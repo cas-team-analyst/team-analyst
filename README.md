@@ -3,6 +3,18 @@
 ## Project Overview
 This project supports the development of actuarial reserve ultimate estimates using systematic methodology and thorough documentation, with the help of an AI coding agent.
 
+## Prerequisites
+*TODO: Add more detailed instructions.*
+
+- Python
+- Git
+- Claude Code
+
+## Quick Start
+
+1. Clone this repository into a new folder. 
+2. Open Claude Code in the folder and say "Let's get started!"
+
 ## Project Structure
 
 ```
