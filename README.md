@@ -1,17 +1,21 @@
 # Actuarial Reserve Ultimate Estimates
 
 ## Project Overview
-This project supports the development of actuarial reserve ultimate estimates using systematic methodology and thorough documentation.
+This project supports the development of actuarial reserve ultimate estimates using systematic methodology and thorough documentation, with the help of an AI coding agent.
 
 ## Project Structure
 
 ```
+├── .claude              # Skills and documentation for Claude Code
 ├── PROGRESS.md          # Progress tracking and status
 ├── README.md            # This file
+├── requirements.txt     # Required Python packages.
 ├── data/                # Raw data files
 │   └── processed/       # Cleaned/transformed data
 ├── analysis/            # Intermediate calculations and diagnostics
 ├── selections/          # Documented selection decisions
+├── scripts/             # Python scripts for repeatability
+│   └── pytest/          # Unit tests for Python scripts
 └── output/              # Final results and exhibits
 ```
 
