@@ -36,7 +36,7 @@ For excel files, document what sheets exist and add short notes about what each 
 Scripts should read from `./data/` and save to `./output/processed/`.
 
 # Step 4: User Selections: Methods
-- [ ] Use the create-excel skill (IMPORTANT!), and the skill for the specific method (IMPORTANT - it will reference a template), to create a worksheet the user can use to review your work and then make selections for [Method Skill Name Here]. Show the user the selections and alternatives (with justification notes) and highlight any that definitely need review for method skill.
+Copy steps from the skill's specific PROGRESS.md file.
 
 # Step 5: Method Weights
 - [ ] Recommend weights for each period and method so we can take a weighted average of ultimates from each method, using different weights for different periods.
