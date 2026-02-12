@@ -22,5 +22,6 @@ When a step is complete: mark it as "Complete", make a commit, note the date and
 As you go:
 * Fill out project metadata in README.md as you learn more about the project. Try to intuit this from file names and content, etc. Only ask the user if you need to know right now.
 * Mark any changes and decision in AUDIT.md. Include the date and user. Include commit ID if applicable.
+* Track steps to replicate results in a file REPLICATE.md: files to add (w/ size and last modified date to verify correct file), scripts to run, any manual edits made to automatically generated files (with reasoning), etc.
 * Create python scripts (use the python skill) at scripts/ as necessary to ensure the steps are repeatable. 
 * Assume the user is not familiar with Git, they will rely on you to manage Git effectively on this project.
