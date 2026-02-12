@@ -1,6 +1,6 @@
 ---
 name: create-excel
-description: Guide for creating Excel workbooks to facilitate actuarial user interactions and parameter selections. Use this when asked to create Excel outputs for actuarial analysis, export results for user review, create workbooks for parameter selection, or prepare actuarial data for manual review and adjustments. Includes formulas, formatting, auto-fit columns, rounding decimals to 4 digits, adding cell notes, and other features to help actuaries make informed decisions.
+description: Guide for creating Excel workbooks to facilitate actuarial user interactions and parameter selections. Use this when asked to create Excel outputs for actuarial analysis, export results for user review, create workbooks for parameter selection, or prepare actuarial data for manual review and adjustments. Includes formulas, formatting, auto-fit columns, rounding decimals to 4 digits, adding cell notes, and other features to help actuaries make informed decisions. IMPORTANT: Always check if an Excel template is available in the skill directory - if so, copy, review, and carefully modify it rather than creating from scratch.
 ---
 
 # Create Excel Workbooks for Actuarial Analysis
@@ -9,7 +9,87 @@ Guide for creating Excel workbooks that help actuarial users interact with analy
 
 **Core Principle:** Excel workbooks should be self-documenting, interactive, and provide sufficient context for actuaries to make informed decisions about parameters and selections.
 
+---
+
+## 🎯 CRITICAL: Check for Templates First
+
+**Before creating any Excel workbook from scratch:**
+
+1. **Check if a template exists** in the skill directory (e.g., `.claude/skills/<method-name>/template.xlsx`)
+2. **If template exists:**
+   - Copy the template to your output location
+   - Review its structure, formatting, and formulas
+   - Carefully modify the template by updating data references, adding/removing rows/columns as needed
+   - Preserve existing formatting, formulas, and structure where appropriate
+   - **DO NOT recreate from scratch** - templates contain carefully designed layouts and formulas
+3. **If no template exists:**
+   - Create the workbook from scratch using the patterns below
+   - Consider if this workbook should become a template for future use
+
+**Why use templates?**
+- Templates contain pre-built formulas, formatting, and structure
+- Ensures consistency across analyses
+- Saves time and reduces errors
+- Incorporates actuarial best practices
+
+**Some skills that may have Excel templates:**
+- Chain Ladder method
+- Bornhuetter-Ferguson method
+- Other actuarial reserving methods
+- Standard parameter selection workbooks
+
+**Using openpyxl to work with templates:**
+```python
+from openpyxl import load_workbook
+import shutil
+from pathlib import Path
+
+def use_template(template_path: str, output_path: str) -> Workbook:
+    """
+    Copy and load template for modification.
+    
+    Parameters:
+    -----------
+    template_path : str
+        Path to template file (e.g., '.claude/skills/chain-ladder/template.xlsx')
+    output_path : str
+        Destination path for the new workbook
+    
+    Returns:
+    --------
+    Workbook : Loaded workbook ready for modification
+    """
+    # Check if template exists
+    if not Path(template_path).exists():
+        raise FileNotFoundError(f"Template not found: {template_path}")
+    
+    # Copy template to output location
+    shutil.copy2(template_path, output_path)
+    print(f"Template copied from {template_path} to {output_path}")
+    
+    # Load and return the workbook for modification
+    wb = load_workbook(output_path)
+    print(f"Template loaded for modification. Sheets: {wb.sheetnames}")
+    
+    return wb
+
+# Example usage:
+template = ".claude/skills/chain-ladder/template.xlsx"
+if Path(template).exists():
+    wb = use_template(template, "output/chain_ladder_results.xlsx")
+    # Now modify the workbook as needed
+    ws = wb['Results']
+    ws['A1'] = "Updated Analysis Date"
+    # ... make other modifications ...
+    wb.save("output/chain_ladder_results.xlsx")
+else:
+    # No template - create from scratch
+    wb = create_workbook_from_scratch()
+```
+
 ## Quick Reference
+
+**⚠️ ALWAYS CHECK FOR TEMPLATES FIRST:** Before creating Excel workbooks from scratch, check if a template exists in the skill directory (`.claude/skills/<method-name>/template.xlsx`). If found, copy and modify the template rather than starting from scratch. → [Template guide](#-critical-check-for-templates-first)
 
 **Key Features:**
 - **Formulas first:** Use Excel formulas instead of hardcoded values whenever possible → [Details](#formulas-over-values)
@@ -19,13 +99,9 @@ Guide for creating Excel workbooks that help actuarial users interact with analy
 - **Clear formatting:** Headers, borders, number formats, conditional formatting for readability → [Details](#formatting-standards)
 - **User inputs highlighted:** Use colors/formatting to distinguish input cells from calculated cells → [See color scheme below]
 - **Multiple sheets:** Organize by purpose (inputs, calculations, outputs, selections, reference) → [Details](#sheet-organization)
-- **Freeze panes:** Lock headers when scrolling through large data sets → [Details](#freeze-panes)
-- **Data validation:** Dropdowns and restrictions where appropriate → [Details](#adding-dropdown-lists)
 
-**Python Packages:** → [Installation guide](#installation-and-setup)
-- **`openpyxl`:** Full-featured Excel read/write, formulas, formatting, comments (recommended for complex workbooks)
-- **`xlsxwriter`:** Write-only, excellent formatting, fast for large files
-- **`pandas` with openpyxl/xlsxwriter engine:** Simple DataFrame export with basic formatting
+**Python Package:** → [Installation guide](#installation-and-setup)
+- **`openpyxl`:** Full-featured Excel read/write, formulas, formatting, comments (use this exclusively for all Excel operations)
 
 **Rounding Standards:** → [Details](#formatting-standards)
 ```python
@@ -41,14 +117,6 @@ Guide for creating Excel workbooks that help actuarial users interact with analy
 # Dollar amounts: 0 decimals with thousands separator
 1234567.89 → 1,234,568
 ```
-
-**Color Scheme (recommended):** → [Formatting examples](#formatting-standards)
-- **Headers:** Blue background (#4472C4), white bold text
-- **User inputs:** Light yellow (#FFF2CC), bold borders
-- **Calculated cells:** White background, normal borders
-- **Selected/recommended values:** Light green (#C6EFCE)
-- **Warnings/issues:** Light red/pink (#FFC7CE)
-- **Reference/info:** Light gray (#D9D9D9)
 
 **Common Workbook Types:**
 1. **Parameter Selection Workbook** → [See guide](#parameter-selection-workbooks)
@@ -72,10 +140,12 @@ Guide for creating Excel workbooks that help actuarial users interact with analy
 
 ## Installation and Setup
 
-**Install required packages:**
+**Install required package:**
 ```powershell
-pip install openpyxl xlsxwriter pandas numpy
+pip install openpyxl
 ```
+
+**Note:** Use `openpyxl` exclusively for all Excel operations. It provides comprehensive support for reading, writing, formulas, formatting, comments, and all features needed for actuarial workbooks.
 
 **Opening Excel files automatically:**
 ```powershell
@@ -98,8 +168,8 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.worksheet.table import Table, TableStyleInfo
 from openpyxl.comments import Comment
 from openpyxl.formatting.rule import CellIsRule
-import xlsxwriter
 from datetime import datetime
+from pathlib import Path
 import os
 import shutil
 ```
@@ -1704,8 +1774,8 @@ if __name__ == "__main__":
 - **Solution:** Comments only appear when hovering over cell (Excel feature)
 
 **Issue:** Excel file is very large
-- **Solution:** Use `xlsxwriter` instead of `openpyxl` for write-only operations
-- **Solution:** Avoid storing full DataFrames in memory, write row-by-row
+- **Solution:** Avoid storing full DataFrames in memory, write row-by-row using openpyxl
+- **Solution:** Use `openpyxl.worksheet._write_only.WriteOnlyWorksheet` for write-only operations with large datasets
 - **Solution:** Compress using ZIP or 7-zip after creation
 
 **Issue:** Conditional formatting not working
@@ -1768,8 +1838,6 @@ if __name__ == "__main__":
 
 **openpyxl Documentation:** https://openpyxl.readthedocs.io/
 
-**xlsxwriter Documentation:** https://xlsxwriter.readthedocs.io/
-
 **pandas Excel I/O:** https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_excel.html
 
 ---
@@ -1777,6 +1845,9 @@ if __name__ == "__main__":
 **Remember:** The goal is to create Excel workbooks that are self-documenting, interactive, and provide actuarial users with sufficient context to make informed decisions. Always prioritize clarity, usability, and reproducibility.
 
 **Critical reminders:**
+- ✅ **Check for templates FIRST:** Always look for Excel templates in the skill directory before creating from scratch
+- ✅ **Use templates when available:** Copy, review, and carefully modify templates rather than recreating
+- ✅ **Use openpyxl exclusively:** All Excel operations should use openpyxl (reading, writing, formatting, formulas)
 - ✅ **Protect user work:** Use `safe_excel_save()` to archive existing files automatically
 - ✅ **Auto-open files:** Never ask users to open files manually - open them programmatically
 - ✅ **Check if exists:** Always check `os.path.exists()` before creating/modifying files

@@ -5,7 +5,7 @@
 # Step 1: Project Setup
 Goal: Set up the project structure and standard documents. 
 - [ ] Copy PROGRESS.md to project root.
-- [ ] Create folder structure: /data, /analysis, /selections, /output, /prior
+- [ ] Create folder structure: /data, /prior, output/processed, output/selections, output/scripts
 - [ ] Ask user to copy relevant data files to data/
 - [ ] Ask user to copy the README from the prior analysis into /prior
 
@@ -35,11 +35,10 @@ For excel files, document what sheets exist and add short notes about what each 
 - [ ] Make and document initial selections for reserving method skill: [Method Skill Name Here]. 
 - [ ] Create 3 alternative selections and include reasons a different choice might be made. 
 
-Scripts should read from `./data/` and save to `./data/processed/`.
-Selections should be saved at ./selections/{method skill name}.md
+Scripts should read from `./data/` and save to `./output/processed/`.
 
 # Step 4: User Selections: Methods
-- [ ] Use the create-excel skill to create a worksheet the user can use to review your work and then make selections for [Method Skill Name Here]. Show the user the selections and alternatives (with justification notes) and highlight any that definitely need review for method skill.
+- [ ] Use the create-excel skill, and the skill for the specific method, to create a worksheet the user can use to review your work and then make selections for [Method Skill Name Here]. Show the user the selections and alternatives (with justification notes) and highlight any that definitely need review for method skill.
 
 # Step 5: Method Weights
 - [ ] Recommend weights for each period and method so we can take a weighted average of ultimates from each method, using different weights for different periods.

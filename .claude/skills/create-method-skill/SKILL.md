@@ -15,25 +15,27 @@ Guide for creating new skills that document actuarial loss reserving methods. Th
 - Creating method-specific guidance for the reserving workflow
 
 **Standard method skill structure:**
-1. Quick Reference (overview, required inputs, outputs, packages)
-2. Detailed Methodology (step-by-step with data requirements)
-3. Python Implementation (code samples with full class)
-4. Outputs and Selection Process (how to create candidates)
-5. Diagnostic Displays (visualization code)
-6. Progress Tracking Template (copy-paste ready for PROGRESS.md)
-7. Actuarial Selections Required (decision points with guidance)
-8. Integration guidance (how method fits in overall study)
-9. Limitations and considerations
-10. References
+1. Quick Reference (overview, required inputs, outputs, packages) → [See template](#section-2-quick-reference)
+2. Detailed Methodology (step-by-step with data requirements) → [See template](#section-3-detailed-methodology)
+3. Python Implementation (code samples with full class) → [See template](#section-4-python-implementation)
+4. Outputs and Selection Process (how to create candidates) → [See template](#section-5-outputs-and-selection-process)
+5. Excel Selection Template (interactive workbook for parameter selections) → [See guide](#excel-selection-template)
+6. Diagnostic Displays (visualization code) → [See template](#section-6-diagnostic-displays)
+7. Progress Tracking Template (copy-paste ready for PROGRESS.md) → [See template](#section-7-progress-tracking-template)
+8. Actuarial Selections Required (decision points with guidance) → [See template](#section-8-actuarial-selections-required)
+9. Integration guidance (how method fits in overall study) → [See template](#section-9-integration-with-overall-study)
+10. Limitations and considerations → [See template](#section-10-limitations-and-considerations)
+11. References → [See template](#section-11-references)
 
 **Key components every method skill needs:**
-- Clear description of the method and when to use it
-- Data requirements (raw and processed formats)
-- Python implementation with working code sample
-- Selection candidate generation
-- Progress tracking template
-- Actuarial selection guidance (critical!)
-- Documentation requirements
+- Clear description of the method and when to use it → [Template](#section-1-title-and-introduction-2-4-paragraphs)
+- Data requirements (raw and processed formats) → [Data Requirements](#step-1-data-requirements)
+- Python implementation with working code sample → [Code Sample](#code-sample-method-name-implementation)
+- Selection candidate generation → [Selection Process](#creating-selection-candidates)
+- Excel template for parameter selections (interactive) → [Template Guide](#excel-selection-template)
+- Progress tracking template → [Copy-paste template](#section-7-progress-tracking-template)
+- Actuarial selection guidance (critical!) → [Decision points](#section-8-actuarial-selections-required)
+- Documentation requirements → [Selection docs](#documentation-for-selections)
 
 ---
 
@@ -407,6 +409,167 @@ Total IBNR: $[amount]
 ### Reasonability
 [Checks performed and results]
 ```
+
+#### Excel Selection Template
+
+Create an Excel workbook to help actuaries review calculated options and make informed parameter selections.
+
+**Purpose:** Present all calculated averaging options, prior selections, and benchmarks in an interactive format where actuaries can document their selections and rationale.
+
+**Reference:** See `.claude/skills/chain-ladder-method/Template - Chain Ladder Selections.xlsx` for complete example implementation.
+
+**Key Template Sheets:**
+1. **Instructions** - How to use the template
+2. **[Parameter] Selections** - Main selection sheet(s) with calculated options
+3. **Selections Summary** - Consolidated view of all selections
+4. **Reference Data** - Supporting information (triangle, prior selections, benchmarks)
+
+**Implementation:**
+```python
+import openpyxl
+from openpyxl.styles import PatternFill, Font, Border, Side
+from openpyxl.comments import Comment
+from openpyxl.worksheet.datavalidation import DataValidation
+
+def create_selection_template(selection_data, output_path, method_name):
+    """
+    Create Excel template for actuarial parameter selections.
+    
+    Template includes:
+    - All calculated averaging options
+    - Yellow cells for actuary selections
+    - Dropdowns for selection methods
+    - Cell comments with guidance
+    - Prior selections for comparison
+    """
+    wb = openpyxl.Workbook()
+    
+    # Sheet 1: Instructions
+    ws_instructions = wb.active
+    ws_instructions.title = "Instructions"
+    # Add instructions for using template
+    
+    # Sheet 2: Main selection sheet (e.g., Development Factors)
+    ws_selections = wb.create_sheet("[Parameter] Selections")
+    
+    # Define styles
+    yellow_fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
+    blue_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+    white_font = Font(bold=True, color="FFFFFF")
+    bold_border = Border(left=Side(style='medium'), right=Side(style='medium'),
+                         top=Side(style='medium'), bottom=Side(style='medium'))
+    
+    # Headers with all averaging options
+    headers = ['Parameter', 'Simple All', 'Simple 5yr', 'Simple 3yr',
+               'Vol-Wgt All', 'Vol-Wgt 5yr', 'Vol-Wgt 3yr', 
+               'Prior', 'Benchmark', 'SELECTED', 'Method', 'Rationale']
+    
+    for col, header in enumerate(headers, start=1):
+        cell = ws_selections.cell(1, col, header)
+        cell.fill = blue_fill
+        cell.font = white_font
+    
+    # Add calculated options and yellow selection cells
+    row = 2
+    for param_name, options in selection_data.items():
+        col = 1
+        ws_selections.cell(row, col, param_name)
+        
+        # Calculated options (columns 2-9)
+        for option_value in options.values():
+            col += 1
+            ws_selections.cell(row, col, option_value)
+        
+        # SELECTED cell (yellow)
+        col += 1
+        selected_cell = ws_selections.cell(row, col)
+        selected_cell.fill = yellow_fill
+        selected_cell.border = bold_border
+        selected_cell.comment = Comment("Enter your selected value and explain in Rationale", "System")
+        
+        # Method dropdown (yellow)
+        col += 1
+        method_cell = ws_selections.cell(row, col)
+        method_cell.fill = yellow_fill
+        method_cell.border = bold_border
+        
+        # Rationale cell (yellow, wide)
+        col += 1
+        rationale_cell = ws_selections.cell(row, col)
+        rationale_cell.fill = yellow_fill
+        rationale_cell.border = bold_border
+        
+        row += 1
+    
+    # Add dropdown validation for Method column
+    method_dropdown = DataValidation(type="list", 
+                                     formula1='"All-Year,5-Year,3-Year,Volume-Weighted,Judgmental,Prior,Benchmark"')
+    ws_selections.add_data_validation(method_dropdown)
+    method_dropdown.add(f'K2:K{row-1}')
+    
+    # Sheet 3: Selections Summary
+    ws_summary = wb.create_sheet("Selections Summary")
+    # Pull selections from main sheet with formulas
+    
+    # Sheet 4: Reference Data  
+    ws_reference = wb.create_sheet("Reference Data")
+    # Add triangle, prior selections, etc.
+    
+    wb.save(output_path)
+    print(f"Selection template created: {output_path}")
+    
+    # Auto-open for review
+    import subprocess
+    subprocess.run(['powershell', '-Command', f'Invoke-Item "{output_path}"'])
+    
+    return output_path
+
+# Usage
+template_path = f"Template - {method_name} Selections.xlsx"
+create_selection_template(selection_data, template_path, method_name)
+```
+
+**Template Features:**
+- Yellow cells indicate where actuaries enter selections
+- All averaging options shown side-by-side for comparison
+- Cell comments explain what to consider
+- Dropdowns for standard selection methods
+- Prior selections shown for comparison (light blue cells)
+- Auto-fit columns, freeze panes, conditional formatting
+- Formulas calculate cumulative factors automatically
+- Validation checks ensure selections are complete
+
+**After Template Creation:**
+1. Open template automatically for actuary review
+2. Actuary makes selections and documents rationale
+3. Saves completed template
+4. Read selections back into Python for ultimate loss calculation
+
+```python
+def read_selections_from_template(template_path):
+    """Read actuarial selections from completed Excel template."""
+    wb = openpyxl.load_workbook(template_path, data_only=True)
+    ws = wb["[Parameter] Selections"]
+    
+    selections = {}
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+        param_name = row[0].value
+        if param_name is None:
+            break
+        selected_value = row[9].value  # SELECTED column
+        method = row[10].value
+        rationale = row[11].value
+        
+        selections[param_name] = {
+            'value': selected_value,
+            'method': method, 
+            'rationale': rationale
+        }
+    
+    return selections
+```
+
+**File Naming:** `Template - [Method Name] Selections.xlsx`
 ```
 
 ---
@@ -812,6 +975,7 @@ Before considering a method skill complete, verify:
 - [ ] Data Requirements section (raw formats and processing)
 - [ ] Python Implementation section with complete working code
 - [ ] Outputs and Selection Process section with candidate generation
+- [ ] Excel Selection Template subsection with code for creating interactive workbook
 - [ ] Diagnostic Displays section with visualization code
 - [ ] Progress Tracking Template (ready to copy into PROGRESS.md)
 - [ ] Actuarial Selections Required (comprehensive decision guidance)
@@ -825,6 +989,8 @@ Before considering a method skill complete, verify:
 - [ ] Python code is complete and runnable (not pseudocode)
 - [ ] Code includes example usage with sample data
 - [ ] Selection candidates generation is explained and coded
+- [ ] Excel selection template code provided with yellow cells, dropdowns, and guidance
+- [ ] Template includes prior selections for comparison and validation checks
 - [ ] Every actuarial decision point is documented with guidance
 - [ ] Progress template has 5-7 subsections (3A through 3G or more)
 - [ ] Each selection includes: options, pros/cons, questions, red flags, documentation
