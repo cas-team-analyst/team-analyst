@@ -39,8 +39,7 @@ Scripts should read from `./data/` and save to `./data/processed/`.
 Selections should be saved at ./selections/{method skill name}.md
 
 # Step 4: User Selections: Methods
-- [ ] Show the user the selections and alternatives and highlight any that definitely need review for method skill: [Method Skill Name Here]
-- [ ] Ask if they want to override any selections for method skill: [Method Skill Name Here]
+- [ ] Use the create-excel skill to create a worksheet the user can use to review your work and then make selections for [Method Skill Name Here]. Show the user the selections and alternatives (with justification notes) and highlight any that definitely need review for method skill.
 
 # Step 5: Method Weights
 - [ ] Recommend weights for each period and method so we can take a weighted average of ultimates from each method, using different weights for different periods.

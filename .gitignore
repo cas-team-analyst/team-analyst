@@ -1,3 +1,5 @@
 analysis/
 data/
 output/
+venv/
+.claude/settings.local.json
