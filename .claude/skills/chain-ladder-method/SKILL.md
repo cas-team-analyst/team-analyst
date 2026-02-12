@@ -20,7 +20,7 @@ The Chain Ladder method is a prominent actuarial loss reserving technique that u
 6. Calculate cumulative claim development factors
 7. Project ultimate claims
 
-**Progress Template:** See [Progress Tracking Template](#progress-tracking-template) section below to copy into PROGRESS.md
+**Progress Template:** See .claude\skills\chain-ladder-method\PROGRESS.MD to copy into PROGRESS.md
 
 **Actuarial Selections:** See [Actuarial Selections Required](#actuarial-selections-required) section for decision points
 

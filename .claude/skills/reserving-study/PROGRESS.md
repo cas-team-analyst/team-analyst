@@ -18,7 +18,7 @@ At this point, data may not be in the exact format we need, but the building blo
 - [ ] Copy relevant content from prior README.md if it exists
 - [ ] Identify reserving methods to consider.
 *By default, we consider Chain Ladder (Loss Development Method), Bornhuetter-Ferguson Method. Each will be duplicated for Paid, Incurred, Reported, Closed depending on available data. Other potential methods: Cape Cod Method, Expected Loss Ratio Method, Frequency/Severity*
-- [ ] Add a step for each method under step 3 and 4.
+- [ ] Add a step for each method under step 3 and 4. Use the methods' skill to determine the appropriate steps.
 - [ ] If there is not already a skill for a reserving method, create one using the `create-reserving-method-skill` skill. 
 - [ ] Note data requirements in README.md
 - [ ] Add a step below for each data requirement.
@@ -32,14 +32,11 @@ For excel files, document what sheets exist and add short notes about what each 
 - [ ] Other: [Specify]
 
 # Step 3: Process Data
-- [ ] Write and run a script to transform the raw data into a format readily usable by reserving method skill: [Method Skill Name Here]. 
-- [ ] Make and document initial selections for reserving method skill: [Method Skill Name Here]. 
-- [ ] Create 3 alternative selections and include reasons a different choice might be made. 
 
 Scripts should read from `./data/` and save to `./output/processed/`.
 
 # Step 4: User Selections: Methods
-- [ ] Use the create-excel skill, and the skill for the specific method, to create a worksheet the user can use to review your work and then make selections for [Method Skill Name Here]. Show the user the selections and alternatives (with justification notes) and highlight any that definitely need review for method skill.
+- [ ] Use the create-excel skill (IMPORTANT!), and the skill for the specific method (IMPORTANT - it will reference a template), to create a worksheet the user can use to review your work and then make selections for [Method Skill Name Here]. Show the user the selections and alternatives (with justification notes) and highlight any that definitely need review for method skill.
 
 # Step 5: Method Weights
 - [ ] Recommend weights for each period and method so we can take a weighted average of ultimates from each method, using different weights for different periods.
