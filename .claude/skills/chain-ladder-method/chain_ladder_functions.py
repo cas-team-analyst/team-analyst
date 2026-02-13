@@ -25,7 +25,7 @@ def calculate_diagnostics(triangles_data: Dict[str, pd.DataFrame], exposure: Opt
         "counts": "reported_counts"
     }
 
-    # Convert dataframes to ActuarialTriangle wrappers
+    # Process dataframes to ensure they're in wide format for diagnostics
     triangles = {}
     for name, df in triangles_data.items():
         # Map name to standard key if possible
@@ -34,22 +34,21 @@ def calculate_diagnostics(triangles_data: Dict[str, pd.DataFrame], exposure: Opt
         # Heuristic detection for diagnostic triangles which are often long but can be wide
         fmt = _detect_triangle_format(df)
         if fmt == "wide":
-            # For wide format, convert to long first
+            # For wide format, prepare for direct use
             temp_df = df.copy()
             # If it has a RangeIndex (0, 1, 2...), the first column is likely the origin
             if isinstance(temp_df.index, pd.RangeIndex):
                 origin_col = temp_df.columns[0]
                 temp_df = temp_df.set_index(origin_col)
-            
-            # Use index name as accident_period
-            origin_name = temp_df.index.name if temp_df.index.name else "accident_period"
-            temp_df_reset = temp_df.rename_axis("accident_period").reset_index()
-            long_df = _wide_to_long(temp_df_reset, "value")
-            t = ActuarialTriangle(long_df, "accident_period", "development_period", "value")
+            processed_df = temp_df
         else:
+            # Convert long to wide format
             cols = _find_long_format_columns(df)
-            t = ActuarialTriangle(df, cols["accident"], cols["development"], cols.get("value", "value"))
-        triangles[std_name] = t
+            accident_col = cols["accident"]
+            dev_col = cols["development"] 
+            value_col = cols.get("value", "value")
+            processed_df = df.pivot(index=accident_col, columns=dev_col, values=value_col)
+        triangles[std_name] = processed_df
 
     # Handle exposure if it's a dataframe to be treated as a triangle
     processed_exposure = exposure
@@ -62,14 +61,14 @@ def calculate_diagnostics(triangles_data: Dict[str, pd.DataFrame], exposure: Opt
                  origin_col = processed_exposure.columns[0]
                  processed_exposure = processed_exposure.set_index(origin_col)
              
-             # Ensure index is the origin period. We don't reset_index for exposure-as-triangle
-             # as it's used directly for division in registry.calculate.
-             
              # Ensure numeric columns for alignment if possible
              processed_exposure.columns = [int(float(str(c).replace("Dev Pd ", "").replace("Age ", ""))) if str(c).replace('.','').isdigit() or "Dev Pd" in str(c) or "Age" in str(c) else c for c in processed_exposure.columns]
         else:
             cols = _find_long_format_columns(exposure)
-            processed_exposure = ActuarialTriangle(exposure, cols["accident"], cols["development"], cols.get("value", "value")).wide
+            accident_col = cols["accident"]
+            dev_col = cols["development"] 
+            value_col = cols.get("value", "value")
+            processed_exposure = exposure.pivot(index=accident_col, columns=dev_col, values=value_col)
 
     registry = DiagnosticsRegistry()
     results = registry.calculate(triangles, processed_exposure)
@@ -89,11 +88,11 @@ class DiagnosticsRegistry:
         
         self.diagnostics = self.config.get("diagnostics", {})
 
-    def _get_data(self, key: str, triangles: Dict[str, ActuarialTriangle], use_incremental: bool) -> pd.DataFrame:
+    def _get_data(self, key: str, triangles: Dict[str, pd.DataFrame], use_incremental: bool) -> pd.DataFrame:
         if key not in triangles:
             raise KeyError(f"Missing required triangle: {key}")
         
-        df = triangles[key].wide
+        df = triangles[key]
         if use_incremental:
             # First column remains as is for incremental? 
             # Usually, for triangles, the first development period IS the first incremental value.
@@ -112,7 +111,7 @@ class DiagnosticsRegistry:
         """Return a mapping of diagnostic key to format type."""
         return {key: spec.get("format", "decimal") for key, spec in self.diagnostics.items()}
 
-    def calculate(self, triangles: Dict[str, ActuarialTriangle], exposure: Optional[Any] = None) -> Dict[str, pd.DataFrame]:
+    def calculate(self, triangles: Dict[str, pd.DataFrame], exposure: Optional[Any] = None) -> Dict[str, pd.DataFrame]:
         results = {}
         for diag_key, spec in self.diagnostics.items():
             recipe = spec["recipe"]
@@ -145,8 +144,8 @@ class DiagnosticsRegistry:
                 elif isinstance(exposure, (pd.Series, dict)):
                     # Exposure is a vector
                     results[diag_key] = num.divide(exposure, axis=0).replace(0, np.nan)
-                elif isinstance(exposure, ActuarialTriangle):
-                    results[diag_key] = num / exposure.wide.replace(0, np.nan)
+                elif isinstance(exposure, pd.DataFrame):
+                    results[diag_key] = num / exposure.replace(0, np.nan)
                 else:
                     # Fallback for scalar or unknown
                     results[diag_key] = num / exposure
@@ -201,16 +200,21 @@ def run_pre_analyst_workflow(
             dev_col = cols["development"]
             long_df = df.rename(columns={cols.get("value", df.columns[-1]): "value"})
 
-        tri = ActuarialTriangle(long_df, accident_col, dev_col, "value")
-        results["triangles"][name] = tri.wide.to_dict()
+        # Convert to DataFrame if needed
+        if isinstance(df, dict) and "data" in df:
+            triangle_df = df["data"] 
+        else:
+            triangle_df = df
+            
+        results["triangles"][name] = triangle_df.to_dict()
         
         # Skip LDF calculations for exposure triangles
         if name.lower() not in ("paid", "incurred", "reported", "closed"):
             continue
         
-        # LDF Calculations
-        ldf_tri_df = calculate_historical_ldfs(tri)
-        avgs_df = calculate_average_ldfs(ldf_tri_df, tri)
+        # LDF Calculations  
+        ldf_tri_df = calculate_historical_ldfs(triangle_df)
+        avgs_df = calculate_average_ldfs(ldf_tri_df, triangle_df)
         qa_metrics = calculate_qa_metrics(ldf_tri_df)
         
         results["ldf_data"][name] = {

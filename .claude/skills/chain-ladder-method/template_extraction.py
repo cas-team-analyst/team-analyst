@@ -5,7 +5,7 @@ TEMPLATE SCRIPT - Copy and adapt this for your project's data source.
 
 This script demonstrates how to:
 1. Extract all triangles from a data source (Excel example shown)
-2. Load them into ActuarialTriangle objects
+2. Load them into pandas DataFrames
 3. Perform chain ladder analysis on each
 4. Generate CSV files for review
 
