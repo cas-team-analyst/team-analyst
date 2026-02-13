@@ -41,7 +41,7 @@ Here are the most important files to be familiar with.
 
 Other files are system files that you should not need to work with unless you are a TeamAnalyst developer.
 
-# Notes for Developers Working on Skills:
+# Notes for Developers Working on Skills
 
 ## Testing strategy
 
