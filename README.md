@@ -48,9 +48,6 @@ See [PROGRESS.md](PROGRESS.md) for current status, completed steps, and pending 
 ## Special Considerations
 - *To be documented during planning phase*
 
-## Getting Started
-Ask your coding agent to use the `reserving-study` skill to get started or continue working.
-
 ## Data
 *To be documented: add important info about files at ./data/*
 | File Name | Description | Location | Special Notes |
