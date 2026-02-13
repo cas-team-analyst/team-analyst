@@ -9,6 +9,15 @@ This project supports the development of actuarial reserve ultimate estimates us
 - Python
 - Git
 - Claude Code
+- Node
+
+## Helpful Commans DEV ONLY
+```bash
+git checkout main
+git branch -D test
+git checkout -B test
+claude
+```
 
 ## Quick Start
 

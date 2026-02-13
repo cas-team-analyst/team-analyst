@@ -1,4 +1,5 @@
-output/
 data/
 .venv/
 .claude/settings.local.json
+node_modules/
+__pycache__/

@@ -1,4 +1,4 @@
 polars # use instead of pandas for better performance with large files
 fastexcel # so polars can read excel
 openpyxl # for manipulating excel templates
-
+pandas # for data manipulation

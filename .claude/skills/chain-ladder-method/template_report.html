@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chain Ladder Development Report</title>
+    <link rel="stylesheet" href="/static/css/tailwind.prod.min.css">
+    <link rel="stylesheet" href="/static/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/static/main.css">
+</head>
+
+<body class="bg-gray-50 p-6">
+    <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                <i class="fas fa-chart-line text-blue-600 mr-2"></i>
+                Chain Ladder Selections
+            </h1>
+
+            <!-- Development Section -->
+            <div class="section-title">Development</div>
+            <div class="table-container" id="development-table"></div>
+
+            <!-- Loss Development Factors Section -->
+            <div class="section-title">Loss Development Factors (LDFs)</div>
+            <div class="table-container" id="ldf-table"></div>
+
+            <!-- Averages Section -->
+            <div class="section-title">Averages</div>
+            <div class="table-container" id="averages-table"></div>
+
+            <!-- Selections Section -->
+            <div class="section-title">Selections</div>
+            <div class="table-container" id="selections-table"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // SOURCE DATA - REPLACE THIS SECTION
+        // ==========================================
+        const sourceData = {
+            triangleName: "Incurred Loss Development",
+            developmentTriangle: {
+                // Periods are the row headers (accident years, for example)
+                periods: ['2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+                // Ages are the column headers (development ages)
+                ages: [12, 24, 36, 48, 60, 72, 84],
+                // Data is a 2D array where data[i][j] is the value at periods[i] and ages[j]
+                // Use null for cells that don't have data yet (upper triangle)
+                data: [
+                    [1000, 1500, 1800, 1950, 2050, 2100, 2120],
+                    [1100, 1650, 1980, 2145, 2255, 2310, null],
+                    [1200, 1800, 2160, 2340, 2460, null, null],
+                    [1300, 1950, 2340, 2535, null, null, null],
+                    [1400, 2100, 2520, null, null, null, null],
+                    [1500, 2250, null, null, null, null, null],
+                    [1600, null, null, null, null, null, null]
+                ]
+            },
+            selections: {
+                // Three scenarios with their selections
+                // For each age-to-age factor, specify either:
+                // - averageType: name matching one of the average types to pull that calculated value
+                // - manualValue: a specific number to use instead of an average
+                scenarios: [
+                    {
+                        label: "Conservative",
+                        selections: [
+                            { averageType: "weighted3", reasoning: "Recent weighted trend" },
+                            { averageType: "simple5", reasoning: "Stable pattern" },
+                            { averageType: "weighted5", reasoning: "Volume-weighted stability" },
+                            { manualValue: 1.015, reasoning: "Judgment - trending down" },
+                            { averageType: "simpleAll", reasoning: "Long-term average" },
+                            { averageType: "weightedAll", reasoning: "Mature tail" }
+                        ]
+                    },
+                    {
+                        label: "Best Estimate",
+                        selections: [
+                            { averageType: "simple5", reasoning: "Median approach" },
+                            { averageType: "simple5", reasoning: "Consistent" },
+                            { averageType: "simpleAll", reasoning: "Full history" },
+                            { averageType: "simpleAll", reasoning: "Balanced" },
+                            { manualValue: 1.008, reasoning: "Slight adjustment" },
+                            { averageType: "simpleAll", reasoning: "Ultimate" }
+                        ]
+                    },
+                    {
+                        label: "Optimistic",
+                        selections: [
+                            { averageType: "simple3", reasoning: "Recent improvement" },
+                            { averageType: "simple3", reasoning: "Lower recent factors" },
+                            { averageType: "simple5", reasoning: "Favorable trend" },
+                            { averageType: "simple5", reasoning: "Development slowing" },
+                            { averageType: "simple5", reasoning: "Quick closure" },
+                            { manualValue: 1.003, reasoning: "Fast tail decay" }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // ==========================================
+        // CALCULATED DATA - DO NOT MODIFY
+        // ==========================================
+
+        // Calculate LDFs from development triangle
+        function calculateLDFs(triangle) {
+            const { data, periods, ages } = triangle;
+            const ldfs = [];
+
+            for (let i = 0; i < data.length; i++) {
+                const row = [];
+                for (let j = 0; j < data[i].length - 1; j++) {
+                    if (data[i][j] !== null && data[i][j + 1] !== null) {
+                        row.push(data[i][j + 1] / data[i][j]);
+                    } else {
+                        row.push(null);
+                    }
+                }
+                ldfs.push(row);
+            }
+
+            return ldfs;
+        }
+
+        // Calculate averages for LDFs
+        function calculateAverages(ldfs, numPeriods) {
+            const numFactors = ldfs[0].length;
+            const averages = [];
+
+            // For each age-to-age factor column
+            for (let factorIdx = 0; factorIdx < numFactors; factorIdx++) {
+                const factorAverages = {
+                    label: `${sourceData.developmentTriangle.ages[factorIdx]}-${sourceData.developmentTriangle.ages[factorIdx + 1]}`,
+                    simple3: null,
+                    simple5: null,
+                    simpleAll: null,
+                    weighted3: null,
+                    weighted5: null,
+                    weightedAll: null
+                };
+
+                // Collect valid factors for this column
+                const validFactors = [];
+                const validVolumes = [];
+
+                for (let i = 0; i < ldfs.length; i++) {
+                    if (ldfs[i][factorIdx] !== null) {
+                        validFactors.push(ldfs[i][factorIdx]);
+                        // Use the "from" volume for weighting
+                        validVolumes.push(sourceData.developmentTriangle.data[i][factorIdx]);
+                    }
+                }
+
+                if (validFactors.length > 0) {
+                    // Simple averages
+                    const last3 = validFactors.slice(-Math.min(3, validFactors.length));
+                    const last5 = validFactors.slice(-Math.min(5, validFactors.length));
+
+                    factorAverages.simple3 = last3.reduce((a, b) => a + b) / last3.length;
+                    factorAverages.simple5 = last5.reduce((a, b) => a + b) / last5.length;
+                    factorAverages.simpleAll = validFactors.reduce((a, b) => a + b) / validFactors.length;
+
+                    // Weighted averages
+                    const last3Vols = validVolumes.slice(-Math.min(3, validVolumes.length));
+                    const last5Vols = validVolumes.slice(-Math.min(5, validVolumes.length));
+
+                    const weighted3Num = last3.reduce((sum, factor, idx) => sum + factor * last3Vols[idx], 0);
+                    const weighted3Den = last3Vols.reduce((a, b) => a + b);
+                    factorAverages.weighted3 = weighted3Num / weighted3Den;
+
+                    const weighted5Num = last5.reduce((sum, factor, idx) => sum + factor * last5Vols[idx], 0);
+                    const weighted5Den = last5Vols.reduce((a, b) => a + b);
+                    factorAverages.weighted5 = weighted5Num / weighted5Den;
+
+                    const weightedAllNum = validFactors.reduce((sum, factor, idx) => sum + factor * validVolumes[idx], 0);
+                    const weightedAllDen = validVolumes.reduce((a, b) => a + b);
+                    factorAverages.weightedAll = weightedAllNum / weightedAllDen;
+                }
+
+                averages.push(factorAverages);
+            }
+
+            return averages;
+        }
+
+        // Format number with commas and decimals
+        function formatNumber(num, decimals = 0) {
+            if (num === null || num === undefined) return '-';
+            return num.toLocaleString('en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+        }
+
+        // Format LDF (3 decimals)
+        function formatLDF(num) {
+            if (num === null || num === undefined) return '-';
+            return num.toFixed(3);
+        }
+
+        // Render Development Table
+        function renderDevelopmentTable() {
+            const { data, periods, ages } = sourceData.developmentTriangle;
+
+            let html = '<table><thead><tr>';
+            html += '<th class="row-header">Period</th>';
+            ages.forEach(age => {
+                html += `<th>${age}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            data.forEach((row, idx) => {
+                html += '<tr>';
+                html += `<td class="row-header">${periods[idx]}</td>`;
+                row.forEach(cell => {
+                    html += `<td>${formatNumber(cell, 0)}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('development-table').innerHTML = html;
+        }
+
+        // Render LDF Table
+        function renderLDFTable(ldfs) {
+            const { periods, ages } = sourceData.developmentTriangle;
+
+            let html = '<table><thead><tr>';
+            html += '<th class="row-header">Period</th>';
+            for (let i = 0; i < ages.length - 1; i++) {
+                html += `<th>${ages[i]}-${ages[i + 1]}</th>`;
+            }
+            html += '</tr></thead><tbody>';
+
+            ldfs.forEach((row, idx) => {
+                html += '<tr>';
+                html += `<td class="row-header">${periods[idx]}</td>`;
+                row.forEach(cell => {
+                    html += `<td>${formatLDF(cell)}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('ldf-table').innerHTML = html;
+        }
+
+        // Render Averages Table
+        function renderAveragesTable(averages) {
+            let html = '<table><tbody>';
+
+            const avgTypes = [
+                { key: 'simple3', label: 'Simple 3-Year' },
+                { key: 'simple5', label: 'Simple 5-Year' },
+                { key: 'simpleAll', label: 'Simple All-Year' },
+                { key: 'weighted3', label: 'Weighted 3-Year' },
+                { key: 'weighted5', label: 'Weighted 5-Year' },
+                { key: 'weightedAll', label: 'Weighted All-Year' }
+            ];
+
+            avgTypes.forEach(avgType => {
+                html += '<tr>';
+                html += `<td class="row-header">${avgType.label}</td>`;
+                averages.forEach(avg => {
+                    html += `<td>${formatLDF(avg[avgType.key])}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('averages-table').innerHTML = html;
+        }
+
+        // Render Selections Table
+        function renderSelectionsTable(averages) {
+            const { scenarios } = sourceData.selections;
+            const numFactors = averages.length;
+
+            // Map of average type keys to display labels
+            const avgTypeLabels = {
+                'simple3': 'Simple 3-Year',
+                'simple5': 'Simple 5-Year',
+                'simpleAll': 'Simple All-Year',
+                'weighted3': 'Weighted 3-Year',
+                'weighted5': 'Weighted 5-Year',
+                'weightedAll': 'Weighted All-Year'
+            };
+
+            let html = '<table><thead><tr>';
+            html += '<th class="row-header">Scenario</th>';
+            for (let i = 0; i < numFactors; i++) {
+                html += `<th>${sourceData.developmentTriangle.ages[i]}-${sourceData.developmentTriangle.ages[i + 1]}</th>`;
+            }
+            html += '</tr></thead><tbody>';
+
+            scenarios.forEach((scenario) => {
+                // Scenario label row
+                html += '<tr>';
+                html += `<td class="scenario-label" colspan="${numFactors + 1}">${scenario.label}</td>`;
+                html += '</tr>';
+
+                // Selected row
+                html += '<tr>';
+                html += '<td class="row-header">Selected</td>';
+                for (let i = 0; i < numFactors; i++) {
+                    let selectedValue = '-';
+                    let cellClass = 'selected-cell';
+                    if (scenario.selections && scenario.selections[i]) {
+                        const sel = scenario.selections[i];
+                        if (sel.manualValue !== undefined) {
+                            selectedValue = formatLDF(sel.manualValue);
+                            cellClass = 'selected-cell manual-value';
+                        } else if (sel.averageType && averages[i][sel.averageType] !== null) {
+                            selectedValue = formatLDF(averages[i][sel.averageType]);
+                        }
+                    }
+                    html += `<td class="${cellClass}">${selectedValue}</td>`;
+                }
+                html += '</tr>';
+
+                // Average Used row
+                html += '<tr>';
+                html += '<td class="row-header">Average Used</td>';
+                for (let i = 0; i < numFactors; i++) {
+                    let avgUsed = '-';
+                    if (scenario.selections && scenario.selections[i]) {
+                        const sel = scenario.selections[i];
+                        if (sel.manualValue !== undefined) {
+                            avgUsed = 'Manual';
+                        } else if (sel.averageType) {
+                            avgUsed = avgTypeLabels[sel.averageType] || sel.averageType;
+                        }
+                    }
+                    html += `<td>${avgUsed}</td>`;
+                }
+                html += '</tr>';
+
+                // Reasoning row
+                html += '<tr>';
+                html += '<td class="row-header">Reasoning</td>';
+                for (let i = 0; i < numFactors; i++) {
+                    let reasoning = '-';
+                    if (scenario.selections && scenario.selections[i] && scenario.selections[i].reasoning) {
+                        reasoning = scenario.selections[i].reasoning;
+                    }
+                    html += `<td class="reasoning-cell">${reasoning}</td>`;
+                }
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('selections-table').innerHTML = html;
+        }
+
+        // Initialize the report
+        function initReport() {
+            // Calculate derived data
+            const ldfs = calculateLDFs(sourceData.developmentTriangle);
+            const averages = calculateAverages(ldfs, sourceData.developmentTriangle.periods.length);
+
+            // Render all sections
+            renderDevelopmentTable();
+            renderLDFTable(ldfs);
+            renderAveragesTable(averages);
+            renderSelectionsTable(averages);
+        }
+
+        // Run on page load
+        window.addEventListener('DOMContentLoaded', initReport);
+    </script>
+</body>
+
+</html>

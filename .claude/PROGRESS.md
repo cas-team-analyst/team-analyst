@@ -3,6 +3,7 @@ Goal: Set up the project structure and standard documents.
 - [ ] Copy PROGRESS.md to project root.
 - [ ] Create folder structure: /data, /prior, output/processed, output/selections, output/scripts
 - [ ] Set up .venv with `python -m venv .venv; .venv/Scripts/activate; pip install -r requirements.txt`
+- [ ] Run `npm install` to install Node.js requirements
 - [ ] Ask user to copy relevant data files to data/
 
 # Step 2: Exploratory Data Analysis

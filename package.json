@@ -1,0 +1,24 @@
+{
+  "name": "claude-code",
+  "version": "1.0.0",
+  "description": "This project supports the development of actuarial reserve ultimate estimates using systematic methodology and thorough documentation, with the help of an AI coding agent.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cas-team-analyst/claude-code.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/cas-team-analyst/claude-code/issues"
+  },
+  "homepage": "https://github.com/cas-team-analyst/claude-code#readme",
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}

@@ -10,7 +10,7 @@ Guide for Python development in this project.
 ## Quick Reference
 
 **Guidelines:**
-- Use polars instead of pandas whenever possible. Read files as all strings and convert later if you need to.
+- Read files as all strings and convert later if you need to.
 - Use openpyxl to manipulate Excel files.
 - Use code from skills whenever possible.
 
