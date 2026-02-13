@@ -9,8 +9,8 @@ Goal: Set up the project structure and standard documents.
 
 # Step 2: Exploratory Data Analysis
 Goal: Understand what data is available. 
-- [ ] Review the files available using the explore-excel tool. For each file, save a summary .md file to `output/eda`
-- [ ] Use the AskUserQuestions tool and the project context to fill in the information in the README section "Project Metadata." Fill in any missing context you need to perform the most valuable actuarial analysis. 
+- [ ] Review the files available using the explore-excel tool. For each file add a file summary subsection to PROJECT.md.
+- [ ] Use the AskUserQuestions tool and the project context to fill in the information in the PROJECT section "Project Metadata." Fill in any missing context you need to perform the most valuable actuarial analysis. 
 
 # Step 3: Add Steps for Each Reserving Method
 

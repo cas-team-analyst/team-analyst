@@ -17,7 +17,7 @@ When a step is complete:
 
 As you go:
 - Use the AskUserQuestions tool at each step to get complete information.
-- Fill out project metadata in README.md as you learn more about the project. Try to intuit this from file names and content, etc. Only ask the user if you need to know right now.
+- Fill out project metadata in PROJECT.md as you learn more about the project. Try to intuit this from file names and content, etc. Only ask the user if you need to know right now.
 - Mark any changes and decision in AUDIT.md. Include the date.
 - Track steps to replicate results in a file REPLICATE.md: files to add (w/ size and last modified date to verify correct file), scripts to run, any manual edits made to automatically generated files (with reasoning), etc.
 - Create python scripts (use the python skill) at output/scripts/ as necessary to ensure the steps are repeatable. 
