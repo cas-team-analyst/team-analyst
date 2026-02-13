@@ -17,9 +17,10 @@ _Copy these steps into PROGRESS to use this skill._
 
 ## Per-Triangle Steps
 
-_For each triangle identified, copy these steps into PROGRESS and work through them one at a time._
+_For each triangle identified, copy these steps into PROGRESS (a full copy of the steps for each triangle) and then work through them one at a time._
 
 **Triangle: [NAME]**
+Don't continue with the next triangle until this one is finished.
 
 ### 1. Review Diagnostics and Adjust Selections
 - [ ] Review generated CSV files:
@@ -43,5 +44,9 @@ _For each triangle identified, copy these steps into PROGRESS and work through t
 ### 3. Review in Browser
 - [ ] Start Vite dev server from project root: `npx vite --port 5175`
 - [ ] Open: http://localhost:5175/output/selections/[trianglename]_selections.html
-- [ ] Work with the user to make adjustments. If adjustments needed, edit CSV and regenerate HTML (repeat steps 2-3)
-- [ ] Close Vite server after all triangles reviewed
+
+- [ ] Run these steps in a loop and only mark complete once the exit condition has been achieved.
+  - Ask the user what changes they'd like to the selections. 
+  - Make the appropriate edits by modifying the selections.csv file and rebuilding the html file, which will trigger Vite to update the micro UI.
+  - Repeat until the user confirms there are no more changes necessary.
+- [ ] Close Vite server.

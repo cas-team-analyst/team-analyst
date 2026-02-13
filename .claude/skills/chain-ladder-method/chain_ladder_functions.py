@@ -606,41 +606,58 @@ def make_selections_from_averages(
         if cv < 0.05:  # Low volatility
             scenarios['Conservative'].append({
                 'averageType': 'weighted3',
-                'reasoning': 'Low volatility - recent weighted trend'
+                'reasoning': f'Low volatility (CV={cv:.3f}) supports recent trend analysis'
             })
         elif cv < 0.10:
             scenarios['Conservative'].append({
                 'averageType': 'weighted5',
-                'reasoning': 'Moderate volatility - 5-year weighted'
+                'reasoning': f'Moderate volatility (CV={cv:.3f}) requires longer-term perspective'
             })
         else:
             scenarios['Conservative'].append({
                 'averageType': 'weightedAll',
-                'reasoning': 'High volatility - all-year weighted'
+                'reasoning': f'High volatility (CV={cv:.3f}) requires full data for stability'
             })
         
         # Best Estimate: Balanced approach
         if cv < 0.08:
-            scenarios['Best Estimate'].append({
-                'averageType': 'simple5',
-                'reasoning': 'Stable - 5-year simple average'
-            })
+            if abs(slope) < 0.01:
+                scenarios['Best Estimate'].append({
+                    'averageType': 'simple5',
+                    'reasoning': f'Stable pattern (CV={cv:.3f}, slope={slope:.4f}) indicates consistent development'
+                })
+            else:
+                trend_desc = "declining" if slope < 0 else "increasing"
+                scenarios['Best Estimate'].append({
+                    'averageType': 'simple5',
+                    'reasoning': f'Stable with {trend_desc} trend (CV={cv:.3f}, slope={slope:.4f})'
+                })
         else:
             scenarios['Best Estimate'].append({
                 'averageType': 'simpleAll',
-                'reasoning': 'All-year simple average'
+                'reasoning': f'Variable pattern (CV={cv:.3f}) benefits from full historical perspective'
             })
         
         # Optimistic: Recent trends
-        if slope < 0:  # Decreasing trend
+        if slope < -0.01:  # Significant decreasing trend
             scenarios['Optimistic'].append({
                 'averageType': 'simple3',
-                'reasoning': 'Recent declining trend'
+                'reasoning': f'Strong declining trend (slope={slope:.4f}) suggests continued improvement'
+            })
+        elif slope < 0:  # Mild decreasing trend
+            scenarios['Optimistic'].append({
+                'averageType': 'simple3',
+                'reasoning': f'Mild declining trend (slope={slope:.4f}) supports recent experience'
+            })
+        elif cv < 0.06:  # Stable, no strong trend
+            scenarios['Optimistic'].append({
+                'averageType': 'simple5',
+                'reasoning': f'Stable development (CV={cv:.3f}) with no adverse trends'
             })
         else:
             scenarios['Optimistic'].append({
                 'averageType': 'simple5',
-                'reasoning': 'Recent 5-year average'
+                'reasoning': f'Recent experience (CV={cv:.3f}) may reflect improved conditions'
             })
     
     return scenarios

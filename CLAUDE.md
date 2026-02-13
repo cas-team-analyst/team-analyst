@@ -25,4 +25,4 @@ As you go:
 # OTHER GUIDELINES
 
 - Assume the user is not familiar with Git, they will rely on you to manage Git effectively on this project.
-- Never include checkmarks (✓ ✔) or other unicode symbols in PowerShell commands - only use standard ASCII text and operators.
+- Never include checkmarks or other unicode symbols in PowerShell commands - only use standard ASCII text and operators.

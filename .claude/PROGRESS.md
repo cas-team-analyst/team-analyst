@@ -4,6 +4,7 @@ Goal: Set up the project structure and standard documents.
 - [ ] Create folder structure: /data, /prior, output/processed, output/selections, output/scripts
 - [ ] Set up .venv with `python -m venv .venv; .venv/Scripts/activate; pip install -r requirements.txt`
 - [ ] Run `npm install` to install Node.js requirements
+- [ ] Ask the user the level of interaction they would like: Careful (Frequent Pauses to Review Work), Quick First Pass (Only Stop to Make Selections), Fully Automated (Skip Selections Review) and note this at the top of PROGRESS.md.
 - [ ] Ask user to copy relevant data files to data/
 
 # Step 2: Exploratory Data Analysis
