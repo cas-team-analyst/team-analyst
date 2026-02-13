@@ -77,16 +77,162 @@ def calculate_diagnostics(triangles_data: Dict[str, pd.DataFrame], exposure: Opt
     return results, labels, formats
 
 class DiagnosticsRegistry:
-    def __init__(self, registry_path: Optional[str] = None):
-        if registry_path is None:
-            # Use project root diagnostics registry
-            project_root = Path(__file__).parent.parent.parent.parent.parent.parent
-            registry_path = project_root / "diagnostics_registry.yaml"
-        
-        with open(registry_path, "r") as f:
-            self.config = yaml.safe_load(f)
-        
-        self.diagnostics = self.config.get("diagnostics", {})
+    def __init__(self):
+        # Embedded diagnostics configuration (formerly in diagnostics_registry.yaml)
+        self.diagnostics = {
+            "INCURRED_SEVERITY": {
+                "label": "Incurred Severity",
+                "format": "integer",
+                "recipe": "safe_divide",
+                "inputs": ["incurred", "reported_counts"],
+                "args": {
+                    "numerator": "incurred",
+                    "denominator": "reported_counts",
+                    "use_incremental": False
+                }
+            },
+            "INCURRED_SEVERITY_INCR": {
+                "label": "Incurred Severity (Incremental)",
+                "format": "integer",
+                "recipe": "safe_divide",
+                "inputs": ["incurred", "reported_counts"],
+                "args": {
+                    "numerator": "incurred",
+                    "denominator": "reported_counts",
+                    "use_incremental": True
+                }
+            },
+            "PAID_SEVERITY": {
+                "label": "Paid Severity",
+                "format": "integer",
+                "recipe": "safe_divide",
+                "inputs": ["paid", "closed_counts"],
+                "args": {
+                    "numerator": "paid",
+                    "denominator": "closed_counts",
+                    "use_incremental": False
+                }
+            },
+            "PAID_SEVERITY_INCR": {
+                "label": "Paid Severity (Incremental)",
+                "format": "integer",
+                "recipe": "safe_divide",
+                "inputs": ["paid", "closed_counts"],
+                "args": {
+                    "numerator": "paid",
+                    "denominator": "closed_counts",
+                    "use_incremental": True
+                }
+            },
+            "PAID_TO_INCURRED": {
+                "label": "Paid / Incurred",
+                "format": "percentage",
+                "recipe": "safe_divide",
+                "inputs": ["paid", "incurred"],
+                "args": {
+                    "numerator": "paid",
+                    "denominator": "incurred",
+                    "use_incremental": False
+                }
+            },
+            "CASE_RESERVES": {
+                "label": "Case Reserves",
+                "format": "integer",
+                "recipe": "subtract",
+                "inputs": ["incurred", "paid"],
+                "args": {
+                    "left": "incurred",
+                    "right": "paid",
+                    "use_incremental": False
+                }
+            },
+            "OPEN_COUNTS": {
+                "label": "Open Counts",
+                "format": "integer",
+                "recipe": "subtract",
+                "inputs": ["reported_counts", "closed_counts"],
+                "args": {
+                    "left": "reported_counts",
+                    "right": "closed_counts",
+                    "use_incremental": False
+                }
+            },
+            "AVERAGE_CASE_RESERVES": {
+                "label": "Average Case Reserves",
+                "format": "integer",
+                "recipe": "nested_divide",
+                "inputs": ["incurred", "paid", "reported_counts", "closed_counts"],
+                "args": {
+                    "numerator_recipe": "subtract",
+                    "numerator_args": {"left": "incurred", "right": "paid"},
+                    "denominator_recipe": "subtract",
+                    "denominator_args": {"left": "reported_counts", "right": "closed_counts"},
+                    "use_incremental": False
+                }
+            },
+            "CUMULATIVE_CLOSURE_RATE": {
+                "label": "Cumulative Closure Rate",
+                "format": "percentage",
+                "recipe": "safe_divide",
+                "inputs": ["closed_counts", "reported_counts"],
+                "args": {
+                    "numerator": "closed_counts",
+                    "denominator": "reported_counts",
+                    "use_incremental": False
+                }
+            },
+            "INCREMENTAL_CLOSURE_RATE": {
+                "label": "Incremental Closure Rate",
+                "format": "percentage",
+                "recipe": "safe_divide",
+                "inputs": ["closed_counts", "reported_counts"],
+                "args": {
+                    "numerator": "closed_counts",
+                    "denominator": "reported_counts",
+                    "use_incremental": True
+                }
+            },
+            "INCURRED_LOSS_RATE": {
+                "label": "Incurred Loss Rate / Ratio",
+                "format": "integer",
+                "recipe": "safe_divide_exposure",
+                "inputs": ["incurred"],
+                "args": {
+                    "numerator": "incurred",
+                    "use_incremental": False
+                }
+            },
+            "PAID_LOSS_RATE": {
+                "label": "Paid Loss Rate / Ratio",
+                "format": "integer",
+                "recipe": "safe_divide_exposure",
+                "inputs": ["paid"],
+                "args": {
+                    "numerator": "paid",
+                    "use_incremental": False
+                }
+            },
+            "REPORTED_FREQUENCY": {
+                "label": "Reported Frequency",
+                "format": "decimal",
+                "recipe": "safe_divide_exposure",
+                "inputs": ["reported_counts"],
+                "args": {
+                    "numerator": "reported_counts",
+                    "use_incremental": False
+                }
+            },
+            "CLOSED_FREQUENCY": {
+                "label": "Closed Frequency",
+                "format": "decimal",
+                "recipe": "safe_divide_exposure",
+                "inputs": ["closed_counts"],
+                "args": {
+                    "numerator": "closed_counts",
+                    "use_incremental": False
+                }
+            }
+        }
 
     def _get_data(self, key: str, triangles: Dict[str, pd.DataFrame], use_incremental: bool) -> pd.DataFrame:
         if key not in triangles:

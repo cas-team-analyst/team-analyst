@@ -26,3 +26,4 @@ Goal: Understand what data is available.
 - [x] Complete: Fixed ActuarialTriangle references causing import errors in chain_ladder_functions.py
 - [x] Complete: Updated template_extraction.py and populate_selections.py for DataFrame workflow
 - [x] Complete: Consolidated documentation into single SKILL.md file
+- [x] Complete: Removed YAML file dependency - embedded diagnostics configuration in Python dictionary (2024-12-30)
