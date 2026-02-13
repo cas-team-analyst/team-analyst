@@ -9,6 +9,114 @@ from pathlib import Path
 # - Values: loss amounts, counts, etc.
 # - Use pd.read_csv(path, index_col=0) to load from CSV
 
+def _detect_triangle_format(df: pd.DataFrame) -> str:
+    """
+    Detect whether a DataFrame is in wide or long format.
+    
+    Args:
+        df: DataFrame to analyze
+        
+    Returns:
+        "wide" or "long"
+    """
+    # Heuristic: wide format typically has numeric columns (ages) and fewer rows than columns
+    # Long format typically has columns like accident_period, development_period, value
+    
+    if len(df.columns) <= 3:
+        return "long"
+    
+    # Check if most columns are numeric (typical of wide triangle format)
+    numeric_cols = sum(1 for col in df.columns if pd.api.types.is_numeric_dtype(df[col]) or str(col).replace('.', '').isdigit())
+    if numeric_cols > len(df.columns) * 0.7:
+        return "wide"
+    
+    # Check for common long format column names
+    col_names_lower = [str(col).lower() for col in df.columns]
+    long_indicators = ["accident", "development", "origin", "period", "age", "value", "loss", "count"]
+    if any(indicator in " ".join(col_names_lower) for indicator in long_indicators):
+        return "long"
+    
+    # Default to wide if uncertain
+    return "wide"
+
+def _find_long_format_columns(df: pd.DataFrame) -> Dict[str, str]:
+    """
+    Find the column names for accident period, development period, and value in a long format DataFrame.
+    
+    Args:
+        df: DataFrame in long format
+        
+    Returns:
+        Dict with keys "accident", "development", "value"
+    """
+    cols = df.columns.tolist()
+    col_names_lower = [str(col).lower() for col in cols]
+    
+    # Find accident period column
+    accident_col = None
+    for i, col_name in enumerate(col_names_lower):
+        if any(term in col_name for term in ["accident", "origin", "ay", "period"]):
+            accident_col = cols[i]
+            break
+    
+    # Find development period column  
+    dev_col = None
+    for i, col_name in enumerate(col_names_lower):
+        if any(term in col_name for term in ["development", "dev", "age", "period"]) and cols[i] != accident_col:
+            dev_col = cols[i]
+            break
+    
+    # Find value column (often the last numeric column)
+    value_col = None
+    for col in reversed(cols):
+        if col not in [accident_col, dev_col] and pd.api.types.is_numeric_dtype(df[col]):
+            value_col = col
+            break
+    
+    # Fallback to positional detection if named detection fails
+    if not accident_col:
+        accident_col = cols[0]
+    if not dev_col:
+        dev_col = cols[1] if len(cols) > 1 else cols[0]
+    if not value_col:
+        value_col = cols[-1] if len(cols) > 2 else "value"
+    
+    return {
+        "accident": accident_col,
+        "development": dev_col,
+        "value": value_col
+    }
+
+def _wide_to_long(df: pd.DataFrame, value_name: str = "value") -> pd.DataFrame:
+    """
+    Convert a wide triangle DataFrame to long format.
+    
+    Args:
+        df: Wide DataFrame with accident periods as index and development ages as columns
+        value_name: Name for the value column in long format
+        
+    Returns:
+        Long format DataFrame with accident_period, development_period, value columns
+    """
+    # Reset index to make accident period a column
+    df_reset = df.reset_index()
+    accident_col = df_reset.columns[0]
+    
+    # Melt the DataFrame
+    long_df = df_reset.melt(
+        id_vars=[accident_col],
+        var_name="development_period", 
+        value_name=value_name
+    )
+    
+    # Rename accident column to standard name
+    long_df = long_df.rename(columns={accident_col: "accident_period"})
+    
+    # Remove rows with NaN values
+    long_df = long_df.dropna(subset=[value_name])
+    
+    return long_df
+
 
 def calculate_diagnostics(triangles_data: Dict[str, pd.DataFrame], exposure: Optional[Any] = None) -> Dict[str, pd.DataFrame]:
     """

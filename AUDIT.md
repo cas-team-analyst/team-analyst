@@ -32,10 +32,11 @@ This file tracks changes and decisions made.
 - Removed YAML file dependency and complex path resolution
 - Simplified __init__ method to use embedded configuration
 - Added 14 diagnostic types: severities, rates, ratios, frequencies, and case reserves
+- Added missing utility functions: _detect_triangle_format, _find_long_format_columns, _wide_to_long
 
 **Files Modified**:
-- `.claude/skills/chain-ladder-method/chain_ladder_functions.py` - Embedded diagnostics dictionary
+- `.claude/skills/chain-ladder-method/chain_ladder_functions.py` - Embedded diagnostics dictionary and utility functions
 
-**Testing**: DiagnosticsRegistry loads 14 diagnostic types successfully without external dependencies.
+**Testing**: DiagnosticsRegistry loads 14 diagnostic types successfully and calculates metrics correctly with sample data.
 
 **Impact**: Skill is now self-contained with no external file dependencies, making it more portable and reliable.
