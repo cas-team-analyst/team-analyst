@@ -589,13 +589,14 @@ def make_selections_from_averages(
         qa_metrics: Dictionary of QA metrics from calculate_qa_metrics
     
     Returns:
-        Dictionary with three scenarios (Conservative, Best Estimate, Optimistic)
+        Dictionary with four scenarios (Conservative, Best Estimate, Optimistic, Final Recommendation)
         Each scenario has a list of selections with averageType and reasoning
     """
     scenarios = {
         'Conservative': [],
         'Best Estimate': [],
-        'Optimistic': []
+        'Optimistic': [],
+        'Final Recommendation': []
     }
     
     for dev_interval in averages_df.columns:
@@ -658,6 +659,39 @@ def make_selections_from_averages(
             scenarios['Optimistic'].append({
                 'averageType': 'simple5',
                 'reasoning': f'Recent experience (CV={cv:.3f}) may reflect improved conditions'
+            })
+        
+        # Final Recommendation: Intelligent selection based on combined metrics
+        # This will be the default choice when users ask for edits without specifying a scenario
+        if cv < 0.05 and abs(slope) < 0.005:  # Very stable, no trend
+            scenarios['Final Recommendation'].append({
+                'averageType': 'simple5',
+                'reasoning': f'RECOMMENDED: Very stable pattern (CV={cv:.3f}, slope={slope:.4f}) supports balanced 5-year average'
+            })
+        elif cv < 0.05 and slope < -0.005:  # Stable with improving trend
+            scenarios['Final Recommendation'].append({
+                'averageType': 'simple3',
+                'reasoning': f'RECOMMENDED: Stable with improving trend (CV={cv:.3f}, slope={slope:.4f}) - recent experience preferred'
+            })
+        elif cv < 0.05 and slope > 0.005:  # Stable with worsening trend
+            scenarios['Final Recommendation'].append({
+                'averageType': 'weighted5',
+                'reasoning': f'RECOMMENDED: Stable with adverse trend (CV={cv:.3f}, slope={slope:.4f}) - weighted average dampens recent increases'
+            })
+        elif cv < 0.08:  # Moderate volatility
+            scenarios['Final Recommendation'].append({
+                'averageType': 'simple5',
+                'reasoning': f'RECOMMENDED: Moderate volatility (CV={cv:.3f}) balanced with 5-year perspective'
+            })
+        elif cv < 0.12:  # High volatility  
+            scenarios['Final Recommendation'].append({
+                'averageType': 'weightedAll',
+                'reasoning': f'RECOMMENDED: High volatility (CV={cv:.3f}) requires full data span with volume weighting for stability'
+            })
+        else:  # Very high volatility
+            scenarios['Final Recommendation'].append({
+                'averageType': 'simpleAll',
+                'reasoning': f'RECOMMENDED: Very high volatility (CV={cv:.3f}) requires full historical perspective for stability'
             })
     
     return scenarios
@@ -745,7 +779,7 @@ def save_selections_csv(selections_df: pd.DataFrame, output_path: str):
     
     selections_df.to_csv(output_path, index=False)
     
-    print(f"✓ Selections saved to: {output_path}")
+    print(f"Selections saved to: {output_path}")
     return str(output_path)
 
 
@@ -776,7 +810,7 @@ def perform_full_analysis(
     # Save triangle data to processed directory
     triangle_path = f"{processed_dir}/{filename}_triangle.csv"
     save_triangle_data(triangle_df, triangle_name, triangle_path)
-    print(f"✓ Triangle data: {triangle_path}")
+    print(f"Triangle data: {triangle_path}")
     
     # Create and save selections CSV
     selections_df = create_selections_csv(triangle_df, triangle_name)

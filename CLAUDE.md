@@ -21,8 +21,8 @@ As you go:
 - Mark any changes and decision in AUDIT.md. Include the date.
 - Track steps to replicate results in a file REPLICATE.md: files to add (w/ size and last modified date to verify correct file), scripts to run, any manual edits made to automatically generated files (with reasoning), etc.
 - Create python scripts (use the python skill) at output/scripts/ as necessary to ensure the steps are repeatable. 
+- Assume the user is not familiar with Git, they will rely on you to manage Git effectively on this project.
 
 # OTHER GUIDELINES
 
-- Assume the user is not familiar with Git, they will rely on you to manage Git effectively on this project.
 - Never include checkmarks or other unicode symbols in PowerShell commands - only use standard ASCII text and operators.

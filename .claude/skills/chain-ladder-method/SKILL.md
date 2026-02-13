@@ -56,7 +56,11 @@ Copy steps from `PROGRESS.MD` into your project's `PROGRESS.md` file for detaile
   - `calculate_qa_metrics(ldf_df)` - Calculate CV (volatility) and slope (trend) for each factor
   
   **Selection Functions** (create initial selections using diagnostics):
-  - `make_selections_from_averages(averages, qa_metrics)` - Generate 3 scenarios from diagnostics
+  - `make_selections_from_averages(averages, qa_metrics)` - Generate 4 scenarios from diagnostics:
+    * **Conservative**: Emphasizes stability and longer-term data
+    * **Best Estimate**: Balanced approach using standard methods
+    * **Optimistic**: Focuses on recent favorable trends
+    * **Final Recommendation**: Intelligent selection based on combined metrics *(default for user edits)*
   - `create_selections_csv(triangle_df, name)` - Create selections DataFrame
   - `save_selections_csv(df, path)` - Save selections to CSV
   
@@ -82,6 +86,18 @@ Copy steps from `PROGRESS.MD` into your project's `PROGRESS.md` file for detaile
   - Takes standardized CSV input (triangle + selections)
   - Produces interactive HTML report with calculations
 
+## Agent Behavior with Scenarios
+
+**When users request edits:**
+- **Default assumption**: User wants to modify the "Final Recommendation" scenario
+- **Explicit scenario**: Only edit other scenarios when user specifically mentions "Conservative", "Best Estimate", or "Optimistic"
+- **Reasoning**: The Final Recommendation represents the agent's best judgment based on statistical analysis
+
+**Example user requests:**
+- "Make the 12-24 factor more conservative" → Modify Final Recommendation scenario
+- "Increase the Conservative scenario's 24-36 factor" → Modify Conservative scenario specifically
+- "I think we should use manual judgment for the tail" → Modify Final Recommendation scenario
+
 ## CSV Format Reference
 
 ### Triangle CSV (`output/processed/[name]_triangle.csv`)
@@ -102,17 +118,20 @@ Scenario,AgeFactor,AverageType,ManualValue,Reasoning
 Conservative,12-24,weighted3,,Recent weighted trend shows stability
 Conservative,24-36,,,1.015,Judgment adjustment based on market
 Best Estimate,12-24,simple5,,Balanced approach
+Final Recommendation,12-24,simple5,,RECOMMENDED: Moderate volatility supports 5-year average
+Final Recommendation,24-36,simple3,,RECOMMENDED: Stable with improving trend - recent experience preferred
 ```
-- **Scenario**: Label (Conservative, Best Estimate, Optimistic)
+- **Scenario**: Label (Conservative, Best Estimate, Optimistic, Final Recommendation)
 - **AgeFactor**: Development factor (e.g., "12-24")
 - **AverageType**: One of: simple3, simple5, simpleAll, weighted3, weighted5, weightedAll
 - **ManualValue**: Custom value (leave AverageType empty if using this)
 - **Reasoning**: Explanation for the selection
 
 **Key Points:**
-- One row per age-to-age factor per scenario
+- One row per age-to-age factor per scenario (4 scenarios total)
 - Use either AverageType OR ManualValue (not both)
 - Reasoning is required for documentation
+- **Final Recommendation** scenario uses "RECOMMENDED:" prefix in reasoning to indicate agent's preferred choice
 
 **Average Types:**
 | Type | Description |

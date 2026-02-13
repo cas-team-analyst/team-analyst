@@ -60,7 +60,7 @@
                 ]
             },
             selections: {
-                // Three scenarios with their selections
+                // Four scenarios with their selections
                 // For each age-to-age factor, specify either:
                 // - averageType: name matching one of the average types to pull that calculated value
                 // - manualValue: a specific number to use instead of an average
@@ -96,6 +96,17 @@
                             { averageType: "simple5", reasoning: "Development slowing" },
                             { averageType: "simple5", reasoning: "Quick closure" },
                             { manualValue: 1.003, reasoning: "Fast tail decay" }
+                        ]
+                    },
+                    {
+                        label: "Final Recommendation",
+                        selections: [
+                            { averageType: "simple5", reasoning: "RECOMMENDED: Moderate volatility supports 5-year average" },
+                            { averageType: "simple3", reasoning: "RECOMMENDED: Stable with improving trend - recent experience preferred" },
+                            { averageType: "weighted5", reasoning: "RECOMMENDED: Moderate volatility balanced with volume weighting" },
+                            { averageType: "simple5", reasoning: "RECOMMENDED: Balanced approach for mature ages" },
+                            { averageType: "weightedAll", reasoning: "RECOMMENDED: High volatility requires full data span for stability" },
+                            { manualValue: 1.005, reasoning: "RECOMMENDED: Judgment based on combined analysis" }
                         ]
                     }
                 ]
@@ -298,7 +309,7 @@
             }
             html += '</tr></thead><tbody>';
 
-            scenarios.forEach((scenario) => {
+            scenarios.forEach((scenario, scenarioIndex) => {
                 // Scenario label row
                 html += '<tr>';
                 html += `<td class="scenario-label" colspan="${numFactors + 1}">${scenario.label}</td>`;
@@ -351,6 +362,13 @@
                     html += `<td class="reasoning-cell">${reasoning}</td>`;
                 }
                 html += '</tr>';
+
+                // Add spacing between scenarios (except after the last one)
+                if (scenarioIndex < scenarios.length - 1) {
+                    html += '<tr class="scenario-spacer">';
+                    html += `<td colspan="${numFactors + 1}" style="height: 20px; background: transparent; border: none;"></td>`;
+                    html += '</tr>';
+                }
             });
 
             html += '</tbody></table>';

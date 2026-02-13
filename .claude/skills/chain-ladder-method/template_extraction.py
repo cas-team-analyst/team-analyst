@@ -137,7 +137,7 @@ def extract_all_triangles():
             print(f"Loading {triangle_name} from '{sheet_name}'...")
             triangle_df = load_triangle_from_excel(EXCEL_FILE, sheet_name)
             triangles[triangle_name] = triangle_df
-            print(f"✓ {triangle_name}: {triangle_df.shape[0]} periods × {triangle_df.shape[1]} ages\n")
+            print(f"SUCCESS: {triangle_name}: {triangle_df.shape[0]} periods × {triangle_df.shape[1]} ages\n")
         except Exception as e:
             print(f"✗ Error loading {triangle_name}: {e}\n")
             continue
@@ -159,7 +159,7 @@ def analyze_triangle(triangle_name: str, triangle_df: pd.DataFrame):
             processed_dir="output/processed",
             selections_dir="output/selections"
         )
-        print(f"\n✓ Success! CSV saved to: {csv_path}\n")
+        print(f"\nSUCCESS: CSV saved to: {csv_path}\n")
         return csv_path
     except Exception as e:
         print(f"\n✗ Error analyzing {triangle_name}:")
@@ -197,7 +197,7 @@ def main():
     print(f"Successfully analyzed {len(results)}/{len(triangles)} triangles:\n")
     for name, path in results.items():
         filename = name.lower().replace(' ', '_')
-        print(f"  ✓ {name}")
+        print(f"  DONE: {name}")
         print(f"    Selections: {path}")
         print(f"    Triangle: output/processed/{filename}_triangle.csv")
         print(f"    Next: python output/scripts/populate_selections.py --csv {path}\n")

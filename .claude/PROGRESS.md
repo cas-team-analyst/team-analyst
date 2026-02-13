@@ -1,16 +1,16 @@
 # Step 1: Project Setup
 Goal: Set up the project structure and standard documents. 
 - [ ] Copy PROGRESS.md to project root.
-- [ ] Create folder structure: /data, /prior, output/processed, output/selections, output/scripts
+- [ ] Create folder structure: /data, output/processed, output/selections, output/scripts
 - [ ] Set up .venv with `python -m venv .venv; .venv/Scripts/activate; pip install -r requirements.txt`
 - [ ] Run `npm install` to install Node.js requirements
-- [ ] Ask the user the level of interaction they would like: Careful (Frequent Pauses to Review Work), Quick First Pass (Only Stop to Make Selections), Fully Automated (Skip Selections Review) and note this at the top of PROGRESS.md.
+- [ ] Ask the user the level of interaction they would like: Careful (Frequent Pauses to Review Work), Selections Only (Only Stop to Make Selections), Fully Automated (Skip Selections Review) and note this at the top of PROGRESS.md (include the option label plus what it means).
 - [ ] Ask user to copy relevant data files to data/
 
 # Step 2: Exploratory Data Analysis
 Goal: Understand what data is available. 
-- [ ] Review the files available using the explore-excel tool. Create summaries and save them at `output/eda`
-- [ ] Use the AskUserQuestions tool and the project context to fill in the information in the README section "Project Metadata."
+- [ ] Review the files available using the explore-excel tool. For each file, save a summary .md file to `output/eda`
+- [ ] Use the AskUserQuestions tool and the project context to fill in the information in the README section "Project Metadata." Fill in any missing context you need to perform the most valuable actuarial analysis. 
 
 # Step 3: Add Steps for Each Reserving Method
 

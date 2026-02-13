@@ -109,7 +109,7 @@ def populate_from_csv(selections_csv_path: str) -> str:
     # Setup HTML file
     print("Setting up HTML file from template...")
     html_path = setup_html_file(triangle_name)
-    print(f"✓ Created: {html_path}\n")
+    print(f"CREATED: {html_path}\n")
     
     # Convert CSV data to JSON format for HTML template
     periods = [str(p) for p in triangle_df.index.tolist()]
@@ -141,13 +141,13 @@ def populate_from_csv(selections_csv_path: str) -> str:
     # Update HTML file
     update_html_with_data(html_path, triangle_name, periods, ages, data, scenarios)
     
-    print(f"\n✓ Successfully updated {html_path}")
+    print(f"\nSUCCESSFULLY updated {html_path}")
     print(f"  Triangle: {triangle_name}")
     print(f"  Periods: {len(periods)} ({periods[0]} - {periods[-1]})")
     print(f"  Ages: {len(ages)} ({ages[0]} - {ages[-1]})")
     print(f"  Scenarios: {len(scenarios)}")
     
-    print(f"\n✓ HTML report populated successfully!")
+    print(f"\nHTML report populated successfully!")
     print(f"\nNext steps:")
     print(f"  1. Run: npx vite --port 5175")
     print(f"  2. Navigate to: http://localhost:5175/{html_path}")
