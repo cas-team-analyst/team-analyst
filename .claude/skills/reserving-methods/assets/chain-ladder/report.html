@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chain Ladder Development Report</title>
-    <link rel="stylesheet" href="/static/css/tailwind.prod.min.css">
-    <link rel="stylesheet" href="/static/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="/static/main.css">
+    <link rel="stylesheet" href="../../../../../static/css/tailwind.prod.min.css">
+    <link rel="stylesheet" href="../../../../../static/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="../../../../../static/main.css">
 </head>
 
 <body class="bg-gray-50 p-6">
@@ -29,6 +29,10 @@
             <!-- Averages Section -->
             <div class="section-title">Averages</div>
             <div class="table-container" id="averages-table"></div>
+
+            <!-- Diagnostics Section -->
+            <div class="section-title">Diagnostics</div>
+            <div class="table-container" id="diagnostics-table"></div>
 
             <!-- Selections Section -->
             <div class="section-title">Selections</div>
@@ -59,6 +63,14 @@
                     [1600, null, null, null, null, null, null]
                 ]
             },
+            diagnostics: [
+                { interval: '12-24', cv: 0.15, slope: -0.002 },
+                { interval: '24-36', cv: 0.10, slope: -0.001 },
+                { interval: '36-48', cv: 0.08, slope: 0.000 },
+                { interval: '48-60', cv: 0.12, slope: 0.001 },
+                { interval: '60-72', cv: 0.20, slope: -0.003 },
+                { interval: '72-84', cv: 0.25, slope: -0.005 }
+            ],
             selections: {
                 // Four scenarios with their selections
                 // For each age-to-age factor, specify either:
@@ -375,6 +387,46 @@
             document.getElementById('selections-table').innerHTML = html;
         }
 
+        // Render Diagnostics Table
+        function renderDiagnosticsTable() {
+            const diagnostics = sourceData.diagnostics || [];
+            if (diagnostics.length === 0) {
+                document.getElementById('diagnostics-table').innerHTML = '<p class="text-gray-500">No diagnostics data available.</p>';
+                return;
+            }
+
+            let html = '<table><thead><tr>';
+            html += '<th class="row-header">Metric</th>';
+            diagnostics.forEach(diag => {
+                html += `<th>${diag.interval}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            // CV row
+            html += '<tr>';
+            html += '<td class="row-header">CV (Coefficient of Variation)</td>';
+            diagnostics.forEach(diag => {
+                const cvValue = diag.cv !== null && diag.cv !== undefined ? diag.cv.toFixed(3) : '-';
+                const cellClass = diag.cv > 0.3 ? 'text-red-600 font-semibold' :
+                    diag.cv > 0.15 ? 'text-yellow-600' : 'text-green-600';
+                html += `<td class="${cellClass}">${cvValue}</td>`;
+            });
+            html += '</tr>';
+
+            // Slope row
+            html += '<tr>';
+            html += '<td class="row-header">Trend Slope</td>';
+            diagnostics.forEach(diag => {
+                const slopeValue = diag.slope !== null && diag.slope !== undefined ? diag.slope.toFixed(4) : '-';
+                const cellClass = Math.abs(diag.slope) > 0.01 ? 'text-orange-600' : 'text-gray-700';
+                html += `<td class="${cellClass}">${slopeValue}</td>`;
+            });
+            html += '</tr>';
+
+            html += '</tbody></table>';
+            document.getElementById('diagnostics-table').innerHTML = html;
+        }
+
         // Initialize the report
         function initReport() {
             // Calculate derived data
@@ -385,6 +437,7 @@
             renderDevelopmentTable();
             renderLDFTable(ldfs);
             renderAveragesTable(averages);
+            renderDiagnosticsTable();
             renderSelectionsTable(averages);
         }
 

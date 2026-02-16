@@ -1,12 +1,13 @@
 ---
-name: chain-ladder-method
-description: Guide for using the Chain Ladder (Loss Development Method) for actuarial loss reserving.
+name: reserving-methods
+description: Actuaries use different methods to come up with candidate reserve methods. Use when asked to apply an actuarial reserving method. Contains step-by-step instructions, code samples, and templates for helping the user prep their data, run the method and make selections.
+compatibility: python, node.js, git
 ---
 
-# Chain Ladder Analysis Skill
+## Reserving Method
 
-## Overview
-This skill automates chain ladder analysis using a JSON-based workflow that separates triangle data from LDF selections, making reviews efficient and reproducible.
+
+
 
 ## Quick Start
 

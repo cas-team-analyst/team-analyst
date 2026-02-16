@@ -16,5 +16,5 @@ Goal: Understand what data is available.
 
 ## 3a Identify Methods
 - [ ] Identify reserving methods to consider. _For now, we only do Chain Ladder (Loss Development Method)._
-- [ ] Add each method's progress steps below in sections 3b, 3c, etc. Progress steps are in the skills. Example: .claude\skills\chain-ladder-method\PROGRESS.MD.
+- [ ] Add each method's progress steps below in sections 3b, 3c, etc. Progress steps are in the assets for the methods-chain-ladder skill. Example: .claude\skills\chain-ladder-method\PROGRESS.MD.
 

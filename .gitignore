@@ -1,5 +1,7 @@
 data/
 .venv/
 .claude/settings.local.json
+.claude/skills/reserving-methods/assets/test-output
 node_modules/
 __pycache__/
+~*
