@@ -24,7 +24,7 @@ Don't continue with the next triangle until this one is finished.
 - [ ] Run these steps in a loop and only mark complete once the exit condition has been achieved.
   - Ask the user what changes they'd like to the selections. If they ask you questions about the report, you can find the report data at `output/reports/[triangle_name]_report.json`.
   - Create or update `selection-overrides.json` to make the appropriate edits.
-  - Rerun `6-update-report.py` which will read in overrides, update the report, then Vite will see the file changed and refresh the report automatically. 
+  - Rerun `5-selections.py`, `6-project-ultimates.py`, and `7-update-report.py` which will read in overrides, update the report, then Vite will see the file changed and refresh the report automatically. 
   - Repeat until the user confirms there are no more changes necessary.
 - [ ] Confirmed with user there are no more changes necessary.
 - [ ] Close Vite server.

@@ -23,6 +23,7 @@ def update_report(
     ldf_summary_path: str = None,
     selections_path: str = None,
     diagnostics_path: str = None,
+    ultimates_path: str = None,
     output_dir: str = None,
     template_path: str = None
 ) -> list:
@@ -33,6 +34,8 @@ def update_report(
         processed_data_path: Path to step 1 output (processed triangle data in long format)
         ldf_summary_path: Path to step 4 output (LDF summary with averages and QA metrics)
         selections_path: Path to step 5 output (selections by scenario)
+        diagnostics_path: Path to step 3 output (actuarial diagnostics)
+        ultimates_path: Path to step 6 output (projected ultimates)
         output_dir: Directory to save the generated HTML reports
         template_path: Path to the report.html template
     
@@ -44,6 +47,7 @@ def update_report(
     ldf_summary_path = ldf_summary_path or INPUT_PATH + f"4_{METHOD_ID}_ldf_summary.parquet"
     selections_path = selections_path or INPUT_PATH + f"5_{METHOD_ID}_selections.parquet"
     diagnostics_path = diagnostics_path or INPUT_PATH + f"3_{METHOD_ID}_diagnostics.parquet"
+    ultimates_path = ultimates_path or INPUT_PATH + f"6_{METHOD_ID}_ultimates.parquet"
     output_dir = output_dir or OUTPUT_PATH + "reports/"
     template_path = template_path or TEMPLATE_PATH
     
@@ -57,11 +61,13 @@ def update_report(
     df_summary = pd.read_parquet(ldf_summary_path)
     df_selections = pd.read_parquet(selections_path)
     df_diagnostics = pd.read_parquet(diagnostics_path)
+    df_ultimates = pd.read_parquet(ultimates_path)
     
     print(f"  Processed data: {len(df_processed)} rows")
     print(f"  LDF summary: {len(df_summary)} rows")
     print(f"  Selections: {len(df_selections)} rows")
     print(f"  Diagnostics: {len(df_diagnostics)} rows")
+    print(f"  Ultimates: {len(df_ultimates)} rows")
     print(f"  Measures: {df_processed['measure'].unique().tolist()}")
     
     # Generate one report per measure
@@ -72,6 +78,7 @@ def update_report(
         
         # Filter data for this measure
         df_measure = df_processed[df_processed['measure'] == measure]
+        df_ultimates_measure = df_ultimates[df_ultimates['measure'] == measure]
         df_selections_measure = df_selections[df_selections['measure'] == measure]
         df_summary_measure = df_summary[df_summary['measure'] == measure]
         
@@ -159,6 +166,29 @@ def update_report(
                 
                 diagnostic_metrics[col] = metric_data
         
+        # Prepare ultimates by scenario
+        ultimates_by_scenario = []
+        for scenario_label in df_ultimates_measure['scenario'].cat.categories:
+            scenario_ult = df_ultimates_measure[
+                df_ultimates_measure['scenario'] == scenario_label
+            ].sort_values('period')
+            
+            ult_records = []
+            for _, row in scenario_ult.iterrows():
+                ult_records.append({
+                    'period': str(row['period']),
+                    'latestAge': str(row['latest_age']),
+                    'currentValue': None if pd.isna(row['current_value']) else float(row['current_value']),
+                    'cdf': None if pd.isna(row['cdf']) else float(row['cdf']),
+                    'ultimate': None if pd.isna(row['ultimate']) else float(row['ultimate']),
+                    'development': None if pd.isna(row['development']) else float(row['development'])
+                })
+            
+            ultimates_by_scenario.append({
+                'scenario': scenario_label,
+                'ultimates': ult_records
+            })
+        
         # Create source data object for HTML (keeps nested structure for rendering)
         source_data = {
             'triangleName': measure,
@@ -171,7 +201,8 @@ def update_report(
             'actuarialDiagnostics': diagnostic_metrics,
             'selections': {
                 'scenarios': scenarios
-            }
+            },
+            'ultimates': ultimates_by_scenario
         }
         
         # Create JSON data in long tabular format for AI agent access
@@ -192,6 +223,10 @@ def update_report(
             },
             'selections': {
                 'columns': ['scenario', 'interval', 'average_type', 'value', 'reasoning'],
+                'data': []
+            },
+            'ultimates': {
+                'columns': ['scenario', 'period', 'latest_age', 'current_value', 'cdf', 'ultimate', 'development'],
                 'data': []
             }
         }
@@ -235,6 +270,20 @@ def update_report(
                     selection.get('averageType', ''),
                     round(value, 4) if value is not None else None,
                     selection.get('reasoning', '')
+                ])
+        
+        # Convert ultimates to long format
+        for ult_scenario in ultimates_by_scenario:
+            scenario_label = ult_scenario['scenario']
+            for ult_record in ult_scenario['ultimates']:
+                json_data['ultimates']['data'].append([
+                    scenario_label,
+                    ult_record['period'],
+                    ult_record['latestAge'],
+                    round(ult_record['currentValue'], 4) if ult_record['currentValue'] is not None else None,
+                    round(ult_record['cdf'], 4) if ult_record['cdf'] is not None else None,
+                    round(ult_record['ultimate'], 4) if ult_record['ultimate'] is not None else None,
+                    round(ult_record['development'], 4) if ult_record['development'] is not None else None
                 ])
         
         # Save JSON data for AI agent access (no _data suffix)
@@ -282,6 +331,16 @@ def update_report(
             f.write('    "data": [\n')
             for i, row in enumerate(json_data['selections']['data']):
                 comma = ',' if i < len(json_data['selections']['data']) - 1 else ''
+                f.write(f'      {json.dumps(row, separators=(",", ": "))}{comma}\n')
+            f.write('    ]\n')
+            f.write('  },\n')
+            
+            # Ultimates - columns + data array
+            f.write('  "ultimates": {\n')
+            f.write(f'    "columns": {json.dumps(json_data["ultimates"]["columns"])},\n')
+            f.write('    "data": [\n')
+            for i, row in enumerate(json_data['ultimates']['data']):
+                comma = ',' if i < len(json_data['ultimates']['data']) - 1 else ''
                 f.write(f'      {json.dumps(row, separators=(",", ": "))}{comma}\n')
             f.write('    ]\n')
             f.write('  }\n')
