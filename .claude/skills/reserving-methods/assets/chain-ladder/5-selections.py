@@ -229,6 +229,9 @@ def make_selections(df_summary: pd.DataFrame, overrides_path: str = None) -> pd.
     # Convert average_type to categorical (after overrides)
     df_selections['average_type'] = df_selections['average_type'].astype('category')
     
+    # Round value column to 4 decimal places
+    df_selections['value'] = df_selections['value'].round(4)
+    
     return df_selections
 
 

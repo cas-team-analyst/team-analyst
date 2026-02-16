@@ -8,6 +8,44 @@
     <link rel="stylesheet" href="../../../../../static/css/tailwind.prod.min.css">
     <link rel="stylesheet" href="../../../../../static/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../../../../../static/main.css">
+    <style>
+        .collapsible-header {
+            cursor: pointer;
+            padding: 12px 16px;
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .collapsible-header:hover {
+            background-color: #e5e7eb;
+        }
+
+        .collapsible-header .icon {
+            transition: transform 0.2s;
+        }
+
+        .collapsible-header.active .icon {
+            transform: rotate(90deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            margin-bottom: 16px;
+        }
+
+        .collapsible-content.active {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50 p-6">
@@ -30,9 +68,13 @@
             <div class="section-title">Averages</div>
             <div class="table-container" id="averages-table"></div>
 
-            <!-- Diagnostics Section -->
-            <div class="section-title">Diagnostics</div>
-            <div class="table-container" id="diagnostics-table"></div>
+            <!-- QA Metrics Section -->
+            <div class="section-title">QA Metrics (Volatility & Trend)</div>
+            <div class="table-container" id="qa-metrics-table"></div>
+
+            <!-- Actuarial Diagnostics Section -->
+            <div class="section-title">Actuarial Diagnostics</div>
+            <div id="actuarial-diagnostics-container"></div>
 
             <!-- Selections Section -->
             <div class="section-title">Selections</div>
@@ -63,7 +105,7 @@
                     [1600, null, null, null, null, null, null]
                 ]
             },
-            diagnostics: [
+            qaMetrics: [
                 { interval: '12-24', cv: 0.15, slope: -0.002 },
                 { interval: '24-36', cv: 0.10, slope: -0.001 },
                 { interval: '36-48', cv: 0.08, slope: 0.000 },
@@ -71,6 +113,35 @@
                 { interval: '60-72', cv: 0.20, slope: -0.003 },
                 { interval: '72-84', cv: 0.25, slope: -0.005 }
             ],
+            actuarialDiagnostics: {
+                incurred_severity: [
+                    [7000, 7500, 7800, 7900, 8000, 8100, 8200],
+                    [7100, 7600, 7900, 8000, 8100, 8200, null],
+                    [7200, 7700, 8000, 8100, 8200, null, null],
+                    [7300, 7800, 8100, 8200, null, null, null],
+                    [7400, 7900, 8200, null, null, null, null],
+                    [7500, 8000, null, null, null, null, null],
+                    [7600, null, null, null, null, null, null]
+                ],
+                paid_severity: [
+                    [6500, 7000, 7500, 7800, 7900, 8000, 8100],
+                    [6600, 7100, 7600, 7900, 8000, 8100, null],
+                    [6700, 7200, 7700, 8000, 8100, null, null],
+                    [6800, 7300, 7800, 8100, null, null, null],
+                    [6900, 7400, 7900, null, null, null, null],
+                    [7000, 7500, null, null, null, null, null],
+                    [7100, null, null, null, null, null, null]
+                ],
+                paid_to_incurred: [
+                    [0.85, 0.88, 0.90, 0.92, 0.93, 0.94, 0.95],
+                    [0.84, 0.87, 0.89, 0.91, 0.92, 0.93, null],
+                    [0.83, 0.86, 0.88, 0.90, 0.91, null, null],
+                    [0.82, 0.85, 0.87, 0.89, null, null, null],
+                    [0.81, 0.84, 0.86, null, null, null, null],
+                    [0.80, 0.83, null, null, null, null, null],
+                    [0.79, null, null, null, null, null, null]
+                ]
+            },
             selections: {
                 // Four scenarios with their selections
                 // For each age-to-age factor, specify either:
@@ -387,28 +458,28 @@
             document.getElementById('selections-table').innerHTML = html;
         }
 
-        // Render Diagnostics Table
-        function renderDiagnosticsTable() {
-            const diagnostics = sourceData.diagnostics || [];
-            if (diagnostics.length === 0) {
-                document.getElementById('diagnostics-table').innerHTML = '<p class="text-gray-500">No diagnostics data available.</p>';
+        // Render QA Metrics Table (CV and Slope)
+        function renderQAMetricsTable() {
+            const qaMetrics = sourceData.qaMetrics || [];
+            if (qaMetrics.length === 0) {
+                document.getElementById('qa-metrics-table').innerHTML = '<p class="text-gray-500">No QA metrics data available.</p>';
                 return;
             }
 
             let html = '<table><thead><tr>';
             html += '<th class="row-header">Metric</th>';
-            diagnostics.forEach(diag => {
-                html += `<th>${diag.interval}</th>`;
+            qaMetrics.forEach(metric => {
+                html += `<th>${metric.interval}</th>`;
             });
             html += '</tr></thead><tbody>';
 
             // CV row
             html += '<tr>';
             html += '<td class="row-header">CV (Coefficient of Variation)</td>';
-            diagnostics.forEach(diag => {
-                const cvValue = diag.cv !== null && diag.cv !== undefined ? diag.cv.toFixed(3) : '-';
-                const cellClass = diag.cv > 0.3 ? 'text-red-600 font-semibold' :
-                    diag.cv > 0.15 ? 'text-yellow-600' : 'text-green-600';
+            qaMetrics.forEach(metric => {
+                const cvValue = metric.cv !== null && metric.cv !== undefined ? metric.cv.toFixed(3) : '-';
+                const cellClass = metric.cv > 0.3 ? 'text-red-600 font-semibold' :
+                    metric.cv > 0.15 ? 'text-yellow-600' : 'text-green-600';
                 html += `<td class="${cellClass}">${cvValue}</td>`;
             });
             html += '</tr>';
@@ -416,15 +487,104 @@
             // Slope row
             html += '<tr>';
             html += '<td class="row-header">Trend Slope</td>';
-            diagnostics.forEach(diag => {
-                const slopeValue = diag.slope !== null && diag.slope !== undefined ? diag.slope.toFixed(4) : '-';
-                const cellClass = Math.abs(diag.slope) > 0.01 ? 'text-orange-600' : 'text-gray-700';
+            qaMetrics.forEach(metric => {
+                const slopeValue = metric.slope !== null && metric.slope !== undefined ? metric.slope.toFixed(4) : '-';
+                const cellClass = Math.abs(metric.slope) > 0.01 ? 'text-orange-600' : 'text-gray-700';
                 html += `<td class="${cellClass}">${slopeValue}</td>`;
             });
             html += '</tr>';
 
             html += '</tbody></table>';
-            document.getElementById('diagnostics-table').innerHTML = html;
+            document.getElementById('qa-metrics-table').innerHTML = html;
+        }
+
+        // Render Actuarial Diagnostics as Collapsible Sections
+        function renderActuarialDiagnostics() {
+            const diagnostics = sourceData.actuarialDiagnostics || {};
+            const container = document.getElementById('actuarial-diagnostics-container');
+
+            if (Object.keys(diagnostics).length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No diagnostics data available.</p>';
+                return;
+            }
+
+            const { periods, ages } = sourceData.developmentTriangle;
+
+            // Define metric labels
+            const metricLabels = {
+                'incurred_severity': 'Incurred Severity',
+                'paid_severity': 'Paid Severity',
+                'paid_to_incurred': 'Paid to Incurred Ratio',
+                'case_reserves': 'Case Reserves',
+                'open_counts': 'Open Counts',
+                'average_case_reserves': 'Average Case Reserves',
+                'cumulative_closure_rate': 'Cumulative Closure Rate',
+                'incurred_severity_incr': 'Incurred Severity (Incremental)',
+                'paid_severity_incr': 'Paid Severity (Incremental)',
+                'incremental_closure_rate': 'Incremental Closure Rate'
+            };
+
+            // Format value based on metric type
+            function formatValue(val, metric) {
+                if (val === null || val === undefined) return '';
+
+                // Ratios and rates are 0-1, show as decimal
+                if (metric.includes('rate') || metric.includes('ratio') || metric === 'paid_to_incurred') {
+                    return val.toFixed(4);
+                }
+                // Counts should be integers
+                if (metric.includes('count')) {
+                    return Math.round(val).toLocaleString();
+                }
+                // Everything else (severities, reserves) as formatted numbers
+                return val.toFixed(2);
+            }
+
+            let html = '';
+
+            // Render each metric as a collapsible section
+            Object.keys(diagnostics).forEach((metricKey, index) => {
+                const metricData = diagnostics[metricKey];
+                const label = metricLabels[metricKey] || metricKey;
+
+                // Collapsible header
+                html += `<div class="collapsible-header" onclick="toggleCollapsible(this)">`;
+                html += `<span class="font-semibold text-gray-700">${label}</span>`;
+                html += `<i class="fas fa-chevron-right icon text-gray-500"></i>`;
+                html += `</div>`;
+
+                // Collapsible content
+                html += `<div class="collapsible-content">`;
+                html += '<div class="table-container">';
+                html += '<table><thead><tr>';
+                html += '<th class="row-header">Period</th>';
+                ages.forEach(age => {
+                    html += `<th>${age}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+
+                metricData.forEach((row, i) => {
+                    html += '<tr>';
+                    html += `<td class="row-header">${periods[i]}</td>`;
+                    row.forEach(val => {
+                        const formattedVal = formatValue(val, metricKey);
+                        html += `<td>${formattedVal}</td>`;
+                    });
+                    html += '</tr>';
+                });
+
+                html += '</tbody></table>';
+                html += '</div></div>'; // Close table-container and collapsible-content
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Toggle collapsible sections
+        function toggleCollapsible(header) {
+            header.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.classList.toggle('active');
         }
 
         // Initialize the report
@@ -437,7 +597,8 @@
             renderDevelopmentTable();
             renderLDFTable(ldfs);
             renderAveragesTable(averages);
-            renderDiagnosticsTable();
+            renderQAMetricsTable();
+            renderActuarialDiagnostics();
             renderSelectionsTable(averages);
         }
 

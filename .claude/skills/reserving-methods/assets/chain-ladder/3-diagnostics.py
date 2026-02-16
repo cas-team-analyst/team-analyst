@@ -188,6 +188,11 @@ if __name__ == "__main__":
     sample = diagnostics_df.dropna(subset=['incurred_severity', 'paid_severity'], how='all').head(10)
     print(sample)
     
+    # Round all numeric columns to 4 decimal places
+    numeric_cols = diagnostics_df.select_dtypes(include=[np.number]).columns
+    for col in numeric_cols:
+        diagnostics_df[col] = diagnostics_df[col].round(4)
+    
     # Save outputs
     diagnostics_df.to_parquet(OUTPUT_PATH + f"3_{METHOD_ID}_diagnostics.parquet", index=False)
     diagnostics_df.to_csv(OUTPUT_PATH + f"3_{METHOD_ID}_diagnostics.csv", index=False)

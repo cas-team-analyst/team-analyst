@@ -108,6 +108,14 @@ def calculate_ldf_summary(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     df_summary['measure'] = pd.Categorical(df_summary['measure'], categories=unique_measures)
     df_summary['interval'] = pd.Categorical(df_summary['interval'], categories=interval_categories, ordered=True)
     
+    # Round all average columns to 4 decimal places (cv and slope already rounded)
+    avg_cols = ['weighted_all', 'simple_all', 'medial_all',
+                'weighted_3yr', 'simple_3yr', 'medial_3yr',
+                'weighted_5yr', 'simple_5yr', 'medial_5yr']
+    for col in avg_cols:
+        if col in df_summary.columns:
+            df_summary[col] = df_summary[col].round(4)
+    
     return df_summary
 
 

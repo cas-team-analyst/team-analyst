@@ -103,6 +103,12 @@ if __name__ == "__main__":
     print("\nSample (first 10 rows with LDFs):")
     print(df_enhanced[df_enhanced['ldf'].notna()].head(10))
     
+    # Round numeric columns to 4 decimal places
+    numeric_cols = ['value', 'ldf', 'weight']
+    for col in numeric_cols:
+        if col in df_enhanced.columns:
+            df_enhanced[col] = df_enhanced[col].round(4)
+    
     # Save outputs
     df_enhanced.to_parquet(OUTPUT_PATH + f"2_{METHOD_ID}_enhanced_data.parquet", index=False)
     df_enhanced.to_csv(OUTPUT_PATH + f"2_{METHOD_ID}_enhanced_data.csv", index=False)

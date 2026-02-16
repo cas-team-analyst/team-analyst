@@ -4,7 +4,7 @@ _Copy these steps into PROGRESS whenever a new method will be used. It applies o
 
 ## Data Extraction (One Time)
 
-- [ ] Copy all the python scripts, and `report.html`, from `assets/chain-ladder` to `output/scripts` and `output/reports`, respectively.
+- [ ] Copy all the python scripts, and `report.html`, from the reserve-methods's skill's chain-ladder assets (`skills/reserving-methods/assets/chain-ladder`) to `output/scripts` and `output/reports`, respectively.
 - [ ] Modify the variables at the top of the file with the appropriate DATA_FILE_PATH, OUTPUT_PATH, and TEMPLATE_PATH.
 - [ ] Modify `1-prep-data.py` to accept the format of the data provided by the user. Only mark this step complete once the tests in the script have passed to verify the output is in the necessary format. 
 - [ ] Run all the other scripts to create processed output.
@@ -20,9 +20,9 @@ Don't continue with the next triangle until this one is finished.
 
 ### 1. User Reviews Report in Browser
 - [ ] Start Vite dev server from project root: `npx vite --port 5175`
-- [ ] Open: http://localhost:5175/output/selections/[triangle_name]_report.html. triangle_name might be "incurred_loss", "paid_loss", "reported_count", "closed_count".
+- [ ] Open: http://localhost:5175/output/reports/[triangle_name]_report.html. triangle_name might be "incurred_loss", "paid_loss", "reported_count", "closed_count".
 - [ ] Run these steps in a loop and only mark complete once the exit condition has been achieved.
-  - Ask the user what changes they'd like to the selections. 
+  - Ask the user what changes they'd like to the selections. If they ask you questions about the report, you can find the report data at `output/reports/[triangle_name]_report.json`.
   - Create or update `selection-overrides.json` to make the appropriate edits.
   - Rerun `6-update-report.py` which will read in overrides, update the report, then Vite will see the file changed and refresh the report automatically. 
   - Repeat until the user confirms there are no more changes necessary.
