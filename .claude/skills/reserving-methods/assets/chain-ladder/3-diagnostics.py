@@ -2,6 +2,10 @@
 goal: Create diagnostics that will support LDF selection. All operations are performed in long format using groupby and merge operations.
 contents:
  calculate_diagnostics(): Calculate actuarial diagnostics from enhanced triangle data to help with LDF selection.
+
+run-note: This script must be run from its own directory for relative paths to work correctly.
+    cd .claude/skills/reserving-methods/assets/chain-ladder
+    python 3-diagnostics.py
 """
 
 import pandas as pd

@@ -2,6 +2,10 @@
 goal: Calculate LDF averages and select between them to set baseline selections which the user can then override.
 contents:
     calculate_ldf_summary(): Calculate LDF averages and QA metrics by measure and development interval.
+
+run-note: This script must be run from its own directory for relative paths to work correctly.
+    cd .claude/skills/reserving-methods/assets/chain-ladder
+    python 4-averages-qa.py
 """
 
 import pandas as pd

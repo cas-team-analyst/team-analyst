@@ -3,6 +3,10 @@ goal: Calculate ultimate values using selected LDFs and CDFs.
 contents:
     calculate_cdfs(): Calculate cumulative development factors from selected LDFs.
     project_ultimates(): Calculate projected ultimate values for each measure and scenario.
+
+run-note: This script must be run from its own directory for relative paths to work correctly.
+    cd .claude/skills/reserving-methods/assets/chain-ladder
+    python 6-project-ultimates.py
 """
 
 import pandas as pd

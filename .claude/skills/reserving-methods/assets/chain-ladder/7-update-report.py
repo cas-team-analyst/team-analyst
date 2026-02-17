@@ -2,6 +2,10 @@
 goal: Update report.html with data from the Chain Ladder pipeline.
 contents:
     update_report(): Reads parquet files from pipeline and populates report.html template for each measure.
+
+run-note: This script must be run from its own directory for relative paths to work correctly.
+    cd .claude/skills/reserving-methods/assets/chain-ladder
+    python 7-update-report.py
 """
 
 import pandas as pd

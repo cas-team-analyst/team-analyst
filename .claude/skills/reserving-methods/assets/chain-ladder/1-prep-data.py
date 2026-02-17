@@ -2,7 +2,11 @@
 goal: Get data in standard format to simplify downstream operations. 
 contents: 
     read_and_process_data(): Example function for reading, processing, validating, and saving the data necessary for Chain Ladder. This function can be replaced with one that works with your raw data.
-    validate_data(): Validate the data format. You should not typically modify this, as other assets depend on this format. 
+    validate_data(): Validate the data format. You should not typically modify this, as other assets depend on this format.
+
+run-note: This script must be run from its own directory for relative paths to work correctly.
+    cd .claude/skills/reserving-methods/assets/chain-ladder
+    python 1-prep-data.py
 """
 
 import pandas as pd

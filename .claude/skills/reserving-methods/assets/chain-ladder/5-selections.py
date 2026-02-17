@@ -2,6 +2,10 @@
 goal: Make initial LDF selections based on calculated averages and QA metrics.
 contents:
     make_selections(): Create Conservative, Best Estimate, Optimistic, and Final Recommendation scenarios.
+
+run-note: This script must be run from its own directory for relative paths to work correctly.
+    cd .claude/skills/reserving-methods/assets/chain-ladder
+    python 5-selections.py
 """
 
 import pandas as pd
