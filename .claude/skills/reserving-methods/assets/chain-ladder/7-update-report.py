@@ -378,12 +378,13 @@ def update_report(
             current = current.parent
             levels_up += 1
         
-        # Build relative path (from the HTML file in reports/, we need levels_up '../')
+        # Build relative path (from the HTML file location, we need levels_up '../')
+        # levels_up counts from the parent directory, so add 1 for the file itself
         relative_static_path = '../' * levels_up + 'static/'
         
         # Replace absolute /static/ paths with relative paths
-        html_content = html_content.replace('href="/static/', f'href="{relative_static_path}')
-        html_content = html_content.replace('src="/static/', f'src="{relative_static_path}')
+        html_content = html_content.replace('href="../../../../../static', f'href="{relative_static_path}')
+        html_content = html_content.replace('src="../../../../../static', f'src="{relative_static_path}')
         
         # Update title with measure name
         title_pattern = r'<title>.*?</title>'
