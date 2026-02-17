@@ -382,7 +382,14 @@
                 'simpleAll': 'Simple All-Year',
                 'weighted3': 'Weighted 3-Year',
                 'weighted5': 'Weighted 5-Year',
-                'weightedAll': 'Weighted All-Year'
+                'weightedAll': 'Weighted All-Year',
+                // Python format with underscores
+                'simple_3yr': 'Simple 3-Year',
+                'simple_5yr': 'Simple 5-Year',
+                'simple_all': 'Simple All-Year',
+                'weighted_3yr': 'Weighted 3-Year',
+                'weighted_5yr': 'Weighted 5-Year',
+                'weighted_all': 'Weighted All-Year'
             };
 
             let html = '<table><thead><tr>';
@@ -409,8 +416,8 @@
                         if (sel.manualValue !== undefined) {
                             selectedValue = formatLDF(sel.manualValue);
                             cellClass = 'selected-cell manual-value';
-                        } else if (sel.averageType && averages[i][sel.averageType] !== null) {
-                            selectedValue = formatLDF(averages[i][sel.averageType]);
+                        } else if (sel.value !== undefined && sel.value !== null) {
+                            selectedValue = formatLDF(sel.value);
                         }
                     }
                     html += `<td class="${cellClass}">${selectedValue}</td>`;
