@@ -30,6 +30,8 @@ git config --global user.email "your.email@example.com"
   - Right-click the "team-analyst" folder > Open in Terminal
   - Run this command: `claude "Let's go!"`
 
+The agent will run you through Chain Ladder selections. That's as far as we've gotten.
+
 
 ## Project Structure
 
