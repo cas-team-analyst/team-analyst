@@ -8,7 +8,8 @@ This project supports the development of actuarial reserve ultimate estimates us
 
 - Python 3.8: https://www.python.org/downloads/
 - Git: https://git-scm.com/downloads (Learn Git at https://www.w3schools.com/git/default.asp)
-- Claude Code: https://code.claude.com/docs/en/setup
+- Sign up for a Claude account at https://claude.ai/.
+- Claude Code: https://code.claude.com/docs/en/setup. 
 - Node.js: https://nodejs.org/download/
 
 After installation, set up your identity in Git:
@@ -21,8 +22,13 @@ git config --global user.email "your.email@example.com"
 
 ## Quick Start
 
-1. Clone (download) this repository into a new folder (Learn Git at https://www.w3schools.com/git/default.asp)
-2. Open the folder in your favorite terminal (PowerShell, etc.) and run `claude "Let's go!"`
+1. Install the prerequisites above. 
+2. Clone (download) this repository into a new folder (Learn Git at https://www.w3schools.com/git/default.asp) or download it from [this link](https://storage.googleapis.com/data-downloads-by-bryce/team-analyst.zip) and unzip it. 
+3. Open the folder in your favorite terminal. For example: 
+  - Unzip the file. 
+  - Click into the "team-analyst" folder, you should see another "team-analyst" folder. If you don't, go back.
+  - Right-click the "team-analyst" folder > Open in Terminal
+  - Run this command: `claude "Let's go!"`
 
 
 ## Project Structure
