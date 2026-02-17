@@ -1,6 +1,6 @@
 ---
 name: reserving-methods
-description: Actuaries use different methods to come up with candidate reserve methods. Use when asked to apply an actuarial reserving method. Contains step-by-step instructions, code samples, and templates for helping the user prep their data, run the method and make selections.
+description: Actuaries use different methods to come up with candidate reserve methods. Use when asked to apply an actuarial reserving method. Contains step-by-step instructions, code samples, and templates for helping the user prep their data, run the method and make selections. Available methods (new ones can be added) are chain-ladder and bf-bornhuetter-ferguson.
 compatibility: python, node.js, git
 ---
 
