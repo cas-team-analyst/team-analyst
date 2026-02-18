@@ -7,6 +7,7 @@ _Copy these steps into PROGRESS whenever a new method will be used. It applies o
 - [ ] Copy all the python scripts, and `report.html`, from the reserve-methods's skill's chain-ladder assets (`skills/reserving-methods/assets/chain-ladder`) to `output/scripts` and `output/reports`, respectively.
 - [ ] Modify the variables at the top of the file with the appropriate DATA_FILE_PATH, OUTPUT_PATH, and TEMPLATE_PATH.
 - [ ] Modify `1-prep-data.py` to accept the format of the data provided by the user. Only mark this step complete once the tests in the script have passed to verify the output is in the necessary format. 
+- [ ] Report to the user what LDF averages and metrics will be calculated and ask them if they'd like to add others.
 - [ ] Run all the other scripts to create processed output.
 
 ---

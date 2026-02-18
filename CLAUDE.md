@@ -22,6 +22,7 @@ As you go:
 - Track steps to replicate results in a file REPLICATE.md: files to add (w/ size and last modified date to verify correct file), scripts to run, any manual edits made to automatically generated files (with reasoning), etc.
 - Create python scripts (use the python skill) at output/scripts/ as necessary to ensure the steps are repeatable. 
 - Assume the user is not familiar with Git, they will rely on you to manage Git effectively on this project.
+- Assume the user is not familiar with the skills: report what you are doing and why; show samples and summaries of data that is output when you run python scripts; tell the user what files you created and where they can find them. 
 
 # OTHER GUIDELINES
 
