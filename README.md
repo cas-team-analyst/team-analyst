@@ -1,15 +1,15 @@
 # TeamAnalyst for Claude Code
 
 ## Project Overview
-This project supports the development of actuarial reserve ultimate estimates using systematic methodology and thorough documentation, with the help of an AI coding agent.
 
+This project supports the development of actuarial reserve ultimate estimates using systematic methodology and thorough documentation, with the help of an AI coding agent.
 
 ## Prerequisites
 
 - Python 3.8: https://www.python.org/downloads/
 - Git: https://git-scm.com/downloads (Learn Git at https://www.w3schools.com/git/default.asp)
 - Sign up for a Claude account at https://claude.ai/.
-- Claude Code: https://code.claude.com/docs/en/setup. 
+- Claude Code: https://code.claude.com/docs/en/setup.
 - Node.js: https://nodejs.org/download/
 
 After installation, set up your identity in Git:
@@ -17,21 +17,20 @@ After installation, set up your identity in Git:
 ```bash
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
-  ```
-
+```
 
 ## Quick Start
 
-1. Install the prerequisites above. 
-2. Clone (download) this repository into a new folder (Learn Git at https://www.w3schools.com/git/default.asp) or download it from [this link](https://storage.googleapis.com/data-downloads-by-bryce/team-analyst.zip) and unzip it. 
-3. Open the folder in your favorite terminal. For example: 
-  - Unzip the file. 
-  - Click into the "team-analyst" folder, you should see another "team-analyst" folder. If you don't, go back.
-  - Right-click the "team-analyst" folder > Open in Terminal
-  - Run this command: `claude "Let's go!"`
+1. Install the prerequisites above.
+2. Clone (download) this repository into a new folder (Learn Git at https://www.w3schools.com/git/default.asp) or download it from [this link](https://storage.googleapis.com/data-downloads-by-bryce/team-analyst.zip) and unzip it.
+3. Open the folder in your favorite terminal. For example:
+
+- Unzip the file.
+- Click into the "team-analyst" folder, you should see another "team-analyst" folder. If you don't, go back.
+- Right-click the "team-analyst" folder > Open in Terminal
+- Run this command: `claude "Let's go!"`
 
 The agent will run you through Chain Ladder selections. That's as far as we've gotten.
-
 
 ## Project Structure
 
@@ -61,19 +60,21 @@ git checkout -B test
 claude
 ```
 
-Then make notes in a notepad for things you want to change. 
+Then make notes in a notepad for things you want to change.
 
 When done testing
+
 ```bash
 git checkout main
 ```
 
-And then make and commit your baseline to the baseline tool state. 
+And then make and commit your baseline to the baseline tool state.
 
 ## Guidelines
 
-- If something unexpected is happening, first check to make sure the skill isn't making it happen. Avoid creating new instructions that override prior instructions, which can happen easily if the skill is complex. 
+- If something unexpected is happening, first check to make sure the skill isn't making it happen. Avoid creating new instructions that override prior instructions, which can happen easily if the skill is complex.
 
 ## Helpful Links
 
-- [Anthropic's Guide to Skills for Claude Code](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf?hsLang=en)
+- [Anthropic&#39;s Guide to Skills for Claude Code](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf?hsLang=en)
+- [Claude Skills: First Principles Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/)
