@@ -10,20 +10,26 @@ These checks return raw findings only — no scores, no synthesized conclusions.
 The agent (SKILL.md) is responsible for interpreting results, flagging issues
 to the user, and requesting confirmation of summary statistics.
 
-Checks (per triangle):
-    1.  check_origin_period_column    — exactly one origin/accident period column
-    2.  check_dev_period_row          — exactly one development period header row
-    3.  check_origin_period_format    — consistent, groupable origin period format
-    4.  check_top_left_nulls          — no missing cells in populated top-left region
-    5.  check_period_intervals        — regular origin and development period intervals
-    6.  check_staircase_pattern       — each later origin period has fewer dev periods
-    7.  check_measure_tab_mapping     — one tab per selected measure (file-level)
+Checks:
+    1.  check_measure_tab_mapping     — one tab per selected measure (file-level prerequisite;
+                                        must be resolved before any per-triangle check can run)
+
+Per-triangle checks:
+    2.  check_origin_period_column    — exactly one origin/accident period column
+    3.  check_dev_period_row          — exactly one development period header row
+    4.  check_origin_period_format    — consistent, groupable origin period format
+    5.  check_top_left_nulls          — no missing cells in populated top-left region
+    6.  check_period_intervals        — regular origin and development period intervals
+    7.  check_staircase_pattern       — each later origin period has fewer dev periods
     8.  check_numeric_values          — triangle numeric cells are numeric or convertible
     9.  check_duplicate_periods       — no duplicate origin or dev period labels
-    10. check_paid_vs_incurred        — cumulative paid never > cumulative incurred
-    11. check_closed_vs_reported      — cumulative closed never > cumulative reported
-    12. check_no_negative_cumulative  — no negative cumulative values
-    13. check_large_incrementals      — flag unusually large period-over-period changes
+
+Cross-triangle checks (require multiple triangles):
+    10. check_period_alignment        — accident and dev periods are identical across all triangles
+    11. check_paid_vs_incurred        — cumulative paid never > cumulative incurred
+    12. check_closed_vs_reported      — cumulative closed never > cumulative reported
+    13. check_no_negative_cumulative  — no negative cumulative values
+    14. check_large_incrementals      — flag unusually large period-over-period changes
 
 This script contains no user interaction.
 """
@@ -100,15 +106,25 @@ def _extract_numeric_triangle(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series
 # ---------------------------------------------------------------------------
 
 @dataclass
+class MeasureTabFindings:
+    """Check 1: One tab per selected measure (file-level prerequisite)."""
+    all_tab_names: list[str]
+    mappings: dict[str, Optional[list[str]]]   # measure → matching tab names
+    missing: list[str]                          # measures with no matching tab
+    ambiguous: dict[str, list[str]]             # measures with >1 matching tab
+    resolved: dict[str, Optional[str]]          # best guess tab per measure
+
+
+@dataclass
 class OriginPeriodColumnFindings:
-    """Check 1: Exactly one origin/accident period column."""
+    """Check 2: Exactly one origin/accident period column."""
     matched_columns: list[str]   # all columns matching origin-period pattern
     found_exactly_one: bool
 
 
 @dataclass
 class DevPeriodRowFindings:
-    """Check 2: Exactly one development period header row."""
+    """Check 3: Exactly one development period header row."""
     # Column names that look like dev period labels
     dev_period_headers: list[str]
     # Column names that do NOT look like dev period labels (possible label cols)
@@ -118,7 +134,7 @@ class DevPeriodRowFindings:
 
 @dataclass
 class OriginFormatFindings:
-    """Check 3: Consistent origin period format."""
+    """Check 4: Consistent origin period format."""
     detected_formats: list[str]
     is_consistent: bool
     unique_values: list[str]
@@ -127,7 +143,7 @@ class OriginFormatFindings:
 
 @dataclass
 class TopLeftNullFindings:
-    """Check 4: Missing cells in the populated top-left region."""
+    """Check 5: Missing cells in the populated top-left region."""
     # Cells that are null but should be populated (row_idx, col_name) pairs
     unexpected_null_cells: list[tuple[int, str]]
     has_unexpected_nulls: bool
@@ -135,7 +151,7 @@ class TopLeftNullFindings:
 
 @dataclass
 class PeriodIntervalFindings:
-    """Check 5: Regularity of origin and development period intervals."""
+    """Check 6: Regularity of origin and development period intervals."""
     origin_values: list[str]          # raw origin period strings
     # If parseable to dates/years, the intervals between consecutive periods
     origin_intervals: Optional[list]  # e.g. [1, 1, 1] years or None
@@ -147,21 +163,11 @@ class PeriodIntervalFindings:
 
 @dataclass
 class StaircaseFindings:
-    """Check 6: Each later origin period has fewer development periods of data."""
+    """Check 7: Each later origin period has fewer development periods of data."""
     # n_populated[i] = number of non-null dev period cells for origin period i
     n_populated_per_origin: list[int]
     is_non_increasing: bool       # True if counts are monotonically non-increasing
     violations: list[tuple[int, int, int, int]]  # (row_i, n_i, row_j, n_j) where n_j > n_i
-
-
-@dataclass
-class MeasureTabFindings:
-    """Check 7: One tab per selected measure (file-level check)."""
-    all_tab_names: list[str]
-    mappings: dict[str, Optional[list[str]]]   # measure → matching tab names
-    missing: list[str]                          # measures with no matching tab
-    ambiguous: dict[str, list[str]]             # measures with >1 matching tab
-    resolved: dict[str, Optional[str]]          # best guess tab per measure
 
 
 @dataclass
@@ -182,8 +188,23 @@ class DuplicatePeriodFindings:
 
 
 @dataclass
+class PeriodAlignmentFindings:
+    """
+    Check 10: Accident and development periods are identical across all triangles.
+
+    Compares the set of origin (accident) period labels and development period
+    column headers across every triangle that was loaded. Any period present in
+    some triangles but absent in others is reported as a mismatch.
+    """
+    applicable: bool          # False when fewer than 2 triangles are present
+    # {period_value: [measures that have it]}  — only periods that are NOT in all triangles
+    origin_mismatches: dict[str, list[str]]
+    dev_mismatches: dict[str, list[str]]
+
+
+@dataclass
 class PaidVsIncurredFindings:
-    """Check 10: Cumulative paid never > cumulative incurred."""
+    """Check 11: Cumulative paid never > cumulative incurred."""
     applicable: bool   # False only if either triangle is not present
     # (origin_label, dev_col) pairs where cumulative paid > cumulative incurred
     violations: list[tuple[str, str]]
@@ -191,14 +212,14 @@ class PaidVsIncurredFindings:
 
 @dataclass
 class ClosedVsReportedFindings:
-    """Check 11: Cumulative closed never > cumulative reported."""
+    """Check 12: Cumulative closed never > cumulative reported."""
     applicable: bool   # False only if either triangle is not present
     violations: list[tuple[str, str]]
 
 
 @dataclass
 class NegativeCumulativeFindings:
-    """Check 12: No negative cumulative values for any origin period at any dev age."""
+    """Check 13: No negative cumulative values for any origin period at any dev age."""
     applicable: bool   # always True when df is provided
     # (origin_label, dev_col, value) for up to 20 violations
     violations: list[tuple[str, str, float]]
@@ -206,7 +227,7 @@ class NegativeCumulativeFindings:
 
 @dataclass
 class LargeIncrementalFindings:
-    """Check 13: Large period-over-period changes in any triangle."""
+    """Check 14: Large period-over-period changes in any triangle."""
     # (origin_label, dev_col, pct_change) for changes exceeding threshold
     violations: list[tuple[str, str, float]]
     threshold_pct: float   # threshold used (e.g. 200.0 for 200%)
@@ -225,6 +246,7 @@ class TriangleValidationResults:
     staircase:           StaircaseFindings
     numeric_values:      NumericValueFindings
     duplicate_periods:   DuplicatePeriodFindings
+    period_alignment:    PeriodAlignmentFindings
     paid_vs_incurred:    PaidVsIncurredFindings
     closed_vs_reported:  ClosedVsReportedFindings
     no_negative_cumul:   NegativeCumulativeFindings
@@ -250,8 +272,52 @@ class TriangleSummaryStatistics:
 # Individual check functions
 # ---------------------------------------------------------------------------
 
+def check_measure_tab_mapping(
+    file_path: str | Path,
+    selected_measures: list[str],
+) -> MeasureTabFindings:
+    """
+    Check 1 — Verify that exactly one Excel tab maps to each selected measure.
+
+    This is a file-level prerequisite. All per-triangle checks (2–9) depend on
+    the resolved tab mapping produced here. Resolve any missing or ambiguous tabs
+    with the user before running any subsequent check.
+
+    CSV files always return a single anonymous tab.
+    """
+    path = Path(file_path)
+    ext  = path.suffix.lower()
+
+    if ext == ".csv":
+        tab_names = ["(csv — single sheet)"]
+    else:
+        xl = pd.ExcelFile(path, engine="xlrd" if ext == ".xls" else "openpyxl")
+        tab_names = xl.sheet_names
+
+    mappings: dict[str, Optional[list[str]]] = {}
+    for measure in selected_measures:
+        pat = _MEASURE_TAB_PATTERNS.get(measure)
+        if pat is None:
+            mappings[measure] = None
+            continue
+        candidates = [t for t in tab_names if pat.search(str(t))]
+        mappings[measure] = candidates if candidates else None
+
+    missing   = [m for m, tabs in mappings.items() if not tabs]
+    ambiguous = {m: tabs for m, tabs in mappings.items() if tabs and len(tabs) > 1}
+    resolved  = {m: (tabs[0] if tabs else None) for m, tabs in mappings.items()}
+
+    return MeasureTabFindings(
+        all_tab_names=tab_names,
+        mappings=mappings,
+        missing=missing,
+        ambiguous=ambiguous,
+        resolved=resolved,
+    )
+
+
 def check_origin_period_column(df: pd.DataFrame) -> OriginPeriodColumnFindings:
-    """Check 1 — Verify exactly one origin/accident period column is present."""
+    """Check 2 — Verify exactly one origin/accident period column is present."""
     matches = [c for c in df.columns if _ORIGIN_RE.search(str(c))]
     # Also count the first column as a candidate if it contains string labels
     first_col = df.columns[0]
@@ -269,7 +335,7 @@ def check_origin_period_column(df: pd.DataFrame) -> OriginPeriodColumnFindings:
 
 
 def check_dev_period_row(df: pd.DataFrame) -> DevPeriodRowFindings:
-    """Check 2 — Verify the column headers look like development period labels."""
+    """Check 3 — Verify the column headers look like development period labels."""
     dev_hdrs    = [str(c) for c in df.columns[1:] if _DEV_RE.search(str(c))]
     non_dev_hdrs= [str(c) for c in df.columns[1:] if not _DEV_RE.search(str(c))]
     return DevPeriodRowFindings(
@@ -280,7 +346,7 @@ def check_dev_period_row(df: pd.DataFrame) -> DevPeriodRowFindings:
 
 
 def check_origin_period_format(df: pd.DataFrame) -> OriginFormatFindings:
-    """Check 3 — Verify origin period values follow a consistent groupable format."""
+    """Check 4 — Verify origin period values follow a consistent groupable format."""
     vals = df.iloc[:, 0].dropna().astype(str).str.strip().tolist()
     detected: set[str] = set()
     unrecognised: list[str] = []
@@ -303,7 +369,7 @@ def check_origin_period_format(df: pd.DataFrame) -> OriginFormatFindings:
 
 def check_top_left_nulls(df: pd.DataFrame) -> TopLeftNullFindings:
     """
-    Check 4 — Find null cells that appear inside the populated top-left region.
+    Check 5 — Find null cells that appear inside the populated top-left region.
 
     The top-left region is defined as: for each origin period row, all columns
     up to and including the last non-null development value in that row.
@@ -353,7 +419,7 @@ def _try_parse_period_values(values: list[str]) -> Optional[list]:
 
 
 def check_period_intervals(df: pd.DataFrame) -> PeriodIntervalFindings:
-    """Check 5 — Verify that origin and development period intervals are regular."""
+    """Check 6 — Verify that origin and development period intervals are regular."""
     origin_vals = df.iloc[:, 0].dropna().astype(str).str.strip().tolist()
     dev_cols    = [str(c) for c in df.columns[1:]]
 
@@ -382,7 +448,7 @@ def check_period_intervals(df: pd.DataFrame) -> PeriodIntervalFindings:
 
 
 def check_staircase_pattern(df: pd.DataFrame) -> StaircaseFindings:
-    """Check 6 — Each successive origin period row should have ≤ dev periods populated."""
+    """Check 7 — Each successive origin period row should have ≤ dev periods populated."""
     data, _ = _extract_numeric_triangle(df)
     counts = [int(row.notna().sum()) for _, row in data.iterrows()]
     violations: list[tuple[int, int, int, int]] = []
@@ -395,44 +461,6 @@ def check_staircase_pattern(df: pd.DataFrame) -> StaircaseFindings:
         violations=violations,
     )
 
-
-def check_measure_tab_mapping(
-    file_path: str | Path,
-    selected_measures: list[str],
-) -> MeasureTabFindings:
-    """
-    Check 7 — Verify that exactly one Excel tab maps to each selected measure.
-    CSV files always return a single anonymous tab.
-    """
-    path = Path(file_path)
-    ext  = path.suffix.lower()
-
-    if ext == ".csv":
-        tab_names = ["(csv — single sheet)"]
-    else:
-        xl = pd.ExcelFile(path, engine="xlrd" if ext == ".xls" else "openpyxl")
-        tab_names = xl.sheet_names
-
-    mappings: dict[str, Optional[list[str]]] = {}
-    for measure in selected_measures:
-        pat = _MEASURE_TAB_PATTERNS.get(measure)
-        if pat is None:
-            mappings[measure] = None
-            continue
-        candidates = [t for t in tab_names if pat.search(str(t))]
-        mappings[measure] = candidates if candidates else None
-
-    missing   = [m for m, tabs in mappings.items() if not tabs]
-    ambiguous = {m: tabs for m, tabs in mappings.items() if tabs and len(tabs) > 1}
-    resolved  = {m: (tabs[0] if tabs else None) for m, tabs in mappings.items()}
-
-    return MeasureTabFindings(
-        all_tab_names=tab_names,
-        mappings=mappings,
-        missing=missing,
-        ambiguous=ambiguous,
-        resolved=resolved,
-    )
 
 
 def check_numeric_values(df: pd.DataFrame) -> NumericValueFindings:
@@ -487,6 +515,64 @@ def check_duplicate_periods(df: pd.DataFrame) -> DuplicatePeriodFindings:
     )
 
 
+def check_period_alignment(
+    dfs: dict[str, pd.DataFrame],
+) -> PeriodAlignmentFindings:
+    """
+    Check 10 — Verify that accident periods and development periods are
+    identical across every triangle in *dfs*.
+
+    Args:
+        dfs: Mapping of measure name → raw triangle DataFrame (first col =
+             origin labels, remaining cols = dev period headers).  Must contain
+             at least two DataFrames for the check to be applicable.
+
+    Returns:
+        PeriodAlignmentFindings with:
+          - origin_mismatches: period values that are not shared by every triangle
+          - dev_mismatches:    dev period labels that are not shared by every triangle
+        Both dicts map the mismatched value → list of measures that contain it,
+        making it easy to tell the user which triangles disagree.
+    """
+    if len(dfs) < 2:
+        return PeriodAlignmentFindings(
+            applicable=False,
+            origin_mismatches={},
+            dev_mismatches={},
+        )
+
+    # Collect origin period sets and dev period sets per measure
+    origin_sets: dict[str, set[str]] = {}
+    dev_sets:    dict[str, set[str]] = {}
+    for measure, df in dfs.items():
+        origin_sets[measure] = set(
+            df.iloc[:, 0].dropna().astype(str).str.strip().tolist()
+        )
+        dev_sets[measure] = set(str(c) for c in df.columns[1:])
+
+    # Intersection = periods every triangle must have
+    all_origins = set.union(*origin_sets.values())
+    all_devs    = set.union(*dev_sets.values())
+
+    def _find_mismatches(
+        universe: set[str],
+        per_measure: dict[str, set[str]],
+    ) -> dict[str, list[str]]:
+        """Return {value: [measures that have it]} for values not in every triangle."""
+        mismatches: dict[str, list[str]] = {}
+        for value in sorted(universe):
+            measures_with = [m for m, s in per_measure.items() if value in s]
+            if len(measures_with) < len(per_measure):   # not universal
+                mismatches[value] = measures_with
+        return mismatches
+
+    return PeriodAlignmentFindings(
+        applicable=True,
+        origin_mismatches=_find_mismatches(all_origins, origin_sets),
+        dev_mismatches=_find_mismatches(all_devs, dev_sets),
+    )
+
+
 def _align_triangles(
     df_a: pd.DataFrame,
     df_b: pd.DataFrame,
@@ -524,7 +610,7 @@ def check_paid_vs_incurred(
     df_incurred: Optional[pd.DataFrame],
 ) -> PaidVsIncurredFindings:
     """
-    Check 10 — Cumulative paid never > cumulative incurred.
+    Check 11 — Cumulative paid never > cumulative incurred.
     Input DataFrames must already be in cumulative form.
     """
     if df_paid is None or df_incurred is None:
@@ -548,7 +634,7 @@ def check_closed_vs_reported(
     df_reported: Optional[pd.DataFrame],
 ) -> ClosedVsReportedFindings:
     """
-    Check 11 — Cumulative closed never > cumulative reported.
+    Check 12 — Cumulative closed never > cumulative reported.
     Input DataFrames must already be in cumulative form.
     """
     if df_closed is None or df_reported is None:
@@ -571,7 +657,7 @@ def check_no_negative_cumulative(
     df: pd.DataFrame,
 ) -> NegativeCumulativeFindings:
     """
-    Check 12 — No negative cumulative values.
+    Check 13 — No negative cumulative values.
     Input DataFrame must already be in cumulative form.
     """
     data, origins = _extract_numeric_triangle(df)
@@ -595,7 +681,7 @@ def check_large_incrementals(
     threshold_pct: float = _LARGE_INCREMENTAL_THRESHOLD * 100,
 ) -> LargeIncrementalFindings:
     """
-    Check 13 — Flag cells where period-over-period change exceeds threshold_pct %.
+    Check 14 — Flag cells where period-over-period change exceeds threshold_pct %.
     Works on both cumulative and incremental triangles (computes incrementals either way).
     """
     data, origins = _extract_numeric_triangle(df)
@@ -670,6 +756,7 @@ def validate_triangle(
     df_incurred: Optional[pd.DataFrame] = None,
     df_closed: Optional[pd.DataFrame] = None,
     df_reported: Optional[pd.DataFrame] = None,
+    sibling_dfs: Optional[dict[str, pd.DataFrame]] = None,
 ) -> TriangleValidationResults:
     """
     Run all per-triangle validation checks and return a results container.
@@ -681,10 +768,13 @@ def validate_triangle(
         triangle_type: "cumulative" or "incremental".
         df_paid / df_incurred / df_closed / df_reported:
                        Other measure triangles (optional), used for cross-checks
-                       10 and 11. Pass None if a measure is not available.
+                       11 and 12. Pass None if a measure is not available.
+        sibling_dfs:   All loaded triangles keyed by measure name (including
+                       this one), used for check 10 (period alignment). When
+                       None the check is skipped (applicable=False).
 
     Returns:
-        TriangleValidationResults with raw findings from all 13 checks.
+        TriangleValidationResults with raw findings from all 14 checks.
     """
     return TriangleValidationResults(
         tab_name=tab_name,
@@ -697,6 +787,7 @@ def validate_triangle(
         staircase          = check_staircase_pattern(df),
         numeric_values     = check_numeric_values(df),
         duplicate_periods  = check_duplicate_periods(df),
+        period_alignment   = check_period_alignment(sibling_dfs or {}),
         paid_vs_incurred   = check_paid_vs_incurred(df_paid, df_incurred),
         closed_vs_reported = check_closed_vs_reported(df_closed, df_reported),
         no_negative_cumul  = check_no_negative_cumulative(df),
@@ -757,6 +848,7 @@ def validate_all_triangles(
             df_incurred = dfs.get("incurred_losses"),
             df_closed   = dfs.get("closed_counts"),
             df_reported = dfs.get("reported_counts"),
+            sibling_dfs = dfs,   # pass all loaded DFs for period-alignment check
         )
 
     return tab_findings, results

@@ -256,6 +256,7 @@ If any structural check fails, pause and resolve with the user before continuing
 
 | Check | Field | Applicable when | What to flag |
 |---|---|---|---|
+| **9. Consistent periods across triangles** | `period_alignment.origin_mismatches` / `period_alignment.dev_mismatches` | More than one triangle present | List any accident periods or development periods that appear in some triangles but not others. Ask the user whether the mismatch is expected (e.g. a newer triangle with an extra origin period) or a data error. **Resolve before running checks 10–11**, which assume all triangles share the same axes. |
 | **10. Paid ≤ incurred** | `paid_vs_incurred.violations` | Both triangles present | List up to 20 `(origin period, dev column)` pairs where cumulative paid > incurred. |
 | **11. Closed ≤ reported** | `closed_vs_reported.violations` | Both triangles present | Same pattern for counts. |
 | **12. No negative cumulatives** | `no_negative_cumul.violations` | Always | List up to 20 `(origin, dev col, value)` triples. Ask if negative values are recoveries or data errors. |
