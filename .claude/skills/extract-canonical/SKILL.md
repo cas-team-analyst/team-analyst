@@ -4,7 +4,7 @@ description: convert validated data to canonical long format, store metadata, an
 ---
 # Extract Canonical Skill
 
-This skill provides a standardized approach to converting validated actuarial data into canonical long format, storing metadata, and performing basic LDF and diagnostic calculations. All user interaction is handled by the agent following the instructions below; the Python scripts in `assets/` are pure utility functions with no prompts.
+This skill provides a standardized approach to converting validated actuarial data into canonical long format, storing metadata, and performing basic LDF and diagnostic calculations. All user interaction is handled by the agent following the instructions below; the Python scripts in `scripts/` are pure utility functions with no prompts.
 
 ## Instructions
 
@@ -28,7 +28,7 @@ Run the appropriate substep based on the data format confirmed in validate-data 
 Use the **original input file** if cumulative, or the **`-cumulative` file** from validate-data Step 6 if incremental.
 
 ```python
-from assets.`1a-extract-triangle` import extract_canonical_from_triangles
+from scripts.`1a-extract-triangle` import extract_canonical_from_triangles
 
 # resolved_tabs: measure → tab mapping confirmed in validate-data Step 7a
 result = extract_canonical_from_triangles(
@@ -46,7 +46,7 @@ result = extract_canonical_from_triangles(
 Use the column mapping resolved during validate-data Step 5 (`results.measure_columns.resolved`, `results.origin_period.selected_column`, `results.eval_date.selected_column`).
 
 ```python
-from assets.`1b-extract-loss-run` import extract_canonical_from_loss_run
+from scripts.`1b-extract-loss-run` import extract_canonical_from_loss_run
 
 # origin_col / eval_col / resolved_columns: resolved during validate-data Step 5
 result = extract_canonical_from_loss_run(
@@ -85,7 +85,7 @@ Before calling the script, gather the following from the user — ask each quest
 Once you have the user's answers, call `store_metadata()`:
 
 ```python
-from assets.`2-store-metadata` import store_metadata
+from scripts.`2-store-metadata` import store_metadata
 
 result = store_metadata(
     canonical_path=canonical_path,          # result.output_path from Step 1
@@ -139,7 +139,7 @@ Store `result.output_path` as the active metadata path for subsequent steps.
 Extract the latest diagonal from the canonical CSV: for each `(origin_period, measure)` pair, keep only the row whose `development_age` is the most mature (maximum). This is the starting point for all loss development projections.
 
 ```python
-from assets.`3-extract-diagonal` import extract_diagonal
+from scripts.`3-extract-diagonal` import extract_diagonal
 
 result = extract_diagonal(
     canonical_path=canonical_path,   # result.output_path from Step 1
