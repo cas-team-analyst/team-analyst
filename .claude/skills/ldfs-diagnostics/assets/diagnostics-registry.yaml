@@ -1,0 +1,140 @@
+# Actuarial Diagnostics Registry
+
+diagnostics:
+  incurred_severity:
+    label: "Incurred Severity"
+    format: "integer"
+    recipe: "safe_divide"
+    inputs: ["incurred_losses", "reported_counts"]
+    args:
+        numerator: "incurred_losses"
+        denominator: "reported_counts"
+        use_incremental: false
+
+  incurred_severity_incr:
+    label: "Incurred Severity (Incremental)"
+    format: "integer"
+    recipe: "safe_divide"
+    inputs: ["incurred_losses", "reported_counts"]
+    args:
+        numerator: "incurred_losses"
+        denominator: "reported_counts"
+        use_incremental: true
+
+  paid_severity:
+    label: "Paid Severity"
+    format: "integer"
+    recipe: "safe_divide"
+    inputs: ["paid_losses", "closed_counts"]
+    args:
+        numerator: "paid_losses"
+        denominator: "closed_counts"
+        use_incremental: false
+
+  paid_severity_incr:
+    label: "Paid Severity (Incremental)"
+    format: "integer"
+    recipe: "safe_divide"
+    inputs: ["paid_losses", "closed_counts"]
+    args:
+        numerator: "paid_losses"
+        denominator: "closed_counts"
+        use_incremental: true
+
+  paid_to_incurred:
+    label: "Paid / Incurred"
+    format: "percentage"
+    recipe: "safe_divide"
+    inputs: ["paid_losses", "incurred_losses"]
+    args:
+        numerator: "paid_losses"
+        denominator: "incurred_losses"
+        use_incremental: false
+
+  case_reserves:
+    label: "Case Reserves"
+    format: "integer"
+    recipe: "subtract"
+    inputs: ["incurred_losses", "paid_losses"]
+    args:
+        left: "incurred_losses"
+        right: "paid_losses"
+        use_incremental: false
+
+  open_counts:
+    label: "Open Counts"
+    format: "integer"
+    recipe: "subtract"
+    inputs: ["reported_counts", "closed_counts"]
+    args:
+        left: "reported_counts"
+        right: "closed_counts"
+        use_incremental: false
+
+  average_case_reserves:
+    label: "Average Case Reserves"
+    format: "integer"
+    recipe: "nested_divide"
+    inputs: ["incurred_losses", "paid_losses", "reported_counts", "closed_counts"]
+    args:
+        numerator_recipe: "subtract"
+        numerator_args: {left: "incurred_losses", right: "paid_losses"}
+        denominator_recipe: "subtract"
+        denominator_args: {left: "reported_counts", right: "closed_counts"}
+        use_incremental: false
+
+  cumulative_closure_rate:
+    label: "Cumulative Closure Rate"
+    format: "percentage"
+    recipe: "safe_divide"
+    inputs: ["closed_counts", "reported_counts"]
+    args:
+        numerator: "closed_counts"
+        denominator: "reported_counts"
+        use_incremental: false
+
+  incremental_closure_rate:
+    label: "Incremental Closure Rate"
+    format: "percentage"
+    recipe: "safe_divide"
+    inputs: ["closed_counts", "reported_counts"]
+    args:
+        numerator: "closed_counts"
+        denominator: "reported_counts"
+        use_incremental: true
+
+  incurred_loss_rate:
+    label: "Incurred Loss Rate / Ratio"
+    format: "integer"
+    recipe: "safe_divide_exposure"
+    inputs: ["incurred_losses"]
+    args:
+        numerator: "incurred_losses"
+        use_incremental: false
+
+  paid_loss_rate:
+    label: "Paid Loss Rate / Ratio"
+    format: "integer"
+    recipe: "safe_divide_exposure"
+    inputs: ["paid_losses"]
+    args:
+        numerator: "paid_losses"
+        use_incremental: false
+
+  reported_frequency:
+    label: "Reported Frequency"
+    format: "decimal"
+    recipe: "safe_divide_exposure"
+    inputs: ["reported_counts"]
+    args:
+        numerator: "reported_counts"
+        use_incremental: false
+
+  closed_frequency:
+    label: "Closed Frequency"
+    format: "decimal"
+    recipe: "safe_divide_exposure"
+    inputs: ["closed_counts"]
+    args:
+        numerator: "closed_counts"
+        use_incremental: false
