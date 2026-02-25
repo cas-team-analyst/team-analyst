@@ -27,7 +27,7 @@ where `D_next` is the next older development age in the sorted sequence. Only ce
 #### Running the script
 
 ```python
-from scripts.`1-calculate-ldfs` import calculate_historical_ldfs
+from scripts.`1-historical-ldfs` import calculate_historical_ldfs
 
 result = calculate_historical_ldfs(
     canonical_path="path/to/{stem}-canonical.csv",
@@ -78,7 +78,7 @@ The same period/type selections are applied to all available measures (triangles
 #### Running the script
 
 ```python
-from scripts.`2-calculate-averages` import calculate_average_ldfs
+from scripts.`2-average-ldfs` import calculate_average_ldfs
 
 result = calculate_average_ldfs(
     ldf_path="path/to/{stem}-canonical-ldfs.csv",   # result.output_path from Step 1
