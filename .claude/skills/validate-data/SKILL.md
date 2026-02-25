@@ -4,11 +4,11 @@ description: Load and validate actuarial data provided by the user to ensure it 
 ---
 # Validate Data Skill
 
-This skill provides a standardized approach to loading and validating actuarial data. All user interaction is handled by the agent following the instructions below; the Python scripts in `assets/` are pure utility functions with no prompts.
+This skill provides a standardized approach to loading and validating actuarial data. All user interaction is handled by the agent following the instructions below; the Python scripts in `scripts/` are pure utility functions with no prompts.
 
 ## Instructions
 
-### Step 1 — Load Data (`assets/1-load-data.py`)
+### Step 1 — Load Data (`scripts/1-load-data.py`)
 
 Ask the user:
 > "Please provide the full path to your data file. Accepted formats: `.csv`, `.xlsx`, `.xlsm`, `.xls`"
@@ -16,7 +16,7 @@ Ask the user:
 Once you have the path, call `load_data()`:
 
 ```python
-from assets.`1-load-data` import load_data
+from scripts.`1-load-data` import load_data
 
 df = load_data("path/to/file.xlsx", sheet_name="Sheet1")
 ```
@@ -25,7 +25,7 @@ If a `FileNotFoundError` or `ValueError` is raised, report the error to the user
 
 ---
 
-### Step 2 — Identify Format (`assets/2-identify-data-format.py`)
+### Step 2 — Identify Format (`scripts/2-identify-data-format.py`)
 
 Ask the user:
 > "What format is your data in?
@@ -35,7 +35,7 @@ Ask the user:
 Once you have their answer, call `summarize()` with the appropriate format string, then display the result:
 
 ```python
-from assets.`2-identify-data-format` import summarize
+from scripts.`2-identify-data-format` import summarize
 
 summary = summarize(df, fmt="loss_run")  # or "triangle"
 print(summary.report())
@@ -49,12 +49,12 @@ After displaying the report, ask the user:
 
 ---
 
-### Step 3 — Check Format (`assets/3-check-format.py`)
+### Step 3 — Check Format (`scripts/3-check-format.py`)
 
 Run all five diagnostic tests against the loaded data and file path:
 
 ```python
-from assets.`3-check-format` import run_all_checks
+from scripts.`3-check-format` import run_all_checks
 
 results = run_all_checks(df, file_path="path/to/file.xlsx")
 ```
@@ -103,12 +103,12 @@ Record the exposure format as either `"long"` or `"triangle"`. Store all selecti
 
 ---
 
-### Step 5 — Validate Loss Run (`assets/4-validate-loss-run.py`)
+### Step 5 — Validate Loss Run (`scripts/4-validate-loss-run.py`)
 
 *Run this step only when the user confirmed **loss run** format in Step 2.*
 
 ```python
-from assets.`4-validate-loss-run` import validate_loss_run, build_summary_statistics
+from scripts.`4-validate-loss-run` import validate_loss_run, build_summary_statistics
 
 # selected_measures: list of keys the user chose in Step 4
 # valid keys: "incurred_losses", "paid_losses", "reported_counts", "closed_counts"
@@ -174,7 +174,7 @@ Present the following to the user and ask for confirmation before proceeding:
 
 ---
 
-### Step 6 — Convert Incremental Triangles to Cumulative (`assets/4b1-convert-to-cumulative.py`)
+### Step 6 — Convert Incremental Triangles to Cumulative (`scripts/4b1-convert-to-cumulative.py`)
 
 *Run this step only when the user confirmed **triangle** format in Step 2.*
 
@@ -185,7 +185,7 @@ Ask the user:
 - If **incremental** → run the conversion script below.
 
 ```python
-from assets.`4b1-convert-to-cumulative` import convert_to_cumulative
+from scripts.`4b1-convert-to-cumulative` import convert_to_cumulative
 
 # resolved_tabs: agent's confirmed mapping from Step 7a tab-check
 # (run the tab check described in 7a first, then pass the resolved mapping here)
@@ -207,14 +207,14 @@ Store `result.output_path` as the active file path for Step 7.
 
 ---
 
-### Step 7 — Validate Triangle (`assets/4b2-validate-triangle.py`)
+### Step 7 — Validate Triangle (`scripts/4b2-validate-triangle.py`)
 
 *Uses the original file (if cumulative) or the `-cumulative` file produced in Step 6 (if incremental). All input DataFrames passed to this script must be in cumulative form.*
 
 #### 7a — Tab mapping check (file-level)
 
 ```python
-from assets.`4b2-validate-triangle` import (
+from scripts.`4b2-validate-triangle` import (
     validate_all_triangles, build_summary_statistics
 )
 
