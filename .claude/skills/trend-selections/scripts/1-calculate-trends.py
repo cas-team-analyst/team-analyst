@@ -1,10 +1,10 @@
 """
-goal: Step 3 of ultimate-projections — fit least-squares annual trend lines for
+goal: Step 1 of trend-selections — fit least-squares annual trend lines for
       frequency, severity, and exposure across user-selected rolling time windows,
-      to inform trend factor selection in Step 4.
+      to inform trend factor selection in Step 2.
 
 inputs:
-    ultimates_path  — path to {stem}-ldf-selections-ultimates.csv (Step 2 output)
+    ultimates_path  — path to {stem}-chain-ladder-ultimates.csv (ultimate-projections Step 2 output)
     canonical_path  — path to {stem}-canonical.csv (extract-canonical Step 1 output)
                       used to derive exposure per origin period
     periods         — list of rolling window sizes, any subset of [3, 4, 5, "all_year"]
@@ -18,7 +18,7 @@ Trend series derived per component:
     exposure      — diagonal value from canonical CSV (measure = "exposure")
 
 Output file: {stem}-trends.csv saved alongside the ultimates CSV.
-  e.g.  trip-canonical-ldf-selections-ultimates.csv
+  e.g.  trip-canonical-chain-ladder-ultimates.csv
      →  trip-canonical-trends.csv
 
 This script contains no user interaction.
@@ -143,10 +143,11 @@ def calculate_trends(
     output_path: Optional[str | Path] = None,
 ) -> CalculateTrendsResult:
     """
-    Fit annual trend lines for exposure and loss ratio (if only loss measures present) or frequency and severity (if both count and loss measures present).
+    Fit annual trend lines for exposure and loss ratio (if only loss measures present)
+    or frequency and severity (if both count and loss measures present).
 
     Args:
-        ultimates_path: Path to {stem}-ldf-selections-ultimates.csv (Step 2 output).
+        ultimates_path: Path to {stem}-chain-ladder-ultimates.csv (ultimate-projections Step 2 output).
         canonical_path: Path to {stem}-canonical.csv (extract-canonical Step 1 output).
         periods:        Rolling window sizes — any subset of [3, 4, 5, "all_year"].
         loss_measure:   Loss measure to use for severity/loss_ratio:

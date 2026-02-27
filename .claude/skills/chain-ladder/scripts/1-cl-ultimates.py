@@ -17,7 +17,7 @@ output columns:
 
 Output file: {ldf_selections_stem}-ultimates.csv saved alongside ldf-selections.json.
   e.g.  trip-canonical-ldf-selections.json
-     →  trip-canonical-ldf-selections-ultimates.csv
+     →  trip-canonical-chain-ladder-ultimates.csv
 
 This script contains no user interaction.
 """
