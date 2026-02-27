@@ -7,6 +7,7 @@ description: Select age-to-age LDFs and tail factors from averages calculated by
 This skill picks up from the outputs of the **ldfs-diagnostics** skill and performs LDF selection, tail factor selection, and chain-ladder ultimate loss projection. All user interaction is handled by the agent following the instructions below.
 
 **Prerequisites — files produced by ldfs-diagnostics:**
+
 - `{stem}-canonical-ldfs.csv` — historical LDFs per interval and origin period (Step 1 output)
 - `{stem}-canonical-ldfs-averages.csv` — computed averages by period and type (Step 2 output)
 - `{stem}-canonical-diagnostics.csv` — diagnostic metrics (Step 3 output)
@@ -20,15 +21,18 @@ This skill picks up from the outputs of the **ldfs-diagnostics** skill and perfo
 > **This step is performed entirely by the LLM and the user. No Python script is called.**
 
 For each available triangle measure, select:
+
 1. A **selected LDF** for every age-to-age interval (`age_from` → `age_to`)
 2. A **tail factor** to apply beyond the last observed development age
 
 #### Reference material
 
 Before making selections, read:
-- `assets/LDF and Method Selection Reference.pdf` (in the **ldfs-diagnostics** skill assets) — the authoritative guide for selection methodology and criteria
+
+- `references/LDF and Method Selection Reference.pdf` — the authoritative guide for selection methodology and criteria
 
 Key inputs to inform selections:
+
 - `{stem}-canonical-ldfs.csv` — historical LDFs per interval and origin period
 - `{stem}-canonical-ldfs-averages.csv` — straight, olympic, and weighted averages across time periods
 - `{stem}-canonical-diagnostics.csv` — diagnostics such as `paid_to_incurred`, `closure_rate`, average case reserves, severity trends
@@ -48,6 +52,7 @@ For each measure and each age-to-age interval (`age_from` → `age_to`):
 5. **Record the selected LDF** as a single value per interval per measure, along with a brief rationale.
 
 For the **tail factor**:
+
 - Default to `1.000` unless the triangle is clearly immature at the oldest observed age.
 - Consult the Selection Reference for guidance on tail fitting approaches.
 
@@ -133,25 +138,27 @@ result = project_cl_ultimates(
 
 **Output file:** `{ldf_selections_stem}-ultimates.csv` saved alongside `ldf-selections.json`.
 
-| Column | Description |
-|---|---|
-| `measure` | Triangle / measure name |
-| `origin_period` | Accident / origin period label |
-| `latest_age` | Development age from the diagonal |
-| `current_value` | Projected-from value (diagonal value for this measure) |
-| `cdf` | Cumulative development factor from `latest_age` to ultimate |
-| `ultimate` | `current_value × cdf` |
+| Column            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `measure`       | Triangle / measure name                                       |
+| `origin_period` | Accident / origin period label                                |
+| `latest_age`    | Development age from the diagonal                             |
+| `current_value` | Projected-from value (diagonal value for this measure)        |
+| `cdf`           | Cumulative development factor from `latest_age` to ultimate |
+| `ultimate`      | `current_value × cdf`                                      |
 
 #### After calling the script
 
 If `result.warnings` is non-empty, report them to the user — e.g. measures with no diagonal data, ages without a CDF, or missing paid/incurred companion values.
 
 Tell the user:
+
 > "I've projected ultimate losses for **{result.measures}** and saved the results to **{result.output_path}**."
 
 Present results as a summary table per measure (origin periods as rows, columns: current_value, cdf, ultimate).
 
 > **Hand off to the trend-selections skill**. Pass the paths to:
+>
 > - `{stem}-chain-ladder-ultimates.csv` — chain-ladder ultimates (Step 2 output)
 > - `{stem}-canonical.csv` — canonical data (for exposure)
 > - `{stem}-canonical-diagnostics.csv` — diagnostics (from ldfs-diagnostics Step 3)
