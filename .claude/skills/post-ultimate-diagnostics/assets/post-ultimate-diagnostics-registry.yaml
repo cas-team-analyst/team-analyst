@@ -1,0 +1,94 @@
+# Actuarial Diagnostics Registry (for methods which are computed after ultimate selection)
+
+post-ultimate-diagnostics:
+  ultimate_severity:
+    label: "Ultimate Severity"
+    format: "integer"
+    datastructure: "series"
+    recipe: "safe_divide"
+    inputs: ["ultimate_losses", "ultimate_counts"]
+    args:
+        numerator: "ultimate_losses"
+        denominator: "ultimate_counts"
+
+  ultimate_frequency:
+    label: "Ultimate Frequency"
+    format: "decimal"
+    datastructure: "series"
+    recipe: "safe_divide_exposure"
+    inputs: ["ultimate_counts"]
+    args:
+        numerator: "ultimate_counts"
+
+  ultimate_loss_rate:
+    label: "Ultimate Loss Rate / Ratio"
+    format: "integer"
+    datastructure: "series"
+    recipe: "safe_divide_exposure"
+    inputs: ["ultimate_losses"]
+    args:
+        numerator: "ultimate_losses"
+
+  percent_incurred:
+    label: "Percent Incurred"
+    format: "percentage"
+    datastructure: "triangle"
+    recipe: "safe_divide"
+    inputs: ["incurred_losses", "ultimate_losses"]
+    args:
+        numerator: "incurred_losses"
+        denominator: "ultimate_losses"
+
+  percent_paid:
+    label: "Percent Paid"
+    format: "percentage"
+    datastructure: "triangle"
+    recipe: "safe_divide"
+    inputs: ["paid_losses", "ultimate_losses"]
+    args:
+        numerator: "paid_losses"
+        denominator: "ultimate_losses"
+
+  percent_reported:
+    label: "Percent Reported"
+    format: "percentage"
+    datastructure: "triangle"
+    recipe: "safe_divide"
+    inputs: ["reported_counts", "ultimate_counts"]
+    args:
+        numerator: "reported_counts"
+        denominator: "ultimate_counts"
+  
+  percent_closed:
+    label: "Percent Closed"
+    format: "percentage"
+    datastructure: "triangle"
+    recipe: "safe_divide"
+    inputs: ["closed_counts", "ultimate_counts"]
+    args:
+        numerator: "closed_counts"
+        denominator: "ultimate_counts"
+
+  average_ibnr:
+    label: "Average IBNR"
+    format: "integer"
+    datastructure: "triangle"
+    recipe: "nested_divide"
+    inputs: ["ultimate_losses", "incurred_losses", "ultimate_counts", "closed_counts"]
+    args:
+        numerator_recipe: "subtract"
+        numerator_args: {left: "ultimate_losses", right: "incurred_losses"}
+        denominator_recipe: "subtract"
+        denominator_args: {left: "ultimate_counts", right: "closed_counts"}
+
+  average_unpaid:
+    label: "Average Unpaid"
+    format: "integer"
+    datastructure: "triangle"
+    recipe: "nested_divide"
+    inputs: ["ultimate_losses", "paid_losses", "ultimate_counts", "closed_counts"]
+    args:
+        numerator_recipe: "subtract"
+        numerator_args: {left: "ultimate_losses", right: "paid_losses"}
+        denominator_recipe: "subtract"
+        denominator_args: {left: "ultimate_counts", right: "closed_counts"}
