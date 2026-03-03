@@ -25,9 +25,9 @@ Output columns:
 
 Rows are sorted by (measure, age_from, origin_period).
 
-Output file: {canonical_stem}-ldfs.csv
+Output file: {stem}-historical-ldfs.csv
   e.g.  C:/data/triangles-canonical.csv
-     →  C:/data/triangles-canonical-ldfs.csv
+     →  C:/data/triangles-historical-ldfs.csv
 
 This script contains no user interaction.
 """
@@ -74,7 +74,7 @@ def _sort_key(label: str):
 # ---------------------------------------------------------------------------
 
 @dataclass
-class LDFResult:
+class HistoricalLDFResult:
     """Outcome of calculate_historical_ldfs()."""
     output_path: Path               # path to the saved LDF CSV
     ldf_df: pd.DataFrame            # the LDF DataFrame (in memory)
@@ -91,7 +91,7 @@ class LDFResult:
 def calculate_historical_ldfs(
     canonical_path: str | Path,
     output_path: Optional[str | Path] = None,
-) -> LDFResult:
+) -> HistoricalLDFResult:
     """
     Calculate historical LDFs from a canonical long-format CSV.
 
@@ -111,7 +111,7 @@ def calculate_historical_ldfs(
                         {canonical_stem}-ldfs.csv in the same directory.
 
     Returns:
-        LDFResult with output path, the LDF DataFrame, the list of measures,
+        HistoricalLDFResult with output path, the LDF DataFrame, the list of measures,
         the list of (age_from, age_to) pairs, and any skipped pairs.
 
     Raises:
@@ -123,7 +123,7 @@ def calculate_historical_ldfs(
         raise FileNotFoundError(f"Canonical file not found: {src}")
 
     if output_path is None:
-        dest = src.with_name(f"{src.stem}-ldfs.csv")
+        dest = f"{src.parent}/historical-ldfs.csv"
     else:
         dest = Path(output_path).expanduser().resolve()
 

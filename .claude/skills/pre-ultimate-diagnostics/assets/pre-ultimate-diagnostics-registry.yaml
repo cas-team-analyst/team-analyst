@@ -1,6 +1,6 @@
-# Actuarial Diagnostics Registry
+# Actuarial Diagnostics Registry (for methods which can be computed prior to ultimate selection)
 
-diagnostics:
+pre-ultimate-diagnostics:
   incurred_severity:
     label: "Incurred Severity"
     format: "integer"

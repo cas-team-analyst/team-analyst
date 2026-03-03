@@ -1,12 +1,12 @@
 """
 goal: Step 3 of reserving-analysis — compute actuarial diagnostics for all
       (origin_period, development_age) cells where the required measures are
-      available, driven by diagnostics-registry.yaml.
+      available, driven by pre-ultimate-diagnostics-registry.yaml.
 
 Inputs:
     canonical_path  — {stem}-canonical.csv produced by extract-canonical Step 1
     metadata_path   — {stem}-canonical-metadata.json produced by extract-canonical Step 2
-    registry_path   — diagnostics-registry.yaml (defaults to file alongside this script)
+    registry_path   — pre-ultimate-diagnostics-registry.yaml (defaults to file alongside this script)
 
 Available measures are read from the metadata JSON (`available_measures` field).
 Only diagnostics whose required `inputs` are all present in available_measures are
@@ -195,7 +195,7 @@ def compute_diagnostics(
         exposure:       Optional dict or pd.Series mapping origin_period →
                         exposure value. Required for `safe_divide_exposure`
                         diagnostics (e.g. loss rates, frequency).
-        registry_path:  Path to diagnostics-registry.yaml. Defaults to the
+        registry_path:  Path to pre-ultimate-diagnostics-registry.yaml. Defaults to the
                         file in the same directory as this script.
         output_path:    Override output location. Defaults to
                         {canonical_stem}-diagnostics.csv.
@@ -217,14 +217,14 @@ def compute_diagnostics(
         raise FileNotFoundError(f"Metadata file not found: {meta_src}")
 
     if registry_path is None:
-        reg_path = Path(__file__).parent / "diagnostics-registry.yaml"
+        reg_path = Path(__file__).parent / "pre-ultimate-diagnostics-registry.yaml"
     else:
         reg_path = Path(registry_path).expanduser().resolve()
     if not reg_path.exists():
         raise FileNotFoundError(f"Registry not found: {reg_path}")
 
     if output_path is None:
-        dest = src.with_name(f"{src.stem}-diagnostics.csv")
+        dest = f"{src.parent}/pre-ultimate-diagnostics.csv"
     else:
         dest = Path(output_path).expanduser().resolve()
 
@@ -284,7 +284,19 @@ def compute_diagnostics(
     registry = _Registry(reg_path)
 
     # Normalise available_measures to lowercase for matching
-    avail_lower = {m.lower() for m in available_measures}
+    avail_map = {m.lower(): m for m in available_measures}
+
+    def resolve_measure(alias: str) -> Optional[str]:
+        alias_l = alias.lower()
+        # Exact match first
+        if alias_l in avail_map:
+            return avail_map[alias_l]
+        # Prefix / contains match
+        for m in available_measures:
+            m_l = m.lower()
+            if alias_l in m_l or m_l.startswith(alias_l):
+                return m
+        return None
 
     # Registry inputs use short aliases; map to actual canonical measure names
     # (handles cases like "paid" mapping to "paid_losses", etc.)

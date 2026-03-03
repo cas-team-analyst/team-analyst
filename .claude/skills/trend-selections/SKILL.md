@@ -10,7 +10,7 @@ This skill fits annual trend lines for frequency, severity, loss ratio, and expo
 - `{stem}-canonical.csv` — canonical long-format data (for exposure)
 
 **Prerequisites — files produced by ldfs-diagnostics:**
-- `{stem}-canonical-diagnostics.csv` — diagnostic metrics from ldfs-diagnostics Step 3 (for selection review)
+- `{stem}-canonical-diagnostics.csv` — diagnostic metrics from ldfs-diagnostics (for selection review)
 
 **Prerequisites — files produced by chain-ladder:**
 - `{stem}-chain-ladder-ultimates.csv` — chain-ladder ultimate losses per measure and origin period
@@ -111,7 +111,7 @@ Before making selections, read:
 
 Key inputs:
 - `{stem}-trends.csv` — fitted trend rates from Step 1 per component and period
-- `{stem}-canonical-diagnostics.csv` — from ldfs-diagnostics Step 3; review incremental severity and frequency metrics for outlier years or pattern shifts
+- `{stem}-canonical-diagnostics.csv` — from ldfs-diagnostics; review incremental severity and frequency metrics for outlier years or pattern shifts
 
 #### Selection process (per component)
 
