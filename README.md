@@ -29,6 +29,7 @@ git config --global user.email "your.email@example.com"
   - Click into the "team-analyst" folder, you should see another "team-analyst" folder. If you don't, go back.
   - Right-click the "team-analyst" folder > Open in Terminal
   - Run this command: `claude "Let's go!"`
+  - To run without having to confirm all the agent's operations, use `claude --dangerously-skip-permissions "Let's go!"`
 
 The agent will run you through Chain Ladder selections. That's as far as we've gotten.
 
