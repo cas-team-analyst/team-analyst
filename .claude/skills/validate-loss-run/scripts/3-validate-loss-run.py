@@ -1,5 +1,5 @@
 """
-goal: Step 5 of validate-data — run validation checks on a loss run dataset.
+goal: Step 3 of validate-loss-run — run validation checks on a loss run dataset.
 
 Loss runs are in long format: one row per claim per evaluation date, with
 columns for claim ID, accident/origin period, evaluation date, and financial
@@ -13,13 +13,11 @@ Checks:
     1.  check_claim_id_column       — claim number/ID column is present
     2.  check_origin_period_column  — accident/origin period column is present
     3.  check_origin_period_format  — origin periods are consistent and groupable
-    4.  check_measure_columns       — exactly one column maps to each selected measure
-    5.  check_numeric_measures      — measure columns are numeric or convertible
-    6.  check_eval_date_column      — evaluation date column is present
-    7.  check_duplicate_rows        — no duplicate claim / eval-date combinations
-    8.  check_isolated_issues       — flag individual cells/rows/cols with anomalies
+    4.  check_numeric_measures      — measure columns are numeric or convertible
+    5.  check_eval_date_column      — evaluation date column is present
+    6.  check_duplicate_rows        — no duplicate claim / eval-date combinations
+    7.  check_isolated_issues       — flag individual cells/rows/cols with anomalies
 
-This script contains no user interaction.
 """
 
 import re
@@ -32,35 +30,42 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 # Column-name regex patterns
 # ---------------------------------------------------------------------------
-
 _CLAIM_ID_RE = re.compile(
     r"\b(claim|clm|file|case|suit|ref)\b.*\b(id|num|number|no\.?)\b"
     r"|\b(claim|clm)\b",
     re.IGNORECASE,
 )
-
 _ORIGIN_PERIOD_RE = re.compile(
     r"\b(accident|acc(ident)?|origin|org|ay|loss)\b.*\b(date|yr|year|period|pd)\b"
     r"|\b(accident|origin|ay)\b",
     re.IGNORECASE,
 )
-
 _EVAL_DATE_RE = re.compile(
     r"\b(eval|evaluation|as.?of|report(ing)?|val(uation)?)\b.*\b(date|dt|yr|year)\b"
     r"|\b(eval|evaluation|as.?of)\b",
     re.IGNORECASE,
 )
-
-# Measure keyword patterns (order matters — more specific first)
-_MEASURE_PATTERNS: dict[str, re.Pattern] = {
+# Measure column patterns (align with 1-identify-loss-run-fields.py for selected_measures)
+_MEASURE_COLUMN_RE: dict[str, re.Pattern] = {
     "incurred_losses":  re.compile(r"\b(incurred?|incur)\b", re.IGNORECASE),
     "paid_losses":      re.compile(r"\b(paid|payment)\b", re.IGNORECASE),
-    "reported_counts":  re.compile(r"\b(report(ed)?|open)\b.*\b(count|cnt|claim|num|no)\b"
-                                   r"|\b(reported?_count|rpt_cnt)\b", re.IGNORECASE),
-    "closed_counts":    re.compile(r"\b(clos(ed)?)\b.*\b(count|cnt|claim|num|no)\b"
-                                   r"|\b(closed?_count|cls_cnt)\b", re.IGNORECASE),
+    "case_reserve":     re.compile(
+        r"\b(case|clm|file|suit|ref)\b.*\b(reserve|reserve\s*amount|reserve\s*value)\b"
+        r"|\b(case|clm|file|suit|ref)\b", re.IGNORECASE
+    ),
+    "reported_count":   re.compile(
+        r"\b(report(ed)?|open)\b.*\b(count|cnt|claim|num|no)\b"
+        r"|\b(reported?_count|rpt_cnt)\b", re.IGNORECASE
+    ),
+    "closed_count":     re.compile(
+        r"\b(clos(ed)?)\b.*\b(count|cnt|claim|num|no)\b"
+        r"|\b(closed?_count|cls_cnt)\b", re.IGNORECASE
+    ),
+    "open_count":       re.compile(
+        r"\b(open)\b.*\b(count|cnt|claim|num|no)\b"
+        r"|\b(open?_count|opn_cnt)\b", re.IGNORECASE
+    ),
 }
-
 # Origin-period format patterns used to classify groupability
 _ORIGIN_FORMAT_PATTERNS = [
     ("year_only",     re.compile(r"^\d{4}$")),
@@ -82,7 +87,7 @@ class ClaimIdFindings:
     """Check 1: Claim ID/number column."""
     found: bool
     matched_columns: list[str]   # all columns matching the pattern
-    selected_column: Optional[str]  # best candidate (first match)
+    selected_column: Optional[str]  # single column when len(matched_columns)==1
 
 
 @dataclass
@@ -90,7 +95,7 @@ class OriginPeriodFindings:
     """Check 2: Accident/origin period column."""
     found: bool
     matched_columns: list[str]
-    selected_column: Optional[str]
+    selected_column: Optional[str]  # single column when len(matched_columns)==1
 
 
 @dataclass
@@ -195,20 +200,22 @@ class LossRunSummaryStatistics:
 def check_claim_id_column(df: pd.DataFrame) -> ClaimIdFindings:
     """Check 1 — Find the claim number / ID column."""
     matches = [c for c in df.columns if _CLAIM_ID_RE.search(str(c))]
+    selected = matches[0] if len(matches) == 1 else None
     return ClaimIdFindings(
         found=len(matches) > 0,
         matched_columns=matches,
-        selected_column=matches[0] if matches else None,
+        selected_column=selected,
     )
 
 
 def check_origin_period_column(df: pd.DataFrame) -> OriginPeriodFindings:
     """Check 2 — Find the accident / origin period column."""
     matches = [c for c in df.columns if _ORIGIN_PERIOD_RE.search(str(c))]
+    selected = matches[0] if len(matches) == 1 else None
     return OriginPeriodFindings(
         found=len(matches) > 0,
         matched_columns=matches,
-        selected_column=matches[0] if matches else None,
+        selected_column=selected,
     )
 
 
@@ -256,25 +263,34 @@ def check_measure_columns(
     selected_measures: list[str],
 ) -> MeasureColumnFindings:
     """
-    Check 4 — Confirm exactly one column maps to each selected measure.
-
-    Args:
-        df: The loaded DataFrame.
-        selected_measures: List of measure keys the user said are present,
-            e.g. ["incurred_losses", "paid_losses"].
+    Check 4 — For each selected measure, find matching columns in df.
+    Returns mappings, missing, ambiguous, and resolved (first match per measure).
     """
     mappings: dict[str, Optional[list[str]]] = {}
-    for measure in selected_measures:
-        pattern = _MEASURE_PATTERNS.get(measure)
-        if pattern is None:
-            mappings[measure] = None
-            continue
-        candidates = [c for c in df.columns if pattern.search(str(c))]
-        mappings[measure] = candidates if candidates else None
+    missing: list[str] = []
+    ambiguous: dict[str, list[str]] = {}
+    resolved: dict[str, Optional[str]] = {}
 
-    missing   = [m for m, cols in mappings.items() if not cols]
-    ambiguous = {m: cols for m, cols in mappings.items() if cols and len(cols) > 1}
-    resolved  = {m: (cols[0] if cols else None) for m, cols in mappings.items()}
+    for measure in selected_measures:
+        pattern = _MEASURE_COLUMN_RE.get(measure)
+        if pattern is None:
+            # Unknown measure key: treat as no match (agent should pass known keys)
+            mappings[measure] = None
+            missing.append(measure)
+            resolved[measure] = None
+            continue
+        matches = [c for c in df.columns if pattern.search(str(c))]
+        if not matches:
+            mappings[measure] = None
+            missing.append(measure)
+            resolved[measure] = None
+        elif len(matches) == 1:
+            mappings[measure] = matches
+            resolved[measure] = matches[0]
+        else:
+            mappings[measure] = matches
+            ambiguous[measure] = matches
+            resolved[measure] = matches[0]  # best guess
 
     return MeasureColumnFindings(
         mappings=mappings,
@@ -513,10 +529,10 @@ def validate_loss_run(
 
     Args:
         df: The DataFrame loaded in step 1.
-        selected_measures: List of measure keys confirmed by the user in step 4,
-            e.g. ["incurred_losses", "paid_losses", "reported_counts"].
-            Valid keys: "incurred_losses", "paid_losses", "reported_counts",
-                        "closed_counts".
+        selected_measures: List of measure keys from build_confirmed_measures(working_mapping),
+            e.g. ["incurred_losses", "paid_losses", "reported_count"].
+            Valid keys: "incurred_losses", "paid_losses", "case_reserve",
+                        "reported_count", "closed_count", "open_count".
 
     Returns:
         LossRunValidationResults with raw findings from all eight checks.

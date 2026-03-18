@@ -41,7 +41,6 @@ Output file: {stem}-bf-ultimates.csv saved alongside the chain-ladder ultimates 
   e.g.  trip-canonical-chain-ladder-ultimates.csv
      →  trip-canonical-bf-ultimates.csv
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations

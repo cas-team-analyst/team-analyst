@@ -31,7 +31,6 @@ Cross-triangle checks (require multiple triangles):
     13. check_no_negative_cumulative  — no negative cumulative values
     14. check_large_incrementals      — flag unusually large period-over-period changes
 
-This script contains no user interaction.
 """
 
 import re
@@ -40,6 +39,7 @@ from pathlib import Path
 from typing import Literal, Optional
 import numpy as np
 import pandas as pd
+from scripts.`4-identify-elements` import MEASURE_TAB_PATTERNS as _MEASURE_TAB_PATTERNS
 
 
 # ---------------------------------------------------------------------------
@@ -70,13 +70,6 @@ _DEV_RE = re.compile(
     re.IGNORECASE,
 )
 
-# Measure keywords → used for tab-name matching
-_MEASURE_TAB_PATTERNS: dict[str, re.Pattern] = {
-    "incurred_losses": re.compile(r"\b(incurred?|incur)\b", re.IGNORECASE),
-    "paid_losses":     re.compile(r"\b(paid|payment)\b",   re.IGNORECASE),
-    "reported_counts": re.compile(r"\b(report(ed)?|open|rpt)\b", re.IGNORECASE),
-    "closed_counts":   re.compile(r"\b(clos(ed)?|cls)\b",   re.IGNORECASE),
-}
 
 # Threshold for "large incremental" flagging (relative change)
 _LARGE_INCREMENTAL_THRESHOLD = 2.0   # 200 % period-over-period change

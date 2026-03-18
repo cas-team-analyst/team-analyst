@@ -1,5 +1,5 @@
 """
-goal: Step 6 of validate-data (triangle path) — convert incremental triangles to
+goal: Step 1 of validate-triangles — convert incremental triangles to
       cumulative form and save the result alongside the original file.
 
 Run this script only when the user confirmed that their triangles are in
@@ -13,12 +13,78 @@ Each tab listed in resolved_tabs is read, converted to cumulative (row-wise
 cumulative sum across development period columns), and written to the output
 file. Tabs not in resolved_tabs are not included in the output.
 
-This script contains no user interaction.
 """
 
 from pathlib import Path
 from typing import Optional
 import pandas as pd
+import numpy as np
+
+
+# ---------------------------------------------------------------------------
+# Triangle type detector — guess cumulative vs incremental before asking user
+# ---------------------------------------------------------------------------
+
+def detect_triangle_type(df: pd.DataFrame) -> tuple[str, str]:
+    """
+    Inspect the numeric data in a triangle DataFrame and guess whether the
+    triangle is cumulative or incremental.
+
+    A cumulative triangle has non-decreasing values from left to right across
+    each row (ignoring trailing NaN cells, which represent unfilled development
+    periods).  An incremental triangle has values that do *not* consistently
+    increase across each row.
+
+    Args:
+        df: A triangle DataFrame where the first column is origin period
+            labels and the remaining columns are development period values.
+            Typically one sheet/tab loaded from the input file.
+
+    Returns:
+        (guess, confidence_note) where:
+          guess           — "cumulative" or "incremental"
+          confidence_note — "high"   (≥ 80 % of rows agree)
+                           "medium" (60–79 %)
+                           "low"    (< 60 %)
+    """
+    # Extract numeric portion (skip first column, which is origin labels)
+    data = df.iloc[:, 1:].copy()
+    for col in data.columns:
+        data[col] = pd.to_numeric(
+            data[col].astype(str).str.replace(r"[\$,\s]", "", regex=True),
+            errors="coerce",
+        )
+
+    non_decreasing_rows = 0
+    testable_rows = 0
+
+    for _, row in data.iterrows():
+        values = row.dropna().tolist()
+        if len(values) < 2:
+            continue  # not enough data to make a call
+        testable_rows += 1
+        # Non-decreasing: every adjacent pair satisfies values[i] <= values[i+1]
+        if all(values[i] <= values[i + 1] for i in range(len(values) - 1)):
+            non_decreasing_rows += 1
+
+    if testable_rows == 0:
+        return "cumulative", "low"  # can't tell; default to safer assumption
+
+    pct_non_decreasing = non_decreasing_rows / testable_rows
+
+    if pct_non_decreasing >= 0.8:
+        guess = "cumulative"
+    else:
+        guess = "incremental"
+
+    if pct_non_decreasing >= 0.8 or pct_non_decreasing <= 0.2:
+        confidence = "high"
+    elif pct_non_decreasing >= 0.6 or pct_non_decreasing <= 0.4:
+        confidence = "medium"
+    else:
+        confidence = "low"
+
+    return guess, confidence
 
 
 # ---------------------------------------------------------------------------
