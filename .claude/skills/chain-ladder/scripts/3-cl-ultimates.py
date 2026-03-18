@@ -19,7 +19,6 @@ Output file: {ldf_selections_stem}-ultimates.csv saved alongside ldf-selections.
   e.g.  trip-canonical-ldf-selections.json
      →  trip-canonical-chain-ladder-ultimates.csv
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations

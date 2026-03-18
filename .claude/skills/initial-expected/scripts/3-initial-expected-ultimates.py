@@ -55,7 +55,6 @@ Output file: {stem}-initial-expected-ultimates.csv saved alongside the initial-e
   e.g.  trip-canonical-initial-expected.csv
      →  trip-canonical-initial-expected-ultimates.csv
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations

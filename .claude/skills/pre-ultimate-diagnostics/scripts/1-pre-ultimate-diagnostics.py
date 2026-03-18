@@ -36,7 +36,6 @@ Rows are sorted by (diagnostic_key, origin_period, age_to).
 
 Output file: {canonical_stem}-diagnostics.csv
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations

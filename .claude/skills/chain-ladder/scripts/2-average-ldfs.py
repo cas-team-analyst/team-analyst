@@ -37,7 +37,6 @@ Output file: {ldf_stem}-averages.csv
   e.g.  C:/data/triangles-canonical-ldfs.csv
      →  C:/data/triangles-canonical-ldfs-averages.csv
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations

@@ -67,7 +67,6 @@ Output file: {stem}-initial-expected.csv saved alongside the ultimates CSV.
   e.g.  trip-canonical-chain-ladder-ultimates.csv
      →  trip-canonical-initial-expected.csv
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations

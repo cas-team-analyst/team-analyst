@@ -36,7 +36,6 @@ Output file: {canonical_stem}-metadata.json
   e.g.  C:/data/triangles-canonical.csv
      →  C:/data/triangles-canonical-metadata.json
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations

@@ -41,7 +41,6 @@ Output file: {stem}-initial-expected-averages.csv saved alongside the initial-ex
   e.g.  trip-canonical-initial-expected.csv
      →  trip-canonical-initial-expected-averages.csv
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations

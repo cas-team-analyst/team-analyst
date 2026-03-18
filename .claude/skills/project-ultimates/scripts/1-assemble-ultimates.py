@@ -43,7 +43,6 @@ Notes:
   ie_ultimate is the projected ultimate for that measure type and origin period.
 - All monetary values rounded to 2 decimal places.
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations

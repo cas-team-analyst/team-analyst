@@ -29,7 +29,6 @@ Output file: {stem}-historical-ldfs.csv
   e.g.  C:/data/triangles-canonical.csv
      →  C:/data/triangles-historical-ldfs.csv
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations

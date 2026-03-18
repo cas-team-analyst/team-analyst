@@ -18,7 +18,6 @@ Output file: {canonical_stem}-diagonal.csv
   e.g.  C:/data/triangles-canonical.csv
      →  C:/data/triangles-canonical-diagonal.csv
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations

@@ -21,7 +21,6 @@ Output file: {stem}-trends.csv saved alongside the ultimates CSV.
   e.g.  trip-canonical-chain-ladder-ultimates.csv
      →  trip-canonical-trends.csv
 
-This script contains no user interaction.
 """
 
 from __future__ import annotations
