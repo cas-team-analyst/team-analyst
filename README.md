@@ -6,11 +6,8 @@ This project supports the development of actuarial reserve ultimate estimates us
 
 ## Prerequisites
 
-- Python 3.8: https://www.python.org/downloads/
-- Git: https://git-scm.com/downloads (Learn Git at https://www.w3schools.com/git/default.asp)
-- Sign up for a Claude account at https://claude.ai/.
-- Claude Code: https://code.claude.com/docs/en/setup. 
-- Node.js: https://nodejs.org/download/
+- Sign up for a Claude account at https://claude.ai/
+- 
 
 After installation, set up your identity in Git:
 
@@ -22,7 +19,18 @@ git config --global user.email "your.email@example.com"
 
 ## Quick Start
 
-1. Install the prerequisites above. 
+**Claude CoWork**
+
+1. Sign up for a Claude Pro account (~$20/month) at https://claude.ai/ and follow installation instructions at https://support.claude.com/en/articles/10065433-installing-claude-desktop.
+2. Download the `team-analyst-plugin.zip` from [URL TBD].
+3. Import the plugin into CoWork by following these instructions with the downloaded zip: [TBD]
+4. Create a folder to work in.
+5. Start a new CoWork sessions with your new folder as the Working Directory.
+6. Type /reserve-analysis and press enter to get started.
+
+**Claude Code**
+
+1. Sign up for a Claude account at https://claude.ai/ and follow installation instructions at https://code.claude.com/docs/en/setup.
 2. Clone (download) this repository into a new folder (Learn Git at https://www.w3schools.com/git/default.asp) or download it from [this link](https://storage.googleapis.com/data-downloads-by-bryce/team-analyst.zip) and unzip it. 
 3. Open the folder in your favorite terminal. For example: 
   - Unzip the file. 

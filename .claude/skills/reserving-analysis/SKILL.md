@@ -1,3 +1,8 @@
+---
+name: reserving-analysis
+description: Entry skill for performing reserving analysis using the skills in this plugin.
+---
+
 # MAIN OPERATION FLOW
 
 Always follow these steps when working on this project:
