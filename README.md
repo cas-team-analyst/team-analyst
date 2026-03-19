@@ -22,7 +22,7 @@ git config --global user.email "your.email@example.com"
 **Claude CoWork**
 
 1. Sign up for a Claude Pro account (~$20/month) at https://claude.ai/ and follow installation instructions at https://support.claude.com/en/articles/10065433-installing-claude-desktop.
-2. Download the `team-analyst-plugin.zip` from [URL TBD].
+2. Download the `team-analyst-plugin.zip` from https://github.com/cas-team-analyst/claude-code/blob/plugin/.claude-plugin/team-analyst-plugin.zip.
 3. Import the plugin into CoWork by following these instructions with the downloaded zip: [TBD]
 4. Create a folder to work in.
 5. Start a new CoWork sessions with your new folder as the Working Directory.
