@@ -7,7 +7,7 @@ description: Entry skill for performing reserving analysis using the skills in t
 
 Always follow these steps when working on this project:
 
-If a file named PROGRESS.md does not already exist in the project directory: copy `.claude/PROGRESS.md` to a new file in the project directory.
+If a file named PROGRESS.md does not already exist in the project directory: copy this skill's `PROGRESS.md` file to a new file in the project directory.
 
 Continue with the next step until all steps are complete.
 

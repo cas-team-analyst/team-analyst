@@ -20,12 +20,12 @@ _For each triangle identified, copy these steps into PROGRESS (a full copy of th
 Don't continue with the next triangle until this one is finished.
 
 ### 1. User Reviews Report in Browser
-- [ ] Create an excel file that contains the triangle data, then below it the various averages, and below it recommended LDF selections, and below that an explanation of why each factor was picked. Call it `Chain Ladder Selections - {triangle name}.xlsx`.
+- [ ] Start Vite dev server from project root: `npx vite --port 5175`
+- [ ] Open: http://localhost:5175/output/reports/[triangle_name]_report.html. triangle_name might be "incurred_loss", "paid_loss", "reported_count", "closed_count".
 - [ ] Run these steps in a loop and only mark complete once the exit condition has been achieved.
-  - Open the file for the user (or tell them where it is) and ask the user what changes they'd like to the selections. If they ask you questions about the report, you can find the report data at `output/reports/[triangle_name]_report.json`.
+  - Ask the user what changes they'd like to the selections. If they ask you questions about the report, you can find the report data at `output/reports/[triangle_name]_report.json`.
   - Create or update `selection-overrides.json` to make the appropriate edits.
-  - Ask the user to close the Excel file if it is open (so you can edit it).
-  - Rerun `5-selections.py`, `6-project-ultimates.py`, and `7-update-json.py` which will read in overrides, update the json. 
-  - Update the Excel file with the new data.
+  - Rerun `5-selections.py`, `6-project-ultimates.py`, and `7-update-report.py` which will read in overrides, update the report, then Vite will see the file changed and refresh the report automatically. 
   - Repeat until the user confirms there are no more changes necessary.
 - [ ] Confirmed with user there are no more changes necessary.
+- [ ] Close Vite server.
