@@ -15,5 +15,5 @@ Goal: Understand what data is available.
 
 ## 3a Identify Methods
 - [ ] Identify reserving methods to consider. Available methods are in the reserving-methods skill. New methods can be added.
-- [ ] Add each method's progress steps below in sections 3b, 3c, etc. Progress steps are in the assets for the reserving-methods skill, in the method's folder. For example: `.claude/skills/reserving-methods/assets/chain-ladder/PROGRESS.md`.
+- [ ] Add each method's progress steps below in sections 3b, 3c, etc. USE THE EXACT TEXT and copy with commands/tools (don't write them yourself) whenever possible. Progress steps are in the assets for the reserving-methods skill, in the method's folder. For example: `.claude/skills/reserving-methods/assets/chain-ladder/PROGRESS.md`.
 
