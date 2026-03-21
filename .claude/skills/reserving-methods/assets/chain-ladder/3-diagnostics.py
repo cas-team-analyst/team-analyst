@@ -192,7 +192,12 @@ if __name__ == "__main__":
     pd.set_option('display.width', None)
     pd.set_option('display.float_format', lambda x: f'{x:.2f}')
     print("\nSample with non-null diagnostics:")
-    sample = diagnostics_df.dropna(subset=['incurred_severity', 'paid_severity'], how='all').head(10)
+    # Build subset list dynamically based on available columns
+    sample_cols = [col for col in ['incurred_severity', 'paid_severity'] if col in diagnostics_df.columns]
+    if sample_cols:
+        sample = diagnostics_df.dropna(subset=sample_cols, how='all').head(10)
+    else:
+        sample = diagnostics_df.head(10)
     print(sample)
     
     # Round all numeric columns to 4 decimal places
