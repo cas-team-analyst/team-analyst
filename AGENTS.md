@@ -1,3 +1,3 @@
 # MAIN OPERATION FLOW
 
-Use the reserve-analysis skill.
+This project will always use the same flow. Start with the reserve-analysis skill.
