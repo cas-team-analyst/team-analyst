@@ -24,9 +24,9 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     Diagnostics include:
     - Severities (Incurred/Paid per claim)
     - Paid to Incurred ratios
-    - Case Reserves
+    - Average Case Reserve (case reserves per open claim)
     - Open claim counts
-    - Closure rates
+    - Claim closure rate (cumulative) and incremental closure rate
     - Loss rates (if exposure provided)
     
     Args:
@@ -94,10 +94,6 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
             result_df['paid_loss'] / result_df['incurred_loss'].replace(0, np.nan)
         )
     
-    # Case Reserves
-    if 'incurred_loss' in result_df.columns and 'paid_loss' in result_df.columns:
-        result_df['case_reserves'] = result_df['incurred_loss'] - result_df['paid_loss']
-    
     # Open Counts
     if 'reported_count' in result_df.columns and 'closed_count' in result_df.columns:
         result_df['open_counts'] = result_df['reported_count'] - result_df['closed_count']
@@ -106,15 +102,15 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     if all(col in result_df.columns for col in ['incurred_loss', 'paid_loss', 'reported_count', 'closed_count']):
         reserves = result_df['incurred_loss'] - result_df['paid_loss']
         opens = result_df['reported_count'] - result_df['closed_count']
-        result_df['average_case_reserves'] = np.where(
+        result_df['average_case_reserve'] = np.where(
             reserves == 0,
             0,
             reserves / opens.replace(0, np.nan)
         )
     
-    # Cumulative Closure Rate
+    # Claim Closure Rate (cumulative)
     if 'closed_count' in result_df.columns and 'reported_count' in result_df.columns:
-        result_df['cumulative_closure_rate'] = np.where(
+        result_df['claim_closure_rate'] = np.where(
             result_df['closed_count'] == 0,
             0,
             result_df['closed_count'] / result_df['reported_count'].replace(0, np.nan)
@@ -134,7 +130,7 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     
     # Incurred Severity (incremental)
     if 'incurred_loss_incr' in result_df.columns and 'reported_count_incr' in result_df.columns:
-        result_df['incurred_severity_incr'] = np.where(
+        result_df['incremental_incurred_severity'] = np.where(
             result_df['incurred_loss_incr'] == 0,
             0,
             result_df['incurred_loss_incr'] / result_df['reported_count_incr'].replace(0, np.nan)
@@ -142,7 +138,7 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     
     # Paid Severity (incremental)
     if 'paid_loss_incr' in result_df.columns and 'closed_count_incr' in result_df.columns:
-        result_df['paid_severity_incr'] = np.where(
+        result_df['incremental_paid_severity'] = np.where(
             result_df['paid_loss_incr'] == 0,
             0,
             result_df['paid_loss_incr'] / result_df['closed_count_incr'].replace(0, np.nan)
@@ -158,12 +154,16 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     
     # Drop temporary incremental columns used for calculation
     temp_cols = [col for col in result_df.columns if col.endswith('_incr') and col not in [
-        'incurred_severity_incr', 'paid_severity_incr', 'incremental_closure_rate'
+        'incremental_incurred_severity', 'incremental_paid_severity', 'incremental_closure_rate'
     ]]
     result_df = result_df.drop(columns=temp_cols)
     
+    # Rename reported_count to reported_claims (keep as diagnostic)
+    if 'reported_count' in result_df.columns:
+        result_df = result_df.rename(columns={'reported_count': 'reported_claims'})
+
     # Drop the raw measure columns, keep only diagnostics
-    measure_cols = ['incurred_loss', 'paid_loss', 'reported_count', 'closed_count']
+    measure_cols = ['incurred_loss', 'paid_loss', 'closed_count']
     result_df = result_df.drop(columns=[col for col in measure_cols if col in result_df.columns])
     
     # Ensure categorical types

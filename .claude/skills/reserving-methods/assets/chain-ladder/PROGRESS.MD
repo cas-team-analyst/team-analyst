@@ -12,15 +12,28 @@ _Copy these steps into PROGRESS whenever a new method will be used. It applies o
 
 ---
 
+## Before Making Actuarial Selections, Bring Relevant Data Together
+
+- [ ] Preview 2_chainladder_enhanced_data.parquet, 3_chainladder_diagnostics.parquet, and 4_chainladder_ldf_averages.parquet to understand the data structure.
+- [ ] Create an excel file that contains the one sheet per triangle with each sheet containing from top to bottom: a triangle of the measurement (filter by measure, cols = ages, rows = periods, cells = value from 2_chainladder_enhanced_data), a triangle of LDFs (cols = intervals, rows = periods, cells = ldf from 2_chainladder_enhanced_data.parquet), all the diagnostics triangles (cols = age, rows = period, cells = 1 triangle for each other column from 3_chainladder_diagnostics), the various cv/slope/averages (cols = interval, 1 row per additional column from 4_chainladder_ldf_averages), and below it recommended LDF selections (cols = interval, rows = selection/reasoning, cells = blank for now). This should be relatively simple to create by extracting data directly from the files. Save the file as `Chain Ladder Selections.xlsx`.
+
+## Make Actuarial Selections for LDFs
+
+- [ ] Create a JSON file to hold selections: selections/chain-ladder.json with just "[]" for now. 
+- [ ] Review assets > chain-ladded > SELECTION-LOGIC-REFERENCE.md from the reserving-methods skill.
+- [ ] Replace this step with many steps, one for each triangle measure and interval in `Chain Ladder Selections.xlsx`, each step being: "Read only the data relevant to measure {measure name} and interval {interval} and apply the selection logic to select an LDF factor. Note this factor and the specific logic used into selections/chain-ladder.json as a dict in the array with keys "method", "interval", "selection", "reasoning" (along with other selections).
+- [ ] Insert the selections and reasoning into the Excel file where we added the blank cells.
+
 ## Get User Input On Selections
 
-_For each triangle identified, copy these steps into PROGRESS (a full copy of the steps for each triangle) and then work through them one at a time. Triangles are things like Incurred Loss, Paid Loss, Reported Count, Closed Count._
+**!! Ignore these steps, they aren't finished yet.**
+
+_For each triangle identified, copy the steps below into PROGRESS (a full copy of the steps for each triangle) and then work through them one at a time. Triangles are things like Incurred Loss, Paid Loss, Reported Count, Closed Count._
 
 **Triangle: [NAME]**
 Don't continue with the next triangle until this one is finished.
 
 ### 1. User Reviews Report in Browser
-- [ ] Create an excel file that contains the triangle data, then below it the various averages, and below it recommended LDF selections, and below that an explanation of why each factor was picked. Call it `Chain Ladder Selections - {triangle name}.xlsx`.
 - [ ] Run these steps in a loop and only mark complete once the exit condition has been achieved.
   - Open the file for the user (or tell them where it is) and ask the user what changes they'd like to the selections. If they ask you questions about the report, you can find the report data at `output/reports/[triangle_name]_report.json`.
   - Create or update `selection-overrides.json` to make the appropriate edits.

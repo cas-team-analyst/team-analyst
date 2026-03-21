@@ -242,7 +242,7 @@ def make_selections(df_summary: pd.DataFrame, overrides_path: str = None) -> pd.
 if __name__ == "__main__":
     """Test the make_selections function."""
     # Read summary data from step 4
-    input_file = OUTPUT_PATH + f"4_{METHOD_ID}_ldf_summary.parquet"
+    input_file = OUTPUT_PATH + f"4_{METHOD_ID}_ldf_averages.parquet"
     df_summary = pd.read_parquet(input_file)
     print(f"Loaded {len(df_summary)} summary rows")
     print(f"Measures: {df_summary['measure'].unique().tolist()}")
