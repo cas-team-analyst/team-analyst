@@ -29,11 +29,12 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
         Wide format DataFrame with columns:
         - measure: Type of measure (Incurred Loss, Paid Loss, etc.)
         - interval: Development interval (Dev Pd 1-Dev Pd 2, etc.)
-        - weighted_all, simple_all, medial_all: Averages using all data
-        - weighted_3yr, simple_3yr, medial_3yr: Averages using last 3 periods
-        - weighted_5yr, simple_5yr, medial_5yr: Averages using last 5 periods
-        - cv_5yr: Coefficient of variation (volatility measure)
-        - slope_5yr: Linear trend slope_5yr
+        - weighted_all, simple_all, avg_exclude_high_low_all: Averages using all data
+        - weighted_3yr, simple_3yr, avg_exclude_high_low_3yr: Averages using last 3 periods
+        - weighted_5yr, simple_5yr, avg_exclude_high_low_5yr: Averages using last 5 periods
+        - weighted_10yr, simple_10yr, avg_exclude_high_low_10yr: Averages using last 10 periods
+        - cv_3yr, cv_5yr, cv_10yr: Coefficient of variation (volatility measure)
+        - slope_3yr, slope_5yr, slope_10yr: Linear trend
     """
     # Filter to rows with valid LDF values (excludes first age in each period)
     df_with_ldfs = df_enhanced[df_enhanced['ldf'].notna()].copy()
@@ -51,7 +52,7 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
         weights = group['weight']
         
         def calc_avgs(f, w, n=None):
-            """Calculate weighted, simple, and medial averages."""
+            """Calculate weighted, simple, and exclude-high-low averages."""
             if n:
                 # Take last n observations
                 f, w = f.tail(n), w.tail(n)
@@ -67,33 +68,41 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
             # Simple average
             s_avg = f.mean()
             
-            # Medial average (exclude highest and lowest)
-            m_avg = f.sort_values().iloc[1:-1].mean() if len(f) > 2 else s_avg
+            # Exclude high and low (medial average)
+            ehl_avg = f.sort_values().iloc[1:-1].mean() if len(f) > 2 else s_avg
                 
-            return w_avg, s_avg, m_avg
+            return w_avg, s_avg, ehl_avg
         
         # Calculate averages for different time periods
-        all_w, all_s, all_m = calc_avgs(factors, weights)
-        w3, s3, m3 = calc_avgs(factors, weights, 3)
-        w5, s5, m5 = calc_avgs(factors, weights, 5)
+        all_w, all_s, all_ehl = calc_avgs(factors, weights)
+        w3, s3, ehl3 = calc_avgs(factors, weights, 3)
+        w5, s5, ehl5 = calc_avgs(factors, weights, 5)
+        w10, s10, ehl10 = calc_avgs(factors, weights, 10)
 
-        # CV and trend use last 5 periods only
-        f5 = factors.tail(5)
-        cv_5yr = f5.std() / f5.mean() if len(f5) > 1 and f5.mean() != 0 else np.nan
-
-        # Slope: linear trend over last 5 periods (x = 0,1,2,... for simplicity)
-        if len(f5) > 1:
-            x = np.arange(len(f5))
-            slope_5yr = np.polyfit(x, f5.values, 1)[0]
-        else:
-            slope_5yr = np.nan
+        # CV and slope for 3, 5, and 10 year periods
+        def calc_cv_slope(f, n):
+            """Calculate CV and slope for n periods."""
+            fn = f.tail(n)
+            cv = fn.std() / fn.mean() if len(fn) > 1 and fn.mean() != 0 else np.nan
+            if len(fn) > 1:
+                x = np.arange(len(fn))
+                slope = np.polyfit(x, fn.values, 1)[0]
+            else:
+                slope = np.nan
+            return cv, slope
+        
+        cv_3yr, slope_3yr = calc_cv_slope(factors, 3)
+        cv_5yr, slope_5yr = calc_cv_slope(factors, 5)
+        cv_10yr, slope_10yr = calc_cv_slope(factors, 10)
 
         # Return as Series with all values
         return pd.Series({
-            'cv_5yr': cv_5yr, 'slope_5yr': slope_5yr,
-            'weighted_all': all_w, 'simple_all': all_s, 'medial_all': all_m,
-            'weighted_3yr': w3, 'simple_3yr': s3, 'medial_3yr': m3,
-            'weighted_5yr': w5, 'simple_5yr': s5, 'medial_5yr': m5,
+            'cv_3yr': cv_3yr, 'cv_5yr': cv_5yr, 'cv_10yr': cv_10yr,
+            'slope_3yr': slope_3yr, 'slope_5yr': slope_5yr, 'slope_10yr': slope_10yr,
+            'weighted_all': all_w, 'simple_all': all_s, 'avg_exclude_high_low_all': all_ehl,
+            'weighted_3yr': w3, 'simple_3yr': s3, 'avg_exclude_high_low_3yr': ehl3,
+            'weighted_5yr': w5, 'simple_5yr': s5, 'avg_exclude_high_low_5yr': ehl5,
+            'weighted_10yr': w10, 'simple_10yr': s10, 'avg_exclude_high_low_10yr': ehl10,
         })
     
     # Group by measure and interval, apply calculations
@@ -107,10 +116,12 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     df_summary['interval'] = pd.Categorical(df_summary['interval'], categories=interval_categories, ordered=True)
     
     # Round all average columns to 4 decimal places
-    avg_cols = ['weighted_all', 'simple_all', 'medial_all',
-                'weighted_3yr', 'simple_3yr', 'medial_3yr',
-                'weighted_5yr', 'simple_5yr', 'medial_5yr',
-                'cv_5yr', 'slope_5yr']
+    avg_cols = ['weighted_all', 'simple_all', 'avg_exclude_high_low_all',
+                'weighted_3yr', 'simple_3yr', 'avg_exclude_high_low_3yr',
+                'weighted_5yr', 'simple_5yr', 'avg_exclude_high_low_5yr',
+                'weighted_10yr', 'simple_10yr', 'avg_exclude_high_low_10yr',
+                'cv_3yr', 'cv_5yr', 'cv_10yr',
+                'slope_3yr', 'slope_5yr', 'slope_10yr']
     for col in avg_cols:
         if col in df_summary.columns:
             df_summary[col] = df_summary[col].round(4)

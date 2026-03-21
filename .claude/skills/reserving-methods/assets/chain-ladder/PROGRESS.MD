@@ -19,9 +19,8 @@ _Copy these steps into PROGRESS whenever a new method will be used. It applies o
 
 ## Make Actuarial Selections for LDFs
 
-- [ ] Create a JSON file to hold selections: selections/chain-ladder.json with just "[]" for now. 
-- [ ] Review assets > chain-ladded > SELECTION-LOGIC-REFERENCE.md from the reserving-methods skill.
-- [ ] Replace this step with many steps, one for each triangle measure and interval in `Chain Ladder Selections.xlsx`, each step being: "Read only the data relevant to measure {measure name} and interval {interval} and apply the selection logic to select an LDF factor. Note this factor and the specific logic used into selections/chain-ladder.json as a dict in the array with keys "method", "interval", "selection", "reasoning" (along with other selections).
+- [ ] Create a JSON file to hold selections: selections/chain-ladder.json with just "[]" for now.
+- [ ] Replace this step with many steps, one for each triangle measure and interval in `Chain Ladder Selections.xlsx`, each step being: "Read only the data relevant to measure {measure name} and interval {interval} and apply the selection logic from assets > chain-ladder > SELECTION-LOGIC-REFERENCE.md from the reserving-methods skill to select an LDF factor. Note this factor and the specific logic used into selections/chain-ladder.json as a dict in the array with keys "method", "interval", "selection", "reasoning" (along with other selections).
 - [ ] Insert the selections and reasoning into the Excel file where we added the blank cells.
 
 ## Get User Input On Selections
