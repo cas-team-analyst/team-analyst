@@ -19,25 +19,16 @@ _Copy these steps into PROGRESS whenever a new method will be used. It applies o
 
 ## Make Actuarial Selections for LDFs
 
-- [ ] Create a JSON file to hold selections: selections/chain-ladder.json with just "[]" for now.
-- [ ] Replace this step with many steps, one for each triangle measure and interval in `Chain Ladder Selections.xlsx`, each step being: "Read only the data relevant to measure {measure name} and interval {interval} and apply the selection logic from assets > chain-ladder > SELECTION-LOGIC-REFERENCE.md from the reserving-methods skill to select an LDF factor. Note this factor and the specific logic used into selections/chain-ladder.json as a dict in the array with keys "method", "interval", "selection", "reasoning" (along with other selections).
-- [ ] Insert the selections and reasoning into the Excel file where we added the blank cells.
+- [ ] Create a JSON file to hold selections: `selections/chain-ladder.json` with just "[]" for now.
+- [ ] Replace this step with many steps, one for each triangle measure and interval in`output/selections/Chain Ladder Selections.xlsx`, each step being: "Read only the data relevant to measure {measure name} and interval {interval} and apply the selection logic from assets > chain-ladder > SELECTION-LOGIC-REFERENCE.md from the reserving-methods skill to select an LDF factor. Note this factor and the specific logic used into `selections/chain-ladder.json` as a dict in the array with keys "method", "interval", "selection", "reasoning" (along with other selections).
+- [ ] Insert the selections and reasoning into the Excel file where we added the blank cells. Create a reusable script that can easily be re-run to update only the selections in `output/selections/Chain Ladder Selections.xlsx` by reading `selections/chain-ladder.json`. 
 
 ## Get User Input On Selections
 
-**!! Ignore these steps, they aren't finished yet.**
-
-_For each triangle identified, copy the steps below into PROGRESS (a full copy of the steps for each triangle) and then work through them one at a time. Triangles are things like Incurred Loss, Paid Loss, Reported Count, Closed Count._
-
-**Triangle: [NAME]**
-Don't continue with the next triangle until this one is finished.
-
-### 1. User Reviews Report in Browser
 - [ ] Run these steps in a loop and only mark complete once the exit condition has been achieved.
-  - Open the file for the user (or tell them where it is) and ask the user what changes they'd like to the selections. If they ask you questions about the report, you can find the report data at `output/reports/[triangle_name]_report.json`.
-  - Create or update `selection-overrides.json` to make the appropriate edits.
+  - Open `output/selections/Chain Ladder Selections.xlsx` for the user (or tell them where it is) and ask the user what changes they'd like to the selections.
+  - Update `selections/chain-ladder.json` to make the appropriate edits.
   - Ask the user to close the Excel file if it is open (so you can edit it).
-  - Rerun `5-selections.py`, `6-project-ultimates.py`, and `7-update-json.py` which will read in overrides, update the json. 
-  - Update the Excel file with the new data.
+  - Rerun your script that updates `output/selections/Chain Ladder Selections.xlsx` with the latest `selections/chain-ladder.json`.
   - Repeat until the user confirms there are no more changes necessary.
 - [ ] Confirmed with user there are no more changes necessary.

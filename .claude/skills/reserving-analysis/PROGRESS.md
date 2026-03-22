@@ -3,7 +3,7 @@ Goal: Set up the project structure and standard documents.
 - [ ] Copy PROGRESS.md to project root (use `cp` or `mv`, don't rewrite it yourself).
 - [ ] Install the Python packages in `requirements.txt` (check for a venv and use it if one exists).
 - [ ] Create folder structure: /data, output/processed, output/selections, output/scripts
-- [ ] Ask the user the level of interaction they would like: Careful (Frequent Pauses to Review Work), Selections Only (Only Stop to Make Selections), Fully Automated (Skip Selections Review) and note this at the top of PROGRESS.md (include the option label plus what it means).
+- [ ] Ask the user the level of interaction they would like: Careful (Frequent Pauses to Review Work), Selections Only (Only Stop to Make Selections), Fully Automated (Skip Selections Review). Use these exact descriptions and don't recommend one of them. Note the user's choice at the top of PROGRESS.md (include the option label plus what it means).
 - [ ] Ask user to copy relevant data files to data/
 
 # Step 2: Exploratory Data Analysis
