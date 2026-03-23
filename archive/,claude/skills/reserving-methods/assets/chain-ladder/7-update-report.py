@@ -24,7 +24,7 @@ METHOD_ID = "chainladder"
 
 def update_report(
     processed_data_path: str = None,
-    ldf_summary_path: str = None,
+    ldf_averages_path: str = None,
     selections_path: str = None,
     diagnostics_path: str = None,
     ultimates_path: str = None,
@@ -36,7 +36,7 @@ def update_report(
     
     Args:
         processed_data_path: Path to step 1 output (processed triangle data in long format)
-        ldf_summary_path: Path to step 4 output (LDF summary with averages and QA metrics)
+        ldf_averages_path: Path to step 4 output (LDF summary with averages and QA metrics)
         selections_path: Path to step 5 output (selections by scenario)
         diagnostics_path: Path to step 3 output (actuarial diagnostics)
         ultimates_path: Path to step 6 output (projected ultimates)
@@ -48,7 +48,7 @@ def update_report(
     """
     # Use defaults if not provided
     processed_data_path = processed_data_path or INPUT_PATH + f"1_{METHOD_ID}_processed_data.parquet"
-    ldf_summary_path = ldf_summary_path or INPUT_PATH + f"4_{METHOD_ID}_ldf_summary.parquet"
+    ldf_averages_path = ldf_averages_path or INPUT_PATH + f"4_{METHOD_ID}_ldf_averages.parquet"
     selections_path = selections_path or INPUT_PATH + f"5_{METHOD_ID}_selections.parquet"
     diagnostics_path = diagnostics_path or INPUT_PATH + f"3_{METHOD_ID}_diagnostics.parquet"
     ultimates_path = ultimates_path or INPUT_PATH + f"6_{METHOD_ID}_ultimates.parquet"
@@ -62,7 +62,7 @@ def update_report(
     # Load data
     print(f"Loading data from pipeline...")
     df_processed = pd.read_parquet(processed_data_path)
-    df_summary = pd.read_parquet(ldf_summary_path)
+    df_summary = pd.read_parquet(ldf_averages_path)
     df_selections = pd.read_parquet(selections_path)
     df_diagnostics = pd.read_parquet(diagnostics_path)
     df_ultimates = pd.read_parquet(ultimates_path)

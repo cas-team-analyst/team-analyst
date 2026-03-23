@@ -1,0 +1,8 @@
+{
+  "name": "team-analyst",
+  "version": "0.0.1",
+  "description": "Supports the development of actuarial reserve ultimate estimates using systematic methodology and thorough documentation, with the help of an AI coding agent.",
+  "author": {
+    "name": "CAS TeamAnalyst Research Team"
+  }
+}

@@ -1,7 +1,7 @@
 """
 goal: Calculate LDF averages and select between them to set baseline selections which the user can then override.
 contents:
-    calculate_ldf_summary(): Calculate LDF averages and QA metrics by measure and development interval.
+    calculate_ldf_averages(): Calculate LDF averages and QA metrics by measure and development interval.
 
 run-note: This script must be run from its own directory for relative paths to work correctly.
     cd .claude/skills/reserving-methods/assets/chain-ladder
@@ -16,7 +16,7 @@ OUTPUT_PATH = "../test-output/"
 METHOD_ID = "chainladder"
 
 
-def calculate_ldf_summary(df_enhanced: pd.DataFrame) -> pd.DataFrame:
+def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     """
     Calculate LDF averages and QA metrics in a single wide format DataFrame.
     Works with long format data from 2-enhance-data.py.
@@ -29,11 +29,12 @@ def calculate_ldf_summary(df_enhanced: pd.DataFrame) -> pd.DataFrame:
         Wide format DataFrame with columns:
         - measure: Type of measure (Incurred Loss, Paid Loss, etc.)
         - interval: Development interval (Dev Pd 1-Dev Pd 2, etc.)
-        - weighted_all, simple_all, medial_all: Averages using all data
-        - weighted_3yr, simple_3yr, medial_3yr: Averages using last 3 periods
-        - weighted_5yr, simple_5yr, medial_5yr: Averages using last 5 periods
-        - cv: Coefficient of variation (volatility measure)
-        - slope: Linear trend slope
+        - weighted_all, simple_all, avg_exclude_high_low_all: Averages using all data
+        - weighted_3yr, simple_3yr, avg_exclude_high_low_3yr: Averages using last 3 periods
+        - weighted_5yr, simple_5yr, avg_exclude_high_low_5yr: Averages using last 5 periods
+        - weighted_10yr, simple_10yr, avg_exclude_high_low_10yr: Averages using last 10 periods
+        - cv_3yr, cv_5yr, cv_10yr: Coefficient of variation (volatility measure)
+        - slope_3yr, slope_5yr, slope_10yr: Linear trend
     """
     # Filter to rows with valid LDF values (excludes first age in each period)
     df_with_ldfs = df_enhanced[df_enhanced['ldf'].notna()].copy()
@@ -51,7 +52,7 @@ def calculate_ldf_summary(df_enhanced: pd.DataFrame) -> pd.DataFrame:
         weights = group['weight']
         
         def calc_avgs(f, w, n=None):
-            """Calculate weighted, simple, and medial averages."""
+            """Calculate weighted, simple, and exclude-high-low averages."""
             if n:
                 # Take last n observations
                 f, w = f.tail(n), w.tail(n)
@@ -67,39 +68,41 @@ def calculate_ldf_summary(df_enhanced: pd.DataFrame) -> pd.DataFrame:
             # Simple average
             s_avg = f.mean()
             
-            # Medial average (exclude highest and lowest)
-            m_avg = f.sort_values().iloc[1:-1].mean() if len(f) > 2 else s_avg
+            # Exclude high and low (medial average)
+            ehl_avg = f.sort_values().iloc[1:-1].mean() if len(f) > 2 else s_avg
                 
-            return w_avg, s_avg, m_avg
+            return w_avg, s_avg, ehl_avg
         
         # Calculate averages for different time periods
-        all_w, all_s, all_m = calc_avgs(factors, weights)
-        w3, s3, m3 = calc_avgs(factors, weights, 3)
-        w5, s5, m5 = calc_avgs(factors, weights, 5)
-        
-        # Calculate QA metrics
-        if len(factors) > 1:
-            # Coefficient of variation
-            cv = factors.std() / factors.mean() if factors.mean() != 0 else 0.0
-            
-            # Trend calculation (simple linear slope)
-            if len(factors) >= 3:
-                y = factors.values
-                x = np.arange(len(y))
-                slope = np.polyfit(x, y, 1)[0]
+        all_w, all_s, all_ehl = calc_avgs(factors, weights)
+        w3, s3, ehl3 = calc_avgs(factors, weights, 3)
+        w5, s5, ehl5 = calc_avgs(factors, weights, 5)
+        w10, s10, ehl10 = calc_avgs(factors, weights, 10)
+
+        # CV and slope for 3, 5, and 10 year periods
+        def calc_cv_slope(f, n):
+            """Calculate CV and slope for n periods."""
+            fn = f.tail(n)
+            cv = fn.std() / fn.mean() if len(fn) > 1 and fn.mean() != 0 else np.nan
+            if len(fn) > 1:
+                x = np.arange(len(fn))
+                slope = np.polyfit(x, fn.values, 1)[0]
             else:
-                slope = 0.0
-        else:
-            cv = 0.0
-            slope = 0.0
+                slope = np.nan
+            return cv, slope
         
+        cv_3yr, slope_3yr = calc_cv_slope(factors, 3)
+        cv_5yr, slope_5yr = calc_cv_slope(factors, 5)
+        cv_10yr, slope_10yr = calc_cv_slope(factors, 10)
+
         # Return as Series with all values
         return pd.Series({
-            'weighted_all': all_w, 'simple_all': all_s, 'medial_all': all_m,
-            'weighted_3yr': w3, 'simple_3yr': s3, 'medial_3yr': m3,
-            'weighted_5yr': w5, 'simple_5yr': s5, 'medial_5yr': m5,
-            'cv': round(cv, 4),
-            'slope': round(slope, 4)
+            'cv_3yr': cv_3yr, 'cv_5yr': cv_5yr, 'cv_10yr': cv_10yr,
+            'slope_3yr': slope_3yr, 'slope_5yr': slope_5yr, 'slope_10yr': slope_10yr,
+            'weighted_all': all_w, 'simple_all': all_s, 'avg_exclude_high_low_all': all_ehl,
+            'weighted_3yr': w3, 'simple_3yr': s3, 'avg_exclude_high_low_3yr': ehl3,
+            'weighted_5yr': w5, 'simple_5yr': s5, 'avg_exclude_high_low_5yr': ehl5,
+            'weighted_10yr': w10, 'simple_10yr': s10, 'avg_exclude_high_low_10yr': ehl10,
         })
     
     # Group by measure and interval, apply calculations
@@ -112,10 +115,13 @@ def calculate_ldf_summary(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     df_summary['measure'] = pd.Categorical(df_summary['measure'], categories=unique_measures)
     df_summary['interval'] = pd.Categorical(df_summary['interval'], categories=interval_categories, ordered=True)
     
-    # Round all average columns to 4 decimal places (cv and slope already rounded)
-    avg_cols = ['weighted_all', 'simple_all', 'medial_all',
-                'weighted_3yr', 'simple_3yr', 'medial_3yr',
-                'weighted_5yr', 'simple_5yr', 'medial_5yr']
+    # Round all average columns to 4 decimal places
+    avg_cols = ['weighted_all', 'simple_all', 'avg_exclude_high_low_all',
+                'weighted_3yr', 'simple_3yr', 'avg_exclude_high_low_3yr',
+                'weighted_5yr', 'simple_5yr', 'avg_exclude_high_low_5yr',
+                'weighted_10yr', 'simple_10yr', 'avg_exclude_high_low_10yr',
+                'cv_3yr', 'cv_5yr', 'cv_10yr',
+                'slope_3yr', 'slope_5yr', 'slope_10yr']
     for col in avg_cols:
         if col in df_summary.columns:
             df_summary[col] = df_summary[col].round(4)
@@ -124,15 +130,15 @@ def calculate_ldf_summary(df_enhanced: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    """Test the calculate_ldf_summary function."""
+    """Test the calculate_ldf_averages function."""
     # Read enhanced data from step 2
     input_file = OUTPUT_PATH + f"2_{METHOD_ID}_enhanced_data.parquet"
     df_enhanced = pd.read_parquet(input_file)
     print(f"Loaded {len(df_enhanced)} rows, {df_enhanced['ldf'].notna().sum()} with LDFs")
     print(f"Measures: {df_enhanced['measure'].unique().tolist()}")
     
-    # Calculate LDF summary (averages + QA metrics)
-    df_summary = calculate_ldf_summary(df_enhanced)
+    # Calculate LDF summary
+    df_summary = calculate_ldf_averages(df_enhanced)
     print(f"\nCalculated {len(df_summary)} summary rows")
     
     # Display summary by measure
@@ -140,15 +146,8 @@ if __name__ == "__main__":
     pd.set_option('display.width', None)
     pd.set_option('display.float_format', '{:.4f}'.format)
     
-    print("\nLDF Summary (Weighted All + QA Metrics):")
-    for measure in df_summary['measure'].unique():
-        measure_data = df_summary[df_summary['measure'] == measure]
-        print(f"\n  {measure}:")
-        for _, row in measure_data.iterrows():
-            print(f"    {row['interval']}: LDF={row['weighted_all']:.4f}, CV={row['cv']:.4f}, Slope={row['slope']:.4f}")
-    
     # Save output - parquet preserves categorical types, CSV for inspection
-    df_summary.to_parquet(OUTPUT_PATH + f"4_{METHOD_ID}_ldf_summary.parquet", index=False)
-    df_summary.to_csv(OUTPUT_PATH + f"4_{METHOD_ID}_ldf_summary.csv", index=False)
-    print(f"\nSaved to: {OUTPUT_PATH}4_{METHOD_ID}_ldf_summary.[parquet|csv]")
+    df_summary.to_parquet(OUTPUT_PATH + f"4_{METHOD_ID}_ldf_averages.parquet", index=False)
+    df_summary.to_csv(OUTPUT_PATH + f"4_{METHOD_ID}_ldf_averages.csv", index=False)
+    print(f"\nSaved to: {OUTPUT_PATH}4_{METHOD_ID}_ldf_averages.[parquet|csv]")
 
