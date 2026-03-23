@@ -1,0 +1,324 @@
+[
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "11-23",
+    "selection": 1.6456,
+    "reasoning": "Selected 5-year exclude-high/low average (1.6456). CV is very high for both 3yr (0.16) and 5yr (0.33), indicating substantial variability. 3yr and 5yr averages diverge by 12.5% (1.489 vs 1.702), triggering recency preference for 3yr, but the 3yr exclude-high/low (1.458) is extremely low relative to recent observed values and would be the minimum of the 3-year window after exclusions. Given early-maturity asymmetric conservatism and conflicting trend signals (slope_3yr=+0.12 vs slope_5yr=-0.27), the 5yr exclude-high/low (1.6456) is selected as a conservative, stable anchor that reflects the broader data pattern while limiting outlier influence."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "23-35",
+    "selection": 1.212,
+    "reasoning": "Selected 5-year exclude-high/low average (1.2120). 3yr and 5yr diverge by 16.2% (1.054 vs 1.258), normally triggering a 3yr selection, but the 3yr exclude-high/low (0.9832) is unreliable — with only 3 data points in the window, excluding high and low leaves a single value and produces a sub-1.0 factor. CV_5yr=0.21 (high), so exclusion is applied to the 5yr window instead. The 5yr exclude-high/low (1.2120) is a credible estimate from 3 remaining data points after removing extremes."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "35-47",
+    "selection": 1.0948,
+    "reasoning": "Selected 3-year volume-weighted average (1.0948). 3yr/5yr divergence is 8.8% (1.095 vs 1.200), exceeding the 3% threshold for preferring recent data. CV_3yr=0.057 is below 0.10, so no outlier exclusion needed. The 3-year weighted average reflects the most current development pattern, which shows a declining trend (slope_5yr=-0.089, slope_3yr=-0.059)."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "47-59",
+    "selection": 1.0233,
+    "reasoning": "Selected 3-year volume-weighted average (1.0233). 3yr/5yr divergence is 3.2% (1.023 vs 1.057), just above the 3% threshold. CV_3yr=0.036 is well below 0.10. The recent 3-year window is preferred to capture the current, lower development level."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "59-71",
+    "selection": 1.1027,
+    "reasoning": "Selected 5-year volume-weighted average (1.1027). 3yr/5yr divergence is only 1.3%, so 5yr is preferred. CV_5yr=0.077, below the 0.10 threshold — no exclusion needed. The 5yr weighted average is the default selection."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "71-83",
+    "selection": 1.087,
+    "reasoning": "Selected 5-year volume-weighted average (1.0870). 3yr/5yr divergence is only 0.3%, confirming stability. CV_5yr=0.074, below 0.10. Default 5yr weighted average applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "83-95",
+    "selection": 1.0065,
+    "reasoning": "Selected 5-year volume-weighted average (1.0065). 3yr/5yr divergence is 0.2% — essentially flat. CV_5yr=0.014, very low variability. Default 5yr weighted average applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "95-107",
+    "selection": 1.0146,
+    "reasoning": "Selected 5-year volume-weighted average (1.0146). 3yr/5yr divergence is 0.5%. CV_5yr=0.025. Stable development pattern at mature age; 5yr weighted is appropriate."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "107-119",
+    "selection": 1.0485,
+    "reasoning": "Selected 5-year volume-weighted average (1.0485). 3yr/5yr divergence is 1.4% (1.063 vs 1.049). CV_5yr=0.039. Slope_3yr=0.048 suggests upward trend in recent periods but divergence is below the 3% threshold, so 5yr weighted is used. The 5yr average provides more stability and adequate credibility at this maturity."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "119-131",
+    "selection": 1.0082,
+    "reasoning": "Selected 5-year volume-weighted average (1.0082). 3yr/5yr divergence is 0.8%. CV_5yr=0.013. Low variability and stable pattern; 5yr weighted is the straightforward choice."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "131-143",
+    "selection": 1.035,
+    "reasoning": "Selected 5-year volume-weighted average (1.0350). 3yr/5yr divergence is 1.8%. CV_5yr=0.076, below 0.10. Stable 5yr window is preferred."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "143-155",
+    "selection": 1.0022,
+    "reasoning": "Selected 5-year volume-weighted average (1.0022). 3yr/5yr divergence is 0.2%. CV_5yr=0.016. Very stable pattern near 1.0 at this mature age; 5yr weighted is appropriate."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "155-167",
+    "selection": 1.0004,
+    "reasoning": "Selected 5-year volume-weighted average (1.0004). CV_5yr is essentially zero and 3yr/5yr divergence is negligible. Development is essentially complete at this maturity."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "167-179",
+    "selection": 1.0167,
+    "reasoning": "Selected all-years volume-weighted average (1.0167). Only 10 data points available with very low variability (CV near zero). Data in this tail interval is limited; the all-year weighted average is the most stable and credible estimate. 5yr average (1.021) is slightly inflated by a short window."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "179-191",
+    "selection": 1.0036,
+    "reasoning": "Selected 5-year volume-weighted average (1.0036). 3yr/5yr divergence is 0.3%. CV_5yr=0.005. Very stable tail interval; 5yr weighted applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "191-203",
+    "selection": 1.0076,
+    "reasoning": "Selected 5-year volume-weighted average (1.0076). 3yr/5yr divergence is 0.1%. CV_5yr=0.009. Tail interval with stable, low development; 5yr weighted applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "203-215",
+    "selection": 1.002,
+    "reasoning": "Selected 5-year volume-weighted average (1.0020). 3yr/5yr divergence is 0.1%. CV_5yr=0.003. Minimal development remaining; 5yr weighted applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "215-227",
+    "selection": 1.0,
+    "reasoning": "Selected 1.0000. The most recent 3yr and 5yr averages all equal 1.000, indicating development has ceased in this interval in recent years. The all-year average (1.005) reflects residual historical development, but the recent pattern strongly suggests this interval no longer develops."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "227-239",
+    "selection": 1.0,
+    "reasoning": "Selected 1.0000. All 5yr and 3yr averages equal 1.000; development is fully complete in recent periods. All-year average of 1.009 reflects historical activity not representative of current patterns."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "239-251",
+    "selection": 1.0069,
+    "reasoning": "Selected all-years volume-weighted average (1.0069). Only 4 data points available; the short window averages are unreliable (3yr excl gives 0.997). All-year weighted average provides the most stable estimate from this sparse tail data."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "251-263",
+    "selection": 1.0174,
+    "reasoning": "Selected all-years volume-weighted average (1.0174). Only 3 data points; all averages converge. The all-year average is used as the most credible estimate from limited tail data."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "263-275",
+    "selection": 1.0,
+    "reasoning": "Selected 1.0000. Only 2 data points, both showing 1.000 development. All averages equal 1.000; no remaining development indicated."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Incurred Loss",
+    "interval": "275-287",
+    "selection": 1.0119,
+    "reasoning": "Selected all-years volume-weighted average (1.0119). Single data point — all averages equal 1.0119. This is the only available estimate for this tail factor."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "11-23",
+    "selection": 2.5525,
+    "reasoning": "Selected 5-year exclude-high/low average (2.5525). CV_5yr=0.18 exceeds 0.10 threshold, indicating meaningful variability. 3yr/5yr divergence is only 0.2% (2.629 vs 2.623), so 5yr is preferred over 3yr. Excluding high and low from the 5yr window (2.5525) dampens the impact of volatile years (notably 2023 at 3.265 and 2016 at 3.315) while retaining the core development pattern."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "23-35",
+    "selection": 1.1803,
+    "reasoning": "Selected 3-year exclude-high/low average (1.1803). 3yr/5yr divergence is 10.9% (1.267 vs 1.422), exceeding the 3% threshold for preferring recent data. CV_3yr=0.247, exceeding the 0.20 threshold with 22+ data points — exclude top and bottom two. The 3yr exclude-high/low (1.1803) appropriately removes the most extreme recent values while reflecting the recent downward trend (slope_3yr=-0.060, slope_5yr=-0.093)."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "35-47",
+    "selection": 1.1327,
+    "reasoning": "Selected 3-year volume-weighted average (1.1327). 3yr/5yr divergence is 5.6% (1.133 vs 1.200), triggering 3yr preference. CV_3yr=0.050, below 0.10 — no exclusion needed. Slope is negative, suggesting a declining development pattern; 3yr captures this shift."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "47-59",
+    "selection": 1.0978,
+    "reasoning": "Selected 5-year volume-weighted average (1.0978). 3yr/5yr divergence is 0.95%, well below the 3% threshold. CV_5yr=0.076, below 0.10. Default 5yr weighted average applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "59-71",
+    "selection": 1.1192,
+    "reasoning": "Selected 5-year volume-weighted average (1.1192). 3yr/5yr divergence is 0.84%. CV_5yr=0.052. Upward trend in recent periods (slope_3yr=0.054, slope_5yr=0.016) but divergence is below threshold. 5yr weighted is the stable default choice."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "71-83",
+    "selection": 1.107,
+    "reasoning": "Selected 5-year volume-weighted average (1.1070). 3yr/5yr divergence is 2.1%, just below threshold. CV_5yr=0.096, just below 0.10. The 5yr weighted is applied; the moderately high CV suggests some variability but exclusion is not triggered."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "83-95",
+    "selection": 1.0328,
+    "reasoning": "Selected 5-year volume-weighted average (1.0328). 3yr/5yr divergence is 0.95%. CV_5yr=0.039. Stable development; 5yr weighted is appropriate."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "95-107",
+    "selection": 1.0132,
+    "reasoning": "Selected 5-year volume-weighted average (1.0132). 3yr/5yr divergence is 0.16%. CV_5yr=0.011. Very stable late-maturity development; 5yr weighted applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "107-119",
+    "selection": 1.0982,
+    "reasoning": "Selected 3-year volume-weighted average (1.0982). 3yr/5yr divergence is 3.2% (1.098 vs 1.065), just above the 3% threshold, triggering recency preference. CV_3yr=0.065, below 0.10 — no exclusion needed. Slope_3yr=0.069 confirms an upward trend in recent development that warrants a higher selection."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "119-131",
+    "selection": 1.0083,
+    "reasoning": "Selected 5-year volume-weighted average (1.0083). 3yr/5yr divergence is 0.50%. CV_5yr=0.012. Stable tail development; 5yr weighted applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "131-143",
+    "selection": 1.0189,
+    "reasoning": "Selected 5-year volume-weighted average (1.0189). 3yr/5yr divergence is 0.30%. CV_5yr=0.024. Stable pattern; 5yr weighted applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "143-155",
+    "selection": 1.0175,
+    "reasoning": "Selected 5-year volume-weighted average (1.0175). 3yr/5yr divergence is 0.36%. CV_5yr=0.024. Tail interval with stable development; 5yr weighted applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "155-167",
+    "selection": 1.0134,
+    "reasoning": "Selected 5-year volume-weighted average (1.0134). 3yr/5yr divergence is 1.16%. CV_5yr=0.012. 5yr weighted is appropriate for this stable tail interval."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "167-179",
+    "selection": 1.0143,
+    "reasoning": "Selected 5-year volume-weighted average (1.0143). 3yr/5yr divergence is 1.19%. CV_5yr=0.011. Tail factor with stable development; 5yr weighted applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "179-191",
+    "selection": 1.0156,
+    "reasoning": "Selected 5-year volume-weighted average (1.0156). 3yr/5yr divergence is 0.37%. CV_5yr=0.011. Stable deep tail; 5yr weighted applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "191-203",
+    "selection": 1.0115,
+    "reasoning": "Selected 5-year volume-weighted average (1.0115). 3yr/5yr divergence is 0.06%. CV_5yr=0.010. Very stable tail development; 5yr weighted applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "203-215",
+    "selection": 1.0021,
+    "reasoning": "Selected 5-year volume-weighted average (1.0021). Minimal remaining development. CV_5yr=0.003; essentially flat. 5yr weighted applied."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "215-227",
+    "selection": 1.0047,
+    "reasoning": "Selected 5-year volume-weighted average (1.0047). 3yr average = 1.0018, 5yr = 1.0047; divergence is 0.30%. Very small residual development remaining; 5yr weighted is credible."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "227-239",
+    "selection": 1.0025,
+    "reasoning": "Selected 5-year volume-weighted average (1.0025). Very limited remaining development. CV_5yr near zero. All-year weighted (1.0025) and 5yr weighted (1.0025) agree; consistent estimate."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "239-251",
+    "selection": 1.0054,
+    "reasoning": "Selected 5-year volume-weighted average (1.0054). Only 4 data points; all averages are consistent (ranging 1.004-1.006). Using 5yr weighted as the primary estimate."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "251-263",
+    "selection": 1.0062,
+    "reasoning": "Selected all-years volume-weighted average (1.0062). Only 3 data points; all averages converge. All-year weighted provides the most stable estimate."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "263-275",
+    "selection": 1.0074,
+    "reasoning": "Selected all-years volume-weighted average (1.0074). Only 2 data points; all averages converge to 1.007-1.008. All-year weighted is used."
+  },
+  {
+    "method": "chainladder",
+    "measure": "Paid Loss",
+    "interval": "275-287",
+    "selection": 1.0039,
+    "reasoning": "Selected all-years volume-weighted average (1.0039). Single data point — all averages equal 1.0039. This is the only available estimate for this tail factor."
+  }
+]

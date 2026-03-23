@@ -13,7 +13,7 @@ _Copy these steps into PROGRESS whenever a new method will be used. It applies o
 ### Make Actuarial Selections for LDFs
 
 - [ ] Create a JSON file to hold selections: `selections/chain-ladder.json` with just "[]" for now.
-- [ ] For each triangle measure and interval in `output/selections/Chain Ladder Selections.xlsx`, send only the data relevant to measure {measure name} and interval {interval} to the subagent "chain-ladder-ldf-selector". It will return a selection. Add this factor reasoning used into `output/selections/chain-ladder.json` as a dict in the array with keys "method", "interval", "selection", "reasoning" (along with other selections). 
+- [ ] For each triangle measure and interval in `output/selections/Chain Ladder Selections.xlsx`, send only the data relevant to measure {measure name} and interval {interval} to the subagent "chain-ladder-ldf-selector". Use a new subagent for each combo so each selection is independent and focused. The subagent will return a selection. Add this factor reasoning used into `output/selections/chain-ladder.json` as a dict in the array with keys "method", "interval", "selection", "reasoning" (along with other selections). 
 - [ ] Run `6-update-selections-excel.py` to insert the selections and reasoning into the Excel file.
 
 ### Get User Input On Selections

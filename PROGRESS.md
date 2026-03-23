@@ -30,13 +30,13 @@ Goal: Understand what data is available.
 - [x] Modify the variables at the top of the file with the appropriate DATA_FILE_PATH, OUTPUT_PATH, and TEMPLATE_PATH.
 - [x] Modify `1-prep-data.py` to accept the format of the data provided by the user, and run it to verify it works and passes validation. Only mark this step complete once the tests in the script have passed to verify the output is in the necessary format.
 - [x] Report to the user what LDF averages and metrics will be calculated and ask them if they'd like to add others.
-- [ ] Run all the other Python scripts to create processed output.
+- [x] Run all the other Python scripts to create processed output.
 
 ### Make Actuarial Selections for LDFs
 
-- [ ] Create a JSON file to hold selections: `selections/chain-ladder.json` with just "[]" for now.
-- [ ] For each triangle measure and interval in `output/selections/Chain Ladder Selections.xlsx`, send only the data relevant to measure {measure name} and interval {interval} to the subagent "chain-ladder-ldf-selector". It will return a selection. Add this factor reasoning used into `output/selections/chain-ladder.json` as a dict in the array with keys "method", "interval", "selection", "reasoning" (along with other selections). 
-- [ ] Run `6-update-selections-excel.py` to insert the selections and reasoning into the Excel file.
+- [x] Create a JSON file to hold selections: `selections/chain-ladder.json` with just "[]" for now.
+- [x] For each triangle measure and interval in `output/selections/Chain Ladder Selections.xlsx`, send only the data relevant to measure {measure name} and interval {interval} to the subagent "chain-ladder-ldf-selector". It will return a selection. Add this factor reasoning used into `output/selections/chain-ladder.json` as a dict in the array with keys "method", "interval", "selection", "reasoning" (along with other selections).
+- [x] Run `6-update-selections-excel.py` to insert the selections and reasoning into the Excel file.
 
 ### Get User Input On Selections
 

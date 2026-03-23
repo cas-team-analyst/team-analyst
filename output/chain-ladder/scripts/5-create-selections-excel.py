@@ -19,9 +19,9 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
 # Replace when using this file in an actual project:
-OUTPUT_PATH = "../test-output/"
+OUTPUT_PATH = "../processed/"
 METHOD_ID = "chainladder"
-SELECTIONS_OUTPUT_PATH = "../test-output/"  # Where to save the Excel selection file
+SELECTIONS_OUTPUT_PATH = "../../selections/"  # Where to save the Excel selection file
 OUTPUT_FILE_NAME = "Chain Ladder Selections.xlsx"
 
 HEADER_FILL = PatternFill("solid", fgColor="1F4E79")

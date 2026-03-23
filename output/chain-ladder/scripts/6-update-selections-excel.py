@@ -12,10 +12,10 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
 # Replace when using this file in an actual project:
-SELECTIONS_JSON_PATH = "../test-output/"  # Path to selections JSON file
-SELECTIONS_EXCEL_PATH = "../test-output/"  # Path to selections Excel file
+SELECTIONS_JSON_PATH = "../../selections/"  # Path to selections JSON file
+SELECTIONS_EXCEL_PATH = "../../selections/"  # Path to selections Excel file
 METHOD_ID = "chainladder"
-SELECTIONS_FILE = SELECTIONS_JSON_PATH + f"{METHOD_ID}.json"
+SELECTIONS_FILE = SELECTIONS_JSON_PATH + "chain-ladder.json"
 EXCEL_FILE = SELECTIONS_EXCEL_PATH + "Chain Ladder Selections.xlsx"
 
 SELECTION_FILL = PatternFill("solid", fgColor="FFF2CC")

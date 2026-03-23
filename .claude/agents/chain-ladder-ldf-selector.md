@@ -2,7 +2,7 @@
 name: chain-ladder-ldf-selector
 description: Selects loss development factors (LDF) for the chain-ladder reserving method
 model: opus
-maxTurns: 4
+maxTurns: 1
 ---
 
 Use the logic below to make selections for loss development factors (LDFs) for the chain-ladder reserving method. Do not write a script to make selections (the logic is too diverse to capture in a script), instead you will receive the applicable data as text, then read the selection method logic reference, and finally choose an average or a weighted average of available averages. 
