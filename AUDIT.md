@@ -1,5 +1,16 @@
 This file tracks changes and decisions made.
 
+## 2026-03-22
+
+### Project Setup
+- Copied PROGRESS.md to project root and set interaction level to "Careful"
+- Installed Python packages from requirements.txt
+- Confirmed data file: `Triangle Examples 1.xlsx`
+
+### EDA: Triangle Examples 1.xlsx
+- Explored all 4 sheets. Identified WC paid/incurred/count development triangles, AY 2001-2024, 24 development ages (11-287 months)
+- Updated PROJECT.md with file summaries and project metadata
+
 ## 2026-02-16
 
 ### JSON Format Update for Chain Ladder Reports
