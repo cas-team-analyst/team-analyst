@@ -4,7 +4,7 @@ description: "Select loss development factors (LDFs) for chain-ladder reserving.
 tools: []
 model: opus
 color: blue
-memory: project
+memory: local
 effort: max
 background: true
 ---
