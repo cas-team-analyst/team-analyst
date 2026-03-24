@@ -24,7 +24,6 @@ When a user asks to apply an actuarial reserving method:
 
 To add a new reserving method, create a new folder in assets/ with the necessary files:
 - PROGRESS.md: A checklist of detailed steps to generate ultimate projections using the method.
-- output/selections/{method-name}.json: A JSON file to hold user selections for the method. Initially just "[]".
 - 1-prep-data.py: Get data in standard format to simplify downstream operations. More info below. 
 - ... Other necessary scripts for the method
 - {n}-create-excel.py: Create an Excel file to help the user make selections. This file should initially have empty cells where selections will go, and it should contain in each sheet all the information that will be helpful for making selections.
@@ -32,6 +31,13 @@ To add a new reserving method, create a new folder in assets/ with the necessary
 - {n+2}-project-ultimates.py: After selections are made, this script will read the selections and data, create ultimate projections, and add them to the excel file. It is important that each method has the same output format so we can join them together to make final selections so review other methods' project ultimates script to understand format.
 
 Review `assets/chain-ladder` for examples of a complete method implementation.
+
+### Folder Structure
+
+Each method should use the following folder structure:
+- Scripts: `output/{method-name}/scripts/` - Contains the Python scripts for the method
+- Data: `output/{method-name}/data/` - Contains processed data files (CSV and Parquet)
+- Selections: `output/{method-name}/selections/` - Contains selection files (JSON and Excel)
 
 ### 1-prep-data.py
 

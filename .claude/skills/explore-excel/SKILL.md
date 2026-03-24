@@ -1,6 +1,6 @@
 ---
 name: explore-excel
-description: Resources for exploring Excel files.
+description: Python code for exploring Excel files. Use when you only need to understand the format of an excel file but don't need to read the whole thing.
 ---
 
 Use preview_data_file.py to preview data files (prints to console and returns text). 

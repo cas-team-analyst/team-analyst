@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 
 # Replace when using this file in an actual project:
-OUTPUT_PATH = "../test-output/"
+OUTPUT_PATH = "../data/"
 METHOD_ID = "chainladder"
 
 
@@ -132,7 +132,7 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
 if __name__ == "__main__":
     """Test the calculate_ldf_averages function."""
     # Read enhanced data from step 2
-    input_file = OUTPUT_PATH + f"2_{METHOD_ID}_enhanced_data.parquet"
+    input_file = OUTPUT_PATH + f"2_{METHOD_ID}_enhanced.parquet"
     df_enhanced = pd.read_parquet(input_file)
     print(f"Loaded {len(df_enhanced)} rows, {df_enhanced['ldf'].notna().sum()} with LDFs")
     print(f"Measures: {df_enhanced['measure'].unique().tolist()}")

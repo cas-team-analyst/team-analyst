@@ -13,8 +13,8 @@ import pandas as pd
 from typing import Optional
 
 # Replace then when using this file in an actual project:
-DATA_FILE_PATH = "../"
-OUTPUT_PATH = "../test-output/"
+DATA_FILE_PATH = "../../../data/"
+OUTPUT_PATH = "../data/"
 METHOD_ID = "chainladder"
 
 def read_and_process_data():
@@ -222,13 +222,13 @@ def read_and_process_data():
 
     # Save to output - parquet preserves categorical ordering, CSV for inspection
     #! AVOID CHANGING THIS, OUTPUT DATA FORMAT DOES NOT TYPICALLY CHANGE.
-    all_data.to_parquet(OUTPUT_PATH + f"1_{METHOD_ID}_processed_data.parquet", index=False)
-    all_data.to_csv(OUTPUT_PATH + f"1_{METHOD_ID}_processed_data.csv", index=False)
+    all_data.to_parquet(OUTPUT_PATH + f"1_{METHOD_ID}_prepped.parquet", index=False)
+    all_data.to_csv(OUTPUT_PATH + f"1_{METHOD_ID}_prepped.csv", index=False)
 
 
 def validate_data(df: pd.DataFrame) -> None:
     """
-    Validate the processed data to ensure it meets expected format and quality standards.
+    Validate the prepped data to ensure it meets expected format and quality standards.
     Raises ValueError if validation fails with detailed error information.
     
     Args:
@@ -324,5 +324,5 @@ if __name__ == "__main__":
     print("Starting data preparation for Chain Ladder...")
     read_and_process_data()
     print(f"\nData preparation complete!")
-    print(f"Parquet (to keep category types): {OUTPUT_PATH}1_{METHOD_ID}_processed_data.parquet")
-    print(f"CSV (for user inspection): {OUTPUT_PATH}1_{METHOD_ID}_processed_data.csv")
+    print(f"Parquet (to keep category types): {OUTPUT_PATH}1_{METHOD_ID}_prepped.parquet")
+    print(f"CSV (for user inspection): {OUTPUT_PATH}1_{METHOD_ID}_prepped.csv")

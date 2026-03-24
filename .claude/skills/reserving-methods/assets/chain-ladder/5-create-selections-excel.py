@@ -19,9 +19,9 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
 # Replace when using this file in an actual project:
-OUTPUT_PATH = "../test-output/"
+OUTPUT_PATH = "../data/"
 METHOD_ID = "chainladder"
-SELECTIONS_OUTPUT_PATH = "../test-output/"  # Where to save the Excel selection file
+SELECTIONS_OUTPUT_PATH = "../selections/"  # Where to save the Excel selection file
 OUTPUT_FILE_NAME = "Chain Ladder Selections.xlsx"
 
 HEADER_FILL = PatternFill("solid", fgColor="1F4E79")
@@ -222,8 +222,8 @@ def build_sheet(ws, measure, df2, df3, df4):
 
 def main():
     """Create Chain Ladder Selections Excel file with all measures."""
-    # Read processed data files
-    df2 = pd.read_parquet(OUTPUT_PATH + f"2_{METHOD_ID}_enhanced_data.parquet")
+    # Read data files
+    df2 = pd.read_parquet(OUTPUT_PATH + f"2_{METHOD_ID}_enhanced.parquet")
     df3 = pd.read_parquet(OUTPUT_PATH + f"3_{METHOD_ID}_diagnostics.parquet")
     df4 = pd.read_parquet(OUTPUT_PATH + f"4_{METHOD_ID}_ldf_averages.parquet")
     

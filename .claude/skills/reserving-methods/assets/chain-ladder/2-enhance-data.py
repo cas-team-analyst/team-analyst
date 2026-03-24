@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 
 # Replace when using this file in an actual project:
-OUTPUT_PATH = "../test-output/"
+OUTPUT_PATH = "../data/"
 METHOD_ID = "chainladder"
 
 
@@ -92,8 +92,8 @@ def enhance_triangle_data(df_long: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
     """Test the enhance_triangle_data function."""
-    # Read processed data from step 1
-    input_file = OUTPUT_PATH + f"1_{METHOD_ID}_processed_data.parquet"
+    # Read prepped data from step 1
+    input_file = OUTPUT_PATH + f"1_{METHOD_ID}_prepped.parquet"
     df = pd.read_parquet(input_file)
     print(f"Loaded {len(df)} rows, {df['measure'].nunique()} measures, {df['source'].nunique()} sources")
     
@@ -114,8 +114,8 @@ if __name__ == "__main__":
             df_enhanced[col] = df_enhanced[col].round(4)
     
     # Save outputs
-    df_enhanced.to_parquet(OUTPUT_PATH + f"2_{METHOD_ID}_enhanced_data.parquet", index=False)
-    df_enhanced.to_csv(OUTPUT_PATH + f"2_{METHOD_ID}_enhanced_data.csv", index=False)
-    print(f"\nSaved to: {OUTPUT_PATH}2_{METHOD_ID}_enhanced_data.[parquet|csv]")
+    df_enhanced.to_parquet(OUTPUT_PATH + f"2_{METHOD_ID}_enhanced.parquet", index=False)
+    df_enhanced.to_csv(OUTPUT_PATH + f"2_{METHOD_ID}_enhanced.csv", index=False)
+    print(f"\nSaved to: {OUTPUT_PATH}2_{METHOD_ID}_enhanced.[parquet|csv]")
     print("parquet preserves categorical types, CSV for inspection")
 
