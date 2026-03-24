@@ -4,19 +4,12 @@ on:
   push:
     branches:
       - main
-      - master
-    paths:
-      - '.claude/**'
-      - 'AGENTS.md'
-      - 'AUDIT.md'
-      - 'PROJECT.md'
-      - 'REPLICATE.md'
-      - 'requirements.txt'
-      - 'admin/create_plugin_zip.py'
 
 jobs:
   update-plugin-zip:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
       - name: Checkout repository
