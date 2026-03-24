@@ -58,6 +58,13 @@ Here are the most important files to be familiar with.
 
 Other files are system files that you should not need to work with unless you are a TeamAnalyst developer.
 
+# Demo Branches
+
+There are a few branches in this repo meant for jumping a head to demo or test specific steps. 
+
+- demo1: Only has the test data at `data/Triangle Examples 1.xlsx`. Use to test starting from the beginning.
+- demo2: Data intake and processing is complete. Use to test AI selections.
+
 # Notes for Developers Working on Skills
 
 ## Testing strategy

@@ -13,12 +13,12 @@ _Copy these steps into PROGRESS whenever a new method will be used. It applies o
 ### Make Actuarial Selections for LDFs
 
 - [ ] Create a JSON file to hold selections: `selections/chain-ladder.json` with just "[]" for now.
-- [ ] Ask the user if they would like to each selection independently (slower, will use many more tokens, better selections expected NOT RECOMMENDED for now, needs more testing as it will eat up your usage in minutes) or all at once (faster, fewer tokens).
+- [ ] Ask the user if they would like AI to (A) make selections all at once (faster, fewer tokens) or (B) make each selection independently (slower, will use many more tokens, better selections expected but NOT RECOMMENDED for now, needs more testing as it will eat up your usage in minutes). Use this exact language when you ask the user. 
 
 _If running each independently:_
-- [ ] For each triangle measure and interval in `output/selections/Chain Ladder Selections.xlsx`, send only the data relevant to measure {measure name} and interval {interval} to the subagent "chain-ladder-ldf-selector". Use a new subagent for each combo so each selection is independent and focused. So if there are 2 measures (paid/incurred) and 10 intervales (6-12, 12-18, etc.) then you should run 2*10 = 20 subagents in parallel. The subagent will return a selection. Add this factor reasoning used into `output/selections/chain-ladder.json` as a dict/object/map in the array with keys "method", "interval", "selection", "reasoning" (along with other selections). 
+- [ ] For each triangle measure and interval in `output/selections/Chain Ladder Selections.xlsx`, send only the data relevant to measure {measure name} and interval {interval} to the subagent "chain-ladder-ldf-selector". Use a new subagent for each combo so each selection is independent and focused. So if there are 2 measures (paid/incurred) and 10 intervales (6-12, 12-18, etc.) then you should run 2*10 = 20 subagents in parallel. The subagent will return a selection. Add this factor reasoning used into `output/selections/chain-ladder.json` as a dict/object/map in the array with keys "measure", "interval", "selection", "reasoning" (along with other selections). 
 _else:_
-- [ ] Refer to `assets\chain-ladder\SELECTION-LOGIC-REFERENCE.md`, make actuarial selections and add them with your reasoning to `selections/chain-ladder.json`, each as a dict/object/map in the array with keys "method", "interval", "selection", "reasoning" (along with other selections). 
+- [ ] Review `assets\chain-ladder\SELECTION-LOGIC-REFERENCE.md` and `output/selections/Chain Ladder Selections.xlsx` (NOT the files at `output/processed`). Use this information to make actuarial LDF selections for each combination of Chain Ladder measure and interval. Add the selections and specific reasoning for each selection to `selections/chain-ladder.json`, each as a dict/object/map in the array with keys "measure", "interval", "selection", "reasoning" (along with other selections). 
 _end if_
 
 - [ ] Run `6-update-selections-excel.py` to insert the selections and reasoning into the Excel file.

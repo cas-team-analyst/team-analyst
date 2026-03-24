@@ -78,7 +78,7 @@ def update_sheet(ws, measure_selections):
 
         # Write reasoning
         reason_cell = ws.cell(row=reasoning_row, column=col)
-        reason_cell.value = sel["method"] + (": " + sel["reasoning"] if sel.get("reasoning") else "")
+        reason_cell.value = sel["measure"] + (": " + sel["reasoning"] if sel.get("reasoning") else "")
         reason_cell.fill = SELECTION_FILL
         reason_cell.font = Font(size=8, italic=True)
         reason_cell.alignment = Alignment(horizontal="left", wrap_text=True)
