@@ -1,0 +1,46 @@
+name: Update Plugin Zip
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '.claude/**'
+      - 'AGENTS.md'
+      - 'AUDIT.md'
+      - 'PROJECT.md'
+      - 'REPLICATE.md'
+      - 'requirements.txt'
+      - 'admin/create_plugin_zip.py'
+
+jobs:
+  update-plugin-zip:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Build plugin zip
+        run: python admin/create_plugin_zip.py
+        
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .claude-plugin/team-analyst-plugin.zip
+          if git diff --staged --quiet; then
+            echo "No changes to plugin zip"
+          else
+            git commit -m "chore: update plugin zip [skip ci]"
+            git push
+            echo "Plugin zip updated and pushed"
+          fi
