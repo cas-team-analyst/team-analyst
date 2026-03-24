@@ -2,8 +2,6 @@ name: Update Plugin Zip
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   update-plugin-zip:
@@ -23,10 +21,20 @@ jobs:
           python-version: '3.11'
           
       - name: Build plugin zip
-        run: python admin/create_plugin_zip.py
+        run: |
+          if [ -f "admin/create_plugin_zip.py" ]; then
+            python admin/create_plugin_zip.py
+          else
+            echo "Skipping: admin/create_plugin_zip.py not found on this branch"
+            exit 0
+          fi
         
       - name: Commit and push if changed
         run: |
+          if [ ! -f "admin/create_plugin_zip.py" ]; then
+            echo "Script not present, skipping commit check"
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .claude-plugin/team-analyst-plugin.zip
