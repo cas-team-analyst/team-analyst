@@ -22,13 +22,5 @@ _else:_
 _end if_
 
 - [ ] Run `6-update-selections-excel.py` to insert the selections and reasoning into the Excel file.
-
-### Get User Input On Selections
-
-- [ ] Run these steps in a loop and only mark complete once the exit condition has been achieved.
-  - Open `output/selections/Chain Ladder Selections.xlsx` for the user (or tell them where it is) and ask the user what changes they'd like to the selections.
-  - Update `output/selections/chain-ladder.json` to make the appropriate edits.
-  - Ask the user to close the Excel file if it is open (so you can edit it).
-  - Run `6-update-selections-excel.py` to update excel from `output/selections/chain-ladder.json`.
-  - Repeat until the user confirms there are no more changes necessary.
-- [ ] Confirmed with user there are no more changes necessary.
+- [ ] Delete `selections/chain-ladder.json` as the new source of truth will be `output/selections/Chain Ladder Selections.xlsx`
+- [ ] Open `output/selections/Chain Ladder Selections.xlsx` for the user (or tell them where it is). It is now ready for them to override the AI selections.
