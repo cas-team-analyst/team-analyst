@@ -60,10 +60,10 @@ Other files are system files that you should not need to work with unless you ar
 
 # Demo Branches
 
-There are a few branches in this repo meant for jumping a head to demo or test specific steps. 
+There are a few projects in this repo in the `demo/` folder meant for jumping ahead to demo or test specific steps. 
 
-- demo1: Only has the test data at `data/Triangle Examples 1.xlsx`. Use to test starting from the beginning.
-- demo2: Data intake and processing is complete. Use to test AI selections.
+- demo1-read-data: Only has the test data at `data/Triangle Examples 1.xlsx`. Use to test starting from the beginning.
+- demo2-make-selections: Data intake and processing is complete. Use to test AI selections.
 
 # Notes for Developers Working on Skills
 
