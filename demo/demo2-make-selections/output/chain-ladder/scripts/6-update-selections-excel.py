@@ -31,9 +31,15 @@ def find_selections_section(ws):
             if cell.value == "LDF Selections":
                 section_row = cell.row
                 header_row = section_row + 1
-                selection_row = header_row + 1
-                reasoning_row = header_row + 2
-                return header_row, selection_row, reasoning_row
+                # Scan for the "Selection" label row (not "Prior Selection")
+                # It may be offset by prior selection rows if they exist
+                for check_row in range(header_row + 1, header_row + 10):
+                    label = ws.cell(row=check_row, column=1).value
+                    if label == "Selection":
+                        selection_row = check_row
+                        reasoning_row = check_row + 1
+                        return header_row, selection_row, reasoning_row
+                return None, None, None
     return None, None, None
 
 
