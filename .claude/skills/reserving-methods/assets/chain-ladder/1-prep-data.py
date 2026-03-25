@@ -1,7 +1,8 @@
 """
 goal: Get data in standard format to simplify downstream operations. 
 contents: 
-    read_and_process_data(): Example function for reading, processing, validating, and saving the data necessary for Chain Ladder. This function can be replaced with one that works with your raw data.
+    read_and_process_triangles(): Example function for reading, processing, validating, and saving triangle data necessary for Chain Ladder. This function can be replaced with one that works with your raw data.
+    read_and_process_prior_selections(): Example function for reading prior selections from user's source. Modify the dummy code to read from your actual source (Excel, database, etc.).
     validate_data(): Validate the data format. You should not typically modify this, as other assets depend on this format.
 
 run-note: This script must be run from its own directory for relative paths to work correctly.
@@ -17,9 +18,9 @@ DATA_FILE_PATH = "../../../data/"
 OUTPUT_PATH = "../data/"
 METHOD_ID = "chainladder"
 
-def read_and_process_data():
+def read_and_process_triangles():
     """
-    Read raw data, process it into a standardized analytical format, and save to output.
+    Read raw triangle data, process it into a standardized analytical format, and save to output.
     """    
 
     # Here is a common implementation for reading and processing triangle data.
@@ -317,12 +318,156 @@ def validate_data(df: pd.DataFrame) -> None:
         raise ValueError(error_msg)
 
 
+def read_and_process_prior_selections(triangle_data: pd.DataFrame) -> Optional[pd.DataFrame]:
+    """
+    Read prior selections from user's source, validate, and save to standardized format.
+    
+    This template function should be customized to read from your specific data source
+    (Excel file, database, JSON, etc.).
+    
+    Args:
+        triangle_data: DataFrame with processed triangle data for validation
+    
+    Returns:
+        DataFrame with prior selections if they exist, None otherwise
+        Columns: measure, interval, selection, reasoning
+    """
+    
+    # ============================================================================
+    # REPLACE THIS SECTION: Read prior selections from your specific source
+    # ============================================================================
+    # Example: Read from Excel file
+    # prior_selections_file = DATA_FILE_PATH + "prior-selections.xlsx"
+    # if not Path(prior_selections_file).exists():
+    #     print("  No prior selections file found (optional)")
+    #     return None
+    # 
+    # df_prior = pd.read_excel(prior_selections_file, sheet_name="Selections")
+    # df_prior = df_prior[['measure', 'interval', 'selection', 'reasoning']]
+    
+    # Example: Read from CSV file
+    prior_selections_file = OUTPUT_PATH + "../prior-selections.csv"
+    from pathlib import Path
+    if not Path(prior_selections_file).exists():
+        print("  No prior selections file found (optional)")
+        return None
+    
+    print(f"  Found prior selections file: {prior_selections_file}")
+    df_prior = pd.read_csv(prior_selections_file)
+    
+    # Ensure required columns exist
+    required_columns = ['measure', 'interval', 'selection']
+    if not all(col in df_prior.columns for col in required_columns):
+        raise ValueError(f"Prior selections must have columns: {', '.join(required_columns)}")
+    
+    # Add reasoning column if missing (optional field)
+    if 'reasoning' not in df_prior.columns:
+        df_prior['reasoning'] = ''
+    
+    # ============================================================================
+    # END REPLACE SECTION
+    # ============================================================================
+    
+    # Validation starts here
+    errors = []
+    
+    # Check for empty DataFrame
+    if df_prior.empty:
+        print("  Prior selections file is empty")
+        return None
+    
+    # Validate required fields exist
+    for col in required_columns:
+        if col not in df_prior.columns:
+            errors.append(f"Missing required column: {col}")
+    
+    # Check data types and null values
+    if 'measure' in df_prior.columns:
+        null_count = df_prior['measure'].isna().sum()
+        if null_count > 0:
+            errors.append(f"'measure' column contains {null_count} null value(s)")
+    
+    if 'interval' in df_prior.columns:
+        null_count = df_prior['interval'].isna().sum()
+        if null_count > 0:
+            errors.append(f"'interval' column contains {null_count} null value(s)")
+    
+    if 'selection' in df_prior.columns:
+        null_count = df_prior['selection'].isna().sum()
+        if null_count > 0:
+            errors.append(f"'selection' column contains {null_count} null value(s)")
+        if not pd.api.types.is_numeric_dtype(df_prior['selection']):
+            errors.append("'selection' column must be numeric")
+    
+    # Validate against triangle data
+    if not errors:
+        # Check measures
+        valid_measures = triangle_data['measure'].cat.categories.tolist()
+        invalid_measures = df_prior[~df_prior['measure'].isin(valid_measures)]['measure'].unique()
+        if len(invalid_measures) > 0:
+            errors.append(f"Prior selections contain invalid measures: {', '.join(invalid_measures)}")
+            errors.append(f"Valid measures are: {', '.join(valid_measures)}")
+        
+        # Derive valid intervals from triangle age categories
+        age_categories = triangle_data['age'].cat.categories.tolist()
+        valid_intervals = []
+        for i in range(len(age_categories) - 1):
+            interval = f"{age_categories[i]}-{age_categories[i+1]}"
+            valid_intervals.append(interval)
+        
+        # Check intervals
+        invalid_intervals = df_prior[~df_prior['interval'].isin(valid_intervals)]['interval'].unique()
+        if len(invalid_intervals) > 0:
+            errors.append(f"Prior selections contain invalid intervals: {', '.join(invalid_intervals)}")
+            errors.append(f"Valid intervals are: {', '.join(valid_intervals)}")
+        
+        # Check for duplicates
+        duplicates = df_prior.duplicated(subset=['measure', 'interval'], keep=False)
+        if duplicates.any():
+            dup_count = duplicates.sum()
+            errors.append(f"Prior selections contain {dup_count} duplicate measure/interval combinations")
+    
+    # Raise error if validation fails
+    if errors:
+        error_msg = "Prior selections validation failed!\n\nERRORS:\n"
+        for error in errors:
+            error_msg += f"  - {error}\n"
+        raise ValueError(error_msg)
+    
+    # Ensure consistent data types
+    df_prior = df_prior[['measure', 'interval', 'selection', 'reasoning']].copy()
+    df_prior['measure'] = df_prior['measure'].astype(str)
+    df_prior['interval'] = df_prior['interval'].astype(str)
+    df_prior['selection'] = df_prior['selection'].astype(float)
+    df_prior['reasoning'] = df_prior['reasoning'].fillna('').astype(str)
+    
+    print(f"  Validated {len(df_prior)} prior selections")
+    return df_prior
+
+
 if __name__ == "__main__":
     """
     Run the data preparation process.
     """
     print("Starting data preparation for Chain Ladder...")
-    read_and_process_data()
-    print(f"\nData preparation complete!")
-    print(f"Parquet (to keep category types): {OUTPUT_PATH}1_{METHOD_ID}_prepped.parquet")
-    print(f"CSV (for user inspection): {OUTPUT_PATH}1_{METHOD_ID}_prepped.csv")
+    
+    # Process triangle data
+    read_and_process_triangles()
+    print(f"\nTriangle data preparation complete!")
+    print(f"  Parquet: {OUTPUT_PATH}1_{METHOD_ID}_prepped.parquet")
+    print(f"  CSV: {OUTPUT_PATH}1_{METHOD_ID}_prepped.csv")
+    
+    # Read prepped triangle data for validation of prior selections
+    df_triangles = pd.read_parquet(OUTPUT_PATH + f"1_{METHOD_ID}_prepped.parquet")
+    
+    # Process prior selections (optional)
+    print("\nProcessing prior selections (if available)...")
+    df_prior = read_and_process_prior_selections(df_triangles)
+    
+    if df_prior is not None:
+        # Save to output
+        output_file = OUTPUT_PATH + "../prior-selections.csv"
+        df_prior.to_csv(output_file, index=False)
+        print(f"  Saved standardized prior selections to: {output_file}")
+    
+    print("\nData preparation complete!")

@@ -10,6 +10,7 @@ run-note: This script must be run from its own directory for relative paths to w
 
 import pandas as pd
 import numpy as np
+from pathlib import Path
 
 # Replace when using this file in an actual project:
 OUTPUT_PATH = "../data/"
@@ -150,4 +151,15 @@ if __name__ == "__main__":
     df_summary.to_parquet(OUTPUT_PATH + f"4_{METHOD_ID}_ldf_averages.parquet", index=False)
     df_summary.to_csv(OUTPUT_PATH + f"4_{METHOD_ID}_ldf_averages.csv", index=False)
     print(f"\nSaved to: {OUTPUT_PATH}4_{METHOD_ID}_ldf_averages.[parquet|csv]")
+    
+    # Check for prior selections
+    prior_selections_path = Path(OUTPUT_PATH) / "../prior-selections.csv"
+    if prior_selections_path.exists():
+        df_prior = pd.read_csv(prior_selections_path)
+        print(f"\nFound {len(df_prior)} prior selections:")
+        for _, row in df_prior.iterrows():
+            print(f"  {row['measure']} | {row['interval']}: {row['selection']:.4f}")
+    else:
+        print("\nNo prior selections found (optional)")
+
 

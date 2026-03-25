@@ -17,6 +17,7 @@ import pandas as pd
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
+from pathlib import Path
 
 # Replace when using this file in an actual project:
 OUTPUT_PATH = "../data/"
@@ -28,6 +29,7 @@ HEADER_FILL = PatternFill("solid", fgColor="1F4E79")
 SUBHEADER_FILL = PatternFill("solid", fgColor="2E75B6")
 SECTION_FILL = PatternFill("solid", fgColor="D6E4F0")
 SELECTION_FILL = PatternFill("solid", fgColor="FFF2CC")
+PRIOR_FILL = PatternFill("solid", fgColor="E2EFDA")  # Light green for prior selections
 
 HEADER_FONT = Font(bold=True, color="FFFFFF", size=11)
 SUBHEADER_FONT = Font(bold=True, color="FFFFFF", size=10)
@@ -52,6 +54,9 @@ def style_header(cell, level="header"):
         cell.font = SECTION_FONT
     elif level == "selection":
         cell.fill = SELECTION_FILL
+        cell.font = LABEL_FONT
+    elif level == "prior":
+        cell.fill = PRIOR_FILL
         cell.font = LABEL_FONT
     cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
     cell.border = THIN_BORDER
@@ -125,8 +130,17 @@ def write_metrics_table(ws, start_row, title, metric_rows, col_labels, data_dict
     return start_row + 1
 
 
-def write_selections_section(ws, start_row, col_labels):
-    """Write blank selection rows for actuary input."""
+def write_selections_section(ws, start_row, col_labels, prior_selections=None, measure=None):
+    """
+    Write selection section with optional prior selections followed by blank rows for new selections.
+    
+    Args:
+        ws: Worksheet object
+        start_row: Starting row number
+        col_labels: List of column labels (intervals)
+        prior_selections: Optional DataFrame with prior selections
+        measure: Current measure being processed (to filter prior selections)
+    """
     title_cell = ws.cell(row=start_row, column=1, value="LDF Selections")
     style_header(title_cell, "section")
     ws.merge_cells(start_row=start_row, start_column=1, end_row=start_row, end_column=len(col_labels) + 1)
@@ -139,6 +153,49 @@ def write_selections_section(ws, start_row, col_labels):
         style_header(cell, "subheader")
     start_row += 1
 
+    # Prior selections (if available)
+    if prior_selections is not None and measure is not None:
+        measure_prior = prior_selections[prior_selections['measure'] == measure]
+        if not measure_prior.empty:
+            # Create dictionary for quick lookup
+            prior_dict = {}
+            for _, row in measure_prior.iterrows():
+                prior_dict[str(row['interval'])] = {
+                    'selection': row['selection'],
+                    'reasoning': row['reasoning']
+                }
+            
+            # Prior Selection row
+            cell = ws.cell(row=start_row, column=1, value="Prior Selection")
+            style_header(cell, "prior")
+            for c_idx, col in enumerate(col_labels, start=2):
+                c = ws.cell(row=start_row, column=c_idx)
+                if str(col) in prior_dict:
+                    c.value = prior_dict[str(col)]['selection']
+                    c.number_format = "0.0000"
+                c.fill = PRIOR_FILL
+                c.border = THIN_BORDER
+                c.font = DATA_FONT
+                c.alignment = Alignment(horizontal="right")
+            start_row += 1
+            
+            # Prior Reasoning row
+            cell = ws.cell(row=start_row, column=1, value="Prior Reasoning")
+            style_header(cell, "prior")
+            for c_idx, col in enumerate(col_labels, start=2):
+                c = ws.cell(row=start_row, column=c_idx)
+                if str(col) in prior_dict:
+                    c.value = prior_dict[str(col)]['reasoning']
+                c.fill = PRIOR_FILL
+                c.border = THIN_BORDER
+                c.font = DATA_FONT
+                c.alignment = Alignment(horizontal="left", wrap_text=True)
+            start_row += 1
+            
+            # Add blank row separator
+            start_row += 1
+
+    # New selection rows (always blank for actuary input)
     for label in ["Selection", "Reasoning"]:
         cell = ws.cell(row=start_row, column=1, value=label)
         style_header(cell, "selection")
@@ -153,7 +210,7 @@ def write_selections_section(ws, start_row, col_labels):
     return start_row
 
 
-def build_sheet(ws, measure, df2, df3, df4):
+def build_sheet(ws, measure, df2, df3, df4, df_prior=None):
     """Build a single measure sheet."""
     df_m = df2[df2['measure'] == measure].copy()
     periods = df_m['period'].cat.categories.tolist()
@@ -209,7 +266,7 @@ def build_sheet(ws, measure, df2, df3, df4):
     row_ptr = write_metrics_table(ws, row_ptr, f"{measure} - LDF Averages & QA Metrics", metric_cols, intervals, metrics_dict)
 
     # --- Selections ---
-    write_selections_section(ws, row_ptr, intervals)
+    write_selections_section(ws, row_ptr, intervals, prior_selections=df_prior, measure=measure)
 
     # Column widths
     ws.column_dimensions['A'].width = 22
@@ -229,6 +286,15 @@ def main():
     
     print(f"Loaded data: {len(df2)} enhanced rows, {len(df3)} diagnostic rows, {len(df4)} average rows")
 
+    # Read prior selections if available
+    prior_selections_path = Path(OUTPUT_PATH) / "../prior-selections.csv"
+    df_prior = None
+    if prior_selections_path.exists():
+        df_prior = pd.read_csv(prior_selections_path)
+        print(f"Loaded {len(df_prior)} prior selections")
+    else:
+        print("No prior selections found (optional)")
+
     # Convert any percentage-like diagnostics to percentage format
     # (values between 0 and 1 that have 'rate' or 'ratio' in the name)
     for col in df3.columns:
@@ -245,7 +311,7 @@ def main():
     for measure in measures:
         sheet_name = measure[:31]  # Excel 31-char limit
         ws = wb.create_sheet(title=sheet_name)
-        build_sheet(ws, measure, df2, df3, df4)
+        build_sheet(ws, measure, df2, df3, df4, df_prior=df_prior)
         print(f"Built sheet: {sheet_name}")
 
     output_file = SELECTIONS_OUTPUT_PATH + OUTPUT_FILE_NAME

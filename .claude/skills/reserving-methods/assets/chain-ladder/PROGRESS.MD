@@ -1,12 +1,16 @@
 _Copy these steps into PROGRESS whenever a new method will be used. It applies only to the this asset folder's method._
 
 - [ ] Based on available data, determine which triangles we will use to come up with Ultimates estimates from this method: Paid Losses, Incurred Losses, Reported Claims, Closed Claims, etc.
+- [ ] **OPTIONAL:** If you haven't already found prior selections, ask the user if prior LDF selections exist from a previous analysis. If they do, ask where they are located (Excel file, CSV, database, etc.). You will need to modify `read_and_process_prior_selections()` in `1-prep-data.py` to read from that source during data extraction.
 
 ### Data Extraction (One Time)
 
 - [ ] Copy all the python scripts from the reserve-methods's skill's chain-ladder assets (`skills/reserving-methods/assets/chain-ladder`) to `output/chain-ladder/scripts`.
 - [ ] Modify the variables at the top of the file with the appropriate DATA_FILE_PATH, OUTPUT_PATH, and TEMPLATE_PATH.
-- [ ] Modify `1-prep-data.py` to accept the format of the data provided by the user, and run it to verify it works and passes validation. Only mark this step complete once the tests in the script have passed to verify the output is in the necessary format. 
+- [ ] Modify `1-prep-data.py` to accept the format of the data provided by the user. This includes:
+  - Customizing `read_and_process_triangles()` to read triangle data from your source
+  - If prior selections exist, customizing `read_and_process_prior_selections()` to read from your source.
+  - Run it to verify it works and passes validation. Only mark this step complete once the tests in the script have passed to verify the output is in the necessary format. 
 - [ ] Report to the user what LDF averages and metrics will be calculated and ask them if they'd like to add others.
 - [ ] Run all the other Python scripts to create output in output/chain-ladder.
 
