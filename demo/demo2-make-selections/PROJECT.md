@@ -1,43 +1,32 @@
 # Project Metadata
-- Client: (to be confirmed)
-- Line of Business: Workers' Compensation (WC)
-- Risk Type: Lots of clerical, relatively long-tailed
-- Payroll Range: $100M-$500M
-- Evaluation Date: 12/31/2024
-- Accident Periods: 2001-2024 (25 years)
-- Development Ages: 11, 23, 35, ..., 287 months (annual, 25 ages)
 
-# Contacts/Stakeholders
-- *To be documented*
+| Field | Value |
+|---|---|
+| Project Name | Demo 2 - Make Selections |
+| Analysis Date | 2026-03-25 |
+| Analyst | Claude (AI) |
+| Data Source | Claude Agent Triangles 5 Demo Data.xlsx |
+| Lines of Business | Single (unnamed) |
+| Accident Year Type | Fiscal |
+| Accident Years | 2008 - 2025 (18 years) |
+| Development Ages | 15, 27, 39, ..., 219 months (18 ages, 12-month intervals starting at 15) |
+| Evaluation Date | 219 months from AY 2008 start |
+| Methods | Chain Ladder |
 
-# Special Considerations
-- *To be documented during planning phase*
+# Data Files
 
-# Data
-| File Name | Description | Location | Special Notes |
-|-----------|-------------|----------|---------------|
-| Triangle Examples 1.xlsx | WC loss development triangles (paid, incurred, counts) | data/ | 4 sheets; annual evaluations 2001-2024 |
+## Claude Agent Triangles 5 Demo Data.xlsx
 
-# File Summaries
+**Sheets:**
 
-## Triangle Examples 1.xlsx
+| Sheet | Description | Rows | Columns |
+|---|---|---|---|
+| Inc | Incurred Losses triangle | 18 AYs + prior selections row | 18 development ages |
+| Pd | Paid Losses triangle | 18 AYs + prior selections row | 18 development ages |
+| Count | Claim Count triangle | 18 AYs + prior selections row | 18 development ages |
 
-**Sheets:** Tri 1, Paid 1, Inc 1, Ct 1
-
-### Sheet: Tri 1 - Metadata
-- Describes the dataset: Line = WC, Risk type = lots of clerical (relatively long-tailed), Payroll range = $100M-$500M
-
-### Sheet: Paid 1 - Paid Loss Triangle
-- Shape: 25 accident years (2001-2024) x 25 development ages (11 to 287 months)
-- Row header column: "Age of Evaluation" / "Accident Year"
-- Values: cumulative paid losses in dollars (range ~$300K at age 11 up to ~$3M at maturity)
-- Standard upper-left triangle format (nulls in future evaluations)
-
-### Sheet: Inc 1 - Incurred Loss Triangle
-- Same structure as Paid 1 (25 AYs x 25 dev ages)
-- Values: cumulative incurred losses in dollars (slightly higher than paid, range ~$450K-$3.2M)
-
-### Sheet: Ct 1 - Claim Count Triangle
-- Same structure (25 AYs x 25 dev ages)
-- Values: cumulative claim counts (range ~260-700 claims per AY)
-- Note: header row not detected by parser (uses generated column names), but structure mirrors Paid/Inc sheets
+**Key Details:**
+- Accident years 2008–2025 (fiscal)
+- Development ages in months: 15, 27, 39, 51, 63, 75, 87, 99, 111, 123, 135, 147, 159, 171, 183, 195, 207, 219
+- Each sheet contains a "Prior Age-to-Age Selections" row at the bottom with prior LDF selections
+- Triangle is upper-left filled (most recent years have fewer development periods)
