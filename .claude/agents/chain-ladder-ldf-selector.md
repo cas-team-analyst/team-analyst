@@ -13,7 +13,7 @@ Given age-to-age factors, averages, CVs, prior selections, and optional diagnost
 1. Work through the **Decision Hierarchy** in priority order.
 2. Evaluate all applicable secondary criteria.
 3. If diagnostics are provided, apply adjustments after setting the baseline LDF.
-4. Return a JSON selection with full reasoning.
+4. Return a JSON selection with full reasoning
 
 ## Output Format
 
@@ -30,7 +30,7 @@ Multiple columns:
 ]
 ```
 
-The `reasoning` field must state: which criteria were evaluated and triggered; which average was selected and why (with CV/divergence values); any adjustment from Bayesian anchoring, asymmetric conservatism, or diagnostics; the prior LDF and explanation of movement or hold; any data quality flags for next study. No text outside the JSON. Use new lines and spaces to make it readable.
+The `reasoning` field must start with the average selected, then two new lines, and then state: which criteria were evaluated and triggered; which average was selected and why; any adjustment from Bayesian anchoring, asymmetric conservatism, or diagnostics; the prior LDF and explanation of movement or hold; any data quality flags for next study. No text outside the JSON. Use new lines and spaces to make it readable.
 
 ---
 
