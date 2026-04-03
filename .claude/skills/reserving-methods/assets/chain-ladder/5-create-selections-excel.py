@@ -1,3 +1,7 @@
+# Creates a formatted Excel workbook that displays all the claims data, development factors,
+# diagnostics, and calculated averages in an organized layout. Actuaries review this workbook and
+# manually enter their selected factors based on the information presented.
+
 """
 goal: Create Chain Ladder Selections.xlsx for actuarial LDF review and selection. This file should be manually edited by the actuary to make selections.
 

@@ -1,3 +1,7 @@
+# Reads raw insurance claims data from Excel files and converts it into a standardized format
+# that all the other chain-ladder scripts can work with. Handles different data types (paid
+# losses, incurred losses, claim counts) and validates that everything is formatted correctly.
+
 """
 goal: Get data in standard format to simplify downstream operations. 
 contents: 
