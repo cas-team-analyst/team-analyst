@@ -35,16 +35,6 @@ def collect_files():
         else:
             print(f"WARNING: {name} not found, skipping")
 
-    # Add .claude directory but exclude skills subdirectory
-    claude_dir = PROJECT_ROOT / ".claude"
-    if claude_dir.exists():
-        for child in sorted(claude_dir.rglob("*")):
-            if child.is_file() and "skills" not in child.relative_to(claude_dir).parts:
-                arcname = child.relative_to(PROJECT_ROOT).as_posix()
-                files.append((child, arcname))
-    else:
-        print(f"WARNING: .claude/ not found, skipping")
-
     # Add skills directory, mapping .claude/skills to skills/ in the zip
     skills_dir = PROJECT_ROOT / ".claude" / "skills"
     if skills_dir.exists():
@@ -54,6 +44,16 @@ def collect_files():
                 files.append((child, arcname))
     else:
         print(f"WARNING: .claude/skills/ not found, skipping")
+
+    # Add agents directory, mapping .claude/agents to agents/ in the zip
+    agents_dir = PROJECT_ROOT / ".claude" / "agents"
+    if agents_dir.exists():
+        for child in sorted(agents_dir.rglob("*")):
+            if child.is_file():
+                arcname = "agents/" + child.relative_to(agents_dir).as_posix()
+                files.append((child, arcname))
+    else:
+        print(f"WARNING: .claude/agents/ not found, skipping")
 
     # Add .claude-plugin directory (excluding the output zip file)
     plugin_dir = PROJECT_ROOT / ".claude-plugin"
