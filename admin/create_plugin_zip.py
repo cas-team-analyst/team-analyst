@@ -40,7 +40,11 @@ def collect_files():
     if skills_dir.exists():
         for child in sorted(skills_dir.rglob("*")):
             if child.is_file():
-                arcname = "skills/" + child.relative_to(skills_dir).as_posix()
+                # Skip improve-agent and python skill folders
+                relative_path = child.relative_to(skills_dir)
+                if relative_path.parts[0] in ("improve-agent", "python"):
+                    continue
+                arcname = "skills/" + relative_path.as_posix()
                 files.append((child, arcname))
     else:
         print(f"WARNING: .claude/skills/ not found, skipping")
