@@ -16,6 +16,7 @@ _Copy these steps into PROGRESS whenever a new method will be used. It applies o
 
 ### Make Actuarial Selections for LDFs
 
+- [ ] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. This framework includes 14 selection criteria and 10 diagnostic adjustment rules. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
 - [ ] Create a JSON file to hold selections: `output/chain-ladder/selections/chain-ladder.json` with just "[]" for now.
 - [ ] Ask the user if they would like AI to (A) make selections all at once (faster, fewer tokens) or (B) make each selection independently (slower, will use many more tokens, better selections expected but NOT RECOMMENDED for now, needs more testing as it will eat up your usage in minutes). Use this exact language when you ask the user. 
 
