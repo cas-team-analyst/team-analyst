@@ -9,17 +9,17 @@ contents:
     read_and_process_prior_selections(): Example function for reading prior selections from user's source. Modify the dummy code to read from your actual source (Excel, database, etc.).
     validate_data(): Validate the data format. You should not typically modify this, as other assets depend on this format.
 
-run-note: This script must be run from its own directory for relative paths to work correctly.
-    cd .claude/skills/reserving-methods/assets/chain-ladder
-    python 1-prep-data.py
+run-note: When copied to a project, run from the scripts/ directory:
+    cd scripts/
+    python 1a-prep-data.py
 """
 
 import pandas as pd
 from typing import Optional
 
 # Replace then when using this file in an actual project:
-DATA_FILE_PATH = "../../../data/"
-OUTPUT_PATH = "../data/"
+DATA_FILE_PATH = "../raw-data/"
+OUTPUT_PATH = "../processed-data/"
 METHOD_ID = "chainladder"
 
 def read_and_process_triangles():

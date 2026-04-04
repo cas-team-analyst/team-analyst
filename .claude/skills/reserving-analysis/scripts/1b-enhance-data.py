@@ -7,16 +7,16 @@ goal: Add calculated columns needed for chain ladder. These should typically not
 contents:
     enhance_triangle_data(): Add calculated columns (prior_age, ldf, weight) to the long format triangle data.
 
-run-note: This script must be run from its own directory for relative paths to work correctly.
-    cd .claude/skills/reserving-methods/assets/chain-ladder
-    python 2-enhance-data.py
+run-note: When copied to a project, run from the scripts/ directory:
+    cd scripts/
+    python 1b-enhance-data.py
 """
 
 import pandas as pd
 import numpy as np
 
 # Replace when using this file in an actual project:
-OUTPUT_PATH = "../data/"
+OUTPUT_PATH = "../processed-data/"
 METHOD_ID = "chainladder"
 
 

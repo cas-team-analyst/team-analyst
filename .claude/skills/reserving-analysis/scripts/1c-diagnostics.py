@@ -7,9 +7,9 @@ goal: Create diagnostics that will support LDF selection. All operations are per
 contents:
  calculate_diagnostics(): Calculate actuarial diagnostics from enhanced triangle data to help with LDF selection.
 
-run-note: This script must be run from its own directory for relative paths to work correctly.
-    cd .claude/skills/reserving-methods/assets/chain-ladder
-    python 3-diagnostics.py
+run-note: When copied to a project, run from the scripts/ directory:
+    cd scripts/
+    python 1c-diagnostics.py
 """
 
 import pandas as pd
@@ -17,7 +17,7 @@ import numpy as np
 from typing import Optional
 
 # Replace when using this file in an actual project:
-OUTPUT_PATH = "../data/"
+OUTPUT_PATH = "../processed-data/"
 METHOD_ID = "chainladder"
 
 

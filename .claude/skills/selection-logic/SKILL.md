@@ -26,7 +26,7 @@ Then use the AskUserQuestion tool with exactly these two options and no others:
 
 ## A. View Selection Criteria
 
-Read `skills/reserving-methods/assets/chain-ladder/SELECTION-LOGIC-REFERENCE.md`. If the file cannot be found, tell the user plainly: "The base selection logic file could not be found at the expected path." and stop.
+Read `agents/selector-chain-ladder-ldf`. If the file cannot be found, tell the user plainly: "The base selection logic file could not be found at the expected path." and stop.
 
 First, present the **Decision Hierarchy** (priority order in which criteria are applied):
 
@@ -66,7 +66,7 @@ Once the user is done exploring, tell them: "When you're ready to see this logic
 
 ## B. View Diagnostic Rules
 
-Read `skills/reserving-methods/assets/chain-ladder/SELECTION-LOGIC-REFERENCE.md`. If the file cannot be found, tell the user plainly: "The base selection logic file could not be found at the expected path." and stop.
+Read `agents/selector-chain-ladder-ldf`. If the file cannot be found, tell the user plainly: "The base selection logic file could not be found at the expected path." and stop.
 
 Explain that diagnostics are applied **after** setting the baseline LDF from the core selection criteria. The sequence is: set baseline, screen diagnostics, cross-check, adjust, then reasonability test (>10% method divergence = re-examine).
 
@@ -94,7 +94,7 @@ Once the user is done exploring, tell them: "When you're ready to see this logic
 ## Guardrails
 
 - This is a **read-only** skill. It does not create, modify, or save any files.
-- It reads from one source only: `skills/reserving-methods/assets/chain-ladder/SELECTION-LOGIC-REFERENCE.md`
+- It reads from one source only: `agents/selector-chain-ladder-ldf`
 - Do NOT invent, assume, or present any selection logic that is not in the reference file.
 - Do NOT offer to create or modify custom logic files.
 - Do NOT suggest other skills, plugin customizers, or workarounds for modifying selection logic.

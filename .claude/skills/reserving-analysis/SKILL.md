@@ -11,7 +11,7 @@ If a file named PROGRESS.md does not already exist in the project directory: cop
 
 Continue with the next step until all steps are complete.
 
-When a step is started: 
+When a PROGRESS.md step is started: 
 1. Mark it as "In Progress" 
 2. Note the date. 
 
@@ -21,11 +21,10 @@ When a step is complete:
 
 As you go:
 - Use the AskUserQuestions tool at each step to get complete information.
-- Fill out project metadata in PROJECT.md as you learn more about the project. Try to intuit this from file names and content, etc. Only ask the user if you need to know right now.
-- Mark any changes and decision in AUDIT.md. Include the date.
-- Track steps to replicate results in a file REPLICATE.md: files to add (w/ size and last modified date to verify correct file), scripts to run, any manual edits made to automatically generated files (with reasoning), etc.
-- Create python scripts (use the python skill) at output/scripts/ as necessary to ensure the steps are repeatable. 
-- Assume the user is not familiar with the skills: report what you are doing and why; show samples and summaries of data that is output when you run python scripts; tell the user what files you created and where they can find them. 
+- Update REPORT.md in the appropriate section at every step. This is the primary document we'll use to communicate our analysis. It starts as boilerplate and you will fill it out as the project goes.
+- Track steps to replicate results in a file REPLICATE.md: files to add (w/ size and last modified date to verify correct file), scripts to run, any manual edits made to automatically generated files (with reasoning), etc. A user without AI support should be able to follow the steps in REPLICATE.md to get the same results.
+- Create python scripts as necessary to ensure the steps are repeatable.
+- Assume the user is not familiar with the workflow: report what you are doing and why, show samples and summaries of data that is output when you run python scripts, tell the user what files you created and where they can find them.
 
 # OTHER GUIDELINES
 

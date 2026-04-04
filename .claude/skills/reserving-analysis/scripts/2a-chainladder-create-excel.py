@@ -12,9 +12,9 @@ Each sheet (one per measure) contains from top to bottom:
   - LDF averages and QA metrics
   - Blank selection rows for actuary input
 
-run-note: This script must be run from its own directory for relative paths to work correctly.
-    cd .claude/skills/reserving-methods/assets/chain-ladder
-    python 5-create-selections-excel.py
+run-note: When copied to a project, run from the scripts/ directory:
+    cd scripts/
+    python 2a-chainladder-create-excel.py
 """
 
 import pandas as pd
@@ -24,7 +24,7 @@ from openpyxl.utils import get_column_letter
 from pathlib import Path
 
 # Replace when using this file in an actual project:
-OUTPUT_PATH = "../data/"
+OUTPUT_PATH = "../processed-data/"
 METHOD_ID = "chainladder"
 SELECTIONS_OUTPUT_PATH = "../selections/"  # Where to save the Excel selection file
 OUTPUT_FILE_NAME = "Chain Ladder Selections.xlsx"

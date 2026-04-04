@@ -6,9 +6,9 @@
 goal: Update ONLY the selections section of Chain Ladder Selections.xlsx from chain-ladder.json.
       Re-run this script any time selections change without needing to rebuild the full Excel.
 
-run-note: This script must be run from its own directory for relative paths to work correctly. Close the Excel file before running.
-    cd .claude/skills/reserving-methods/assets/chain-ladder
-    python 6-update-selections-excel.py
+run-note: When copied to a project, run from the scripts/ directory. Close the Excel file before running.
+    cd scripts/
+    python 2b-chainladder-update-selections.py
 """
 
 import json
