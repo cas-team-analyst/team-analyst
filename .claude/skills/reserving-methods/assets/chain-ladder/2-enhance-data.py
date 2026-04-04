@@ -1,3 +1,7 @@
+# Takes the standardized claims data and adds important calculated columns that show how claims
+# develop over time. Calculates "loss development factors" (ratios showing how much claims grow
+# from one period to the next) and weights for each calculation.
+
 """
 goal: Add calculated columns needed for chain ladder. These should typically not be changed, they should work with the format of the data output by 1-prep-data.py.
 contents:

@@ -1,3 +1,7 @@
+# Refreshes only the selections section of the Excel workbook based on saved selections from a
+# JSON file. Allows you to update the displayed selections without rebuilding the entire workbook,
+# which is useful when you need to revert changes or apply selections from another source.
+
 """
 goal: Update ONLY the selections section of Chain Ladder Selections.xlsx from chain-ladder.json.
       Re-run this script any time selections change without needing to rebuild the full Excel.

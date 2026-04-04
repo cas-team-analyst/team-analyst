@@ -1,3 +1,7 @@
+# Calculates various statistics that help actuaries spot patterns and anomalies in the claims
+# data. Computes metrics like average claim severity, payment percentages, closure rates, and
+# other diagnostic measures that inform decisions about future claim development.
+
 """
 goal: Create diagnostics that will support LDF selection. All operations are performed in long format using groupby and merge operations.
 contents:

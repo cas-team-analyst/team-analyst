@@ -1,3 +1,7 @@
+# Calculates multiple types of averages (weighted, simple, excluding outliers) for the loss
+# development factors using different time periods (3, 5, 10 years, or all available data). Also
+# computes quality metrics like volatility and trends to help actuaries pick the best average.
+
 """
 goal: Calculate LDF averages and select between them to set baseline selections which the user can then override.
 contents:
