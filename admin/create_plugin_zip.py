@@ -11,13 +11,7 @@ PLUGIN_DIR = PROJECT_ROOT / ".claude-plugin"
 OUTPUT_ZIP = PLUGIN_DIR / "team-analyst-plugin.zip"
 ZIP_FILENAME = "team-analyst-plugin.zip"
 
-TOP_LEVEL_FILES = [
-    "AGENTS.md",
-    "AUDIT.md",
-    "PROJECT.md",
-    "REPLICATE.md",
-    "requirements.txt"
-]
+TOP_LEVEL_FILES = []
 
 EXTRA_DIRS = [
     ".claude",
