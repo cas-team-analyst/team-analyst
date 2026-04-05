@@ -11,8 +11,8 @@ inputs:
     ../selections/Chain Ladder Selections.xlsx - LDF selections by measure
 
 outputs:
-    ../ultimates/chain-ladder.parquet - CL ultimates with CDFs, percent developed, and IBNR
-    ../ultimates/chain-ladder.csv - Same data in CSV format
+    ../ultimates/projected-ultimates.parquet - Combined ultimates file with CL columns
+    ../ultimates/projected-ultimates.csv - Same data in CSV format
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
@@ -261,14 +261,41 @@ if __name__ == "__main__":
     output_dir = Path(OUTPUT_PATH)
     output_dir.mkdir(parents=True, exist_ok=True)
     
+    # Check if projected-ultimates already exists and merge if so
+    output_parquet = output_dir / "projected-ultimates.parquet"
+    output_csv = output_dir / "projected-ultimates.csv"
+    
+    if output_parquet.exists():
+        print(f"\nMerging with existing data in: {output_parquet}")
+        df_existing = pd.read_parquet(output_parquet)
+        
+        # Merge on period, measure, current_age (outer join to keep all rows)
+        df_combined = df_existing.merge(
+            df_cl,
+            on=['period', 'measure', 'current_age'],
+            how='outer',
+            suffixes=('', '_new')
+        )
+        
+        # Update/add CL columns from new data
+        for col in ['actual', 'cdf', 'pct_developed', 'cl_ultimate', 'cl_ibnr']:
+            if col + '_new' in df_combined.columns:
+                df_combined[col] = df_combined[col + '_new'].combine_first(df_combined.get(col, pd.Series()))
+                df_combined.drop(columns=[col + '_new'], inplace=True)
+            elif col not in df_combined.columns and col in df_cl.columns:
+                df_combined[col] = df_cl.set_index(['period', 'measure', 'current_age'])[col]
+        
+        df_final = df_combined
+        print(f"  Combined with {len(df_existing)} existing row(s)")
+    else:
+        df_final = df_cl
+        print(f"\nCreating new projected-ultimates file")
+    
     # Save results
-    output_parquet = output_dir / "chain-ladder.parquet"
-    output_csv = output_dir / "chain-ladder.csv"
+    df_final.to_parquet(output_parquet, index=False)
+    df_final.to_csv(output_csv, index=False)
     
-    df_cl.to_parquet(output_parquet, index=False)
-    df_cl.to_csv(output_csv, index=False)
-    
-    print(f"\nSaved Chain Ladder ultimates:")
+    print(f"\nSaved Chain Ladder ultimates to projected-ultimates:")
     print(f"  Parquet: {output_parquet}")
     print(f"  CSV: {output_csv}")
     

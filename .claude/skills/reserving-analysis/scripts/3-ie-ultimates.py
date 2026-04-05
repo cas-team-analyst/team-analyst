@@ -9,8 +9,8 @@ inputs:
     ../processed-data/1_expected_loss_rates.parquet - Expected loss rates and frequencies by period
 
 outputs:
-    ../ultimates/initial-expected.parquet - Expected ultimates by period and measure
-    ../ultimates/initial-expected.csv - Same data in CSV format
+    ../ultimates/projected-ultimates.parquet - Combined ultimates file with IE columns
+    ../ultimates/projected-ultimates.csv - Same data in CSV format
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
@@ -169,14 +169,45 @@ if __name__ == "__main__":
     output_dir = Path(OUTPUT_PATH)
     output_dir.mkdir(parents=True, exist_ok=True)
     
+    # Check if projected-ultimates already exists and merge if so
+    output_parquet = output_dir / "projected-ultimates.parquet"
+    output_csv = output_dir / "projected-ultimates.csv"
+    
+    if output_parquet.exists():
+        print(f"\nMerging with existing data in: {output_parquet}")
+        df_existing = pd.read_parquet(output_parquet)
+        
+        # Merge on period and measure (IE has one expected per period/measure, no age)
+        df_combined = df_existing.merge(
+            df_ie,
+            on=['period', 'measure'],
+            how='outer',
+            suffixes=('', '_new')
+        )
+        
+        # Update/add expected_ultimate column from new data
+        if 'expected_ultimate_new' in df_combined.columns:
+            df_combined['expected_ultimate'] = df_combined['expected_ultimate_new'].combine_first(df_combined.get('expected_ultimate', pd.Series()))
+            df_combined.drop(columns=['expected_ultimate_new'], inplace=True)
+        elif 'expected_ultimate' not in df_combined.columns:
+            # Add expected_ultimate to all rows by merging on period/measure
+            df_combined = df_combined.merge(
+                df_ie[['period', 'measure', 'expected_ultimate']],
+                on=['period', 'measure'],
+                how='left'
+            )
+        
+        df_final = df_combined
+        print(f"  Combined with {len(df_existing)} existing row(s)")
+    else:
+        df_final = df_ie
+        print(f"\nCreating new projected-ultimates file")
+    
     # Save results
-    output_parquet = output_dir / "initial-expected.parquet"
-    output_csv = output_dir / "initial-expected.csv"
+    df_final.to_parquet(output_parquet, index=False)
+    df_final.to_csv(output_csv, index=False)
     
-    df_ie.to_parquet(output_parquet, index=False)
-    df_ie.to_csv(output_csv, index=False)
-    
-    print(f"\nSaved initial expected ultimates:")
+    print(f"\nSaved initial expected ultimates to projected-ultimates:")
     print(f"  Parquet: {output_parquet}")
     print(f"  CSV: {output_csv}")
     

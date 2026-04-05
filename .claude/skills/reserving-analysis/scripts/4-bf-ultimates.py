@@ -16,8 +16,8 @@ inputs:
     ../ultimates/initial-expected.parquet - Expected ultimates by period and measure
 
 outputs:
-    ../ultimates/bornhuetter-ferguson.parquet - BF ultimates with IBNR
-    ../ultimates/bornhuetter-ferguson.csv - Same data in CSV format
+    ../ultimates/projected-ultimates.parquet - Combined ultimates file with BF columns
+    ../ultimates/projected-ultimates.csv - Same data in CSV format
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
@@ -33,8 +33,8 @@ from pathlib import Path
 # NOTE: Set INPUT_IE_ULTIMATES to None if Initial Expected data is not available.
 #       This script will exit gracefully since BF requires Initial Expected ultimates.
 INPUT_TRIANGLE_DATA = "../processed-data/1_triangles.parquet"
-INPUT_CL_ULTIMATES = "../ultimates/chain-ladder.parquet"
-INPUT_IE_ULTIMATES = "../ultimates/initial-expected.parquet"  # Set to None if not available
+INPUT_CL_ULTIMATES = "../ultimates/projected-ultimates.parquet"  # Now reads from combined file
+INPUT_IE_ULTIMATES = "../ultimates/projected-ultimates.parquet"  # Now reads from combined file (set to None if not available)
 OUTPUT_PATH = "../ultimates/"
 
 
@@ -201,14 +201,41 @@ if __name__ == "__main__":
     output_dir = Path(OUTPUT_PATH)
     output_dir.mkdir(parents=True, exist_ok=True)
     
+    # Check if projected-ultimates already exists and merge if so
+    output_parquet = output_dir / "projected-ultimates.parquet"
+    output_csv = output_dir / "projected-ultimates.csv"
+    
+    if output_parquet.exists():
+        print(f"\nMerging with existing data in: {output_parquet}")
+        df_existing = pd.read_parquet(output_parquet)
+        
+        # Merge on period, measure, current_age (outer join to keep all rows)
+        df_combined = df_existing.merge(
+            df_bf[['period', 'measure', 'current_age', 'bf_ultimate', 'bf_ibnr']],
+            on=['period', 'measure', 'current_age'],
+            how='outer',
+            suffixes=('', '_new')
+        )
+        
+        # Update/add BF columns from new data
+        for col in ['bf_ultimate', 'bf_ibnr']:
+            if col + '_new' in df_combined.columns:
+                df_combined[col] = df_combined[col + '_new'].combine_first(df_combined.get(col, pd.Series()))
+                df_combined.drop(columns=[col + '_new'], inplace=True)
+            elif col not in df_combined.columns and col in df_bf.columns:
+                df_combined[col] = df_bf.set_index(['period', 'measure', 'current_age'])[col]
+        
+        df_final = df_combined
+        print(f"  Combined with {len(df_existing)} existing row(s)")
+    else:
+        df_final = df_bf
+        print(f"\nCreating new projected-ultimates file")
+    
     # Save results
-    output_parquet = output_dir / "bornhuetter-ferguson.parquet"
-    output_csv = output_dir / "bornhuetter-ferguson.csv"
+    df_final.to_parquet(output_parquet, index=False)
+    df_final.to_csv(output_csv, index=False)
     
-    df_bf.to_parquet(output_parquet, index=False)
-    df_bf.to_csv(output_csv, index=False)
-    
-    print(f"\nSaved Bornhuetter-Ferguson ultimates:")
+    print(f"\nSaved Bornhuetter-Ferguson ultimates to projected-ultimates:")
     print(f"  Parquet: {output_parquet}")
     print(f"  CSV: {output_csv}")
     
