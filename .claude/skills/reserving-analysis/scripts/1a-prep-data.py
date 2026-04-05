@@ -7,7 +7,7 @@ goal: Get data in standard format to simplify downstream operations.
 contents: 
     read_and_process_triangles(): Example function for reading, processing, validating, and saving triangle data necessary for Chain Ladder. This function can be replaced with one that works with your raw data.
     read_and_process_prior_selections(): Example function for reading prior selections from user's source. Modify the dummy code to read from your actual source (Excel, database, etc.).
-    validate_data(): Validate the data format. You should not typically modify this, as other assets depend on this format.
+    validate_triangle_data(): Validate the triangle data format. You should not typically modify this, as other assets depend on this format.
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
@@ -17,10 +17,10 @@ run-note: When copied to a project, run from the scripts/ directory:
 import pandas as pd
 from typing import Optional
 
-# Replace then when using this file in an actual project:
+# Replace these when using this file in an actual project:
 DATA_FILE_PATH = "../raw-data/"
 OUTPUT_PATH = "../processed-data/"
-METHOD_ID = "chainladder"
+EXPECTED_LOSS_RATES_FILE = "expected-loss-rates.csv"  # Optional: Set to None if not using expected loss rates
 
 def read_and_process_triangles():
     """
@@ -223,104 +223,12 @@ def read_and_process_triangles():
 
     # Validate the format is correct. 
     #! AVOID CHANGING THIS, OUTPUT DATA FORMAT DOES NOT TYPICALLY CHANGE.
-    validate_data(all_data)
+    validate_triangle_data(all_data)
 
     # Save to output - parquet preserves categorical ordering, CSV for inspection
     #! AVOID CHANGING THIS, OUTPUT DATA FORMAT DOES NOT TYPICALLY CHANGE.
-    all_data.to_parquet(OUTPUT_PATH + f"1_{METHOD_ID}_prepped.parquet", index=False)
-    all_data.to_csv(OUTPUT_PATH + f"1_{METHOD_ID}_prepped.csv", index=False)
-
-
-def validate_data(df: pd.DataFrame) -> None:
-    """
-    Validate the prepped data to ensure it meets expected format and quality standards.
-    Raises ValueError if validation fails with detailed error information.
-    
-    Args:
-        df: DataFrame to validate
-    
-    Raises:
-        ValueError: If validation fails, with detailed error, warning, and summary information
-    """
-
-    #! AVOID CHANGING THIS, OUTPUT DATA FORMAT DOES NOT TYPICALLY CHANGE.
-
-    errors = []
-    
-    # Check if DataFrame is empty
-    if df.empty:
-        raise ValueError("Data validation failed!\n\nERRORS:\n  - DataFrame is empty")
-    
-    # Check required columns
-    required_columns = ['period', 'age', 'value', 'measure', 'unit_type']
-    missing_columns = [col for col in required_columns if col not in df.columns]
-    if missing_columns:
-        errors.append(f"Missing required columns: {', '.join(missing_columns)}")
-    
-    # Check data types
-    if 'period' in df.columns and df['period'].dtype.name != 'category':
-        errors.append("'period' column should be categorical type")
-    
-    if 'age' in df.columns and df['age'].dtype.name != 'category':
-        errors.append("'age' column should be categorical type")
-    
-    # Check that categorical columns are ordered (critical for downstream operations)
-    if 'period' in df.columns and df['period'].dtype.name == 'category':
-        if not df['period'].cat.ordered:
-            errors.append("'period' categorical must be ordered (ordered=True)")
-    
-    if 'age' in df.columns and df['age'].dtype.name == 'category':
-        if not df['age'].cat.ordered:
-            errors.append("'age' categorical must be ordered (ordered=True)")
-    
-    if 'value' in df.columns and not pd.api.types.is_numeric_dtype(df['value']):
-        errors.append("'value' column must be numeric")
-    
-    if 'measure' in df.columns and df['measure'].dtype.name != 'category':
-        errors.append("'measure' column should be categorical type")
-    
-    if 'unit_type' in df.columns and df['unit_type'].dtype.name != 'category':
-        errors.append("'unit_type' column should be categorical type")
-    
-    # Check for null values in critical columns
-    for col in ['period', 'age', 'value', 'measure']:
-        if col in df.columns:
-            null_count = df[col].isna().sum()
-            if null_count > 0:
-                errors.append(f"Column '{col}' contains {null_count} null value(s)")
-    
-    # Check unit_type values
-    if 'unit_type' in df.columns:
-        valid_unit_types = ['Count', 'Dollars']
-        invalid_units = df[~df['unit_type'].isin(valid_unit_types)]['unit_type'].unique()
-        if len(invalid_units) > 0:
-            errors.append(f"Unexpected unit_type value(s): {', '.join(map(str, invalid_units))}")
-    
-    # Check measure values
-    if 'measure' in df.columns:
-        valid_measures = ['Incurred Loss', 'Paid Loss', 'Reported Count', 'Closed Count']
-        invalid_measures = df[~df['measure'].isin(valid_measures)]['measure'].unique()
-        if len(invalid_measures) > 0:
-            errors.append(f"Unexpected measure value(s): {', '.join(map(str, invalid_measures))}")
-    
-    # Check for duplicate combinations
-    if all(col in df.columns for col in ['source', 'period', 'age', 'measure']):
-        duplicates = df.duplicated(subset=['source', 'period', 'age', 'measure'], keep=False)
-        if duplicates.any():
-            dup_count = duplicates.sum()
-            errors.append(f"Found {dup_count} duplicate source/period/age/measure combinations")
-    
-    # Raise error if validation fails
-    if len(errors) > 0:
-        error_msg = "Data validation failed!\n\n"
-        
-        if errors:
-            error_msg += "ERRORS:\n"
-            for error in errors:
-                error_msg += f"  - {error}\n"
-        
-        raise ValueError(error_msg)
-
+    all_data.to_parquet(OUTPUT_PATH + f"1_prepped.parquet", index=False)
+    all_data.to_csv(OUTPUT_PATH + f"1_prepped.csv", index=False)
 
 def read_and_process_prior_selections(triangle_data: pd.DataFrame) -> Optional[pd.DataFrame]:
     """
@@ -448,6 +356,243 @@ def read_and_process_prior_selections(triangle_data: pd.DataFrame) -> Optional[p
     print(f"  Validated {len(df_prior)} prior selections")
     return df_prior
 
+def read_and_process_expected_loss_rates(triangle_data: pd.DataFrame, file_path: Optional[str] = None) -> Optional[pd.DataFrame]:
+    """
+    Read expected loss rate data from file, validate, and save to standardized format.
+    
+    Args:
+        triangle_data: DataFrame with processed triangle data for validation
+        file_path: Path to the expected loss rates file. If None, uses DATA_FILE_PATH + EXPECTED_LOSS_RATES_FILE.
+    
+    Returns:
+        DataFrame with expected loss rates if they exist, None otherwise
+        Columns: period, expected_loss_rate, expected_freq
+    """
+    
+    # Default file path if none provided
+    if file_path is None:
+        # If constant is None, skip expected loss rates processing
+        if EXPECTED_LOSS_RATES_FILE is None:
+            print("  Expected loss rates not configured (EXPECTED_LOSS_RATES_FILE is None)")
+            return None
+        file_path = DATA_FILE_PATH + EXPECTED_LOSS_RATES_FILE
+    
+    from pathlib import Path
+    if not Path(file_path).exists():
+        print("  No expected loss rates file found (optional)")
+        return None
+    
+    print(f"  Found expected loss rates file: {file_path}")
+    
+    # This is a simple implementation for reading expected loss rate data.
+    # However, data may come in a different format so you may need to replace this code.
+    
+    # Read the data
+    if file_path.lower().endswith('.csv'):
+        df_expected = pd.read_csv(file_path)
+    elif file_path.lower().endswith(('.xlsx', '.xls')):
+        df_expected = pd.read_excel(file_path, engine='openpyxl')
+    else:
+        raise ValueError(f"Unsupported file format: {file_path}. Use .csv, .xlsx, or .xls")
+    
+    # ============================================================================
+    # COLUMN RENAMING STEP
+    # If your source file has different column names, rename them here:
+    # Example:
+    # df_expected = df_expected.rename(columns={
+    #     'Period': 'period',
+    #     'Expected_Loss_Rate': 'expected_loss_rate',
+    #     'Expected_Frequency': 'expected_freq'
+    # })
+    # ============================================================================
+    
+    # Validate the data
+    validate_expected_loss_rates(df_expected, triangle_data)
+    
+    # Save to output
+    df_expected.to_parquet(OUTPUT_PATH + "1_expected_loss_rates.parquet", index=False)
+    df_expected.to_csv(OUTPUT_PATH + "1_expected_loss_rates.csv", index=False)
+    
+    print(f"  Processed {len(df_expected)} expected loss rate records")
+    return df_expected
+
+def validate_expected_loss_rates(df: pd.DataFrame, triangle_data: pd.DataFrame) -> None:
+    """
+    Validate expected loss rates data to ensure it meets expected format and quality standards.
+    Raises ValueError if validation fails with detailed error information.
+    
+    Args:
+        df: DataFrame to validate (expected loss rates)
+        triangle_data: DataFrame with triangle data for period validation
+    
+    Raises:
+        ValueError: If validation fails, with detailed error information
+    """
+    
+    errors = []
+    
+    # Check if DataFrame is empty
+    if df.empty:
+        raise ValueError("Expected loss rates validation failed!\n\nERRORS:\n  - DataFrame is empty")
+    
+    # Check required columns
+    required_columns = ['period', 'expected_loss_rate', 'expected_freq']
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    if missing_columns:
+        errors.append(f"Missing required columns: {', '.join(missing_columns)}")
+    
+    # If we have the required columns, perform detailed validation
+    if not missing_columns:
+        # Check data types
+        if not pd.api.types.is_numeric_dtype(df['expected_loss_rate']):
+            errors.append("'expected_loss_rate' column must be numeric (decimal)")
+        
+        if not pd.api.types.is_numeric_dtype(df['expected_freq']):
+            errors.append("'expected_freq' column must be numeric (decimal)")
+        
+        # Check for null values
+        for col in required_columns:
+            null_count = df[col].isna().sum()
+            if null_count > 0:
+                errors.append(f"Column '{col}' contains {null_count} null value(s)")
+        
+        # Check for duplicate periods (only one value per period)
+        if 'period' in df.columns:
+            duplicates = df['period'].duplicated(keep=False)
+            if duplicates.any():
+                dup_count = duplicates.sum()
+                dup_periods = df[duplicates]['period'].unique()
+                errors.append(f"Found {dup_count} duplicate period(s): {', '.join(map(str, dup_periods))}")
+        
+        # Validate periods match triangle data
+        if 'period' in df.columns and not df.empty:
+            triangle_periods = set(triangle_data['period'].cat.categories.tolist())
+            expected_periods = set(df['period'].astype(str).unique())
+            
+            # Check for periods in expected data that don't exist in triangles
+            extra_periods = expected_periods - triangle_periods
+            if extra_periods:
+                errors.append(f"Expected loss rates contain periods not in triangle data: {', '.join(sorted(extra_periods))}")
+            
+            # Check for missing periods (warning only - not all triangle periods need expected rates)
+            missing_periods = triangle_periods - expected_periods
+            if missing_periods:
+                print(f"  Note: {len(missing_periods)} triangle period(s) have no expected loss rates: {', '.join(sorted(list(missing_periods)[:5]))}{'...' if len(missing_periods) > 5 else ''}")
+    
+    # Raise error if validation fails
+    if errors:
+        error_msg = "Expected loss rates validation failed!\n\nERRORS:\n"
+        for error in errors:
+            error_msg += f"  - {error}\n"
+        raise ValueError(error_msg)
+    
+    # Convert to proper types and create ordered categorical for period
+    # Use the same period ordering as triangle data to ensure consistency
+    triangle_period_categories = triangle_data['period'].cat.categories.tolist()
+    
+    # Only include periods that exist in both datasets
+    valid_periods = [p for p in triangle_period_categories if p in df['period'].astype(str).values]
+    
+    df['period'] = pd.Categorical(
+        df['period'].astype(str),
+        categories=valid_periods,
+        ordered=True
+    )
+    df['expected_loss_rate'] = df['expected_loss_rate'].astype(float)
+    df['expected_freq'] = df['expected_freq'].astype(float)
+    
+    print(f"  Validated {len(df)} expected loss rate records")
+
+def validate_triangle_data(df: pd.DataFrame) -> None:
+    """
+    Validate the prepped triangle data to ensure it meets expected format and quality standards.
+    Raises ValueError if validation fails with detailed error information.
+    
+    Args:
+        df: DataFrame to validate
+    
+    Raises:
+        ValueError: If validation fails, with detailed error, warning, and summary information
+    """
+
+    #! AVOID CHANGING THIS, OUTPUT DATA FORMAT DOES NOT TYPICALLY CHANGE.
+
+    errors = []
+    
+    # Check if DataFrame is empty
+    if df.empty:
+        raise ValueError("Data validation failed!\n\nERRORS:\n  - DataFrame is empty")
+    
+    # Check required columns
+    required_columns = ['period', 'age', 'value', 'measure', 'unit_type']
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    if missing_columns:
+        errors.append(f"Missing required columns: {', '.join(missing_columns)}")
+    
+    # Check data types
+    if 'period' in df.columns and df['period'].dtype.name != 'category':
+        errors.append("'period' column should be categorical type")
+    
+    if 'age' in df.columns and df['age'].dtype.name != 'category':
+        errors.append("'age' column should be categorical type")
+    
+    # Check that categorical columns are ordered (critical for downstream operations)
+    if 'period' in df.columns and df['period'].dtype.name == 'category':
+        if not df['period'].cat.ordered:
+            errors.append("'period' categorical must be ordered (ordered=True)")
+    
+    if 'age' in df.columns and df['age'].dtype.name == 'category':
+        if not df['age'].cat.ordered:
+            errors.append("'age' categorical must be ordered (ordered=True)")
+    
+    if 'value' in df.columns and not pd.api.types.is_numeric_dtype(df['value']):
+        errors.append("'value' column must be numeric")
+    
+    if 'measure' in df.columns and df['measure'].dtype.name != 'category':
+        errors.append("'measure' column should be categorical type")
+    
+    if 'unit_type' in df.columns and df['unit_type'].dtype.name != 'category':
+        errors.append("'unit_type' column should be categorical type")
+    
+    # Check for null values in critical columns
+    for col in ['period', 'age', 'value', 'measure']:
+        if col in df.columns:
+            null_count = df[col].isna().sum()
+            if null_count > 0:
+                errors.append(f"Column '{col}' contains {null_count} null value(s)")
+    
+    # Check unit_type values
+    if 'unit_type' in df.columns:
+        valid_unit_types = ['Count', 'Dollars']
+        invalid_units = df[~df['unit_type'].isin(valid_unit_types)]['unit_type'].unique()
+        if len(invalid_units) > 0:
+            errors.append(f"Unexpected unit_type value(s): {', '.join(map(str, invalid_units))}")
+    
+    # Check measure values
+    if 'measure' in df.columns:
+        valid_measures = ['Incurred Loss', 'Paid Loss', 'Reported Count', 'Closed Count']
+        invalid_measures = df[~df['measure'].isin(valid_measures)]['measure'].unique()
+        if len(invalid_measures) > 0:
+            errors.append(f"Unexpected measure value(s): {', '.join(map(str, invalid_measures))}")
+    
+    # Check for duplicate combinations
+    if all(col in df.columns for col in ['source', 'period', 'age', 'measure']):
+        duplicates = df.duplicated(subset=['source', 'period', 'age', 'measure'], keep=False)
+        if duplicates.any():
+            dup_count = duplicates.sum()
+            errors.append(f"Found {dup_count} duplicate source/period/age/measure combinations")
+    
+    # Raise error if validation fails
+    if len(errors) > 0:
+        error_msg = "Data validation failed!\n\n"
+        
+        if errors:
+            error_msg += "ERRORS:\n"
+            for error in errors:
+                error_msg += f"  - {error}\n"
+        
+        raise ValueError(error_msg)
+
 
 if __name__ == "__main__":
     """
@@ -458,11 +603,11 @@ if __name__ == "__main__":
     # Process triangle data
     read_and_process_triangles()
     print(f"\nTriangle data preparation complete!")
-    print(f"  Parquet: {OUTPUT_PATH}1_{METHOD_ID}_prepped.parquet")
-    print(f"  CSV: {OUTPUT_PATH}1_{METHOD_ID}_prepped.csv")
+    print(f"  Parquet: {OUTPUT_PATH}1_prepped.parquet")
+    print(f"  CSV: {OUTPUT_PATH}1_prepped.csv")
     
     # Read prepped triangle data for validation of prior selections
-    df_triangles = pd.read_parquet(OUTPUT_PATH + f"1_{METHOD_ID}_prepped.parquet")
+    df_triangles = pd.read_parquet(OUTPUT_PATH + f"1_prepped.parquet")
     
     # Process prior selections (optional)
     print("\nProcessing prior selections (if available)...")
@@ -473,5 +618,13 @@ if __name__ == "__main__":
         output_file = OUTPUT_PATH + "../prior-selections.csv"
         df_prior.to_csv(output_file, index=False)
         print(f"  Saved standardized prior selections to: {output_file}")
+
+    # Process expected loss rates (optional)
+    print("\nProcessing expected loss rates (if available)...)")
+    df_expected = read_and_process_expected_loss_rates(df_triangles)
     
-    print("\nData preparation complete!")
+    if df_expected is not None:
+        print(f"  Saved expected loss rates to:")
+        print(f"    Parquet: {OUTPUT_PATH}1_expected_loss_rates.parquet")
+        print(f"    CSV: {OUTPUT_PATH}1_expected_loss_rates.csv")
+        print("\nData preparation complete!")
