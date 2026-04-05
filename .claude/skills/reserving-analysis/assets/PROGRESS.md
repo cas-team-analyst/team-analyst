@@ -38,3 +38,10 @@ _end if_
 
 - [ ] Run `2b-chainladder-update-selections.py` to insert the selections and reasoning into the Excel file.
 - [ ] Open `selections/Chain Ladder Selections.xlsx` for the user (or tell them where it is). It is now ready for them to override the AI selections.
+- [ ] Confirm the user has made selections and is ready to continue.
+
+### Run Methods That Don't Require Selections
+
+- [ ] Run `2c-chainladder-ultimates.py`, `3-ie-ultimates.py`, and `4-bf-ultimates.py`. Debug any errors that occur.
+
+
