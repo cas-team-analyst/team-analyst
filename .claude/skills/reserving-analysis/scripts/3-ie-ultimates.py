@@ -23,8 +23,10 @@ import sys
 from pathlib import Path
 
 # Replace these when using this file in an actual project:
+# NOTE: Set INPUT_EXPECTED_RATES to None if expected loss rate data is not available.
+#       This script will exit gracefully since Initial Expected requires this data.
 INPUT_TRIANGLE_DATA = "../processed-data/1_triangles.parquet"
-INPUT_EXPECTED_RATES = "../processed-data/1_expected_loss_rates.parquet"
+INPUT_EXPECTED_RATES = "../processed-data/1_expected_loss_rates.parquet"  # Set to None if not available
 OUTPUT_PATH = "../ultimates/"
 
 
@@ -135,6 +137,13 @@ def compute_initial_expected_ultimates(expected_rates: pd.DataFrame, exposure: d
 
 if __name__ == "__main__":
     print("Computing Initial Expected ultimates...")
+    
+    # Check if expected rates data is configured
+    if INPUT_EXPECTED_RATES is None:
+        print("\nINPUT_EXPECTED_RATES is set to None.")
+        print("Initial Expected calculation requires expected loss rate data.")
+        print("Skipping Initial Expected calculation.")
+        sys.exit(0)
     
     # Load triangle data
     print(f"\nReading triangle data from: {INPUT_TRIANGLE_DATA}")
