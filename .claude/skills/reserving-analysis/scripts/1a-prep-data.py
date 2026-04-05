@@ -227,8 +227,8 @@ def read_and_process_triangles():
 
     # Save to output - parquet preserves categorical ordering, CSV for inspection
     #! AVOID CHANGING THIS, OUTPUT DATA FORMAT DOES NOT TYPICALLY CHANGE.
-    all_data.to_parquet(OUTPUT_PATH + f"1_prepped.parquet", index=False)
-    all_data.to_csv(OUTPUT_PATH + f"1_prepped.csv", index=False)
+    all_data.to_parquet(OUTPUT_PATH + f"1_triangles.parquet", index=False)
+    all_data.to_csv(OUTPUT_PATH + f"1_triangles.csv", index=False)
 
 def read_and_process_prior_selections(triangle_data: pd.DataFrame) -> Optional[pd.DataFrame]:
     """
@@ -603,11 +603,11 @@ if __name__ == "__main__":
     # Process triangle data
     read_and_process_triangles()
     print(f"\nTriangle data preparation complete!")
-    print(f"  Parquet: {OUTPUT_PATH}1_prepped.parquet")
-    print(f"  CSV: {OUTPUT_PATH}1_prepped.csv")
+    print(f"  Parquet: {OUTPUT_PATH}1_triangles.parquet")
+    print(f"  CSV: {OUTPUT_PATH}1_triangles.csv")
     
     # Read prepped triangle data for validation of prior selections
-    df_triangles = pd.read_parquet(OUTPUT_PATH + f"1_prepped.parquet")
+    df_triangles = pd.read_parquet(OUTPUT_PATH + f"1_triangles.parquet")
     
     # Process prior selections (optional)
     print("\nProcessing prior selections (if available)...")
