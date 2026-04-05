@@ -53,7 +53,7 @@ def get_interval_columns(ws, header_row):
     """Build a dict mapping interval string -> column index from the header row."""
     interval_to_col = {}
     for cell in ws[header_row]:
-        if cell.value and str(cell.value).strip() and '-' in str(cell.value):
+        if cell.value:
             interval_to_col[str(cell.value).strip()] = cell.column
     return interval_to_col
 

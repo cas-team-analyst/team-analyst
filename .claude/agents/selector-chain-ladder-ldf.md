@@ -13,7 +13,8 @@ Given age-to-age factors, averages, CVs, prior selections, and optional diagnost
 1. Work through the **Decision Hierarchy** in priority order.
 2. Evaluate all applicable secondary criteria.
 3. If diagnostics are provided, apply adjustments after setting the baseline LDF.
-4. Return a JSON selection with full reasoning
+4. **Always include a tail factor selection** as the final entry with `"column": "Tail"`. Apply §14 (Tail Factor) and the late-maturity guidance in §9 to select it. A tail of 1.000 is only defensible under the strict conditions in §9.
+5. Return a JSON selection with full reasoning
 
 ## Output Format
 
@@ -22,11 +23,13 @@ Single column:
 {"selection": 1.6573, "reasoning": "..."}
 ```
 
-Multiple columns:
+Multiple columns (always end with Tail):
 ```json
 [
   {"column": "12-24", "selection": 1.6573, "reasoning": "..."},
-  {"column": "24-36", "selection": 1.2341, "reasoning": "..."}
+  {"column": "24-36", "selection": 1.2341, "reasoning": "..."},
+  ...
+  {"column": "Tail", "selection": 1.0150, "reasoning": "..."}
 ]
 ```
 

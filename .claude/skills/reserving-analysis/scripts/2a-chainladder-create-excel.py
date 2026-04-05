@@ -259,18 +259,20 @@ def build_sheet(ws, measure, df2, df3, df4, df_prior=None):
 
     # --- LDF Averages & QA Metrics ---
     df_avg = df4[df4['measure'] == measure].copy()
-    
+
     # Dynamically get all metric columns (exclude measure and interval)
     metric_cols = [col for col in df_avg.columns if col not in ['measure', 'interval']]
-    
+
     metrics_dict = {}
     for _, row in df_avg.iterrows():
         for metric in metric_cols:
             metrics_dict[(metric, str(row['interval']))] = row[metric]
-    row_ptr = write_metrics_table(ws, row_ptr, f"{measure} - LDF Averages & QA Metrics", metric_cols, intervals, metrics_dict)
+    # Add Tail column to metrics table (blank — tail is extrapolated, not averaged from data)
+    intervals_with_tail = intervals + ["Tail"]
+    row_ptr = write_metrics_table(ws, row_ptr, f"{measure} - LDF Averages & QA Metrics", metric_cols, intervals_with_tail, metrics_dict)
 
     # --- Selections ---
-    write_selections_section(ws, row_ptr, intervals, prior_selections=df_prior, measure=measure)
+    write_selections_section(ws, row_ptr, intervals_with_tail, prior_selections=df_prior, measure=measure)
 
     # Column widths
     ws.column_dimensions['A'].width = 22
