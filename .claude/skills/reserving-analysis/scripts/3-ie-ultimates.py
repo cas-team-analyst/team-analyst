@@ -30,6 +30,29 @@ INPUT_EXPECTED_RATES = "../processed-data/1_expected_loss_rates.parquet"  # Set 
 OUTPUT_PATH = "../ultimates/"
 
 
+def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Extract the latest (diagonal) value for each period × measure combination.
+    
+    The diagonal represents the most mature value for each period, which is
+    the current actual value at the valuation date.
+    
+    Args:
+        triangle_data: DataFrame with triangle data
+    
+    Returns:
+        DataFrame with columns: period, measure, age, value
+    """
+    # For each period × measure, get the latest age (diagonal value)
+    diagonal = triangle_data.groupby(['period', 'measure'], observed=True).agg({
+        'value': 'last',  # Last value is the most mature (diagonal)
+        'age': 'last'
+    }).reset_index()
+    
+    print(f"  Extracted diagonal for {len(diagonal)} period × measure combinations")
+    return diagonal
+
+
 def extract_exposure_diagonal(triangle_data: pd.DataFrame) -> dict:
     """
     Extract the latest (diagonal) exposure value for each period.
@@ -66,21 +89,27 @@ def extract_exposure_diagonal(triangle_data: pd.DataFrame) -> dict:
     return exposure_dict
 
 
-def compute_initial_expected_ultimates(expected_rates: pd.DataFrame, exposure: dict) -> pd.DataFrame:
+def compute_initial_ultimate_ies(expected_rates: pd.DataFrame, exposure: dict, diagonal: pd.DataFrame) -> pd.DataFrame:
     """
-    Compute initial expected ultimates by multiplying rates and frequencies by exposure.
+    Compute initial expected ultimates by multiplying rates and frequencies by exposure,
+    and then compute IBNR by subtracting actual diagonal values.
     
     For each period:
     - Expected Loss Ultimate = Expected Loss Rate * Exposure (applies to Incurred Loss and Paid Loss)
     - Expected Count Ultimate = Expected Frequency * Exposure (applies to Reported Count and Closed Count)
+    - IBNR_IE = Ultimate_IE - Actual
     
     Args:
         expected_rates: DataFrame with columns: period, expected_loss_rate, expected_freq
         exposure: Dictionary mapping period to exposure value
+        diagonal: DataFrame with diagonal (actual) values by period, measure, age
     
     Returns:
-        DataFrame with columns: period, measure, expected_ultimate
+        DataFrame with columns: period, measure, current_age, actual, ultimate_ie, ibnr_ie
     """
+    # Create lookup for diagonal (actual) values
+    diagonal_lookup = diagonal.set_index(['period', 'measure'])[['age', 'value']].to_dict('index')
+    
     rows = []
     
     for _, row in expected_rates.iterrows():
@@ -95,30 +124,52 @@ def compute_initial_expected_ultimates(expected_rates: pd.DataFrame, exposure: d
         # Compute loss ultimate (applies to both Incurred and Paid)
         if pd.notna(row.get('expected_loss_rate')):
             loss_ultimate = float(row['expected_loss_rate']) * float(exp)
-            rows.append({
-                'period': period,
-                'measure': 'Incurred Loss',
-                'expected_ultimate': loss_ultimate
-            })
-            rows.append({
-                'period': period,
-                'measure': 'Paid Loss',
-                'expected_ultimate': loss_ultimate
-            })
+            
+            for measure in ['Incurred Loss', 'Paid Loss']:
+                # Get actual value from diagonal
+                actual_info = diagonal_lookup.get((period, measure), {})
+                actual = actual_info.get('value', np.nan)
+                current_age = str(actual_info.get('age', '')) if actual_info.get('age') else None
+                
+                # Compute IBNR
+                if pd.notna(actual) and pd.notna(loss_ultimate):
+                    ibnr_ie = loss_ultimate - actual
+                else:
+                    ibnr_ie = np.nan
+                
+                rows.append({
+                    'period': period,
+                    'measure': measure,
+                    'current_age': current_age,
+                    'actual': actual,
+                    'ultimate_ie': loss_ultimate,
+                    'ibnr_ie': ibnr_ie
+                })
         
         # Compute count ultimate (applies to both Reported and Closed)
         if pd.notna(row.get('expected_freq')):
             count_ultimate = float(row['expected_freq']) * float(exp)
-            rows.append({
-                'period': period,
-                'measure': 'Reported Count',
-                'expected_ultimate': count_ultimate
-            })
-            rows.append({
-                'period': period,
-                'measure': 'Closed Count',
-                'expected_ultimate': count_ultimate
-            })
+            
+            for measure in ['Reported Count', 'Closed Count']:
+                # Get actual value from diagonal
+                actual_info = diagonal_lookup.get((period, measure), {})
+                actual = actual_info.get('value', np.nan)
+                current_age = str(actual_info.get('age', '')) if actual_info.get('age') else None
+                
+                # Compute IBNR
+                if pd.notna(actual) and pd.notna(count_ultimate):
+                    ibnr_ie = count_ultimate - actual
+                else:
+                    ibnr_ie = np.nan
+                
+                rows.append({
+                    'period': period,
+                    'measure': measure,
+                    'current_age': current_age,
+                    'actual': actual,
+                    'ultimate_ie': count_ultimate,
+                    'ibnr_ie': ibnr_ie
+                })
     
     if not rows:
         raise ValueError("No initial expected ultimates could be computed. Check that expected_loss_rate and expected_freq have values.")
@@ -128,7 +179,9 @@ def compute_initial_expected_ultimates(expected_rates: pd.DataFrame, exposure: d
     # Convert to appropriate types
     result_df['period'] = result_df['period'].astype(str)
     result_df['measure'] = result_df['measure'].astype('category')
-    result_df['expected_ultimate'] = result_df['expected_ultimate'].astype(float)
+    result_df['current_age'] = result_df['current_age'].astype(str)
+    for col in ['actual', 'ultimate_ie', 'ibnr_ie']:
+        result_df[col] = result_df[col].astype(float)
     
     print(f"  Computed {len(result_df)} expected ultimate(s) across {len(result_df['period'].unique())} period(s)")
     
@@ -157,13 +210,22 @@ if __name__ == "__main__":
     
     df_expected_rates = pd.read_parquet(INPUT_EXPECTED_RATES)
     
+    # Extract diagonal values
+    print("\nExtracting diagonal values...")
+    diagonal = extract_diagonal(df_triangles)
+    
+    # Ensure string types for matching
+    diagonal['period'] = diagonal['period'].astype(str)
+    diagonal['measure'] = diagonal['measure'].astype(str)
+    diagonal['age'] = diagonal['age'].astype(str)
+    
     # Extract exposure diagonal
     print("\nExtracting exposure values...")
     exposure_dict = extract_exposure_diagonal(df_triangles)
     
     # Compute initial expected ultimates
     print("\nComputing initial expected ultimates...")
-    df_ie = compute_initial_expected_ultimates(df_expected_rates, exposure_dict)
+    df_ie = compute_initial_ultimate_ies(df_expected_rates, exposure_dict, diagonal)
     
     # Create output directory if it doesn't exist
     output_dir = Path(OUTPUT_PATH)
@@ -177,25 +239,21 @@ if __name__ == "__main__":
         print(f"\nMerging with existing data in: {output_parquet}")
         df_existing = pd.read_parquet(output_parquet)
         
-        # Merge on period and measure (IE has one expected per period/measure, no age)
+        # Merge on period, measure, current_age (outer join to keep all rows)
         df_combined = df_existing.merge(
-            df_ie,
-            on=['period', 'measure'],
+            df_ie[['period', 'measure', 'current_age', 'ultimate_ie', 'ibnr_ie']],
+            on=['period', 'measure', 'current_age'],
             how='outer',
             suffixes=('', '_new')
         )
         
-        # Update/add expected_ultimate column from new data
-        if 'expected_ultimate_new' in df_combined.columns:
-            df_combined['expected_ultimate'] = df_combined['expected_ultimate_new'].combine_first(df_combined.get('expected_ultimate', pd.Series()))
-            df_combined.drop(columns=['expected_ultimate_new'], inplace=True)
-        elif 'expected_ultimate' not in df_combined.columns:
-            # Add expected_ultimate to all rows by merging on period/measure
-            df_combined = df_combined.merge(
-                df_ie[['period', 'measure', 'expected_ultimate']],
-                on=['period', 'measure'],
-                how='left'
-            )
+        # Update/add IE columns from new data
+        for col in ['ultimate_ie', 'ibnr_ie']:
+            if col + '_new' in df_combined.columns:
+                df_combined[col] = df_combined[col + '_new'].combine_first(df_combined.get(col, pd.Series()))
+                df_combined.drop(columns=[col + '_new'], inplace=True)
+            elif col not in df_combined.columns and col in df_ie.columns:
+                df_combined[col] = df_ie.set_index(['period', 'measure', 'current_age'])[col]
         
         df_final = df_combined
         print(f"  Combined with {len(df_existing)} existing row(s)")
@@ -213,5 +271,13 @@ if __name__ == "__main__":
     
     print("\nSample of results:")
     print(df_ie.head(10).to_string(index=False))
+    
+    print("\nSummary by measure:")
+    summary = df_ie.groupby('measure', observed=True).agg({
+        'ultimate_ie': 'sum',
+        'ibnr_ie': 'sum',
+        'actual': 'sum'
+    }).round(0)
+    print(summary.to_string())
     
     print("\nInitial Expected calculation complete!")

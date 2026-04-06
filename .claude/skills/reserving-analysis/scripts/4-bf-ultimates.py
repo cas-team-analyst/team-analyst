@@ -61,7 +61,7 @@ def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
     return diagonal
 
 
-def compute_bf_ultimates(diagonal: pd.DataFrame, cl_ultimates: pd.DataFrame, 
+def compute_ultimate_bfs(diagonal: pd.DataFrame, ultimate_cls: pd.DataFrame, 
                          ie_ultimates: pd.DataFrame) -> pd.DataFrame:
     """
     Compute Bornhuetter-Ferguson ultimates.
@@ -75,16 +75,16 @@ def compute_bf_ultimates(diagonal: pd.DataFrame, cl_ultimates: pd.DataFrame,
     
     Args:
         diagonal: DataFrame with actual values (period, measure, age, value)
-        cl_ultimates: DataFrame with CL results including pct_developed
+        ultimate_cls: DataFrame with CL results including pct_developed
         ie_ultimates: DataFrame with expected ultimates
     
     Returns:
         DataFrame with columns: period, measure, current_age, actual, pct_developed,
-                                expected_ultimate, bf_ibnr, bf_ultimate
+                                ultimate_ie, ibnr_bf, ultimate_bf
     """
     # Create lookups
-    pct_lookup = cl_ultimates.set_index(['measure', 'current_age'])['pct_developed'].to_dict()
-    ie_lookup = ie_ultimates.set_index(['period', 'measure'])['expected_ultimate'].to_dict()
+    pct_lookup = ultimate_cls.set_index(['measure', 'current_age'])['pct_developed'].to_dict()
+    ie_lookup = ie_ultimates.set_index(['period', 'measure'])['ultimate_ie'].to_dict()
     
     rows = []
     skipped_measures = set()
@@ -107,11 +107,11 @@ def compute_bf_ultimates(diagonal: pd.DataFrame, cl_ultimates: pd.DataFrame,
         
         # Calculate BF values
         if pd.notna(pct_dev) and pd.notna(expected):
-            bf_ibnr = (1 - pct_dev) * expected
-            bf_ultimate = actual + bf_ibnr
+            ibnr_bf = (1 - pct_dev) * expected
+            ultimate_bf = actual + ibnr_bf
         else:
-            bf_ibnr = np.nan
-            bf_ultimate = np.nan
+            ibnr_bf = np.nan
+            ultimate_bf = np.nan
             if pd.isna(expected):
                 skipped_measures.add(measure)
         
@@ -121,9 +121,9 @@ def compute_bf_ultimates(diagonal: pd.DataFrame, cl_ultimates: pd.DataFrame,
             'current_age': age,
             'actual': actual,
             'pct_developed': pct_dev,
-            'expected_ultimate': expected,
-            'bf_ibnr': bf_ibnr,
-            'bf_ultimate': bf_ultimate,
+            'ultimate_ie': expected,
+            'ibnr_bf': ibnr_bf,
+            'ultimate_bf': ultimate_bf,
         })
     
     if skipped_measures:
@@ -188,13 +188,13 @@ if __name__ == "__main__":
     
     # Compute BF ultimates
     print("\nComputing Bornhuetter-Ferguson ultimates...")
-    df_bf = compute_bf_ultimates(diagonal, df_cl, df_ie)
+    df_bf = compute_ultimate_bfs(diagonal, df_cl, df_ie)
     
     # Convert to appropriate types
     df_bf['period'] = df_bf['period'].astype(str)
     df_bf['measure'] = df_bf['measure'].astype('category')
     df_bf['current_age'] = df_bf['current_age'].astype(str)
-    for col in ['actual', 'pct_developed', 'expected_ultimate', 'bf_ibnr', 'bf_ultimate']:
+    for col in ['actual', 'pct_developed', 'ultimate_ie', 'ibnr_bf', 'ultimate_bf']:
         df_bf[col] = df_bf[col].astype(float)
     
     # Create output directory if it doesn't exist
@@ -211,14 +211,14 @@ if __name__ == "__main__":
         
         # Merge on period, measure, current_age (outer join to keep all rows)
         df_combined = df_existing.merge(
-            df_bf[['period', 'measure', 'current_age', 'bf_ultimate', 'bf_ibnr']],
+            df_bf[['period', 'measure', 'current_age', 'ultimate_bf', 'ibnr_bf']],
             on=['period', 'measure', 'current_age'],
             how='outer',
             suffixes=('', '_new')
         )
         
         # Update/add BF columns from new data
-        for col in ['bf_ultimate', 'bf_ibnr']:
+        for col in ['ultimate_bf', 'ibnr_bf']:
             if col + '_new' in df_combined.columns:
                 df_combined[col] = df_combined[col + '_new'].combine_first(df_combined.get(col, pd.Series()))
                 df_combined.drop(columns=[col + '_new'], inplace=True)
@@ -244,10 +244,10 @@ if __name__ == "__main__":
     
     print("\nSummary by measure:")
     summary = df_bf.groupby('measure', observed=True).agg({
-        'bf_ultimate': 'sum',
-        'bf_ibnr': 'sum',
+        'ultimate_bf': 'sum',
+        'ibnr_bf': 'sum',
         'actual': 'sum',
-        'expected_ultimate': 'sum'
+        'ultimate_ie': 'sum'
     }).round(0)
     print(summary.to_string())
     

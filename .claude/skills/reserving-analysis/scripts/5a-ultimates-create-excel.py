@@ -51,7 +51,7 @@ def format_sheet(ws, measure, df_ult, df_prior):
         ws: openpyxl worksheet object
         measure: Measure name (e.g., 'Incurred Loss', 'Paid Loss')
         df_ult: DataFrame with projected ultimates containing columns:
-                period, current_age, actual, expected_ultimate, cl_ultimate, bf_ultimate
+                period, current_age, actual, ultimate_ie, ultimate_cl, ultimate_bf
         df_prior: DataFrame with prior selections containing columns:
                   period, measure, selection, reasoning (or None if no prior selections)
     """
@@ -99,7 +99,7 @@ def format_sheet(ws, measure, df_ult, df_prior):
         ws.cell(row=r_idx, column=2, value=val_age).border = THIN_BORDER
         
         # Values
-        for c_idx, col_name in enumerate(['actual', 'expected_ultimate', 'cl_ultimate', 'bf_ultimate'], start=3):
+        for c_idx, col_name in enumerate(['actual', 'ultimate_ie', 'ultimate_cl', 'ultimate_bf'], start=3):
             val = row.get(col_name)
             if pd.isna(val): val = ""
             cell = ws.cell(row=r_idx, column=c_idx, value=val)

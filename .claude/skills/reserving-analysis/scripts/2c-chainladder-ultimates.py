@@ -162,7 +162,7 @@ def project_ultimates(diagonal: pd.DataFrame, cdf_df: pd.DataFrame) -> pd.DataFr
     
     Returns:
         DataFrame with columns: period, measure, current_age, actual, cdf, 
-                                pct_developed, cl_ultimate, cl_ibnr
+                                pct_developed, ultimate_cl, ibnr_cl
     """
     # Create lookup for CDFs
     cdf_lookup = cdf_df.set_index(['measure', 'age'])[['cdf', 'pct_developed']]
@@ -190,8 +190,8 @@ def project_ultimates(diagonal: pd.DataFrame, cdf_df: pd.DataFrame) -> pd.DataFr
             'actual': r['value'],
             'cdf': cdf,
             'pct_developed': pct,
-            'cl_ultimate': ultimate,
-            'cl_ibnr': ibnr,
+            'ultimate_cl': ultimate,
+            'ibnr_cl': ibnr,
         })
     
     return pd.DataFrame(rows)
@@ -254,7 +254,7 @@ if __name__ == "__main__":
     df_cl['period'] = df_cl['period'].astype(str)
     df_cl['measure'] = df_cl['measure'].astype('category')
     df_cl['current_age'] = df_cl['current_age'].astype(str)
-    for col in ['actual', 'cdf', 'pct_developed', 'cl_ultimate', 'cl_ibnr']:
+    for col in ['actual', 'cdf', 'pct_developed', 'ultimate_cl', 'ibnr_cl']:
         df_cl[col] = df_cl[col].astype(float)
     
     # Create output directory if it doesn't exist
@@ -278,7 +278,7 @@ if __name__ == "__main__":
         )
         
         # Update/add CL columns from new data
-        for col in ['actual', 'cdf', 'pct_developed', 'cl_ultimate', 'cl_ibnr']:
+        for col in ['actual', 'cdf', 'pct_developed', 'ultimate_cl', 'ibnr_cl']:
             if col + '_new' in df_combined.columns:
                 df_combined[col] = df_combined[col + '_new'].combine_first(df_combined.get(col, pd.Series()))
                 df_combined.drop(columns=[col + '_new'], inplace=True)
@@ -304,8 +304,8 @@ if __name__ == "__main__":
     
     print("\nSummary by measure:")
     summary = df_cl.groupby('measure', observed=True).agg({
-        'cl_ultimate': 'sum',
-        'cl_ibnr': 'sum',
+        'ultimate_cl': 'sum',
+        'ibnr_cl': 'sum',
         'actual': 'sum'
     }).round(0)
     print(summary.to_string())
