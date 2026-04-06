@@ -97,7 +97,7 @@ def enhance_triangle_data(df_long: pd.DataFrame) -> pd.DataFrame:
 if __name__ == "__main__":
     """Test the enhance_triangle_data function."""
     # Read prepped data from step 1
-    input_file = OUTPUT_PATH + f"1_{METHOD_ID}_prepped.parquet"
+    input_file = OUTPUT_PATH + f"1_prepped.parquet"
     df = pd.read_parquet(input_file)
     print(f"Loaded {len(df)} rows, {df['measure'].nunique()} measures, {df['source'].nunique()} sources")
     
@@ -118,8 +118,8 @@ if __name__ == "__main__":
             df_enhanced[col] = df_enhanced[col].round(4)
     
     # Save outputs
-    df_enhanced.to_parquet(OUTPUT_PATH + f"2_{METHOD_ID}_enhanced.parquet", index=False)
-    df_enhanced.to_csv(OUTPUT_PATH + f"2_{METHOD_ID}_enhanced.csv", index=False)
-    print(f"\nSaved to: {OUTPUT_PATH}2_{METHOD_ID}_enhanced.[parquet|csv]")
+    df_enhanced.to_parquet(OUTPUT_PATH + f"2_enhanced.parquet", index=False)
+    df_enhanced.to_csv(OUTPUT_PATH + f"2_enhanced.csv", index=False)
+    print(f"\nSaved to: {OUTPUT_PATH}2_enhanced.[parquet|csv]")
     print("parquet preserves categorical types, CSV for inspection")
 

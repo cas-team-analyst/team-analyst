@@ -191,8 +191,8 @@ def project_ultimates(
 if __name__ == "__main__":
     """Test the project_ultimates function."""
     # Read data from previous steps
-    input_file_processed = OUTPUT_PATH + f"1_{METHOD_ID}_processed_data.parquet"
-    input_file_selections = OUTPUT_PATH + f"5_{METHOD_ID}_selections.parquet"
+    input_file_processed = OUTPUT_PATH + f"1_processed_data.parquet"
+    input_file_selections = OUTPUT_PATH + f"5_selections.parquet"
     
     df_processed = pd.read_parquet(input_file_processed)
     df_selections = pd.read_parquet(input_file_selections)
@@ -224,7 +224,7 @@ if __name__ == "__main__":
         print(sample)
     
     # Save outputs
-    df_ultimates.to_parquet(OUTPUT_PATH + f"6_{METHOD_ID}_ultimates.parquet", index=False)
-    df_ultimates.to_csv(OUTPUT_PATH + f"6_{METHOD_ID}_ultimates.csv", index=False)
-    print(f"\nSaved to: {OUTPUT_PATH}6_{METHOD_ID}_ultimates.[parquet|csv]")
+    df_ultimates.to_parquet(OUTPUT_PATH + f"6_ultimates.parquet", index=False)
+    df_ultimates.to_csv(OUTPUT_PATH + f"6_ultimates.csv", index=False)
+    print(f"\nSaved to: {OUTPUT_PATH}6_ultimates.[parquet|csv]")
     print("parquet preserves categorical types, CSV for inspection")

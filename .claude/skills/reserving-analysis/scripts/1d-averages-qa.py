@@ -137,7 +137,7 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
 if __name__ == "__main__":
     """Test the calculate_ldf_averages function."""
     # Read enhanced data from step 2
-    input_file = OUTPUT_PATH + f"2_{METHOD_ID}_enhanced.parquet"
+    input_file = OUTPUT_PATH + f"2_enhanced.parquet"
     df_enhanced = pd.read_parquet(input_file)
     print(f"Loaded {len(df_enhanced)} rows, {df_enhanced['ldf'].notna().sum()} with LDFs")
     print(f"Measures: {df_enhanced['measure'].unique().tolist()}")
@@ -152,9 +152,9 @@ if __name__ == "__main__":
     pd.set_option('display.float_format', '{:.4f}'.format)
     
     # Save output - parquet preserves categorical types, CSV for inspection
-    df_summary.to_parquet(OUTPUT_PATH + f"4_{METHOD_ID}_ldf_averages.parquet", index=False)
-    df_summary.to_csv(OUTPUT_PATH + f"4_{METHOD_ID}_ldf_averages.csv", index=False)
-    print(f"\nSaved to: {OUTPUT_PATH}4_{METHOD_ID}_ldf_averages.[parquet|csv]")
+    df_summary.to_parquet(OUTPUT_PATH + f"4_ldf_averages.parquet", index=False)
+    df_summary.to_csv(OUTPUT_PATH + f"4_ldf_averages.csv", index=False)
+    print(f"\nSaved to: {OUTPUT_PATH}4_ldf_averages.[parquet|csv]")
     
     # Check for prior selections
     prior_selections_path = Path(OUTPUT_PATH) / "../prior-selections.csv"

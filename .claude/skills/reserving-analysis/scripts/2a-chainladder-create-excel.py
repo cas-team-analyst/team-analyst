@@ -286,9 +286,9 @@ def build_sheet(ws, measure, df2, df3, df4, df_prior=None):
 def main():
     """Create Chain Ladder Selections Excel file with all measures."""
     # Read data files
-    df2 = pd.read_parquet(OUTPUT_PATH + f"2_{METHOD_ID}_enhanced.parquet")
-    df3 = pd.read_parquet(OUTPUT_PATH + f"3_{METHOD_ID}_diagnostics.parquet")
-    df4 = pd.read_parquet(OUTPUT_PATH + f"4_{METHOD_ID}_ldf_averages.parquet")
+    df2 = pd.read_parquet(OUTPUT_PATH + f"2_enhanced.parquet")
+    df3 = pd.read_parquet(OUTPUT_PATH + f"3_diagnostics.parquet")
+    df4 = pd.read_parquet(OUTPUT_PATH + f"4_ldf_averages.parquet")
     
     print(f"Loaded data: {len(df2)} enhanced rows, {len(df3)} diagnostic rows, {len(df4)} average rows")
 

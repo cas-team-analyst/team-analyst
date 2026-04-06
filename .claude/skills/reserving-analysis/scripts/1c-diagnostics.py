@@ -183,7 +183,7 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
 if __name__ == "__main__":
     """Test the calculate_diagnostics function."""
     # Read enhanced data from step 2
-    input_file = OUTPUT_PATH + f"2_{METHOD_ID}_enhanced.parquet"
+    input_file = OUTPUT_PATH + f"2_enhanced.parquet"
     df = pd.read_parquet(input_file)
     print(f"Loaded {len(df)} rows, {df['measure'].nunique()} measures")
     
@@ -210,7 +210,7 @@ if __name__ == "__main__":
         diagnostics_df[col] = diagnostics_df[col].round(4)
     
     # Save outputs
-    diagnostics_df.to_parquet(OUTPUT_PATH + f"3_{METHOD_ID}_diagnostics.parquet", index=False)
-    diagnostics_df.to_csv(OUTPUT_PATH + f"3_{METHOD_ID}_diagnostics.csv", index=False)
-    print(f"\nSaved to: {OUTPUT_PATH}3_{METHOD_ID}_diagnostics.[parquet|csv]")
+    diagnostics_df.to_parquet(OUTPUT_PATH + f"3_diagnostics.parquet", index=False)
+    diagnostics_df.to_csv(OUTPUT_PATH + f"3_diagnostics.csv", index=False)
+    print(f"\nSaved to: {OUTPUT_PATH}3_diagnostics.[parquet|csv]")
     print("parquet preserves categorical types, CSV for inspection")

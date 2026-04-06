@@ -47,11 +47,11 @@ def update_report(
         List of paths to generated HTML files (one per measure)
     """
     # Use defaults if not provided
-    processed_data_path = processed_data_path or INPUT_PATH + f"1_{METHOD_ID}_processed_data.parquet"
-    ldf_averages_path = ldf_averages_path or INPUT_PATH + f"4_{METHOD_ID}_ldf_averages.parquet"
-    selections_path = selections_path or INPUT_PATH + f"5_{METHOD_ID}_selections.parquet"
-    diagnostics_path = diagnostics_path or INPUT_PATH + f"3_{METHOD_ID}_diagnostics.parquet"
-    ultimates_path = ultimates_path or INPUT_PATH + f"6_{METHOD_ID}_ultimates.parquet"
+    processed_data_path = processed_data_path or INPUT_PATH + f"1_processed_data.parquet"
+    ldf_averages_path = ldf_averages_path or INPUT_PATH + f"4_ldf_averages.parquet"
+    selections_path = selections_path or INPUT_PATH + f"5_selections.parquet"
+    diagnostics_path = diagnostics_path or INPUT_PATH + f"3_diagnostics.parquet"
+    ultimates_path = ultimates_path or INPUT_PATH + f"6_ultimates.parquet"
     output_dir = output_dir or OUTPUT_PATH + "reports/"
     template_path = template_path or TEMPLATE_PATH
     
