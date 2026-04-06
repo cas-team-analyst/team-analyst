@@ -182,11 +182,40 @@ Sub-1.000 paid LDFs always indicate data issues — investigate and correct.
 - Long-tail casualty minimum: rarely <1.010 paid or <1.005 incurred unless 120+ month triangle with strong closure diagnostics.
 - Diagnostic checks: `open_counts` >10% above norms at last maturity → add +0.005–0.015; rising `average_case_reserve` on remaining opens → increase incurred tail; `paid_to_incurred` below benchmark at last maturity → increase paid tail.
 
+### 15. Additional Diagnostic Patterns
+
+Apply via the same sequence as §Diagnostic Adjustment Rules (baseline → screen → cross-check → adjust).
+
+| Pattern | Key Signals | LDF Action |
+|---|---|---|
+| **Legislative / Benefit Change** | Severity step-change post-effective date; count/closure shift after law change | Segment pre/post; select from post-change years only |
+| **Reopened Claims** | Late-age count or paid increments spike vs. history | Increase late-age LDFs; extend tail |
+| **Reinsurance Attachment Change** | Severity drops without count change; paid increments shrink on large claims | Lower loss LDFs; adjust severity loading separately |
+| **Mix-of-Business Shift** | Severity pattern or closure/reporting rates change by period; claim-type composition shifts | Segment and select LDFs separately per segment |
+| **Frequency Shock (Non-CAT)** | Count increment spike at early ages; severity stable; losses rise proportionally with counts | Remove or treat separately; do not confuse with severity-driven change |
+| **Data System Change / Restatement** | Step-change in both loss and count patterns simultaneously; link ratio discontinuity across same calendar period | Correct or exclude impacted years; flag in data quality notes |
+| **Exposure Base Change** | Counts and losses shift proportionally across all ages; severity stable; change aligns with exposure measure change | Normalize or segment triangles before selecting |
+
+**Combined patterns — pre-filter before applying core criteria:**
+
+| Combination | Action |
+|---|---|
+| CAT + Increased Case Reserve Adequacy | Use unaffected paid triangle; adjust incurred cautiously; do not let CAT diagonal inflate incurred LDFs |
+| Slower Reporting + Decreased Settlement | Raise both early and late-age LDFs; extend tail |
+| Growing Book + Faster Reporting | Reduce early LDFs but exposure-adjust for volume; weight recent years |
+| Shrinking Book + Increased Settlement | Shorten tail; reduce credibility weighting on recent small years |
+| Legislative Change + Ongoing Severity Trend | Segment pre/post; within post-period, apply severity trending per §6 |
+
 ---
 
 ## Diagnostic Adjustment Rules
 
 Apply after setting baseline LDF from core criteria. Sequence: set baseline → screen → cross-check → adjust → reasonability test (>10% method divergence = re-examine).
+
+**Signal interpretation before adjusting:**
+- **Persistence:** A signal confined to one maturity → short-term cap or exclude; affects 2–3 maturities → adjust those columns; consistent across many maturities or periods → treat as structural, adjust all affected columns and revisit tail.
+- **Signal volatility:** If the diagnostic itself is highly variable year-to-year, reduce reliance on it — widen the averaging window or require corroboration before acting.
+- **Cross-view correlation:** A signal appearing in both paid and incurred, or in both counts and losses, warrants higher confidence and a larger adjustment. A signal in only one view requires corroboration or a dampened response.
 
 | Diagnostic | No-Action Zone | Signal & Action |
 |---|---|---|
