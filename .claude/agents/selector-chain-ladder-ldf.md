@@ -1,5 +1,5 @@
 ---
-name: chain-ladder-ldf-selector
+name: selector-chain-ladder-ldf
 description: Select loss development factors (LDFs) for chain-ladder reserving. Invoke when an actuary needs defensible, documented age-to-age factor selections from triangle data.
 color: blue
 ---

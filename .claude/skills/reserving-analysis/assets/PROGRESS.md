@@ -23,15 +23,14 @@ Goal: Understand what data is available.
 - [ ] Report to the user what LDF averages (review `1d-averages-qa.py`) and metrics will be calculated and ask them if they'd like to add others.
 - [ ] Run all the other Python scripts to create output in `processed-data/`.
 
-### Chain Ladder: Actuarial LDF Selections
+# Step 4: Actuarial Selections: Chain Ladder LDFs
 
 - [ ] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. This framework includes 14 selection criteria and 10 diagnostic adjustment rules. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
 - [ ] Create a JSON file to hold selections: `selections/chain-ladder.json` with just "[]" for now.
 - [ ] Ask the user if they would like AI to (A) make selections all at once (faster, fewer tokens) or (B) make each selection independently (slower, will use many more tokens, better selections expected but NOT RECOMMENDED for now, needs more testing as it will eat up your usage in minutes). Use this exact language when you ask the user. 
 
 _If running each independently:_
-- [ ] For each triangle measure and interval in `selections/Chain Ladder Selections.xlsx`, send only the data relevant to measure {measure name} and interval {interval} to the subagent `chain-ladder-ldf-selector`. Use a new subagent for each combo so each selection is independent and focused. So if there are 2 measures (paid/incurred) and 10 intervales (6-12, 12-18, etc.) then you should run 2*10 = 20 subagents in parallel. The subagent will return a selection. Add this factor reasoning used into `output/chain-ladder/selections/chain-ladder.json` as a dict/object/map in the array with keys "measure", "interval", "selection", "reasoning" (along with other selections).
-- [ ] Also run one tail factor subagent per measure. For tail selection, send: the averages and CVs from the last two development intervals (so the agent can judge the level of remaining development), the late-maturity diagnostics (open_counts, claim_closure_rate, paid_to_incurred, average_case_reserve), and the prior tail selection if one exists. Use interval `"Tail"` in the JSON output.
+- [ ] For each triangle measure and interval in `selections/Chain Ladder Selections.xlsx`, send only the data relevant to measure {measure name} and interval {interval} to the subagent `selector-chain-ladder-ldf`. Use a new subagent for each combo so each selection is independent and focused. So if there are 2 measures (paid/incurred) and 10 intervales (6-12, 12-18, etc.) then you should run 2*10 = 20 subagents in parallel. The subagent will return a selection. Add this factor reasoning used into `selections/chain-ladder.json` as a dict/object/map in the array with keys "measure", "interval", "selection", "reasoning" (along with other selections).
 _else:_
 - [ ] Task a single `selector-chain-ladder-ldf` subagent to: Review `selections/Chain Ladder Selections.xlsx` in full (NOT the files at `processed-data`), use this information to make actuarial LDF selections for each combination of Chain Ladder measure and interval **including a tail factor (interval "Tail") for each measure**, and add the selections and specific reasoning for each selection to `selections/chain-ladder.json`, each as a dict/object/map in the array with keys "measure", "interval", "selection", "reasoning" (along with other selections).
 _end if_
@@ -40,8 +39,15 @@ _end if_
 - [ ] Open `selections/Chain Ladder Selections.xlsx` for the user (or tell them where it is). It is now ready for them to override the AI selections.
 - [ ] Confirm the user has made selections and is ready to continue.
 
-### Run Methods That Don't Require Selections
+# Step 5: Run Methods That Don't Require Selections
 
 - [ ] Run `2c-chainladder-ultimates.py`, `3-ie-ultimates.py`, and `4-bf-ultimates.py`. Debug any errors that occur.
 
+# Step 6: Actuarial Selections: Ultimates
+
+- [ ] Create an Excel worksheet at `selections/Ultimates.xlsx` with the context needed to select Ultimates using the available methods. Leave blank space for the selections (we'll select ultimates in the next step). Create a script for this at `scripts/5a-ultimates-create-excel.py`. Use `scripts/2a-chainladder-create-excel.py` as a guide for format.
+- [ ] Create a script at `scripts/5b-ultimates-update-selections.py` that reads `selections/ultimates.json` and updates `selections/Ultimates.xlsx` with selections and reasoning. Use `scripts/2b-chainladder-update-selections.py` as a guide for format.
+- [ ] Task a selector-ultimates subagent to make ultimates selections. Use a different subagent for each measure. Read the excel file and give them the context for the specific measure, and they'll return JSON which you should save to `selections/ultimates.json`.
+- [ ] Task a single `selector-ultimates` subagent to: Review `selections/Ultimates.xlsx` in full (NOT the files at `processed-data`), use this information to make actuarial ultimate selections for each combination of Chain Ladder measure and period, and add the selections and specific reasoning for each selection to `selections/ultimates.json`, each as a dict/object/map in the array with keys "measure", "period", "selection", "reasoning" (along with other selections).
+- [ ] Run `5b-ultimates-update-selections.py` to insert the selections and reasoning into `selections/Ultimates.xlsx`.
 

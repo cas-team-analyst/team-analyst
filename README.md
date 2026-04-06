@@ -132,7 +132,7 @@ You can read it directly or ask Claude: "Read and explain the selection logic re
 
 ## How Selection Logic Is Applied
 
-During a chain-ladder analysis, the `chain-ladder-ldf-selector` agent is tasked with making LDF selections. This agent (defined in `.claude/agents/chain-ladder-ldf-selector.md`) embeds the full selection logic framework in its prompt. When it evaluates your triangle data, it works through:
+During a chain-ladder analysis, the `selector-chain-ladder-ldf` agent is tasked with making LDF selections. This agent (defined in `.claude/agents/selector-chain-ladder-ldf.md`) embeds the full selection logic framework in its prompt. When it evaluates your triangle data, it works through:
 
 1. **Decision Hierarchy** — A priority-ordered sequence that determines which criteria take precedence. For example, if all averages converge within +/-2%, that overrides Bayesian anchoring and asymmetric conservatism.
 
@@ -155,7 +155,7 @@ Since the selection logic is defined in markdown files, you can modify it direct
 | Adjust thresholds | Change CV outlier boundary from 0.10 to 0.15 | `SELECTION-LOGIC-REFERENCE.md` |
 | Change averaging windows | Default to 3-year instead of 5-year | `SELECTION-LOGIC-REFERENCE.md` |
 | Modify conservatism | Make downward movements faster (e.g., 50-70% instead of 30-50%) | `SELECTION-LOGIC-REFERENCE.md` |
-| Reorder decision hierarchy | Prioritize trending over Bayesian anchoring | `chain-ladder-ldf-selector.md` |
+| Reorder decision hierarchy | Prioritize trending over Bayesian anchoring | `selector-chain-ladder-ldf.md` |
 | Add a new criterion | Add a "Reinsurance Impact" criterion | `SELECTION-LOGIC-REFERENCE.md` |
 | Remove a criterion | Remove tail factor requirements | `SELECTION-LOGIC-REFERENCE.md` |
 | Adjust diagnostic sensitivity | Widen the no-action zone for closure rate from +/-3pp to +/-5pp | `SELECTION-LOGIC-REFERENCE.md` |
@@ -206,7 +206,7 @@ Run a chain-ladder analysis on sample data to see how your changes affect select
 The decision hierarchy lives in the agent definition, not the reference file:
 
 ```
-.claude/agents/chain-ladder-ldf-selector.md
+.claude/agents/selector-chain-ladder-ldf.md
 ```
 
 This file defines the priority order:
@@ -220,13 +220,13 @@ This file defines the priority order:
 
 To reorder, ask Claude:
 
-> "In the chain-ladder-ldf-selector agent, move Sparse Data Caution above Bayesian Anchoring in the decision hierarchy. For our book of business, sparse data concerns should take priority over anchoring to priors."
+> "In the selector-chain-ladder-ldf agent, move Sparse Data Caution above Bayesian Anchoring in the decision hierarchy. For our book of business, sparse data concerns should take priority over anchoring to priors."
 
 ### Important Considerations
 
 **Changes are global.** Modifying the selection logic reference file or the agent definition affects every future analysis that uses the chain-ladder method. There is no per-analysis override mechanism — if you want different logic for different lines of business, you would need to maintain separate branches or manually adjust selections after the fact.
 
-**The agent embeds the logic.** The `chain-ladder-ldf-selector` agent has the full selection criteria and diagnostic rules embedded in its prompt. If you change `SELECTION-LOGIC-REFERENCE.md`, you must also update the corresponding sections in `chain-ladder-ldf-selector.md` to keep them in sync. Both files should reflect the same rules.
+**The agent embeds the logic.** The `selector-chain-ladder-ldf` agent has the full selection criteria and diagnostic rules embedded in its prompt. If you change `SELECTION-LOGIC-REFERENCE.md`, you must also update the corresponding sections in `selector-chain-ladder-ldf.md` to keep them in sync. Both files should reflect the same rules.
 
 **Document your changes.** When you modify selection logic, consider adding a comment at the top of the reference file noting what was changed, when, and why. This helps future reviewers (or your future self) understand the rationale.
 
@@ -240,4 +240,4 @@ To reorder, ask Claude:
 |---|---|
 | `.claude/skills/selection-logic/SKILL.md` | View-only skill for inspecting selection logic in Cowork |
 | `.claude/skills/reserving-methods/assets/chain-ladder/SELECTION-LOGIC-REFERENCE.md` | The base selection logic framework (14 criteria + 10 diagnostics) |
-| `.claude/agents/chain-ladder-ldf-selector.md` | Agent definition that embeds the selection logic and applies it to triangle data |
+| `.claude/agents/selector-chain-ladder-ldf.md` | Agent definition that embeds the selection logic and applies it to triangle data |
