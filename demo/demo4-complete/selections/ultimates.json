@@ -1,0 +1,242 @@
+[
+  {
+    "measure": "Closed Count",
+    "period": 2015,
+    "selection": 4931.0,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 120 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2015,
+    "selection": 45008437.7,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 120 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": 2015,
+    "selection": 45008437.67,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 120 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2015,
+    "selection": 4930.0,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 120 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Closed Count",
+    "period": 2016,
+    "selection": 4935.9024,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 108 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2016,
+    "selection": 61133060.841568,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 108 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": 2016,
+    "selection": 61839916.44795601,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 108 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2016,
+    "selection": 4943.0,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 108 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Closed Count",
+    "period": 2017,
+    "selection": 4895.927245440001,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 96 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2017,
+    "selection": 37281411.98767959,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 96 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": 2017,
+    "selection": 38557110.6927636,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 96 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2017,
+    "selection": 4911.6672,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 96 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Closed Count",
+    "period": 2018,
+    "selection": 5018.2255096934405,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 84 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2018,
+    "selection": 60804900.15690639,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 84 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": 2018,
+    "selection": 61371138.34975644,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 84 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2018,
+    "selection": 4987.16873424,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 84 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Closed Count",
+    "period": 2019,
+    "selection": 4956.526684837317,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 72 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2019,
+    "selection": 46985591.30256086,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 72 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": 2019,
+    "selection": 48207987.81583902,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 72 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2019,
+    "selection": 4970.8039616484475,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 72 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Closed Count",
+    "period": 2020,
+    "selection": 4966.255362243055,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 60 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2020,
+    "selection": 43644400.72906783,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 60 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": 2020,
+    "selection": 43367215.93912094,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 60 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2020,
+    "selection": 4998.219921514037,
+    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 60 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+  },
+  {
+    "measure": "Closed Count",
+    "period": 2021,
+    "selection": 5239.811664614578,
+    "reasoning": "25% BF / 75% Chain Ladder\n\nMaturity-Based Weighting: Age 48 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2021,
+    "selection": 74524986.59331614,
+    "reasoning": "25% BF / 75% Chain Ladder\n\nMaturity-Based Weighting: Age 48 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": 2021,
+    "selection": 72084768.5641918,
+    "reasoning": "25% BF / 75% Chain Ladder\n\nMaturity-Based Weighting: Age 48 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2021,
+    "selection": 5082.854862172061,
+    "reasoning": "25% BF / 75% Chain Ladder\n\nMaturity-Based Weighting: Age 48 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Closed Count",
+    "period": 2022,
+    "selection": 5049.336107313848,
+    "reasoning": "50% BF / 50% Chain Ladder\n\nMaturity-Based Weighting: Age 36 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2022,
+    "selection": 46472800.898418695,
+    "reasoning": "50% BF / 50% Chain Ladder\n\nMaturity-Based Weighting: Age 36 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": 2022,
+    "selection": 47097855.047060475,
+    "reasoning": "50% BF / 50% Chain Ladder\n\nMaturity-Based Weighting: Age 36 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2022,
+    "selection": 4942.667611491467,
+    "reasoning": "50% BF / 50% Chain Ladder\n\nMaturity-Based Weighting: Age 36 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Closed Count",
+    "period": 2023,
+    "selection": 4410.743228544742,
+    "reasoning": "75% BF / 25% Chain Ladder\n\nMaturity-Based Weighting: Age 24 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2023,
+    "selection": 47455112.13675013,
+    "reasoning": "75% BF / 25% Chain Ladder\n\nMaturity-Based Weighting: Age 24 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": 2023,
+    "selection": 48005249.34239192,
+    "reasoning": "75% BF / 25% Chain Ladder\n\nMaturity-Based Weighting: Age 24 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2023,
+    "selection": 4524.305484526373,
+    "reasoning": "75% BF / 25% Chain Ladder\n\nMaturity-Based Weighting: Age 24 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Closed Count",
+    "period": 2024,
+    "selection": 3373.511205566031,
+    "reasoning": "100% BF\n\nMaturity-Based Weighting: Age 12 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2024,
+    "selection": 43459794.86217109,
+    "reasoning": "100% BF\n\nMaturity-Based Weighting: Age 12 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": 2024,
+    "selection": 42396501.582315534,
+    "reasoning": "100% BF\n\nMaturity-Based Weighting: Age 12 months. Transitioning from expected to actual experience."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2024,
+    "selection": 3661.1118440617097,
+    "reasoning": "100% BF\n\nMaturity-Based Weighting: Age 12 months. Transitioning from expected to actual experience."
+  }
+]
