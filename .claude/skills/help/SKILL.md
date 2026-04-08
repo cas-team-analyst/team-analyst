@@ -32,10 +32,11 @@ The plugin's primary workflow is **Reserving Analysis** (`/reserving-analysis`),
 
 Available reserving methods:
 
-| Method | Status |
-|--------|--------|
-| **Chain Ladder** | Active |
-| **Bornhuetter-Ferguson** | Under Construction |
+| Method | Status | Notes |
+|--------|--------|-------|
+| **Chain Ladder** | Active | Core method, no additional inputs needed |
+| **Initial Expected** | Active | Requires an Expected Loss Rate input file and exposures |
+| **Bornhuetter-Ferguson** | Active | Requires Chain Ladder and Initial Expected results; skipped automatically if IE was not run |
 
 ## Step 3: Ask How to Help
 

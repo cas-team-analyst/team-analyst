@@ -3,6 +3,33 @@ name: reserving-analysis
 description: Entry skill for performing reserving analysis using the skills in this plugin.
 ---
 
+# WELCOME
+
+When the user first triggers this skill, present the following message:
+
+```
+Reserving Analysis — TeamAnalyst Plugin
+
+This workflow walks you through a full actuarial reserving analysis:
+
+1. Project Setup — set up folders, install dependencies, choose interaction level
+2. Exploratory Data Analysis — review and summarize your data files
+3. Data Intake — prepare triangles, calculate LDF averages and diagnostics
+4. Chain Ladder Selections — AI-assisted LDF selections with actuarial judgment
+5. Run Methods — project ultimates using Chain Ladder, Initial Expected, and BF
+6. Ultimate Selections — select final ultimates across methods
+
+Note: The Initial Expected method requires an Expected Loss Rate input file
+(period, expected loss rate, expected frequency) and exposure data. The
+Bornhuetter-Ferguson method builds on both Chain Ladder and Initial Expected
+results — if IE can't run, BF will be skipped automatically. Chain Ladder
+always runs. You'll be asked about your available data during data intake.
+
+You'll be guided through each step and asked for input along the way.
+```
+
+Then ask the user to identify the folder where they'd like to conduct this analysis. This should be an existing folder that contains (or will contain) their triangle data. Do not create a new folder in an arbitrary location. Once the user has confirmed the folder, proceed with the main operation flow below.
+
 # MAIN OPERATION FLOW
 
 Always follow these steps when working on this project:
