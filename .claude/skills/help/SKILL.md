@@ -42,6 +42,7 @@ Available reserving methods:
 Ask what the user is working on today. Suggest starting points:
 
 - **"Run a reserving analysis"** — triggers `/reserving-analysis` to set up a project and walk through the full workflow
+- **"View selection logic"** — triggers `/selection-logic` to review the actuarial LDF selection criteria and diagnostic rules used during chain-ladder selections
 
 Mention the three interaction levels available during analysis:
 1. **Careful** — step-by-step review at each stage, full user control over every decision
