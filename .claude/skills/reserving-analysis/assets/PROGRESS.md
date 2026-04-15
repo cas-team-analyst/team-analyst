@@ -54,3 +54,9 @@ _end if_
 # Step 7: Build Complete Analysis Output
 
 - [ ] Run `scripts/6-complete-analysis.py` and alert the user of the location and description of the final output files. 
+- [ ] Run `scripts/7-tech-review.py` and alert the user of the results and where the output is saved to.
+
+# Step 8: Suggest Peer Review
+
+- [ ] Suggest to the user that they get a Peer Review of the results. If they would like TeamAnalyst to do this, they should close the current workflow (this will clear context to get an independent review) and use the /peer-review skill to get a AI Peer Review.
+
