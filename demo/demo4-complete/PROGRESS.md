@@ -52,3 +52,7 @@ _end if_
 - [x] Task a single `selector-ultimates` subagent to: Review `selections/Ultimates.xlsx` in full (NOT the files at `processed-data`), use this information to make actuarial ultimate selections for each combination of Chain Ladder measure and period, and add the selections and specific reasoning for each selection to `selections/ultimates.json`, each as a dict/object/map in the array with keys "measure", "period", "selection", "reasoning" (along with other selections). (Completed 2026-04-06)
 - [x] Run `5b-ultimates-update-selections.py` to insert the selections and reasoning into `selections/Ultimates.xlsx`. (Completed 2026-04-06)
 
+# Step 7: Build Complete Analysis Output
+
+- [x] Run `scripts/6-complete-analysis.py` and alert the user of the location and description of the final output files. (Completed 2026-04-15)
+
