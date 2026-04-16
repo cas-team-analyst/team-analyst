@@ -32,10 +32,11 @@ The plugin's primary workflow is **Reserving Analysis** (`/reserving-analysis`),
 
 Available reserving methods:
 
-| Method | Status |
-|--------|--------|
-| **Chain Ladder** | Active |
-| **Bornhuetter-Ferguson** | Under Construction |
+| Method | Status | Notes |
+|--------|--------|-------|
+| **Chain Ladder** | Active | Core method, no additional inputs needed |
+| **Initial Expected** | Active | Requires an Expected Loss Rate input file and exposures |
+| **Bornhuetter-Ferguson** | Active | Requires Chain Ladder and Initial Expected results; skipped automatically if IE was not run |
 
 ## Step 3: Ask How to Help
 
@@ -43,6 +44,7 @@ Ask what the user is working on today. Suggest starting points:
 
 - **"Run a reserving analysis"** — triggers `/reserving-analysis` to set up a project and walk through the full workflow
 - **"View selection logic"** — triggers `/selection-logic` to review the actuarial LDF selection criteria and diagnostic rules used during chain-ladder selections
+- **"Peer review my analysis"** — triggers `/peer-review` to review a completed reserving analysis against cross-method consistency checks and ASOP standards (13, 23, 25, 36, 41, 43); produces an advisory findings report without modifying selections
 
 Mention the three interaction levels available during analysis:
 1. **Careful** — step-by-step review at each stage, full user control over every decision
