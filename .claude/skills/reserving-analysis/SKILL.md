@@ -12,7 +12,7 @@ Reserving Analysis — TeamAnalyst Plugin
 
 This workflow walks you through a full actuarial reserving analysis:
 
-1. Project Setup — set up folders, install dependencies, choose interaction level
+1. Project Setup — set up folders, install dependencies, choose interaction mode
 2. Exploratory Data Analysis — review and summarize your data files
 3. Data Intake — prepare triangles, calculate LDF averages and diagnostics
 4. Chain Ladder Selections — AI-assisted LDF selections with actuarial judgment
@@ -25,7 +25,11 @@ Bornhuetter-Ferguson method builds on both Chain Ladder and Initial Expected
 results — if IE can't run, BF will be skipped automatically. Chain Ladder
 always runs. You'll be asked about your available data during data intake.
 
-You'll be guided through each step and asked for input along the way.
+Interaction modes:
+- Pause for Selections: pauses after LDF selections and after ultimate selections for your review
+- Fully Automatic: runs start to finish with no pauses (except to confirm data format)
+
+Throughout the workflow, keep the user you'll be kept informed of what is happening and why.
 ```
 
 Then ask the user to identify the folder where they'd like to conduct this analysis. This should be an existing folder that contains (or will contain) their triangle data. Do not create a new folder in an arbitrary location. Once the user has confirmed the folder, proceed with the main operation flow below.
@@ -47,11 +51,11 @@ When a step is complete:
 2. Note any applicable scripts that were created by listing them to the right of the progress step, on the same line.
 
 As you go:
-- Use the AskUserQuestions tool at each step to get complete information.
+- Keep the user informed at every step: report what you are doing and why, show samples and summaries of data output when you run Python scripts, tell the user what files were created and where. This applies in all modes.
+- Only ask for user input at steps marked for the chosen interaction mode. In Fully Automatic mode, the only required user input is the data format confirmation in Step 3. If you aren't sure what interaction mode has been chosen, ask again.
 - Update REPORT.md in the appropriate section at every step. This is the primary document we'll use to communicate our analysis. It starts as boilerplate and you will fill it out as the project goes.
 - Track steps to replicate results in a file REPLICATE.md: files to add (w/ size and last modified date to verify correct file), scripts to run, any manual edits made to automatically generated files (with reasoning), etc. A user without AI support should be able to follow the steps in REPLICATE.md to get the same results.
 - Create python scripts as necessary to ensure the steps are repeatable.
-- Assume the user is not familiar with the workflow: report what you are doing and why, show samples and summaries of data that is output when you run python scripts, tell the user what files you created and where they can find them.
 
 # OTHER GUIDELINES
 
