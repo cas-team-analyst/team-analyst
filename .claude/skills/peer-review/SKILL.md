@@ -16,7 +16,12 @@ Review the reserve analysis at `output/complete-analysis.xlsx`. Produce `output/
 
 Standards to verify against:
 - CAS Paper: "Estimating Unpaid Claims Using Basic Techniques" (Friedland et al.)
-- ASOP Nos. 13 (Trending), 23 (Data Quality), 25 (Credibility), 36 (SAO for P/C Reserves), 41 (Actuarial Communications), 43 (P/C Unpaid Claim Estimates)
+- ASOP No. 13 — Trending — see `assets/ASOP-13-Trending.md`
+- ASOP No. 23 — Data Quality — see `assets/ASOP-23-Data-Quality.md`
+- ASOP No. 25 — Credibility — see `assets/ASOP-25-Credibility.md`
+- ASOP No. 36 — SAO for P/C Reserves — see `assets/ASOP-36-SAO-PC-Reserves.md`
+- ASOP No. 41 — Actuarial Communications — see `assets/ASOP-41-Actuarial-Communications.md`
+- ASOP No. 43 — P/C Unpaid Claim Estimates — see `assets/ASOP-43-PC-Unpaid-Claim-Estimates.md`
 
 ---
 
@@ -40,11 +45,13 @@ Standards to verify against:
 
 ### 4. Selection Quality per ASOPs
 
-- Are data sources and adjustments documented? (ASOP 23, 41)
-- Are trending procedures appropriate? (ASOP 13)
-- Is credibility weighting applied where warranted? (ASOP 25)
-- Are selections consistent with the diagnostics shown? (ASOP 43)
-- Would selections support an actuarial opinion? (ASOP 36)
+Before answering the bullets below, open the relevant ASOP file in `assets/` and verify against its **Key Requirements** and **Red Flags** sections. Cite the specific requirement in findings, not just the ASOP number.
+
+- Are data sources and adjustments documented? (ASOP 23 — see `assets/ASOP-23-Data-Quality.md`; ASOP 41 — see `assets/ASOP-41-Actuarial-Communications.md`)
+- Are trending procedures appropriate? (ASOP 13 — see `assets/ASOP-13-Trending.md`)
+- Is credibility weighting applied where warranted? (ASOP 25 — see `assets/ASOP-25-Credibility.md`)
+- Are selections consistent with the diagnostics shown? (ASOP 43 — see `assets/ASOP-43-PC-Unpaid-Claim-Estimates.md`)
+- Would selections support an actuarial opinion? (ASOP 36 — see `assets/ASOP-36-SAO-PC-Reserves.md`)
 
 ### 5. Diagnostic Consistency
 
@@ -82,7 +89,7 @@ Write `output/PEER_REVIEW.md` structured as:
 [Findings]
 
 ### ASOP Compliance
-[Findings by standard]
+[For each ASOP with findings, cite the specific requirement from the corresponding `assets/ASOP-NN-*.md` file, not just the ASOP number. Organize findings by standard.]
 
 ### Diagnostic Consistency
 [Findings]
