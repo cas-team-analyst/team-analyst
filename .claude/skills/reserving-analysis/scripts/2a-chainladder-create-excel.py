@@ -285,6 +285,13 @@ def build_sheet(ws, measure, df2, df3, df4, df_prior=None):
 
 def main():
     """Create Chain Ladder Selections Excel file with all measures."""
+    output_file = SELECTIONS_OUTPUT_PATH + OUTPUT_FILE_NAME
+    if Path(output_file).exists():
+        raise FileExistsError(
+            f"Output file already exists: {output_file}\n"
+            "Delete or rename the file before re-running to avoid overwriting manual edits."
+        )
+
     # Read data files
     df2 = pd.read_parquet(OUTPUT_PATH + f"2_enhanced.parquet")
     df3 = pd.read_parquet(OUTPUT_PATH + f"3_diagnostics.parquet")
@@ -320,7 +327,6 @@ def main():
         build_sheet(ws, measure, df2, df3, df4, df_prior=df_prior)
         print(f"Built sheet: {sheet_name}")
 
-    output_file = SELECTIONS_OUTPUT_PATH + OUTPUT_FILE_NAME
     wb.save(output_file)
     print(f"\nSaved: {output_file}")
 

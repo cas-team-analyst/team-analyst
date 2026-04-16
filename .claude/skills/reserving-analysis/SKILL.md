@@ -60,3 +60,16 @@ As you go:
 # OTHER GUIDELINES
 
 - Never include checkmarks or other unicode symbols in PowerShell commands - only use standard ASCII text and operators.
+
+## Protecting Manual Edits to Excel Files
+
+Several Excel files in this workflow are designed for manual actuary input after generation. **Never re-run a script that would overwrite these files once the actuary has edited them.**
+
+Key protected files:
+- `selections/Chain Ladder Selections.xlsx` — actuary enters LDF selections and reasoning here after `2a` generates it
+
+Rules:
+- Do NOT re-run `2a-chainladder-create-excel.py` if `Chain Ladder Selections.xlsx` already exists. The script will error to protect the file.
+- Do NOT re-run `2b-chainladder-update-selections.py` if any selections are already present in the Excel. The script will error to protect existing actuary entries.
+- If a rebuild is truly necessary (e.g., data changed), confirm with the user first and ensure existing selections are preserved or backed up before proceeding.
+- Log any manual edits the actuary makes to generated files in `REPLICATE.md` so the analysis remains reproducible.

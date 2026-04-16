@@ -58,6 +58,17 @@ def get_interval_columns(ws, header_row):
     return interval_to_col
 
 
+def has_existing_selections(ws):
+    """Return True if any Selection row cells in this sheet already have values."""
+    _, selection_row, _ = find_selections_section(ws)
+    if selection_row is None:
+        return False
+    for cell in ws[selection_row]:
+        if cell.column > 1 and cell.value not in (None, ""):
+            return True
+    return False
+
+
 def update_sheet(ws, measure_selections):
     """Update the selections section of a single sheet."""
     header_row, selection_row, reasoning_row = find_selections_section(ws)
@@ -119,6 +130,14 @@ def main():
     print(f"Loaded {len(selections)} selections from {SELECTIONS_FILE}")
 
     wb = openpyxl.load_workbook(EXCEL_FILE)
+
+    # Abort if any sheet already has manual selections to avoid overwriting actuary work
+    sheets_with_selections = [s for s in wb.sheetnames if has_existing_selections(wb[s])]
+    if sheets_with_selections:
+        raise ValueError(
+            f"Existing selections found in sheet(s): {sheets_with_selections}\n"
+            "Clear selections manually before re-running to avoid overwriting actuary edits."
+        )
 
     # Group selections by measure
     by_measure = {}
