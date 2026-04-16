@@ -1,0 +1,1 @@
+See @AGENTS.md for project overview and design guidelines.
