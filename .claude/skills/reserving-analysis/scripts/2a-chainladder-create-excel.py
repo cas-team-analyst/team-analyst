@@ -17,30 +17,22 @@ run-note: When copied to a project, run from the scripts/ directory:
 
 import pandas as pd
 import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.styles import Alignment, Font
 from openpyxl.utils import get_column_letter
 from pathlib import Path
 
-# Replace when using this file in an actual project:
-OUTPUT_PATH = "../processed-data/"
+from modules import config
+from modules.xl_styles import (
+    HEADER_FILL, SUBHEADER_FILL, SECTION_FILL, SELECTION_FILL, PRIOR_FILL,
+    HEADER_FONT, SUBHEADER_FONT, SECTION_FONT, LABEL_FONT, DATA_FONT,
+    THIN_BORDER, style_header,
+)
+
+# Paths from modules/config.py — override here if needed:
+OUTPUT_PATH = config.PROCESSED_DATA
+SELECTIONS_OUTPUT_PATH = config.SELECTIONS
 METHOD_ID = "chainladder"
-SELECTIONS_OUTPUT_PATH = "../selections/"  # Where to save the Excel selection file
 OUTPUT_FILE_NAME = "Chain Ladder Selections.xlsx"
-
-HEADER_FILL = PatternFill("solid", fgColor="1F4E79")
-SUBHEADER_FILL = PatternFill("solid", fgColor="2E75B6")
-SECTION_FILL = PatternFill("solid", fgColor="D6E4F0")
-SELECTION_FILL = PatternFill("solid", fgColor="FFF2CC")
-PRIOR_FILL = PatternFill("solid", fgColor="E2EFDA")
-
-HEADER_FONT = Font(bold=True, color="FFFFFF", size=11)
-SUBHEADER_FONT = Font(bold=True, color="FFFFFF", size=10)
-SECTION_FONT = Font(bold=True, size=10)
-LABEL_FONT = Font(bold=True, size=9)
-DATA_FONT = Font(size=9)
-
-THIN = Side(style="thin", color="CCCCCC")
-THIN_BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 
 # Short labels for diagnostic sheet names (max ~14 chars to fit in 31-char sheet name)
 DIAG_SHEET_LABELS = {
@@ -78,26 +70,6 @@ def diag_sheet_name(diag_col):
 
 def cv_slopes_sheet_name(measure):
     return f"{measure} - CV & Slopes"[:31]
-
-
-def style_header(cell, level="header"):
-    if level == "header":
-        cell.fill = HEADER_FILL
-        cell.font = HEADER_FONT
-    elif level == "subheader":
-        cell.fill = SUBHEADER_FILL
-        cell.font = SUBHEADER_FONT
-    elif level == "section":
-        cell.fill = SECTION_FILL
-        cell.font = SECTION_FONT
-    elif level == "selection":
-        cell.fill = SELECTION_FILL
-        cell.font = LABEL_FONT
-    elif level == "prior":
-        cell.fill = PRIOR_FILL
-        cell.font = LABEL_FONT
-    cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-    cell.border = THIN_BORDER
 
 
 def write_triangle(ws, start_row, title, row_labels, col_labels, data_dict, number_format="#,##0"):

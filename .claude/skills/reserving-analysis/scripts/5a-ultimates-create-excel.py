@@ -20,27 +20,19 @@ run-note: When copied to a project, run from the scripts/ directory:
 
 import pandas as pd
 from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.styles import Alignment
 import pathlib
 import json
 
-# Replace when using this file in an actual project:
-ULTIMATES_INPUT_PATH = "../ultimates/"  # Path to projected ultimates
-INPUT_ULTIMATES = ULTIMATES_INPUT_PATH + "projected-ultimates.parquet"
-SELECTIONS_JSON_PATH = "../selections/"  # Path to read prior selections
-PRIOR_SELECTIONS = SELECTIONS_JSON_PATH + "ultimates.json"  # Optional
-SELECTIONS_EXCEL_PATH = "../selections/"  # Path to save Excel selection file
-OUTPUT_FILE = SELECTIONS_EXCEL_PATH + "Ultimates.xlsx"
-
-# Formatting Styles
-HEADER_FILL = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
-HEADER_FONT = Font(name='Calibri', size=11, bold=True, color="FFFFFF")
-SELECTION_FILL = PatternFill(start_color="FFFFE0", end_color="FFFFE0", fill_type="solid")
-PRIOR_FILL = PatternFill(start_color="F2F2F2", end_color="F2F2F2", fill_type="solid")
-THIN_BORDER = Border(
-    left=Side(style='thin'), right=Side(style='thin'),
-    top=Side(style='thin'), bottom=Side(style='thin')
+from modules import config
+from modules.xl_styles import (
+    HEADER_FILL, HEADER_FONT, SELECTION_FILL, PRIOR_FILL, THIN_BORDER,
 )
+
+# Paths from modules/config.py — override here if needed:
+INPUT_ULTIMATES  = config.ULTIMATES + "projected-ultimates.parquet"
+PRIOR_SELECTIONS = config.SELECTIONS + "ultimates.json"   # Optional
+OUTPUT_FILE      = config.SELECTIONS + "Ultimates.xlsx"
 
 
 def format_sheet(ws, measure, df_ult, df_prior):

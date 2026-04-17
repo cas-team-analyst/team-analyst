@@ -17,11 +17,11 @@ import pandas as pd
 from openpyxl import load_workbook
 import pathlib
 
-# Replace when using this file in an actual project:
-SELECTIONS_JSON_PATH = "../selections/"  # Path to selections JSON file
-SELECTIONS_EXCEL_PATH = "../selections/"  # Path to selections Excel file
-JSON_FILE = SELECTIONS_JSON_PATH + "ultimates.json"
-EXCEL_FILE = SELECTIONS_EXCEL_PATH + "Ultimates.xlsx"
+from modules import config
+
+# Paths from modules/config.py — override here if needed:
+JSON_FILE  = config.SELECTIONS + "ultimates.json"
+EXCEL_FILE = config.SELECTIONS + "Ultimates.xlsx"
 
 
 def update_sheet_selections(ws, periods_data):

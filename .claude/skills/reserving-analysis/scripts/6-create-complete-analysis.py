@@ -29,23 +29,30 @@ import pathlib
 import numpy as np
 import pandas as pd
 from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 
-# ── User-configurable properties ─────────────────────────────────────────────
-# Replace these paths when using this file in a new project.
+from modules import config
+from modules.xl_styles import (
+    HEADER_FILL, SUBHEADER_FILL, SECTION_FILL, SELECTION_FILL,
+    HEADER_FONT, SUBHEADER_FONT, SECTION_FONT, LABEL_FONT, DATA_FONT,
+    THIN_BORDER, style_header,
+)
 
-INPUT_ULTIMATES       = "../ultimates/projected-ultimates.parquet"
-INPUT_SELECTIONS_JSON = "../selections/ultimates.json"   # actuary-selected ultimates
-INPUT_TRIANGLES       = "../processed-data/1_triangles.parquet"
-OUTPUT_PATH           = "../output/"
+# ── User-configurable properties ─────────────────────────────────────────────
+# Paths from modules/config.py — override here if needed:
+
+INPUT_ULTIMATES       = config.ULTIMATES + "projected-ultimates.parquet"
+INPUT_SELECTIONS_JSON = config.SELECTIONS + "ultimates.json"
+INPUT_TRIANGLES       = config.PROCESSED_DATA + "1_triangles.parquet"
+OUTPUT_PATH           = config.OUTPUT
 
 # Excel files from prior scripts to fold into the complete analysis workbook.
 # Each entry: (path_to_file, sheet_name_prefix_or_None).
 # Files that do not exist are silently skipped.
 ANALYSIS_SOURCE_FILES = [
-    ("../selections/Chain Ladder Selections.xlsx", "CL - "),
-    ("../selections/Ultimates.xlsx",               "Sel - "),
+    (config.SELECTIONS + "Chain Ladder Selections.xlsx", "CL - "),
+    (config.SELECTIONS + "Ultimates.xlsx",               "Sel - "),
 ]
 
 # Maps each measure to its "unpaid" proxy measure used to compute the Unpaid column.
@@ -64,35 +71,12 @@ OUTPUT_POST_SERIES        = OUTPUT_PATH + "post-method-series.xlsx"
 OUTPUT_POST_TRIANGLES     = OUTPUT_PATH + "post-method-triangles.xlsx"
 OUTPUT_COMPLETE_ANALYSIS  = OUTPUT_PATH + "complete-analysis.xlsx"
 
-# ── Styling — matches 2a-chainladder-create-excel.py ─────────────────────────
-HEADER_FILL    = PatternFill("solid", fgColor="1F4E79")   # dark blue
-SUBHEADER_FILL = PatternFill("solid", fgColor="2E75B6")   # medium blue
-SECTION_FILL   = PatternFill("solid", fgColor="D6E4F0")   # light blue
-SELECTION_FILL = PatternFill("solid", fgColor="FFF2CC")   # yellow
-
-HEADER_FONT    = Font(bold=True, color="FFFFFF", size=11)
-SUBHEADER_FONT = Font(bold=True, color="FFFFFF", size=10)
-SECTION_FONT   = Font(bold=True, size=10)
-LABEL_FONT     = Font(bold=True, size=9)
-DATA_FONT      = Font(size=9)
-
-_THIN        = Side(style="thin", color="CCCCCC")
-THIN_BORDER  = Border(left=_THIN, right=_THIN, top=_THIN, bottom=_THIN)
-
 _NUM_FMT = "#,##0"
 _DEC_FMT = "#,##0.000"
 
 
 def _style_cell(cell, level="subheader"):
-    """Apply 2a-consistent header styling to a cell."""
-    fills = {"header": HEADER_FILL, "subheader": SUBHEADER_FILL,
-             "section": SECTION_FILL, "selection": SELECTION_FILL}
-    fonts = {"header": HEADER_FONT, "subheader": SUBHEADER_FONT,
-             "section": SECTION_FONT, "selection": LABEL_FONT}
-    cell.fill   = fills.get(level, SUBHEADER_FILL)
-    cell.font   = fonts.get(level, SUBHEADER_FONT)
-    cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-    cell.border = THIN_BORDER
+    style_header(cell, level)
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

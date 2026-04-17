@@ -14,7 +14,7 @@ Goal: Understand what data is available.
 
 # Step 3: Data Intake
 
-- [ ] Copy all the numbered python scripts from the reserving-analysis skill scripts folder to `scripts/` (use `cp` or `mv`, don't rewrite it yourself): 1a-prep-data.py through 2b-chainladder-update-selections.py.
+- [ ] Copy all the numbered python scripts from the reserving-analysis skill scripts folder to `scripts/` (use `cp` or `mv`, don't rewrite it yourself): 1a-prep-data.py through 2b-chainladder-update-selections.py. Also copy the `modules/` subfolder (containing `config.py`, `xl_styles.py`, `__init__.py`) into `scripts/modules/` — all scripts import from it.
 - [ ] Based on available data, determine which triangles we will use to come up with Ultimates estimates using the Chain Ladder method: Paid Losses, Incurred Losses, Reported Claims, Closed Claims, etc.
 - [ ] If you haven't already found prior selections, ask the user if prior LDF selections exist from a previous analysis. If they do, ask where they are located (Excel file, CSV, database, etc.). You will need to modify `read_and_process_prior_selections()` in `1a-prep-data.py` to read from that source during data extraction.
 - [ ] If you haven't already found an input file with Expected Loss Rates (containing period, expected loss rate, and expected frequency), ask the user if this file exists and to place it in the raw-data folder. Without this file, we won't be able to use the Initial Expected or Bornhuetter-Ferguson methods.
@@ -40,12 +40,11 @@ _(Pause for Selections only):_
 
 # Step 5: Run Methods That Don't Require Selections
 
-- [ ] Run `2c-chainladder-ultimates.py`, `3-ie-ultimates.py`, and `4-bf-ultimates.py`. Debug any errors that occur.
+- [ ] Run `2c-chainladder-ultimates.py`, `3-ie-ultimates.py`, and `4-bf-ultimates.py`. Debug any errors that occur. It is normal for IE and BF to get skipped if the user didn't provide the necessary data (exposure, initial expected).
 
 # Step 6: Actuarial Selections: Ultimates
 
-- [ ] Create an Excel worksheet at `selections/Ultimates.xlsx` with the context needed to select Ultimates using the available methods. Leave blank space for the selections (we'll select ultimates in the next step). Create a script for this at `scripts/5a-ultimates-create-excel.py`. Use `scripts/2a-chainladder-create-excel.py` as a guide for format.
-- [ ] Create a script at `scripts/5b-ultimates-update-selections.py` that reads `selections/ultimates.json` and updates `selections/Ultimates.xlsx` with selections and reasoning. Use `scripts/2b-chainladder-update-selections.py` as a guide for format.
+- [ ] Copy `scripts/5a-ultimates-create-excel.py` and `scripts/5b-ultimates-update-selections.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`, don't rewrite them yourself). Ensure `scripts/modules/` is already in place (copied in Step 3).
 - [ ] Task a single `selector-ultimates` subagent to: Review `selections/Ultimates.xlsx` in full (NOT the files at `processed-data`), use this information to make actuarial ultimate selections for each combination of Chain Ladder measure and period, and add the selections and specific reasoning for each selection to `selections/ultimates.json`, each as a dict/object/map in the array with keys "measure", "period", "selection", "reasoning" (along with other selections).
 - [ ] Run `5b-ultimates-update-selections.py` to insert the selections and reasoning into `selections/Ultimates.xlsx`.
 - [ ] Tell the user where `selections/Ultimates.xlsx` is located and that AI selections have been written to it.
@@ -55,7 +54,8 @@ _(Pause for Selections only):_
 
 # Step 7: Build Complete Analysis Output
 
-- [ ] Run `scripts/6-complete-analysis.py` and alert the user of the location and description of the final output files. 
+- [ ] Copy `scripts/6-create-complete-analysis.py` and `scripts/7-tech-review.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`). Ensure `scripts/modules/` is already in place.
+- [ ] Run `scripts/6-create-complete-analysis.py` and alert the user of the location and description of the final output files. 
 - [ ] Run `scripts/7-tech-review.py` and alert the user of the results and where the output is saved to.
 
 # Step 8: Suggest Peer Review

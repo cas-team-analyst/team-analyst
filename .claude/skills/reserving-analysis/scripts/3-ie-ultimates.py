@@ -22,12 +22,14 @@ import numpy as np
 import sys
 from pathlib import Path
 
-# Replace these when using this file in an actual project:
+from modules import config
+
+# Paths from modules/config.py — override here if needed:
 # NOTE: Set INPUT_EXPECTED_RATES to None if expected loss rate data is not available.
 #       This script will exit gracefully since Initial Expected requires this data.
-INPUT_TRIANGLE_DATA = "../processed-data/1_triangles.parquet"
-INPUT_EXPECTED_RATES = "../processed-data/1_expected_loss_rates.parquet"  # Set to None if not available
-OUTPUT_PATH = "../ultimates/"
+INPUT_TRIANGLE_DATA  = config.PROCESSED_DATA + "1_triangles.parquet"
+INPUT_EXPECTED_RATES = config.PROCESSED_DATA + "1_expected_loss_rates.parquet"  # Set to None if not available
+OUTPUT_PATH          = config.ULTIMATES
 
 
 def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:

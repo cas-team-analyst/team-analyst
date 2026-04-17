@@ -29,13 +29,15 @@ import numpy as np
 import sys
 from pathlib import Path
 
-# Replace these when using this file in an actual project:
+from modules import config
+
+# Paths from modules/config.py — override here if needed:
 # NOTE: Set INPUT_IE_ULTIMATES to None if Initial Expected data is not available.
 #       This script will exit gracefully since BF requires Initial Expected ultimates.
-INPUT_TRIANGLE_DATA = "../processed-data/1_triangles.parquet"
-INPUT_CL_ULTIMATES = "../ultimates/projected-ultimates.parquet"  # Now reads from combined file
-INPUT_IE_ULTIMATES = "../ultimates/projected-ultimates.parquet"  # Now reads from combined file (set to None if not available)
-OUTPUT_PATH = "../ultimates/"
+INPUT_TRIANGLE_DATA = config.PROCESSED_DATA + "1_triangles.parquet"
+INPUT_CL_ULTIMATES  = config.ULTIMATES + "projected-ultimates.parquet"
+INPUT_IE_ULTIMATES  = config.ULTIMATES + "projected-ultimates.parquet"  # Set to None if not available
+OUTPUT_PATH         = config.ULTIMATES
 
 
 def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:

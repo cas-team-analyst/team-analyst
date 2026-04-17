@@ -23,10 +23,12 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-# Replace these when using this file in an actual project:
-INPUT_TRIANGLE_DATA = "../processed-data/1_triangles.parquet"
-INPUT_SELECTIONS_EXCEL = "../selections/Chain Ladder Selections.xlsx"
-OUTPUT_PATH = "../ultimates/"
+from modules import config
+
+# Paths from modules/config.py — override here if needed:
+INPUT_TRIANGLE_DATA    = config.PROCESSED_DATA + "1_triangles.parquet"
+INPUT_SELECTIONS_EXCEL = config.SELECTIONS + "Chain Ladder Selections.xlsx"
+OUTPUT_PATH            = config.ULTIMATES
 
 
 def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:

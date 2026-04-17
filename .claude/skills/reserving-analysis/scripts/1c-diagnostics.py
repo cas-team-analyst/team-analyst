@@ -16,9 +16,11 @@ import pandas as pd
 import numpy as np
 from typing import Optional
 
-# Replace when using this file in an actual project:
-OUTPUT_PATH = "../processed-data/"
-METHOD_ID = "chainladder"
+from modules import config
+
+# Paths from modules/config.py — override here if needed:
+OUTPUT_PATH = config.PROCESSED_DATA
+METHOD_ID   = "chainladder"
 
 
 def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:

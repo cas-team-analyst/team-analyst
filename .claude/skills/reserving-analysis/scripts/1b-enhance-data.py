@@ -15,9 +15,11 @@ run-note: When copied to a project, run from the scripts/ directory:
 import pandas as pd
 import numpy as np
 
-# Replace when using this file in an actual project:
-OUTPUT_PATH = "../processed-data/"
-METHOD_ID = "chainladder"
+from modules import config
+
+# Paths from modules/config.py — override here if needed:
+OUTPUT_PATH = config.PROCESSED_DATA
+METHOD_ID   = "chainladder"
 
 
 def enhance_triangle_data(df_long: pd.DataFrame) -> pd.DataFrame:

@@ -14,20 +14,15 @@ run-note: When copied to a project, run from the scripts/ directory. Close the E
 import json
 import os
 import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.styles import Alignment, Font
 
-# Replace when using this file in an actual project:
-SELECTIONS_JSON_PATH = "../selections/"  # Path to selections JSON file
-SELECTIONS_EXCEL_PATH = "../selections/"  # Path to selections Excel file
+from modules import config
+from modules.xl_styles import SELECTION_FILL, LABEL_FONT, DATA_FONT, THIN_BORDER
+
+# Paths from modules/config.py — override here if needed:
 METHOD_ID = "chainladder"
-SELECTIONS_FILE = SELECTIONS_JSON_PATH + f"{METHOD_ID}.json"
-EXCEL_FILE = SELECTIONS_EXCEL_PATH + "Chain Ladder Selections.xlsx"
-
-SELECTION_FILL = PatternFill("solid", fgColor="FFF2CC")
-LABEL_FONT = Font(bold=True, size=9)
-DATA_FONT = Font(size=9)
-THIN = Side(style="thin", color="CCCCCC")
-THIN_BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
+SELECTIONS_FILE = config.SELECTIONS + f"{METHOD_ID}.json"
+EXCEL_FILE      = config.SELECTIONS + "Chain Ladder Selections.xlsx"
 
 
 def find_selections_section(ws):

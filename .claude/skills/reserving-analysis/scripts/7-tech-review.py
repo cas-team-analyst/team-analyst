@@ -24,12 +24,16 @@ import pathlib
 
 import pandas as pd
 from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
+from modules import config
+from modules.xl_styles import HEADER_FILL, HEADER_FONT, THIN_BORDER
+
 # ── User-configurable properties ─────────────────────────────────────────────
-INPUT_COMPLETE_ANALYSIS = "../output/complete-analysis.xlsx"
-OUTPUT_REVIEW           = "../output/tech-review.xlsx"
+# Paths from modules/config.py — override here if needed:
+INPUT_COMPLETE_ANALYSIS = config.OUTPUT + "complete-analysis.xlsx"
+OUTPUT_REVIEW           = config.OUTPUT + "tech-review.xlsx"
 
 IBNR_NEG_TOLERANCE     = -500   # WARN if IBNR < this (small negatives OK from rounding)
 SEV_OUTLIER_RATIO      = 5.0    # WARN if any severity > this × median
@@ -52,10 +56,9 @@ LDF_CEILING_DEFAULT = 1.05  # ages beyond 120
 PASS_FILL = PatternFill("solid", fgColor="C6EFCE")
 WARN_FILL = PatternFill("solid", fgColor="FFEB9C")
 FAIL_FILL = PatternFill("solid", fgColor="FFC7CE")
-HDR_FILL  = PatternFill("solid", fgColor="1F4E79")
-HDR_FONT  = Font(bold=True, color="FFFFFF", size=10)
-_T        = Side(style="thin", color="CCCCCC")
-THIN      = Border(left=_T, right=_T, top=_T, bottom=_T)
+HDR_FILL  = HEADER_FILL
+HDR_FONT  = HEADER_FONT
+THIN      = THIN_BORDER
 
 
 # ── Result collector ──────────────────────────────────────────────────────────

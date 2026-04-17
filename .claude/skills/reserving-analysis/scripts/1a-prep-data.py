@@ -17,9 +17,11 @@ run-note: When copied to a project, run from the scripts/ directory:
 import pandas as pd
 from typing import Optional
 
-# Replace these when using this file in an actual project:
-DATA_FILE_PATH = "../raw-data/"
-OUTPUT_PATH = "../processed-data/"
+from modules import config
+
+# Paths from modules/config.py — override here if needed:
+DATA_FILE_PATH = config.RAW_DATA
+OUTPUT_PATH    = config.PROCESSED_DATA
 EXPECTED_LOSS_RATES_FILE = "expected-loss-rates.csv"  # Optional: Set to None if not using expected loss rates
 
 def read_and_process_triangles():
