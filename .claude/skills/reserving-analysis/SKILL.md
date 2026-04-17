@@ -71,6 +71,17 @@ As you go:
 
 - Never include checkmarks or other unicode symbols in PowerShell commands - only use standard ASCII text and operators.
 
+## Never Rewrite the Numbered Scripts
+
+The numbered Python scripts in `scripts/` (1a through 7, plus `modules/`) are the canonical, tested pipeline. Do not rewrite them from scratch under any circumstances. They are long but complete — a partial Read view is not evidence of truncation.
+
+If you suspect a script is truncated or broken:
+1. Run `wc -l <script>` to check the line count against what you see.
+2. Read the tail of the file to confirm it ends with `if __name__ == "__main__": main()` or a proper final statement.
+3. Only if the file is genuinely incomplete, tell the user and ask how to proceed — do not silently regenerate it.
+
+Real bugs (wrong path variable, wrong column name, missing customization for the user's data format) should be fixed with a targeted Edit, not a full rewrite. Rewriting loses tested logic and introduces divergence from the skill's canonical scripts.
+
 ## Protecting Manual Edits to Excel Files
 
 Several Excel files in this workflow are designed for manual actuary input after generation. **Never re-run a script that would overwrite these files once the actuary has edited them.**
