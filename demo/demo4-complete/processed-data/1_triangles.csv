@@ -219,58 +219,58 @@ period,age,value,measure,unit_type,source,details
 2023,12,1318.0,Closed Count,Count,../raw-data/canonical-triangles.xlsx - Sheet: Closed,Example closed data
 2023,24,2214.0,Closed Count,Count,../raw-data/canonical-triangles.xlsx - Sheet: Closed,Example closed data
 2024,12,1306.0,Closed Count,Count,../raw-data/canonical-triangles.xlsx - Sheet: Closed,Example closed data
-2015,12,2960.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2015,24,3890.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2015,36,4350.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2015,48,4443.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2015,60,4501.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2015,72,4512.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2015,84,4512.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2015,96,4512.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2015,108,4512.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2015,120,4512.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2016,12,2870.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2016,24,3666.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2016,36,4209.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2016,48,4355.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2016,60,4435.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2016,72,4440.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2016,84,4440.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2016,96,4440.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2016,108,4440.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2017,12,2560.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2017,24,3445.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2017,36,3898.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2017,48,4050.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2017,60,4116.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2017,72,4128.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2017,84,4128.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2017,96,4128.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2018,12,2390.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2018,24,3110.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2018,36,3552.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2018,48,3659.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2018,60,3732.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2018,72,3732.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2018,84,3732.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2019,12,2245.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2019,24,3038.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2019,36,3390.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2019,48,3509.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2019,60,3578.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2019,72,3580.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2020,12,2120.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2020,24,2856.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2020,36,3142.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2020,48,3209.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2020,60,3265.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2021,12,2070.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2021,24,2689.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2021,36,3009.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2021,48,3088.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2022,12,2340.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2022,24,3043.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2022,36,3468.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2023,12,2367.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2023,24,3109.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
-2024,12,2378.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Exposure data
+2015,12,2960.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2015,24,3890.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2015,36,4350.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2015,48,4443.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2015,60,4501.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2015,72,4512.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2015,84,4512.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2015,96,4512.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2015,108,4512.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2015,120,4512.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2016,12,2870.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2016,24,3666.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2016,36,4209.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2016,48,4355.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2016,60,4435.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2016,72,4440.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2016,84,4440.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2016,96,4440.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2016,108,4440.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2017,12,2560.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2017,24,3445.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2017,36,3898.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2017,48,4050.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2017,60,4116.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2017,72,4128.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2017,84,4128.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2017,96,4128.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2018,12,2390.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2018,24,3110.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2018,36,3552.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2018,48,3659.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2018,60,3732.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2018,72,3732.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2018,84,3732.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2019,12,2245.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2019,24,3038.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2019,36,3390.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2019,48,3509.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2019,60,3578.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2019,72,3580.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2020,12,2120.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2020,24,2856.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2020,36,3142.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2020,48,3209.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2020,60,3265.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2021,12,2070.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2021,24,2689.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2021,36,3009.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2021,48,3088.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2022,12,2340.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2022,24,3043.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2022,36,3468.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2023,12,2367.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2023,24,3109.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data
+2024,12,2378.0,Exposure,Count,../raw-data/canonical-triangles.xlsx - Sheet: Exposure,Example exposure data

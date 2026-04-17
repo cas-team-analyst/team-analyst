@@ -15,9 +15,11 @@ run-note: When copied to a project, run from the scripts/ directory:
 import pandas as pd
 import numpy as np
 
-# Replace when using this file in an actual project:
-OUTPUT_PATH = "../processed-data/"
-METHOD_ID = "chainladder"
+from modules import config
+
+# Paths from modules/config.py — override here if needed:
+OUTPUT_PATH = config.PROCESSED_DATA
+METHOD_ID   = "chainladder"
 
 
 def enhance_triangle_data(df_long: pd.DataFrame) -> pd.DataFrame:
@@ -97,7 +99,7 @@ def enhance_triangle_data(df_long: pd.DataFrame) -> pd.DataFrame:
 if __name__ == "__main__":
     """Test the enhance_triangle_data function."""
     # Read prepped data from step 1
-    input_file = OUTPUT_PATH + "1_triangles.parquet"
+    input_file = OUTPUT_PATH + f"1_triangles.parquet"
     df = pd.read_parquet(input_file)
     print(f"Loaded {len(df)} rows, {df['measure'].nunique()} measures, {df['source'].nunique()} sources")
     

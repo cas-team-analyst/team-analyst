@@ -17,9 +17,11 @@ run-note: When copied to a project, run from the scripts/ directory:
 import pandas as pd
 from typing import Optional
 
-# Replace these when using this file in an actual project:
-DATA_FILE_PATH = "../raw-data/"
-OUTPUT_PATH = "../processed-data/"
+from modules import config
+
+# Paths from modules/config.py — override here if needed:
+DATA_FILE_PATH = config.RAW_DATA
+OUTPUT_PATH    = config.PROCESSED_DATA
 EXPECTED_LOSS_RATES_FILE = "canonical-elrs.xlsx"  # Optional: Set to None if not using expected loss rates
 
 def read_and_process_triangles():
@@ -118,6 +120,18 @@ def read_and_process_triangles():
             
             period = str(period_val).strip()
             
+            # Resolve Excel formula-based period values like "=A2+1"
+            # These appear when accident years are entered as formulas in Excel
+            if period.startswith('=A') and '+' in period:
+                try:
+                    if periods:
+                        base = int(periods[0])
+                        period = str(base + len(periods))
+                    else:
+                        continue  # Cannot resolve without a base
+                except (ValueError, IndexError):
+                    pass  # leave as-is if unparseable
+            
             # Track period order (only add if not already seen)
             if period not in periods:
                 periods.append(period)
@@ -207,19 +221,8 @@ def read_and_process_triangles():
         details="Example closed data"
     )
 
-    exposure = read_triangle_data(
-        file_path=DATA_FILE_PATH + "canonical-triangles.xlsx",
-        sheet_name="Exposure",
-        header_row=1,
-        period_column=1,
-        first_data_column=2,
-        data_type="Exposure",
-        unit_type="Count",
-        details="Exposure data"
-    )
-
     # Concatenate all dataframes
-    all_data = pd.concat([incurred, paid, reported, closed, exposure], ignore_index=True)
+    all_data = pd.concat([incurred, paid, reported, closed], ignore_index=True)
     
     # Get unique age and period categories in the order they first appear (should be consistent across all triangles)
     age_categories = incurred['age'].cat.categories.tolist()
@@ -408,12 +411,43 @@ def read_and_process_expected_loss_rates(triangle_data: pd.DataFrame, file_path:
     
     # ============================================================================
     # COLUMN RENAMING STEP
-    # If your source file has different column names, rename them here:
+    # canonical-elrs.xlsx uses different column names — rename to standard format
     df_expected = df_expected.rename(columns={
         'Accident Period': 'period',
         'Expected Loss Rate': 'expected_loss_rate',
         'Expected Frequency': 'expected_freq'
     })
+    
+    # Resolve formula-based period values (e.g. =A2+1) in the ELR file
+    resolved = []
+    base_year = None
+    for val in df_expected['period']:
+        s = str(val).strip()
+        if base_year is None:
+            try:
+                base_year = int(float(s))
+                resolved.append(str(base_year))
+            except ValueError:
+                resolved.append(s)
+        else:
+            if s.startswith('=A') and '+' in s:
+                try:
+                    resolved.append(str(base_year + len(resolved)))
+                except Exception:
+                    resolved.append(s)
+            else:
+                try:
+                    resolved.append(str(int(float(s))))
+                except ValueError:
+                    resolved.append(s)
+    df_expected['period'] = resolved
+    # Drop blank/unresolved rows at bottom of file
+    df_expected = df_expected[
+        df_expected['period'].notna() &
+        (df_expected['period'] \!= 'None') &
+        (df_expected['period'] \!= '')
+    ]
+    df_expected = df_expected.dropna(subset=['expected_loss_rate', 'expected_freq'])
     # ============================================================================
     
     # Validate the data
@@ -580,7 +614,7 @@ def validate_triangle_data(df: pd.DataFrame) -> None:
     
     # Check measure values
     if 'measure' in df.columns:
-        valid_measures = ['Incurred Loss', 'Paid Loss', 'Reported Count', 'Closed Count', 'Exposure']
+        valid_measures = ['Incurred Loss', 'Paid Loss', 'Reported Count', 'Closed Count']
         invalid_measures = df[~df['measure'].isin(valid_measures)]['measure'].unique()
         if len(invalid_measures) > 0:
             errors.append(f"Unexpected measure value(s): {', '.join(map(str, invalid_measures))}")

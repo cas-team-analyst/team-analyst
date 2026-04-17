@@ -1,29 +1,52 @@
+# Creates a formatted Excel workbook displaying projected ultimate indications from multiple
+# reserving methods (Chain Ladder, Bornhuetter-Ferguson, etc.) alongside prior selections.
+# Actuaries review this workbook and manually enter their selected ultimate values and reasoning.
+
 """
-goal: Create an Excel workbook displaying indicated ultimates with spaces for final selection.
+goal: Create Ultimates.xlsx for actuarial review and selection of ultimate losses by period.
+
+Each sheet (one per measure) contains:
+  - Period and current maturity information
+  - Actual reported losses
+  - Initial expected ultimate
+  - Indicated ultimates from Chain Ladder, BF, and other methods
+  - Prior selections and reasoning (when available)
+  - Blank selection rows for actuary input
+
+run-note: When copied to a project, run from the scripts/ directory:
+    cd scripts/
+    python 5a-ultimates-create-excel.py
 """
 
 import pandas as pd
 from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.styles import Alignment
 import pathlib
 import json
 
-# File paths
-INPUT_ULTIMATES = "../ultimates/projected-ultimates.parquet"
-PRIOR_SELECTIONS = "../selections/ultimates.json"  # Optional
-OUTPUT_FILE = "../selections/Ultimates.xlsx"
-
-# Formatting Styles
-HEADER_FILL = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
-HEADER_FONT = Font(name='Calibri', size=11, bold=True, color="FFFFFF")
-SELECTION_FILL = PatternFill(start_color="FFFFE0", end_color="FFFFE0", fill_type="solid")
-PRIOR_FILL = PatternFill(start_color="F2F2F2", end_color="F2F2F2", fill_type="solid")
-THIN_BORDER = Border(
-    left=Side(style='thin'), right=Side(style='thin'),
-    top=Side(style='thin'), bottom=Side(style='thin')
+from modules import config
+from modules.xl_styles import (
+    HEADER_FILL, HEADER_FONT, SELECTION_FILL, PRIOR_FILL, THIN_BORDER,
 )
 
+# Paths from modules/config.py — override here if needed:
+INPUT_ULTIMATES  = config.ULTIMATES + "projected-ultimates.parquet"
+PRIOR_SELECTIONS = config.SELECTIONS + "ultimates.json"   # Optional
+OUTPUT_FILE      = config.SELECTIONS + "Ultimates.xlsx"
+
+
 def format_sheet(ws, measure, df_ult, df_prior):
+    """
+    Format a single ultimates sheet with indicated values and selection areas.
+    
+    Args:
+        ws: openpyxl worksheet object
+        measure: Measure name (e.g., 'Incurred Loss', 'Paid Loss')
+        df_ult: DataFrame with projected ultimates containing columns:
+                period, current_age, actual, ultimate_ie, ultimate_cl, ultimate_bf
+        df_prior: DataFrame with prior selections containing columns:
+                  period, measure, selection, reasoning (or None if no prior selections)
+    """
     # Filter for measure
     df_m = df_ult[df_ult['measure'] == measure].copy()
     if df_m.empty:
@@ -68,7 +91,7 @@ def format_sheet(ws, measure, df_ult, df_prior):
         ws.cell(row=r_idx, column=2, value=val_age).border = THIN_BORDER
         
         # Values
-        for c_idx, col_name in enumerate(['actual', 'expected_ultimate', 'cl_ultimate', 'bf_ultimate'], start=3):
+        for c_idx, col_name in enumerate(['actual', 'ultimate_ie', 'ultimate_cl', 'ultimate_bf'], start=3):
             val = row.get(col_name)
             if pd.isna(val): val = ""
             cell = ws.cell(row=r_idx, column=c_idx, value=val)
@@ -97,14 +120,16 @@ def format_sheet(ws, measure, df_ult, df_prior):
         
         c = ws.cell(row=r_idx, column=10)
         c.fill = SELECTION_FILL
-        c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
 
-if __name__ == "__main__":
+
+def main():
+    """Create ultimates selection Excel file from projected ultimates."""
     print("Creating Ultimates.xlsx...")
     
     try:
         df_ult = pd.read_parquet(INPUT_ULTIMATES)
+        print(f"Loaded ultimates from {INPUT_ULTIMATES}")
     except Exception as e:
         print(f"Error loading ultimates: {e}")
         exit(1)
@@ -115,6 +140,7 @@ if __name__ == "__main__":
             with open(PRIOR_SELECTIONS, 'r') as f:
                 prior_data = json.load(f)
             df_prior = pd.DataFrame(prior_data)
+            print(f"Loaded prior selections from {PRIOR_SELECTIONS}")
     except Exception as e:
         print(f"  No prior selections found or error: {e}")
 
@@ -127,9 +153,14 @@ if __name__ == "__main__":
         if m in df_ult['measure'].values:
             ws = wb.create_sheet(title=m)
             format_sheet(ws, m, df_ult, df_prior)
+            print(f"  Created sheet for {m}")
             
     out_dir = pathlib.Path(OUTPUT_FILE).parent
     out_dir.mkdir(parents=True, exist_ok=True)
     
     wb.save(OUTPUT_FILE)
-    print(f"Successfully created {OUTPUT_FILE}")
+    print(f"\nSaved: {OUTPUT_FILE}")
+
+
+if __name__ == "__main__":
+    main()

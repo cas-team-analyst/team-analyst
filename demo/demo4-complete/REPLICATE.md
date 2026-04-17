@@ -1,26 +1,30 @@
-# Replication Steps
+This file contains steps to replicate results.
 
-This file records the exact sequence of actions taken to recreate the analysis.
+## Files Required
 
-1. **Data Ingestion**
-   - Executed `scripts/1a-prep-data.py` to process Excel data (`canonical-triangles.xlsx` and `canonical-elrs.xlsx`) into `.parquet` format. Includes `Exposure` measure mapping.
+| File | Location | Notes |
+|---|---|---|
+| canonical-triangles.xlsx | raw-data/ | Triangle data: Incurred, Paid, Reported, Closed, Exposure sheets. AYs 2015–2024, ages 12–120. |
+| canonical-elrs.xlsx | raw-data/ | Expected Loss Rates and Expected Frequency by accident year 2015–2024. |
 
-2. **Data Engineering & Enhancements**
-   - Executed `scripts/1b-enhance-data.py` to calculate raw LDFs metrics from triangles.
-   - Executed `scripts/1c-diagnostics.py` to gather diagnostic checks on historical triangle data.
-   - Executed `scripts/1d-averages-qa.py` to compute traditional LDF averages (e.g. 3yr, 5yr, volume-weighted) across all measures.
+## Scripts (run from scripts/ directory)
 
-3. **LDF Selections**
-   - Executed `scripts/2a-chainladder-create-excel.py` to build the `selections/Chain Ladder Selections.xlsx` document.
-   - AI generated automated selections using the logic defined in `agents/selector-chain-ladder-ldf.md` and saved to `selections/chainladder.json`.
-   - Executed `scripts/2b-chainladder-update-selections.py` to update the Excel file with the AI selections + rationale.
+| Script | Purpose |
+|---|---|
+| 1a-prep-data.py | Read raw data, resolve formula-based AY labels, output canonical parquet/CSV |
+| 1b-enhance-data.py | Add derived columns (LDFs, etc.) |
+| 1c-diagnostics.py | Compute diagnostics |
+| 1d-averages-qa.py | Compute LDF averages for QA |
+| 2a-chainladder-create-excel.py | Create Chain Ladder Selections workbook |
+| 2b-chainladder-update-selections.py | Write AI/rule-based LDF selections into workbook |
+| 2c-chainladder-ultimates.py | Project ultimates via Chain Ladder |
+| 3-ie-ultimates.py | Project ultimates via Initial Expected |
+| 4-bf-ultimates.py | Project ultimates via Bornhuetter-Ferguson |
+| 5a-ultimates-create-excel.py | Create Ultimates selections workbook |
+| 5b-ultimates-update-selections.py | Write AI ultimate selections into workbook |
+| 6-create-complete-analysis.py | Compile complete analysis output |
+| 7-tech-review.py | Run technical review checks |
 
-4. **Deterministic Methods**
-   - Executed `scripts/2c-chainladder-ultimates.py` to compute Chain Ladder ultimates.
-   - Executed `scripts/3-ie-ultimates.py` to compute Initial Expected (a priori) ultimates.
-   - Executed `scripts/4-bf-ultimates.py` to compute Bornhuetter-Ferguson ultimates.
+## Manual Edits
 
-5. **Ultimates Selections**
-   - Created and executed `scripts/5a-ultimates-create-excel.py` to organize deterministic methods into an actionable spreadsheet format.
-   - Created and executed script `scripts/generate_ultimates_json.py` to automate applying the maturity-based selection hierarchy weighting methods by period age (e.g. 100% BF for fresh periods, 100% CL for old periods). Ouput saved to `selections/ultimates.json`.
-   - Created and executed `scripts/5b-ultimates-update-selections.py` to flush JSON selection values back into the `selections/Ultimates.xlsx` file.
+*(None yet — will be logged here as they occur)*

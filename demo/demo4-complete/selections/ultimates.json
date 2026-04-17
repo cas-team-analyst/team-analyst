@@ -1,242 +1,242 @@
 [
   {
-    "measure": "Closed Count",
-    "period": 2015,
-    "selection": 4931.0,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 120 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+    "measure": "Incurred Loss",
+    "period": "2015",
+    "selection": 46543111,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 120.0m). Methods diverge 40.2% \u2014 weighted toward credibility at age 120.0m. "
   },
   {
     "measure": "Incurred Loss",
-    "period": 2015,
-    "selection": 45008437.7,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 120 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Paid Loss",
-    "period": 2015,
-    "selection": 45008437.67,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 120 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Reported Count",
-    "period": 2015,
-    "selection": 4930.0,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 120 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Closed Count",
-    "period": 2016,
-    "selection": 4935.9024,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 108 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+    "period": "2016",
+    "selection": 61987456,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 108.0m). Moderate method variance (2.5%). "
   },
   {
     "measure": "Incurred Loss",
-    "period": 2016,
-    "selection": 61133060.841568,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 108 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Paid Loss",
-    "period": 2016,
-    "selection": 61839916.44795601,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 108 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Reported Count",
-    "period": 2016,
-    "selection": 4943.0,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 108 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Closed Count",
-    "period": 2017,
-    "selection": 4895.927245440001,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 96 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+    "period": "2017",
+    "selection": 39184364,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 96.0m). Methods diverge 57.7% \u2014 weighted toward credibility at age 96.0m. "
   },
   {
     "measure": "Incurred Loss",
-    "period": 2017,
-    "selection": 37281411.98767959,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 96 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Paid Loss",
-    "period": 2017,
-    "selection": 38557110.6927636,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 96 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Reported Count",
-    "period": 2017,
-    "selection": 4911.6672,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 96 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Closed Count",
-    "period": 2018,
-    "selection": 5018.2255096934405,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 84 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+    "period": "2018",
+    "selection": 61004941,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 84.0m). Methods diverge 13.3% \u2014 weighted toward credibility at age 84.0m. "
   },
   {
     "measure": "Incurred Loss",
-    "period": 2018,
-    "selection": 60804900.15690639,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 84 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Paid Loss",
-    "period": 2018,
-    "selection": 61371138.34975644,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 84 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Reported Count",
-    "period": 2018,
-    "selection": 4987.16873424,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 84 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Closed Count",
-    "period": 2019,
-    "selection": 4956.526684837317,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 72 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+    "period": "2019",
+    "selection": 48041441,
+    "reasoning": "CL 65% + IE 5% + BF 30%. Maturity: Late (age 72.0m). Methods diverge 10.6% \u2014 weighted toward credibility at age 72.0m. "
   },
   {
     "measure": "Incurred Loss",
-    "period": 2019,
-    "selection": 46985591.30256086,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 72 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Paid Loss",
-    "period": 2019,
-    "selection": 48207987.81583902,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 72 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Reported Count",
-    "period": 2019,
-    "selection": 4970.8039616484475,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 72 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Closed Count",
-    "period": 2020,
-    "selection": 4966.255362243055,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 60 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
+    "period": "2020",
+    "selection": 44635788,
+    "reasoning": "CL 65% + IE 5% + BF 30%. Maturity: Late (age 60.0m). Moderate method variance (9.7%). "
   },
   {
     "measure": "Incurred Loss",
-    "period": 2020,
-    "selection": 43644400.72906783,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 60 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Paid Loss",
-    "period": 2020,
-    "selection": 43367215.93912094,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 60 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Reported Count",
-    "period": 2020,
-    "selection": 4998.219921514037,
-    "reasoning": "100% Chain Ladder\n\nMaturity-Based Weighting: Age 60 months. High maturity relies fully on Chain Ladder experience without expected loss drag."
-  },
-  {
-    "measure": "Closed Count",
-    "period": 2021,
-    "selection": 5239.811664614578,
-    "reasoning": "25% BF / 75% Chain Ladder\n\nMaturity-Based Weighting: Age 48 months. Transitioning from expected to actual experience."
+    "period": "2021",
+    "selection": 72020039,
+    "reasoning": "CL 50% + IE 5% + BF 45%. Maturity: Mid (age 48.0m). Methods diverge 68.0% \u2014 weighted toward credibility at age 48.0m. "
   },
   {
     "measure": "Incurred Loss",
-    "period": 2021,
-    "selection": 74524986.59331614,
-    "reasoning": "25% BF / 75% Chain Ladder\n\nMaturity-Based Weighting: Age 48 months. Transitioning from expected to actual experience."
-  },
-  {
-    "measure": "Paid Loss",
-    "period": 2021,
-    "selection": 72084768.5641918,
-    "reasoning": "25% BF / 75% Chain Ladder\n\nMaturity-Based Weighting: Age 48 months. Transitioning from expected to actual experience."
-  },
-  {
-    "measure": "Reported Count",
-    "period": 2021,
-    "selection": 5082.854862172061,
-    "reasoning": "25% BF / 75% Chain Ladder\n\nMaturity-Based Weighting: Age 48 months. Transitioning from expected to actual experience."
-  },
-  {
-    "measure": "Closed Count",
-    "period": 2022,
-    "selection": 5049.336107313848,
-    "reasoning": "50% BF / 50% Chain Ladder\n\nMaturity-Based Weighting: Age 36 months. Transitioning from expected to actual experience."
+    "period": "2022",
+    "selection": 47221287,
+    "reasoning": "CL 50% + IE 5% + BF 45%. Maturity: Mid (age 36.0m). Methods diverge 14.9% \u2014 weighted toward credibility at age 36.0m. "
   },
   {
     "measure": "Incurred Loss",
-    "period": 2022,
-    "selection": 46472800.898418695,
-    "reasoning": "50% BF / 50% Chain Ladder\n\nMaturity-Based Weighting: Age 36 months. Transitioning from expected to actual experience."
-  },
-  {
-    "measure": "Paid Loss",
-    "period": 2022,
-    "selection": 47097855.047060475,
-    "reasoning": "50% BF / 50% Chain Ladder\n\nMaturity-Based Weighting: Age 36 months. Transitioning from expected to actual experience."
-  },
-  {
-    "measure": "Reported Count",
-    "period": 2022,
-    "selection": 4942.667611491467,
-    "reasoning": "50% BF / 50% Chain Ladder\n\nMaturity-Based Weighting: Age 36 months. Transitioning from expected to actual experience."
-  },
-  {
-    "measure": "Closed Count",
-    "period": 2023,
-    "selection": 4410.743228544742,
-    "reasoning": "75% BF / 25% Chain Ladder\n\nMaturity-Based Weighting: Age 24 months. Transitioning from expected to actual experience."
+    "period": "2023",
+    "selection": 47756784,
+    "reasoning": "Converged (3 methods). Maturity: Early (age 24.0m). Methods converge within \u00b12% (range 1.4%). "
   },
   {
     "measure": "Incurred Loss",
-    "period": 2023,
-    "selection": 47455112.13675013,
-    "reasoning": "75% BF / 25% Chain Ladder\n\nMaturity-Based Weighting: Age 24 months. Transitioning from expected to actual experience."
+    "period": "2024",
+    "selection": 47479305,
+    "reasoning": "CL 20% + IE 5% + BF 75%. Maturity: Green (age 12.0m). Methods diverge 77.1% \u2014 weighted toward credibility at age 12.0m. "
   },
   {
     "measure": "Paid Loss",
-    "period": 2023,
-    "selection": 48005249.34239192,
-    "reasoning": "75% BF / 25% Chain Ladder\n\nMaturity-Based Weighting: Age 24 months. Transitioning from expected to actual experience."
+    "period": "2015",
+    "selection": 46848515,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 120.0m). Methods diverge 39.3% \u2014 weighted toward credibility at age 120.0m. "
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2016",
+    "selection": 63169814,
+    "reasoning": "Converged (3 methods). Maturity: Tail/Mature (age 108.0m). Methods converge within \u00b12% (range 0.7%). "
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2017",
+    "selection": 40848317,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 96.0m). Methods diverge 51.6% \u2014 weighted toward credibility at age 96.0m. "
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2018",
+    "selection": 61785674,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 84.0m). Methods diverge 15.1% \u2014 weighted toward credibility at age 84.0m. "
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2019",
+    "selection": 49529430,
+    "reasoning": "CL 65% + IE 5% + BF 30%. Maturity: Late (age 72.0m). Moderate method variance (7.1%). "
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2020",
+    "selection": 44769749,
+    "reasoning": "CL 65% + IE 5% + BF 30%. Maturity: Late (age 60.0m). Moderate method variance (9.7%). "
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2021",
+    "selection": 69294515,
+    "reasoning": "CL 50% + IE 5% + BF 45%. Maturity: Mid (age 48.0m). Methods diverge 64.5% \u2014 weighted toward credibility at age 48.0m. "
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2022",
+    "selection": 47820600,
+    "reasoning": "CL 50% + IE 5% + BF 45%. Maturity: Mid (age 36.0m). Methods diverge 13.8% \u2014 weighted toward credibility at age 36.0m. "
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2023",
+    "selection": 48229234,
+    "reasoning": "CL 40% + IE 5% + BF 55%. Maturity: Early (age 24.0m). Moderate method variance (2.8%). "
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2024",
+    "selection": 46781253,
+    "reasoning": "CL 20% + IE 5% + BF 75%. Maturity: Green (age 12.0m). Methods diverge 78.8% \u2014 weighted toward credibility at age 12.0m. "
   },
   {
     "measure": "Reported Count",
-    "period": 2023,
-    "selection": 4524.305484526373,
-    "reasoning": "75% BF / 25% Chain Ladder\n\nMaturity-Based Weighting: Age 24 months. Transitioning from expected to actual experience."
+    "period": "2015",
+    "selection": 5011,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 120.0m). Methods diverge 32.9% \u2014 weighted toward credibility at age 120.0m. "
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2016",
+    "selection": 5012,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 108.0m). Methods diverge 27.9% \u2014 weighted toward credibility at age 108.0m. "
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2017",
+    "selection": 4956,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 96.0m). Methods diverge 17.3% \u2014 weighted toward credibility at age 96.0m. "
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2018",
+    "selection": 4992,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 84.0m). Moderate method variance (2.3%). "
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2019",
+    "selection": 4960,
+    "reasoning": "CL 65% + IE 5% + BF 30%. Maturity: Late (age 72.0m). Moderate method variance (3.6%). "
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2020",
+    "selection": 4945,
+    "reasoning": "CL 65% + IE 5% + BF 30%. Maturity: Late (age 60.0m). Methods diverge 16.6% \u2014 weighted toward credibility at age 60.0m. "
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2021",
+    "selection": 4991,
+    "reasoning": "CL 50% + IE 5% + BF 45%. Maturity: Mid (age 48.0m). Methods diverge 29.2% \u2014 weighted toward credibility at age 48.0m. "
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2022",
+    "selection": 4927,
+    "reasoning": "CL 50% + IE 5% + BF 45%. Maturity: Mid (age 36.0m). Methods diverge 15.5% \u2014 weighted toward credibility at age 36.0m. "
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2023",
+    "selection": 4568,
+    "reasoning": "CL 40% + IE 5% + BF 55%. Maturity: Early (age 24.0m). Methods diverge 26.9% \u2014 weighted toward credibility at age 24.0m. "
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2024",
+    "selection": 3921,
+    "reasoning": "CL 20% + IE 5% + BF 75%. Maturity: Green (age 12.0m). Methods diverge 80.9% \u2014 weighted toward credibility at age 12.0m. "
   },
   {
     "measure": "Closed Count",
-    "period": 2024,
-    "selection": 3373.511205566031,
-    "reasoning": "100% BF\n\nMaturity-Based Weighting: Age 12 months. Transitioning from expected to actual experience."
+    "period": "2015",
+    "selection": 5012,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 120.0m). Methods diverge 32.9% \u2014 weighted toward credibility at age 120.0m. "
   },
   {
-    "measure": "Incurred Loss",
-    "period": 2024,
-    "selection": 43459794.86217109,
-    "reasoning": "100% BF\n\nMaturity-Based Weighting: Age 12 months. Transitioning from expected to actual experience."
+    "measure": "Closed Count",
+    "period": "2016",
+    "selection": 5009,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 108.0m). Methods diverge 28.1% \u2014 weighted toward credibility at age 108.0m. "
   },
   {
-    "measure": "Paid Loss",
-    "period": 2024,
-    "selection": 42396501.582315534,
-    "reasoning": "100% BF\n\nMaturity-Based Weighting: Age 12 months. Transitioning from expected to actual experience."
+    "measure": "Closed Count",
+    "period": "2017",
+    "selection": 4948,
+    "reasoning": "CL 70% + IE 5% + BF 25%. Maturity: Tail/Mature (age 96.0m). Methods diverge 17.6% \u2014 weighted toward credibility at age 96.0m. "
   },
   {
-    "measure": "Reported Count",
-    "period": 2024,
-    "selection": 3661.1118440617097,
-    "reasoning": "100% BF\n\nMaturity-Based Weighting: Age 12 months. Transitioning from expected to actual experience."
+    "measure": "Closed Count",
+    "period": "2018",
+    "selection": 5050,
+    "reasoning": "Converged (3 methods). Maturity: Tail/Mature (age 84.0m). Methods converge within \u00b12% (range 1.6%). "
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2019",
+    "selection": 4944,
+    "reasoning": "CL 65% + IE 5% + BF 30%. Maturity: Late (age 72.0m). Moderate method variance (3.4%). "
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2020",
+    "selection": 4895,
+    "reasoning": "CL 65% + IE 5% + BF 30%. Maturity: Late (age 60.0m). Methods diverge 15.9% \u2014 weighted toward credibility at age 60.0m. "
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2021",
+    "selection": 5096,
+    "reasoning": "CL 50% + IE 5% + BF 45%. Maturity: Mid (age 48.0m). Methods diverge 34.4% \u2014 weighted toward credibility at age 48.0m. "
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2022",
+    "selection": 5028,
+    "reasoning": "CL 50% + IE 5% + BF 45%. Maturity: Mid (age 36.0m). Methods diverge 19.5% \u2014 weighted toward credibility at age 36.0m. "
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2023",
+    "selection": 4470,
+    "reasoning": "CL 40% + IE 5% + BF 55%. Maturity: Early (age 24.0m). Methods diverge 25.0% \u2014 weighted toward credibility at age 24.0m. "
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2024",
+    "selection": 3591,
+    "reasoning": "CL 20% + IE 5% + BF 75%. Maturity: Green (age 12.0m). Methods diverge 59.8% \u2014 weighted toward credibility at age 12.0m. "
   }
 ]

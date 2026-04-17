@@ -1,11 +1,11 @@
 # Reserving Analysis — Working Draft
 
-**Analysis:** [Segment / Program Name]
-**Valuation Date:** [MM/DD/YYYY]
-**Draft Version:** [e.g., v0.3 — For Peer Review]
-**Prepared by:** [Analyst Name]
-**Submitted to:** [Reviewing Actuary Name]
-**Draft Date:** [MM/DD/YYYY]
+**Analysis:** Canonical Demo — All Lines Combined  
+**Valuation Date:** 12/31/2024  
+**Draft Version:** v0.1 — For Peer Review  
+**Prepared by:** Bryce (TeamAnalyst)  
+**Submitted to:** [Reviewing Actuary]  
+**Draft Date:** 2026-04-17
 
 > **Draft status:** This is a working document prepared for internal peer review. It is not a final actuarial communication and should not be distributed outside the review team. Numbers, selections, and commentary are subject to change based on reviewer feedback.
 
@@ -28,58 +28,57 @@
 - [12. ASOP Self-Check (for reviewer)](#12-asop-self-check-for-reviewer)
 - [13. Peer Review Log](#13-peer-review-log)
 - [14. Version History](#14-version-history)
-- [Appendices](#appendices-in-accompanying-workbook)
 
 ---
 
 ## 0. Reviewer Quick-Start
 
-*A short orientation so the reviewer can get into the work quickly.*
-
-- **What this analysis covers:** [1–2 sentences]
-- **What changed since last review (if applicable):** [Bullet the deltas]
-- **Where I want the most scrutiny:** [Point the reviewer at the judgment calls]
-- **Open questions for reviewer:** See Section 11
+- **What this analysis covers:** Chain-ladder reserving analysis for a single segment, accident years 2015–2024, using Paid Loss, Incurred Loss, Reported Count, and Closed Count triangles. All three methods (CL, IE, BF) were run.
+- **What changed since last review:** Initial draft — no prior version.
+- **Where I want the most scrutiny:** (1) Tail factor selections — Paid Loss tail of 1.019 vs. Incurred tail of 1.013; (2) Ultimate selections for immature years 2022–2024 where BF was weighted heavily; (3) The IE/BF divergence from CL for AY 2015 Incurred Loss ($45M CL vs. $64M IE).
+- **Open questions for reviewer:** See Section 11.
 
 ---
 
 ## 1. Purpose and Scope
 
 ### 1.1 Purpose of the Analysis
-[Why is this analysis being performed? e.g., quarterly reserve review, year-end booking, pricing support, reinsurance renewal, etc.]
+Quarterly reserve review for internal booking purposes using canonical demonstration data. The analysis projects ultimate losses and claim counts for accident years 2015–2024 using development triangle methods.
 
 ### 1.2 Scope
 | Item | Detail |
 |---|---|
-| Segment(s) / LOB | [ ] |
-| Accident / Underwriting years | [ ] |
-| Coverages | [Loss / DCC / A&O / ULAE] |
-| Basis | [Gross / Ceded / Net] |
-| Currency | [ ] |
-| Geography | [ ] |
+| Segment(s) / LOB | All Lines Combined (single segment) |
+| Accident / Underwriting years | 2015–2024 (10 years) |
+| Coverages | Loss only (DCC/ALAE not separately analyzed) |
+| Basis | Gross |
+| Currency | USD |
+| Geography | Not specified |
 
 ### 1.3 Intended Internal Users
-[e.g., Chief Actuary, Reserving Committee, CFO]. This draft is not intended for external distribution in its current form.
+Chief Actuary, Reserving Committee. This draft is not intended for external distribution in its current form.
 
 ---
 
 ## 2. Summary of Indications
 
-*Placeholder numbers — subject to review.*
-
-| Segment | Paid to Date | Case | IBNR | Total Unpaid | Ultimate |
+| Segment | Paid to Date | Case Reserves | IBNR | Total Unpaid | Selected Ultimate |
 |---|---|---|---|---|---|
-| [ ] | | | | | |
-| [ ] | | | | | |
-| **Total** | | | | | |
+| Incurred Loss | $390,463,646 | $29,701,340 | $125,410,870 | $155,112,210 | $515,874,516 |
+| Paid Loss | $360,762,306 | — | $158,314,795 | $158,314,795 | $519,077,101 |
+| **Reported Count** | 41,233 | — | 7,050 | 7,050 | 48,283 |
+| **Closed Count** | 38,016 | — | 10,027 | 10,027 | 48,043 |
 
-**Comparison to prior estimate:**
+**Method indications summary (Incurred Loss):**
 
-| Segment | Prior Ultimate | Current Ultimate | Change | % |
-|---|---|---|---|---|
-| [ ] | | | | |
+| Method | Total Ultimate | Total IBNR |
+|---|---|---|
+| Chain Ladder | $534,775,787 | $144,312,141 |
+| Initial Expected | $525,022,611 | $134,558,965 |
+| Bornhuetter-Ferguson | $509,349,682 | $118,886,036 |
+| **Selected** | **$515,874,516** | **$125,410,870** |
 
-**Key drivers of change:** [Brief narrative — emergence vs. expected, assumption changes, new data, etc.]
+**Key drivers:** No prior estimate available for comparison. Method divergence is concentrated in immature years (2022–2024) where CL is most volatile, and in AY 2015 where the IE method produces a materially higher indication than CL (see Section 11).
 
 ---
 
@@ -88,39 +87,26 @@
 ### 3.1 Data Used
 | Data Element | Source | As-of Date | Notes |
 |---|---|---|---|
-| Paid loss triangles | [ ] | [ ] | |
-| Reported loss triangles | [ ] | [ ] | |
-| Claim counts (reported/closed) | [ ] | [ ] | |
-| Earned premium / exposures | [ ] | [ ] | |
-| Case reserves | [ ] | [ ] | |
-| Rate change history | [ ] | [ ] | |
-| [Other] | | | |
-
-#### File Summary: canonical-elrs.xlsx
-- **File Name:** demo/latest/raw-data/canonical-elrs.xlsx
-- **Description:** Excel file containing Expected Loss Rates (ELR) and Expected Frequencies by Accident Period.
-- **Sheets:** 1 sheet named "ELR".
-- **Structure:** 10 rows (Accident Periods 2015-2024), 3 columns.
-- **Columns:** Accident Period (int), Expected Loss Rate (float), Expected Frequency (float).
-
-#### File Summary: canonical-triangles.xlsx
-- **File Name:** demo/latest/raw-data/canonical-triangles.xlsx
-- **Description:** Excel file containing reserving data across several metrics.
-- **Sheets:** 5 sheets - Incurred, Paid, Reported, Closed, Exposure. 
-- **Structure:** (Sampled Incurred sheet) 11 rows by 11 columns, with Accident Periods (2015-2024) in the first column and development periods (12 to 120 months) in subsequent columns. Data is formatted as traditional reserving triangles.
+| Paid loss triangles | canonical-triangles.xlsx — Sheet: Paid | 12/31/2024 | 10×10 triangle, AYs 2015–2024 |
+| Incurred loss triangles | canonical-triangles.xlsx — Sheet: Incurred | 12/31/2024 | 10×10 triangle |
+| Reported claim counts | canonical-triangles.xlsx — Sheet: Reported | 12/31/2024 | 10×10 triangle |
+| Closed claim counts | canonical-triangles.xlsx — Sheet: Closed | 12/31/2024 | 10×10 triangle |
+| Earned exposure | canonical-triangles.xlsx — Sheet: Exposure | 12/31/2024 | Used for IE/BF methods |
+| Expected loss rates | canonical-elrs.xlsx — Sheet: ELR | 12/31/2024 | ELR and expected frequency by AY |
 
 ### 3.2 Data Reconciliation
-- Reconciled to [financial system / prior valuation / GL] as of [date].
-- Reconciliation result: [Clean / Differences of $X explained by Y].
+Reconciliation to prior valuation or financial system not performed — this is a demonstration analysis using canonical data. No external reconciliation was available.
 
 ### 3.3 Data Quality Observations
-*Per ASOP No. 23 — flag anything unusual.*
-
-- [Outliers, negative development, coding changes, mix shifts, gaps, etc.]
-- [Anything you had to adjust or exclude, and why]
+- Accident year labels in source files used Excel formula references (=A2+1 style); resolved programmatically during intake.
+- No negative development observed in any triangle.
+- AY 2015 Closed Count shows a closure rate of 1.000 at age 120 (100% closed), triggering a minor tech review flag; confirmed as expected for a fully mature year.
+- YoY severity jumps >25% flagged in early accident years — consistent with normal development pattern for immature periods at age 12–24.
 
 ### 3.4 Data Limitations
-- [Known limitations and how they were handled]
+- No rate change history or trend data available; trend assumptions are implicitly embedded in the ELR file.
+- Single-segment analysis only; no sub-segment or coverage-level breakdowns available.
+- IE method uses a pre-loaded ELR file; ELR basis and derivation are not documented in source data.
 
 ---
 
@@ -129,92 +115,117 @@
 ### 4.1 Methods Applied
 | Method | Segments Applied | Why Selected |
 |---|---|---|
-| Paid LDF | [ ] | |
-| Reported LDF | [ ] | |
-| Paid B-F | [ ] | |
-| Reported B-F | [ ] | |
-| Expected Loss Ratio | [ ] | |
-| Frequency-Severity | [ ] | |
-| [Other] | | |
+| Paid LDF (Chain Ladder) | All Lines | Standard primary method; stable patterns, good credibility at mature ages |
+| Incurred LDF (Chain Ladder) | All Lines | Cross-check to Paid; useful for case reserve adequacy assessment |
+| Paid/Incurred Count LDF | All Lines | Frequency tracking; supports IE/BF frequency assumptions |
+| Initial Expected (IE) | All Lines | Provides a prior-expectation anchor; used as BF weight source |
+| Bornhuetter-Ferguson (BF) | All Lines | Blends CL and IE; primary method for immature years |
 
 ### 4.2 Method Weighting / Selection Logic
-[Describe how methods were weighted by maturity, and any segment-specific logic. Call out where judgment was applied vs. formulaic selection.]
+LDF selections were made using a rule-based 14-criteria framework with an independent AI cross-check. Selections were confirmed consistent across both approaches at mid-to-late maturities; minor divergence at 12-24 interval (rule-based: 1.8151 vs. AI: 1.8309 for Paid Loss).
+
+Ultimate selections use a maturity-based weighting approach:
+- **Ages 84–120 (AYs 2015–2018):** CL ~70%, BF ~25%, IE ~5%
+- **Ages 60–72 (AYs 2019–2020):** CL ~65%, BF ~30%, IE ~5%
+- **Ages 36–48 (AYs 2021–2022):** CL ~50%, BF ~45%, IE ~5%
+- **Ages 12–24 (AYs 2023–2024):** BF ~55–75%, CL ~20–40%, IE ~5%
 
 ### 4.3 LAE Treatment
-- **DCC / ALAE:** [Analyzed with loss / separately / ratio method]
-- **A&O / ULAE:** [Paid-to-paid ratio / other]
+- DCC/ALAE: Not separately analyzed; assumed included in loss triangles if present in source data.
+- A&O/ULAE: Not analyzed.
 
 ---
 
 ## 5. Key Assumptions
 
 ### 5.1 Development Patterns
-- **Selection basis:** [e.g., volume-weighted 5-year average with outlier adjustment]
-- **Tail:** [Source — curve fit, industry benchmark, judgment]
+- **Selection basis:** Volume-weighted averages, with 3-year window preferred at early maturities and 5-year window at mid-to-late maturities. Convergence override applied where all averages cluster within ±2%.
+- **Tail:** Paid Loss: 1.019 (reflects ~1.9% residual development beyond age 120, consistent with sub/salvage activity). Incurred Loss: 1.013. Count measures: 1.000 (fully closed by age 120).
 
 ### 5.2 Expected Loss Ratios (for B-F and ELR methods)
-| AY | ELR | Basis |
+| AY | Expected Loss Rate ($/exposure) | Expected Frequency |
 |---|---|---|
-| | | |
+| 2015 | 14,158 | 1.453 |
+| 2016 | 14,291 | 1.424 |
+| 2017 | 14,426 | 1.395 |
+| 2018 | 14,561 | 1.367 |
+| 2019 | 14,698 | 1.340 |
+| 2020 | 14,836 | 1.313 |
+| 2021 | 14,976 | 1.287 |
+| 2022 | 15,117 | 1.261 |
+| 2023 | 15,259 | 1.236 |
+| 2024 | 15,402 | 1.211 |
 
 ### 5.3 Trend Assumptions
-| Segment | Frequency | Severity | Pure Premium |
-|---|---|---|---|
-| | | | |
+Implicitly embedded in the ELR file (approximately 0.9% annual severity trend and -1.9% annual frequency trend implied by ELR progression).
 
 ### 5.4 Other Assumptions
-- **Rate change:** [ ]
-- **Case reserve adequacy:** [Assumed stable / Adjustment applied]
-- **Settlement rate / claim closing patterns:** [ ]
-- **Mix / law / tort environment:** [ ]
+- **Case reserve adequacy:** Assumed stable; paid-to-incurred ratios progress normally from 0.80 at age 12 to 1.00 at age 120.
+- **Settlement rate / claim closing patterns:** Stable; closure rates increase monotonically with age for all AYs.
 
 ### 5.5 Assumption Rationale
-*For each material assumption, note the rationale and supporting evidence. Flag any that are primarily judgment-driven.*
+The tail factors are the most judgment-sensitive assumptions. The paid tail of 1.019 is derived from the observed 108-120 LDF of 1.043 with exponential decay; the incurred tail of 1.013 is lower, consistent with the paid/incurred convergence at age 120. Both are within normal ranges for casualty lines.
 
 ---
 
 ## 6. Results by Segment
 
-*Detailed exhibits live in the accompanying workbook; summarize selections and rationale here.*
+### 6.1 Incurred Loss
+- **Selected ultimates:** See Ultimates.xlsx → Sel - Incurred Loss
+- **Total selected ultimate:** $515,874,516 | **Total IBNR:** $125,410,870
+- **Method weighting:** CL dominant for AYs 2015–2018; BF blend increases for 2019–2024
+- **Notable judgment calls:** AY 2015 CL ultimate ($45.6M) is materially below IE ($63.9M); selected near BF ($45.8M) given that AY 2015 is effectively fully developed and CL at age 120 includes only tail factor.
 
-### 6.1 [Segment A]
-- Selected ultimates: [Reference exhibit]
-- Method weighting: [Summary]
-- Notable judgment calls: [ ]
+### 6.2 Paid Loss
+- **Selected ultimates:** See Ultimates.xlsx → Sel - Paid Loss
+- **Total selected ultimate:** $519,077,101 | **Total IBNR:** $158,314,795
+- **Method weighting:** Same maturity-based schedule as Incurred Loss
+- **Notable judgment calls:** Paid IBNR exceeds Incurred IBNR — flagged for reviewer (see Section 11).
 
-### 6.2 [Segment B]
-- [ ]
+### 6.3 Reported Count
+- **Selected ultimate:** 48,283 | **IBNR:** 7,050 counts
+- Count development patterns are stable and credible; selections follow CL closely for mature years.
+
+### 6.4 Closed Count
+- **Selected ultimate:** 48,043 | **IBNR:** 10,027 counts
+- Closed count selections slightly below Reported Count selections for some years — flagged (see Section 11).
 
 ---
 
 ## 7. Diagnostics and Reasonableness Checks
 
-- [ ] Loss ratios by AY — reasonable progression?
-- [ ] Frequency / severity trends — consistent with assumptions?
-- [ ] Implied paid and reported development — consistent with patterns?
-- [ ] Actual vs. expected emergence since prior review
-- [ ] Comparison to independent benchmark (if available)
-- [ ] Hindsight test on prior ultimates
-- [ ] Ratio of IBNR to case reserves — reasonable?
+- [x] Loss ratios by AY — Selected ultimate loss ratios show smooth progression from $9,129/claim (AY 2015) to ~$10,070/claim median ultimate severity; reasonable.
+- [x] Frequency / severity trends — Implied frequency declining ~1.9%/yr; severity increasing ~0.9%/yr. Consistent with ELR file assumptions.
+- [x] Implied paid and reported development — Paid-to-incurred ratio increases monotonically from 0.80 at age 12 to 1.00 at age 120 across all AYs. Normal pattern.
+- [x] Actual vs. expected emergence — Not compared; no prior estimate available.
+- [x] Comparison to independent benchmark — Not available.
+- [x] Hindsight test on prior ultimates — Not applicable (first analysis).
+- [x] Ratio of IBNR to case reserves — IBNR ($125M) is 4.2x case reserves ($30M); elevated but consistent with significant immature-year exposure (AYs 2021–2024 represent 40% of ultimate).
 
-**Anomalies to investigate:** [List anything the diagnostics flagged]
+**Tech review results:** 186 PASS / 27 WARN / 5 FAIL. Full results in output/tech-review.xlsx.
+
+**Anomalies to investigate:**
+1. Paid Loss IBNR ($158M) exceeds Incurred Loss IBNR ($125M) — review if paid tail > incurred tail is the sole driver.
+2. Closed Count selected > Reported Count selected for AYs 2015, 2018, 2021, 2022 — logically Closed should not exceed Reported; likely a blending artifact in immature years.
+3. AY 2015 Incurred Loss: CL ultimate ($45.6M, IBNR ~$0.6M) vs. IE ultimate ($63.9M) — a 40% divergence. IE appears too high relative to actual development.
+4. Loss Rate tech review flag — ELR is expressed as $/exposure, not a traditional loss ratio; not a data error.
 
 ---
 
 ## 8. Sensitivity and Uncertainty
 
 ### 8.1 Sensitivity to Key Assumptions
-| Assumption | Change | Impact on Total Ultimate |
+| Assumption | Change | Estimated Impact on Incurred Ultimate |
 |---|---|---|
-| Tail factor | ± [ ] | [ ] |
-| ELR | ± [ ] | [ ] |
-| Severity trend | ± [ ] | [ ] |
+| Paid tail factor | +0.01 | ~+$5M |
+| Incurred tail factor | +0.01 | ~+$4M |
+| BF weight for AYs 2022–2024 | ±10% shift to CL | ±$3–5M |
 
 ### 8.2 Sources of Uncertainty
-*Per ASOP No. 43 — discuss the risks that could cause actuals to differ from estimate.*
-
-- Process / parameter / model / systemic risk commentary as applicable
-- Segment-specific risk factors: [ ]
+- **Process risk:** Thin data for immature years (AYs 2022–2024 have only 12–36 months of development); selections rely heavily on BF/IE which assumes ELR quality.
+- **Parameter risk:** Tail factor uncertainty; the 108-120 interval is based on only one observed data point (AY 2015).
+- **Model risk:** CL and BF give materially different results for AY 2015; method selection significantly affects that year's indication.
+- **Systemic risk:** No adjustment for tort environment, economic inflation, or mix shift; these risks are not quantified.
 
 ---
 
@@ -222,31 +233,27 @@
 
 | Source | Information Relied Upon |
 |---|---|
-| [Claims / Underwriting / Finance contact] | [ ] |
-| [External benchmark or data source] | [ ] |
+| Source data provider | canonical-triangles.xlsx and canonical-elrs.xlsx as provided; accuracy of underlying claim data not independently verified |
 
 ---
 
 ## 10. Information Date and Subsequent Events
 
-- **Information Date:** [ ]
-- **Subsequent events considered:** [None known / Describe]
+- **Information Date:** 12/31/2024
+- **Subsequent events considered:** None known.
 
 ---
 
 ## 11. Open Questions for Reviewer
 
-*The key section — where you flag judgment calls you want a second opinion on.*
+1. **AY 2015 Incurred Loss IE vs. CL divergence:** IE projects $63.9M vs. CL $45.6M. The CL is effectively at tail-only development. Should we investigate whether the ELR for 2015 is reasonable given the actual emergence? Currently selected near BF ($45.8M).
+2. **Paid IBNR > Incurred IBNR:** Total paid IBNR ($158M) exceeds incurred IBNR ($125M). This is driven by the paid tail being higher than the incurred tail (1.019 vs. 1.013). Is this ordering reasonable for this book?
+3. **Closed Count > Reported Count in some years:** The AI selections produced Closed > Reported for AYs 2015, 2018, 2021, 2022. Logically this should not occur. Recommend reviewing these specific year selections in Ultimates.xlsx before finalizing.
+4. **ELR basis:** The expected loss rates are in $/exposure (not traditional loss ratio). The basis and derivation of this file are not documented. Is the source reliable?
 
-1. [Specific question with context — e.g., "AY 2023 paid emergence is 15% below expected; I kept selections unchanged pending more data. Agree?"]
-2. [ ]
-3. [ ]
-
-**Items I'm flagging as low-confidence:**
-- [ ]
-
-**Items I think should be escalated to [Chief Actuary / Committee]:**
-- [ ]
+**Items flagged as low-confidence:**
+- All selections for AYs 2023–2024 (12–24 months of development, very high BF weight)
+- Tail factors for both Paid and Incurred Loss
 
 ---
 
@@ -254,29 +261,19 @@
 
 | Standard | Addressed In | Notes |
 |---|---|---|
-| ASOP 23 (Data Quality) | §3 | |
-| ASOP 25 (Credibility) | §4, §5 | |
-| ASOP 41 (Communications) | Throughout | Draft — not a final communication |
-| ASOP 43 (Unpaid Claim Estimates) | §4, §5, §8 | |
-| ASOP 56 (Modeling) | §4 | If applicable |
+| ASOP 23 (Data Quality) | §3 | Formula-based AY labels resolved; no negative development |
+| ASOP 25 (Credibility) | §4, §5 | Maturity-based weighting applied; immature years use BF |
+| ASOP 41 (Communications) | Throughout | Draft — not a final actuarial communication |
+| ASOP 43 (Unpaid Claim Estimates) | §4, §5, §8 | Three methods applied; sensitivity noted |
+| ASOP 56 (Modeling) | §4 | Rule-based + AI selection framework documented |
 
 ---
 
 ## 13. Peer Review Log
 
-*Reviewer fills this in; analyst responds and updates the draft.*
-
 | # | Date | Reviewer Comment | Analyst Response | Status |
 |---|---|---|---|---|
-| 1 | | | | Open / Addressed / Deferred |
-| 2 | | | | |
-
-**Sign-off checklist (to be completed before moving to final):**
-- [ ] All reviewer comments addressed or deferred with rationale
-- [ ] Numbers reconcile to supporting workbook
-- [ ] Exhibits match narrative
-- [ ] Open questions closed or escalated
-- [ ] Version history updated
+| 1 | | | | Open |
 
 ---
 
@@ -284,18 +281,18 @@
 
 | Version | Date | Author | Summary of Changes |
 |---|---|---|---|
-| v0.1 | | | Initial draft |
-| v0.2 | | | |
+| v0.1 | 2026-04-17 | Bryce / TeamAnalyst | Initial draft — full analysis, all methods, tech review complete |
 
 ---
 
 ## Appendices (in accompanying workbook)
 
-- A. Triangles (paid, reported, counts)
-- B. Development factor selections
-- C. Method indications by segment / AY
-- D. Diagnostic exhibits
-- E. Data reconciliation worksheet
+- A. Chain Ladder Selections (selections/Chain Ladder Selections.xlsx)
+- B. Ultimate Selections (selections/Ultimates.xlsx)
+- C. Selected Ultimates Summary (output/selected-ultimates.xlsx)
+- D. Post-Method Diagnostics (output/post-method-series.xlsx, post-method-triangles.xlsx)
+- E. Complete Analysis Workbook (output/complete-analysis.xlsx)
+- F. Tech Review Results (output/tech-review.xlsx)
 
 ---
 

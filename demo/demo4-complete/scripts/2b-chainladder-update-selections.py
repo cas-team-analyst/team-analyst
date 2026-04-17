@@ -14,20 +14,16 @@ run-note: When copied to a project, run from the scripts/ directory. Close the E
 import json
 import os
 import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.styles import Alignment, Font, PatternFill
 
-# Replace when using this file in an actual project:
-SELECTIONS_JSON_PATH = "../selections/"  # Path to selections JSON file
-SELECTIONS_EXCEL_PATH = "../selections/"  # Path to selections Excel file
+from modules import config
+from modules.xl_styles import SELECTION_FILL, AI_FILL, LABEL_FONT, DATA_FONT, THIN_BORDER
+
+# Paths from modules/config.py — override here if needed:
 METHOD_ID = "chainladder"
-SELECTIONS_FILE = SELECTIONS_JSON_PATH + f"{METHOD_ID}.json"
-EXCEL_FILE = SELECTIONS_EXCEL_PATH + "Chain Ladder Selections.xlsx"
-
-SELECTION_FILL = PatternFill("solid", fgColor="FFF2CC")
-LABEL_FONT = Font(bold=True, size=9)
-DATA_FONT = Font(size=9)
-THIN = Side(style="thin", color="CCCCCC")
-THIN_BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
+SELECTIONS_FILE    = config.SELECTIONS + f"{METHOD_ID}.json"
+AI_SELECTIONS_FILE = config.SELECTIONS + f"{METHOD_ID}-ai.json"
+EXCEL_FILE         = config.SELECTIONS + "Chain Ladder Selections.xlsx"
 
 
 def find_selections_section(ws):
@@ -56,6 +52,39 @@ def get_interval_columns(ws, header_row):
         if cell.value:
             interval_to_col[str(cell.value).strip()] = cell.column
     return interval_to_col
+
+
+def find_ai_section(ws):
+    """Find the row numbers for the AI Selection and AI Reasoning rows."""
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value == "AI Selection":
+                ai_selection_row = cell.row
+                ai_reasoning_row = ai_selection_row + 1
+                return ai_selection_row, ai_reasoning_row
+    return None, None
+
+
+def has_existing_selections(ws):
+    """Return True if the Selection row (not AI Selection) already has values."""
+    _, selection_row, _ = find_selections_section(ws)
+    if selection_row is None:
+        return False
+    for cell in ws[selection_row]:
+        if cell.column > 1 and cell.value not in (None, ""):
+            return True
+    return False
+
+
+def has_existing_ai_selections(ws):
+    """Return True if the AI Selection row already has values."""
+    ai_row, _ = find_ai_section(ws)
+    if ai_row is None:
+        return False
+    for cell in ws[ai_row]:
+        if cell.column > 1 and cell.value not in (None, ""):
+            return True
+    return False
 
 
 def update_sheet(ws, measure_selections):
@@ -98,6 +127,40 @@ def update_sheet(ws, measure_selections):
     print(f"  Updated {len(measure_selections)} selections in '{ws.title}'")
 
 
+def update_ai_sheet(ws, measure_selections, interval_to_col):
+    """Write AI selections and reasoning into the AI Selection / AI Reasoning rows."""
+    ai_selection_row, ai_reasoning_row = find_ai_section(ws)
+    if ai_selection_row is None:
+        print(f"  WARNING: Could not find 'AI Selection' row in sheet '{ws.title}'")
+        return
+
+    for sel in measure_selections:
+        interval = sel["interval"]
+        if interval not in interval_to_col:
+            print(f"  WARNING: Interval '{interval}' not found in sheet '{ws.title}'")
+            continue
+
+        col = interval_to_col[interval]
+
+        sel_cell = ws.cell(row=ai_selection_row, column=col)
+        sel_cell.value = sel["selection"]
+        sel_cell.fill = AI_FILL
+        sel_cell.font = DATA_FONT
+        sel_cell.alignment = Alignment(horizontal="right")
+        sel_cell.border = THIN_BORDER
+        sel_cell.number_format = "0.0000"
+
+        reason_cell = ws.cell(row=ai_reasoning_row, column=col)
+        reason_cell.value = sel.get("reasoning", "")
+        reason_cell.fill = AI_FILL
+        reason_cell.font = Font(size=8, italic=True)
+        reason_cell.alignment = Alignment(horizontal="left", wrap_text=True)
+        reason_cell.border = THIN_BORDER
+
+    ws.row_dimensions[ai_reasoning_row].height = 60
+    print(f"  Updated {len(measure_selections)} AI selections in '{ws.title}'")
+
+
 def main():
     """Update Chain Ladder Selections Excel file with selections from JSON."""
     # Check if JSON file exists
@@ -105,11 +168,11 @@ def main():
         print(f"Selections file not found: {SELECTIONS_FILE}")
         print("Skipping update - no selections to apply.")
         return
-    
+
     # Load selections
     with open(SELECTIONS_FILE) as f:
         selections = json.load(f)
-    
+
     # Check if selections array is empty
     if not selections or len(selections) == 0:
         print(f"No selections found in {SELECTIONS_FILE}")
@@ -118,13 +181,43 @@ def main():
 
     print(f"Loaded {len(selections)} selections from {SELECTIONS_FILE}")
 
+    # Load AI selections if available
+    ai_selections = []
+    if os.path.exists(AI_SELECTIONS_FILE):
+        with open(AI_SELECTIONS_FILE) as f:
+            ai_selections = json.load(f) or []
+        print(f"Loaded {len(ai_selections)} AI selections from {AI_SELECTIONS_FILE}")
+    else:
+        print(f"No AI selections file found at {AI_SELECTIONS_FILE} (optional)")
+
     wb = openpyxl.load_workbook(EXCEL_FILE)
+
+    # Abort if any sheet already has manual selections to avoid overwriting actuary work
+    sheets_with_selections = [s for s in wb.sheetnames if has_existing_selections(wb[s])]
+    if sheets_with_selections:
+        raise ValueError(
+            f"Existing selections found in sheet(s): {sheets_with_selections}\n"
+            "Clear selections manually before re-running to avoid overwriting actuary edits."
+        )
+
+    # Abort if AI rows already have values
+    sheets_with_ai = [s for s in wb.sheetnames if has_existing_ai_selections(wb[s])]
+    if sheets_with_ai:
+        raise ValueError(
+            f"Existing AI selections found in sheet(s): {sheets_with_ai}\n"
+            "Clear AI selections manually before re-running."
+        )
 
     # Group selections by measure
     by_measure = {}
     for sel in selections:
         m = sel["measure"]
         by_measure.setdefault(m, []).append(sel)
+
+    by_measure_ai = {}
+    for sel in ai_selections:
+        m = sel["measure"]
+        by_measure_ai.setdefault(m, []).append(sel)
 
     for sheet_name in wb.sheetnames:
         # Match sheet name to measure (sheet name may be truncated to 31 chars)
@@ -133,8 +226,16 @@ def main():
             if sheet_name == measure[:31]:
                 matched = measure
                 break
+
         if matched:
             update_sheet(wb[sheet_name], by_measure[matched])
+
+            # Also write AI selections for this measure if available
+            if matched in by_measure_ai:
+                header_row, _, _ = find_selections_section(wb[sheet_name])
+                if header_row:
+                    interval_to_col = get_interval_columns(wb[sheet_name], header_row)
+                    update_ai_sheet(wb[sheet_name], by_measure_ai[matched], interval_to_col)
         else:
             print(f"No selections found for sheet '{sheet_name}' - skipping")
 

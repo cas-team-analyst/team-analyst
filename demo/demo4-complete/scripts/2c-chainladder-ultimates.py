@@ -23,10 +23,13 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-# Replace these when using this file in an actual project:
-INPUT_TRIANGLE_DATA = "../processed-data/1_triangles.parquet"
-INPUT_SELECTIONS_EXCEL = "../selections/Chain Ladder Selections.xlsx"
-OUTPUT_PATH = "../ultimates/"
+from modules import config
+from modules.excel_reader import read_labeled_selections, get_tail
+
+# Paths from modules/config.py — override here if needed:
+INPUT_TRIANGLE_DATA    = config.PROCESSED_DATA + "1_triangles.parquet"
+INPUT_SELECTIONS_EXCEL = config.SELECTIONS + "Chain Ladder Selections.xlsx"
+OUTPUT_PATH            = config.ULTIMATES
 
 
 def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
@@ -52,53 +55,59 @@ def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
     return diagonal
 
 
+def _extract_selections_from_row(df, label: str) -> tuple[dict, pd.Series | None]:
+    """Find a labeled row and extract interval->LDF mapping. Returns (selections, interval_row).
+    Scans upward from the labeled row to find the interval header row (e.g. '12-24', 'Tail')."""
+    import re
+    interval_pattern = re.compile(r'^\d+-\d+$')
+
+    def _is_interval_row(candidate):
+        vals = [str(v).strip() for v in candidate.iloc[1:] if pd.notna(v) and str(v).strip()]
+        matches = sum(1 for v in vals if interval_pattern.match(v) or v.lower() == 'tail')
+        return matches >= 3
+
+    idx = df[df.iloc[:, 0].astype(str).str.strip() == label].index
+    if len(idx) == 0:
+        return {}, None
+    sel_row = df.iloc[idx[0]]
+    # Scan upward to find the interval header row
+    interval_row = None
+    for offset in range(1, min(20, idx[0] + 1)):
+        candidate = df.iloc[idx[0] - offset]
+        if _is_interval_row(candidate):
+            interval_row = candidate
+            break
+    if interval_row is None:
+        interval_row = df.iloc[idx[0] - 1]  # fallback
+    selections = {}
+    for col_idx in range(1, len(sel_row)):
+        interval = interval_row.iloc[col_idx]
+        ldf_value = sel_row.iloc[col_idx]
+        if pd.notna(interval) and pd.notna(ldf_value):
+            try:
+                selections[str(interval).strip()] = float(ldf_value)
+            except (ValueError, TypeError):
+                continue
+    return selections, interval_row
+
+
 def read_selections_from_excel(excel_path: str, measure: str, ages: list) -> dict:
     """
     Read LDF selections from the Chain Ladder Selections Excel file for a specific measure.
-    
-    Args:
-        excel_path: Path to the Chain Ladder Selections.xlsx file
-        measure: Measure name (sheet name in Excel)
-        ages: List of age values to create intervals
-    
-    Returns:
-        Dictionary mapping interval (e.g., "11-23") to selected LDF value
+    Priority: 'Selection' row (actuary final) → 'AI Selection' row (fallback).
+    Uses robust upward-scanning interval detection from modules.excel_reader.
     """
     try:
-        # Read the sheet for this measure
         df = pd.read_excel(excel_path, sheet_name=measure)
-        
-        # Find the Selection row (row where first column == 'Selection')
-        sel_idx = df[df.iloc[:, 0].astype(str).str.strip() == 'Selection'].index
-        
-        if len(sel_idx) == 0:
-            print(f"  Warning: No 'Selection' row found in sheet '{measure}', skipping")
-            return {}
-        
-        # Get the selection row
-        sel_row = df.iloc[sel_idx[0]]
-        
-        # The intervals should be in the row above (row with interval headers)
-        intervals_idx = sel_idx[0] - 1
-        interval_row = df.iloc[intervals_idx]
-        
-        # Build dictionary of interval -> selected LDF
-        selections = {}
-        for col_idx in range(1, len(sel_row)):  # Skip first column (label)
-            interval = interval_row.iloc[col_idx]
-            ldf_value = sel_row.iloc[col_idx]
-            
-            # Only add if both interval and LDF are valid
-            if pd.notna(interval) and pd.notna(ldf_value):
-                interval_str = str(interval).strip()
-                try:
-                    selections[interval_str] = float(ldf_value)
-                except (ValueError, TypeError):
-                    continue
-        
-        print(f"  Found {len(selections)} LDF selection(s) for {measure}")
-        return selections
-        
+        # Try actuary selection first, fall back to AI selection
+        for label in ("Selection", "AI Selection"):
+            selections = read_labeled_selections(df, label)
+            if selections:
+                print(f"  Found {len(selections)} LDF selection(s) for {measure} (row: '{label}')")
+                return selections
+        raise ValueError(
+            f"No values found in 'Selection' or 'AI Selection' row for sheet '{measure}'."
+        )
     except Exception as e:
         print(f"  Warning: Could not read selections for {measure}: {e}")
         return {}
@@ -123,7 +132,7 @@ def build_cdfs(selections: dict, ages: list, measure: str) -> pd.DataFrame:
     intervals = {f"{ages[i]}-{ages[i+1]}": i for i in range(len(ages) - 1)}
     
     # Get tail factor (if present, otherwise 1.0)
-    tail = selections.get("tail", 1.0)
+    tail = get_tail(selections)
     
     # Build CDFs from oldest to youngest
     # Start with tail at the oldest age
@@ -162,7 +171,7 @@ def project_ultimates(diagonal: pd.DataFrame, cdf_df: pd.DataFrame) -> pd.DataFr
     
     Returns:
         DataFrame with columns: period, measure, current_age, actual, cdf, 
-                                pct_developed, cl_ultimate, cl_ibnr
+                                pct_developed, ultimate_cl, ibnr_cl
     """
     # Create lookup for CDFs
     cdf_lookup = cdf_df.set_index(['measure', 'age'])[['cdf', 'pct_developed']]
@@ -190,8 +199,8 @@ def project_ultimates(diagonal: pd.DataFrame, cdf_df: pd.DataFrame) -> pd.DataFr
             'actual': r['value'],
             'cdf': cdf,
             'pct_developed': pct,
-            'cl_ultimate': ultimate,
-            'cl_ibnr': ibnr,
+            'ultimate_cl': ultimate,
+            'ibnr_cl': ibnr,
         })
     
     return pd.DataFrame(rows)
@@ -254,7 +263,7 @@ if __name__ == "__main__":
     df_cl['period'] = df_cl['period'].astype(str)
     df_cl['measure'] = df_cl['measure'].astype('category')
     df_cl['current_age'] = df_cl['current_age'].astype(str)
-    for col in ['actual', 'cdf', 'pct_developed', 'cl_ultimate', 'cl_ibnr']:
+    for col in ['actual', 'cdf', 'pct_developed', 'ultimate_cl', 'ibnr_cl']:
         df_cl[col] = df_cl[col].astype(float)
     
     # Create output directory if it doesn't exist
@@ -278,7 +287,7 @@ if __name__ == "__main__":
         )
         
         # Update/add CL columns from new data
-        for col in ['actual', 'cdf', 'pct_developed', 'cl_ultimate', 'cl_ibnr']:
+        for col in ['actual', 'cdf', 'pct_developed', 'ultimate_cl', 'ibnr_cl']:
             if col + '_new' in df_combined.columns:
                 df_combined[col] = df_combined[col + '_new'].combine_first(df_combined.get(col, pd.Series()))
                 df_combined.drop(columns=[col + '_new'], inplace=True)
@@ -304,8 +313,8 @@ if __name__ == "__main__":
     
     print("\nSummary by measure:")
     summary = df_cl.groupby('measure', observed=True).agg({
-        'cl_ultimate': 'sum',
-        'cl_ibnr': 'sum',
+        'ultimate_cl': 'sum',
+        'ibnr_cl': 'sum',
         'actual': 'sum'
     }).round(0)
     print(summary.to_string())

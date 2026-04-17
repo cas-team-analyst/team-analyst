@@ -1,0 +1,242 @@
+[
+  {
+    "measure": "Closed Count",
+    "interval": "12-24",
+    "selection": 1.6323,
+    "reasoning": "Weighted all average 1.6300. Very consistent range 1.5450-1.6832. Low CV (0.042 3yr). Recent years stable. Using simple_all average, which matches historical pattern."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "24-36",
+    "selection": 1.2995,
+    "reasoning": "Exclude high/low average 1.2997 chosen over simple_all (1.3017). Extremely tight distribution (1.2857-1.3293). CV of only 0.0024 indicates exceptional consistency. Minimal noise benefit from excluding extremes."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "36-48",
+    "selection": 1.2032,
+    "reasoning": "Weighted all average 1.2026. Consistent range 1.1788-1.2255. CV 0.0116. Used weighted average to downweight less recent sparse factors. Slight negative slope (-0.008 over 10yr) suggests mild stabilization over time."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "48-60",
+    "selection": 1.1334,
+    "reasoning": "Weighted all average 1.1333. Very tight range 1.1282-1.1406. CV 0.003 indicates near-perfect consistency. Recent data (2020-2021) very aligned. Standard choice."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "60-72",
+    "selection": 1.086,
+    "reasoning": "Weighted all average 1.0860. Narrow range 1.0827-1.0895. CV 0.0015. Stable throughout. No discernible trend. Straightforward average selection."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "72-84",
+    "selection": 1.0595,
+    "reasoning": "Weighted all average 1.0595. Tight range 1.0568-1.0621. CV 0.0022. Very stable development. Consistent across all years."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "84-96",
+    "selection": 1.0325,
+    "reasoning": "Weighted all average 1.0325. Narrow range 1.0320-1.0338. CV 0.0011. Mature development, very low movement. Clear pattern."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "96-108",
+    "selection": 1.0307,
+    "reasoning": "Weighted all average 1.0307. Range 1.0307. CV 0.001. Single observed factor or near-identical factors. Extremely mature."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "108-120",
+    "selection": 1.0098,
+    "reasoning": "All averages converge to 1.0098. Single observed factor across multiple years. Near-complete closure by age 108."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "Tail",
+    "selection": 1.0,
+    "reasoning": "By age 120, Closed Count exhibits 1.0000-1.0098 from 108-120, indicating functional closure. Expected counts fully developed by 120 months. No material tail development expected."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "12-24",
+    "selection": 1.8093,
+    "reasoning": "Weighted all average 1.8093 chosen over simple_all (1.8108). Reasonable range 1.7670-1.8913. CV 0.0247 (modest). Earlier years (2015-2016) slightly higher (1.7763-1.8913); 2023 lower (1.7670). Weighted approach appropriately downweights outlier 2017 (1.8913) and emphasizes recent development."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "24-36",
+    "selection": 1.333,
+    "reasoning": "Exclude high/low average 1.3336 chosen over weighted_all (1.3321). Range 1.3144-1.3691. CV 0.0156. Removing extremes (highest 1.3691 in 2020, lowest 1.3144 in 2021) provides better central estimate. Slight negative slope suggests modest stabilization. Defensible to exclude outliers."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "36-48",
+    "selection": 1.2015,
+    "reasoning": "Weighted all average 1.2015. Range 1.1832-1.2171. CV 0.0088. Stable core with manageable variation. No compelling trend. Weighted average balances recency and historical consistency well."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "48-60",
+    "selection": 1.1128,
+    "reasoning": "Weighted all average 1.1128. Range 1.1037-1.1270. CV 0.0072. Very consistent across years. No trend (-0.0025 over 10yr). Clean, straightforward selection."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "60-72",
+    "selection": 1.0733,
+    "reasoning": "Weighted all average 1.0733. Range 1.0700-1.0757. CV 0.0020. Extremely tight cluster. Consistent development in mature tail. Standard selection."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "72-84",
+    "selection": 1.0587,
+    "reasoning": "Weighted all average 1.0587. Range 1.0559-1.0612. CV 0.0024. Very stable. No trend. Clear single pattern."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "84-96",
+    "selection": 1.0424,
+    "reasoning": "Weighted all average 1.0424. Range 1.0406-1.0439. CV 0.0016. Matured development, minimal variation. Consistent across available experience."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "96-108",
+    "selection": 1.0332,
+    "reasoning": "Weighted all average 1.0332. Range 1.0326-1.0338. CV 0.0007. Highly concentrated. Small sample (4 observations) but very consistent."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "108-120",
+    "selection": 1.0202,
+    "reasoning": "All averages 1.0202. Single observed factor. Limited data (oldest cohort only) but consistent."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "Tail",
+    "selection": 1.005,
+    "reasoning": "Beyond age 120, incurred loss expected to continue development on large loss reserves. CV across intervals stays <3%, slope near zero. Modest tail of 1.005 reflects: (1) inherent tail risk in incurred (includes IBNR/reopenings), (2) development pattern suggests >95% closure by 120, (3) conservative buffer for reserve adequacy. Standard practice for incurred loss."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "12-24",
+    "selection": 1.8309,
+    "reasoning": "Weighted all average 1.8309 chosen over simple_all (1.8324). Range 1.7758-1.8822. CV 0.0187. Recent years more stable (1.7758-1.8499) vs. 2015 outlier (1.8262) and 2016 outlier (1.8822). Weighted downweights oldest/newest extremes appropriately."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "24-36",
+    "selection": 1.3693,
+    "reasoning": "Weighted all average 1.3693 chosen over weighted 5yr (1.3678). Range 1.3346-1.3920. CV 0.0139. Recent years (2020-2022) cluster around 1.3346-1.3901. Weighted approach downweights 2017 (1.3920) outlier. Stable trend (slope ~0). Clear selection."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "36-48",
+    "selection": 1.2121,
+    "reasoning": "Weighted all average 1.2121. Range 1.2048-1.2201. CV 0.0071. Consistent across all years. No trend. Standard weighted average."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "48-60",
+    "selection": 1.1468,
+    "reasoning": "Weighted all average 1.1468. Range 1.1401-1.1525. CV 0.0050. Very tight. No trend. Clean development pattern."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "60-72",
+    "selection": 1.1087,
+    "reasoning": "Weighted all average 1.1087. Range 1.1066-1.1098. CV 0.0012. Exceptional consistency. Single clear factor across all years."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "72-84",
+    "selection": 1.0858,
+    "reasoning": "Weighted all average 1.0858. Range 1.0850-1.0865. CV 0.0047. Stable, narrow range despite moderate CV (reflects very small percentage movements). Consistent."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "84-96",
+    "selection": 1.0602,
+    "reasoning": "Weighted all average 1.0602. Range 1.0599-1.0604. CV 0.0026. Highly consistent. Mature development."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "96-108",
+    "selection": 1.0581,
+    "reasoning": "Weighted all average 1.0581. Range 1.0555-1.0586. CV 0.0041. Small sample (4 observations) but stable. Mid-point of tight range."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "108-120",
+    "selection": 1.0434,
+    "reasoning": "All averages 1.0434. Single observed factor from 2015 cohort only. Limited but definitive experience."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "Tail",
+    "selection": 1.01,
+    "reasoning": "Paid loss exhibits complete data through 120 months for oldest cohort (2015). By 120 months, paid development is >95% complete. Small tail of 1.010 reflects: (1) minimal expected development beyond 10yr, (2) subrogation/salvage recoveries on older claims, (3) conservative margin for adequacy. Slightly higher than incurred (accounts for sub/sal volatility on old claims)."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "12-24",
+    "selection": 1.6641,
+    "reasoning": "Simple all average 1.6641 chosen over weighted_all (1.6631). Range 1.6123-1.7235. CV 0.0230. More recent years slightly elevated (2019: 1.7235) but recent years (2020-2022) in line with 10yr average. Simple average captures overall pattern well."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "24-36",
+    "selection": 1.293,
+    "reasoning": "Weighted all average 1.2930 chosen over simple_5yr (1.2951). Range 1.2705-1.3024. CV 0.0124. Stable range with minor variation. Recent years (2021-2022) very consistent (1.2821-1.3024). Weighted approach balances recency."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "36-48",
+    "selection": 1.1859,
+    "reasoning": "Weighted all average 1.1859. Range 1.1752-1.2017. CV 0.0088. Consistent. Slight positive slope (0.0021 over 10yr) suggests very mild increase but not material. Standard weighted approach."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "48-60",
+    "selection": 1.0999,
+    "reasoning": "Weighted all average 1.0999. Range 1.0923-1.1064. CV 0.0062. Tight and stable. No trend. Clean selection."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "60-72",
+    "selection": 1.0425,
+    "reasoning": "Weighted all average 1.0425. Range 1.0394-1.0436. CV 0.0021. Excellent consistency. Single clear pattern."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "72-84",
+    "selection": 1.022,
+    "reasoning": "Weighted all average 1.0220. Range 1.0210-1.0237. CV 0.0012. Highly consistent, mature development."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "84-96",
+    "selection": 1.0105,
+    "reasoning": "Weighted all average 1.0105. Range 1.0099-1.0108. CV 0.0005. Exceptional consistency. Very late in development cycle."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "96-108",
+    "selection": 1.0098,
+    "reasoning": "Weighted all average 1.0098. Range 1.0098 (all equal). Single factor. Claims essentially closed."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "108-120",
+    "selection": 1.0,
+    "reasoning": "All averages 1.0000. No further development beyond 108 months. Reported count count triangle is functionally closed by age 108."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "Tail",
+    "selection": 1.0,
+    "reasoning": "Reported count fully closed by 120 months. Development complete. No tail needed. Factor of 1.000 reflects mature, closed-out portfolio with stable closure patterns."
+  }
+]
