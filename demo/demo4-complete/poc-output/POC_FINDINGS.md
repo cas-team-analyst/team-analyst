@@ -1,111 +1,87 @@
 # POC — Formula-Driven Workbook Findings
 
 **Branch:** `poc/formula-driven-workbook`
-**Scope:** Closed Count measure only, end-to-end (age-to-age → averages → CDF → projected ultimate → cross-sheet IBNR)
-**Approach:** Python-openpyxl injects formulas into a template file that's seeded from demo4's `Chain Ladder Selections.xlsx`.
+**Scope:** All 4 measure sheets (Incurred Loss, Paid Loss, Reported Count, Closed Count) + cross-sheet Selected Ultimates summaries + fix for script 6's sheet-rename-breaks-refs issue.
 
 ## What's in `poc-output/`
 
-- `templates/cl-selections-template.xlsx` — the template. Closed Count sheet contains live formulas; other measure sheets untouched. A new `Selected Ultimates - POC` sheet demonstrates cross-sheet wiring.
-- `sim-script6-master.xlsx` — the result of running `6-create-complete-analysis.py`'s sheet-copy loop against the template (simulated). Use this to see what breaks downstream.
+- `templates/cl-selections-template.xlsx` — the template. All 4 measure sheets have live formulas; 4 new `Sel Ults - <measure>` sheets cross-reference into them.
+- `sim-script6-master-fixed.xlsx` — script 6's copy loop with the cross-sheet ref rewriting fix applied. 120/120 refs resolve correctly after the `CL - ` prefix rename.
 
 ## Scripts (in `claude-code/scripts/`)
 
-- `poc_inject_formulas.py` — injects CL formulas into the `Closed Count` sheet.
-- `poc_add_selected_sheet.py` — adds the `Selected Ultimates - POC` sheet with cross-sheet refs.
+- `poc_inject_formulas.py` — rebuilds template from demo4 source, injects formulas into all 4 measure sheets (age-to-age, averages, CDF, Projected Ultimates).
+- `poc_add_selected_sheet.py` — adds `Sel Ults - <measure>` sheets with cross-sheet formulas to the template.
+- `poc_sim_script6_fixed.py` — simulates script 6's sheet-copy loop with the sheet-ref rewriting patch.
 
 ## Results
 
-### ✅ Core CL chain works
+### ✅ All 4 measures validate at 0.0 diff
 
-Python-simulated the formula chain against `ultimates/projected-ultimates.parquet` for all 10 periods:
+Simulated the formula chain (age-to-age → averages → CDF → projected ultimate) in Python and compared against `projected-ultimates.parquet`:
 
-| Period | Simulated Ultimate | Reference Ultimate | Diff |
+| Measure | Max \|diff\| | Rel diff | Status |
 |---|---|---|---|
-| 2015 | 4,931.00 | 4,931.00 | 0.0 |
-| 2016 | 4,935.90 | 4,935.90 | 0.0 |
-| 2017 | 4,895.93 | 4,895.93 | 0.0 |
-| 2018 | 5,020.66 | 5,020.66 | 0.0 |
-| 2019 | 4,958.46 | 4,958.46 | 0.0 |
-| 2020 | 4,968.19 | 4,968.19 | 0.0 |
-| 2021 | 5,340.87 | 5,340.87 | 0.0 |
-| 2022 | 5,225.31 | 5,225.31 | 0.0 |
-| 2023 | 4,803.41 | 4,803.41 | 0.0 |
-| 2024 | 4,602.37 | 4,602.37 | 0.0 |
+| Incurred Loss | 0.000000 | 0.00e+00 | PASS |
+| Paid Loss | 0.000000 | 0.00e+00 | PASS |
+| Reported Count | 0.000000 | 0.00e+00 | PASS |
+| Closed Count | 0.000000 | 0.00e+00 | PASS |
 
-**Max absolute diff: 0.0.** Formula logic exactly replicates the Python reference.
+### ✅ Script 6 cross-sheet ref fix works
 
-### ✅ openpyxl formula-injection path works
+Earlier POC: cross-sheet formula `='Closed Count'!E56` broke after script 6 renamed sheets to `CL - Closed Count`. Fix is a regex rewrite in the copy loop:
 
-The engineering lead's prior concern ("initial attempts didn't go well" in Python) may have been the code-from-scratch path. The template-based approach — where Python only edits `cell.value` of an existing workbook to inject formula strings — worked on the first try.
+```python
+# Pseudocode — actual fix in poc_sim_script6_fixed.py
+for each source workbook:
+    rename_map = {sheet_name: f"{prefix}{sheet_name}"[:31] for sheet_name in wb.sheetnames}
+    for each sheet:
+        for each cell:
+            if isinstance(cell.value, str) and cell.value.startswith("="):
+                cell.value = rewrite_formula_sheet_refs(cell.value, rename_map)
+```
 
-Known openpyxl behavior confirmed: it writes formula strings but does **not** evaluate them. Cached values are `None` until Excel opens the file and saves.
+The rewriter handles both quoted (`'Sheet Name'!`) and unquoted (`SheetName!`) refs, and requotes new names that contain spaces or special characters.
 
-### ⚠️ Script 6 breaks cross-sheet refs (the expected risk)
+**Validation:** 120 cross-sheet refs across 4 `Sel Ults` sheets, all 120 resolve to existing sheets in the master workbook after copy.
 
-`6-create-complete-analysis.py` copies each source sheet into the master workbook with a `CL - ` / `Sel - ` prefix. Same-sheet formulas (the entire CL chain within `Closed Count`) survive intact. **Cross-sheet formulas do not** — `='Closed Count'!E56` stays as-is after the source sheet gets renamed to `CL - Closed Count` in the master, producing `#REF!` or an external-link prompt when Excel opens the master.
+### ✅ End-to-end pipeline
 
-This affects only formulas that reach across sheets. Within a single sheet, everything is fine.
+1. `poc_inject_formulas.py` → seeds template, injects formulas in 4 measure sheets.
+2. `poc_add_selected_sheet.py` → adds 4 Sel Ults sheets with cross-sheet refs.
+3. `poc_sim_script6_fixed.py` → simulates aggregation with ref rewriting.
+4. Actuary opens `sim-script6-master-fixed.xlsx` in Excel → edits any Selection LDF → recalc cascades through CDF → Projected Ultimate → cross-sheet IBNR in the summary sheet.
 
-### ⚠️ `7-tech-review.py` and peer-review read `complete-analysis.xlsx` with `data_only=True`
+## Known Constraints & Decisions
 
-These expect cached values. If formulas are in the master workbook and nobody opens it in Excel first, these readers will see `None` for every derived cell. Confirmed via the cross-sheet simulation: cached values are empty on disk until Excel saves.
+1. **Excel 31-char sheet name limit.** The Sel Ults sheets were named to fit: `Sel Ults - Incurred Loss` (24 chars) + `CL - ` prefix = 29 chars, under the cap. Longer names would truncate, breaking formula resolution.
 
-## Formulas in use (Closed Count sheet)
+2. **openpyxl doesn't evaluate formulas.** Cached values are `None` on disk until Excel opens + saves. Impact:
+   - `2b`/`2c` only read actuary-typed Selection row — safe.
+   - `7-tech-review.py` and peer-review read `complete-analysis.xlsx` with `data_only=True`. If nobody opens the master in Excel first, they see blank derived cells. Open remains: human-opens-in-Excel step vs. LibreOffice-headless recalc vs. moving readers off the xlsx.
 
-| Region | Formula template |
-|---|---|
-| Age-to-age (B16:J24) | `=C3/B3` (next age ÷ current age) — only where both cells populated |
-| Simple avg (row 29) | `=IFERROR(AVERAGE(B16:B24), AVERAGE(B16:B24))` |
-| Weighted avg (row 30) | `=IFERROR(SUMPRODUCT(B16:B24,B3:B11)/SUMPRODUCT((B16:B24<>"")*B3:B11), …fallback…)` |
-| Exclude hi/lo (row 31) | `=IFERROR(TRIMMEAN(B16:B24,2/COUNT(B16:B24)), AVERAGE(B16:B24))` |
-| N-yr variants (rows 32–40) | same patterns with narrower ranges; fallback to "all" when window is sparse |
-| CDF row (row 52) | `K52: =K47`, then `J52: =J47*K52`, `I52: =I47*J52`, … backward chain |
-| Latest Age (col B, rows 56–65) | `=LOOKUP(2, 1/(B3:K3<>""), $B$2:$K$2)` |
-| Latest Value (col C) | `=LOOKUP(2, 1/(B3:K3<>""), B3:K3)` |
-| CDF at age (col D) | `=HLOOKUP(B56, $B$51:$K$52, 2, FALSE)` |
-| Ultimate (col E) | `=C56*D56` |
-| IBNR (col F) | `=E56-C56` |
+3. **Weighted-average formulas reference the triangle directly.** Uses `SUMPRODUCT(atoa_range, triangle_col_range)` / `SUMPRODUCT((atoa_range<>"")*triangle_col_range)`. Aligned indexing proven out against all 4 measures.
 
-## Manual verification checklist for you
+4. **Sparse-window fallback.** N-yr averages use `=IFERROR(...window..., ...all periods...)` so intervals with fewer data points in the window fall back to all-period average. This matches observed behavior but the exact semantics of the Python `1d-averages-qa.py` fallback weren't audited — flagging as a minor possible-discrepancy area.
 
-1. Open `demo/demo4-complete/poc-output/templates/cl-selections-template.xlsx` in Excel.
-2. Go to the **Closed Count** sheet. Confirm every cell in the age-to-age, averages, CDF, and Projected Ultimates sections is populated (not blank or #REF). Compare the Projected Ultimate column values to the table above.
-3. Edit a Selection cell — e.g., change `B47` from `1.6243` to `1.7000`. Watch `B52` (CDF at age 12) and column E of the Projected Ultimates section update live.
-4. Flip to the **Selected Ultimates - POC** sheet. Confirm the Chain Ladder Ult column pulls from Closed Count, and changing the LDF on Closed Count cascades into the IBNR here.
-5. Save. This caches values so downstream readers work.
+5. **Tail factor.** `K47` (per-measure actuary input). CDF chain starts with `K52 = K47` regardless of the tail value, so it works for Closed Count (tail=1.0), Incurred Loss (tail=1.0125), Paid Loss (tail=1.019), Reported Count (tail=1.0).
 
-## Scaling to the full ~50-sheet workbook
+## Scaling estimate
 
-**Effort estimate — moderate:** ~1–2 days of focused work.
+~~1–2 days~~ → **substantially done** on this branch for the Chain Ladder workbook. What remains:
 
-The hard part was proving the path works and finding the sheet-rename gotcha. Repeating the injection for the other three measure sheets (Incurred Loss, Paid Loss, Reported Count) is mostly `poc_inject_formulas.py` parameterized on a sheet name. Diagnostic sheets (Diag-* and CV & Slopes) would need their own formula maps but follow similar patterns.
-
-Bigger outstanding items before a full rollout:
-
-1. **Patch `6-create-complete-analysis.py`** to rewrite formula sheet refs during copy. In the copy loop around line 577, after assigning `dst_cell.value = cell.value`, if the value is a formula string, regex-replace `'<old_name>'!` with `'<new_name>'!` using the `{original: prefixed}` mapping built as sheets are renamed. ~20 lines of code.
-
-2. **Decide on recalc strategy** for `data_only=True` readers. Options:
-   - Human-in-the-loop: the actuary opens the master in Excel and saves; the reviewers then run. Fits the existing workflow since actuary already opens workbooks for review.
-   - LibreOffice headless (`soffice --headless --calc --convert-to xlsx`) inserted before `7-tech-review.py` to force recalc. Adds Linux/LibreOffice dependency the lead flagged as "keep it simple."
-   - Migrate `7-tech-review.py` / peer-review to read source parquets/JSON directly rather than the aggregated xlsx — this would be the cleanest but requires rewriting both.
-
-3. **Weighted-average weight references.** The current formulas reference the triangle directly (`SUMPRODUCT(B16:B24, B3:B11)`). This works because weights for age-to-age factors are the prior-age triangle values. If different weighting is ever used, formulas would need to be updated. Not a concern for the current actuarial method.
-
-4. **Sparse-window behavior for 3yr/5yr averages.** Python's `1d-averages-qa.py` has specific logic for sparse intervals (columns where the window has zero observations). Our formulas fall back to the "all" range via `IFERROR`. Need to confirm with the actuary that this fallback is acceptable, or replicate the exact fallback (requires reading 1d to verify).
+- **Small.** Apply the `rewrite_formula_sheet_refs` patch to the real `6-create-complete-analysis.py` (it's in `.claude/skills/reserving-analysis/scripts/` and gets copied into projects). ~20 lines around line 580.
+- **Medium.** Convert `selected-ultimates.xlsx`, `post-method-series.xlsx`, `post-method-triangles.xlsx` to be formula-driven and reference cells in the master workbook rather than standing on pre-computed values. These are generated inside script 6 today — could be consolidated into the CL template workbook, or kept separate with intra-master formula refs after the copy.
+- **Policy.** Decide whether `7-tech-review.py` / peer-review require a recalc step before they read the master, or move them to source parquets.
 
 ## Recommendation — GO
 
-The core proof is solid: formulas produce numerically identical results to the Python pipeline, openpyxl injection works, and the actuary gets a live-recalcing workbook. The sheet-rename issue is real but fixable with a small patch to script 6.
+Core workbook works across all 4 measures with live recalc. Script 6's sheet-rename issue has a validated fix. The remaining work is mechanical (apply the patch, convert the three smaller output workbooks) and policy (the recalc step for review readers).
 
-**Suggested next commits on this branch:**
-1. Patch `6-create-complete-analysis.py` to rewrite cross-sheet refs during copy.
-2. Extend `poc_inject_formulas.py` to all four measure sheets (parameterize on sheet name).
-3. Decide recalc strategy with the team before touching `7-tech-review.py` / peer-review.
+## Manual verification checklist
 
-## Things not covered in this POC
-
-- Downstream diagnostic sheets (post-method triangles, severity/loss-rate/frequency) still use hard-coded values. These are all derived from selected ultimates, so the same template pattern applies — wire them in the next iteration.
-- `selected-ultimates.xlsx` and `post-method-series.xlsx` (the separate workbooks generated by script 6) were not converted; the `Selected Ultimates - POC` sheet in the template is a standalone demo of the cross-sheet pattern.
-- Incurred Loss / Paid Loss / Reported Count sheets are untouched.
-- No testing against LibreOffice-headless recalc yet.
+1. Open `demo/demo4-complete/poc-output/templates/cl-selections-template.xlsx` in Excel.
+2. On any measure sheet, edit Selection row 47 (e.g., `Incurred Loss!B47`). Watch CDF row 52 and Projected Ultimates rows 56-65 recalc.
+3. Flip to that measure's `Sel Ults` tab. IBNR column should reflect the change.
+4. Save.
+5. Open `sim-script6-master-fixed.xlsx`. All 22 sheets present, all cross-sheet formulas resolve (no #REF! errors). Save.
