@@ -22,6 +22,7 @@ run-note: When copied to a project, run from the scripts/ directory:
     python 6-create-complete-analysis.py
 """
 
+import copy
 import json
 import os
 import pathlib
@@ -81,12 +82,15 @@ def _style_cell(cell, level="subheader"):
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def _try_int(series):
-    """Convert Series to integer where possible, else return as string."""
+def _try_int(val):
+    """Convert value to integer where possible, else return original value."""
     try:
-        return series.astype(str).apply(lambda x: int(float(x)))
+        num = float(val)
+        if num == int(num):
+            return int(num)
+        return num
     except (ValueError, TypeError):
-        return series.astype(str)
+        return val
 
 
 def _col_has_data(df, col):
@@ -102,14 +106,22 @@ def _write_header_row(ws, headers, row=1, level="subheader", col_width=22):
         ws.column_dimensions[get_column_letter(c_idx)].width = col_width
 
 
-def _write_data_cell(cell, value, num_fmt=None):
+def _write_data_cell(cell, value, num_fmt=None, is_numeric=False):
     """Write a data cell with consistent font, border, alignment."""
-    cell.value  = value
+    # Ensure numeric values are stored as numbers, not text
+    if value is not None and is_numeric:
+        try:
+            cell.value = float(value) if not isinstance(value, (int, float)) else value
+        except (ValueError, TypeError):
+            cell.value = value
+    else:
+        cell.value = value
+    
     cell.font   = DATA_FONT
     cell.border = THIN_BORDER
-    cell.alignment = Alignment(horizontal="right" if isinstance(value, (int, float)) else "left",
+    cell.alignment = Alignment(horizontal="right" if isinstance(cell.value, (int, float)) else "left",
                                vertical="center")
-    if num_fmt and value is not None:
+    if num_fmt and cell.value is not None and isinstance(cell.value, (int, float)):
         cell.number_format = num_fmt
 
 
@@ -258,7 +270,7 @@ def write_selected_ultimates(combined, has_ie, has_bf, path):
         )
         for row_idx, period in enumerate(periods, start=3):
             vals = [
-                _try_int(pd.Series([period])).iloc[0],
+                _try_int(period),
                 _get(df_m, period, "current_age"),
                 _get(df_m, period, "actual"),
                 _get(df_m, period, "ultimate_cl"),
@@ -274,8 +286,11 @@ def write_selected_ultimates(combined, has_ie, has_bf, path):
             ]
 
             for c_idx, val in enumerate(vals, start=1):
-                num_fmt = _NUM_FMT if c_idx > 2 and isinstance(val, (int, float)) else None
-                _write_data_cell(ws.cell(row=row_idx, column=c_idx), val, num_fmt)
+                is_numeric = c_idx >= 1  # All columns are numeric (period is year)
+                num_fmt = _NUM_FMT if c_idx > 2 else None  # Currency formatting for cols 3+
+                if c_idx == 2:  # Age column gets 0 decimals but no comma
+                    num_fmt = "0"
+                _write_data_cell(ws.cell(row=row_idx, column=c_idx), val, num_fmt, is_numeric)
 
     os.makedirs(pathlib.Path(path).parent, exist_ok=True)
     wb.save(path)
@@ -327,13 +342,14 @@ def write_post_method_series(combined, exp_map, path):
                 if has_exp and pd.notna(ult_counts) and pd.notna(exp_val) and exp_val != 0
                 else None)
 
-        row_vals = [_try_int(pd.Series([period])).iloc[0], sev]
+        row_vals = [_try_int(period), sev]
         if has_exp:
             row_vals += [lr, freq]
 
         for c_idx, val in enumerate(row_vals, start=1):
-            num_fmt = _DEC_FMT if c_idx > 1 and val is not None else None
-            _write_data_cell(ws.cell(row=row_idx, column=c_idx), val, num_fmt)
+            is_numeric = True  # All columns are numeric
+            num_fmt = _DEC_FMT if c_idx > 1 else None
+            _write_data_cell(ws.cell(row=row_idx, column=c_idx), val, num_fmt, is_numeric)
 
     os.makedirs(pathlib.Path(path).parent, exist_ok=True)
     wb.save(path)
@@ -366,11 +382,13 @@ def _write_triangle_sheet(ws, label, data, num_fmt):
                               value=int(period_int) if pd.notna(period_int) else period_int)
         period_cell.font   = LABEL_FONT
         period_cell.border = THIN_BORDER
-        period_cell.alignment = Alignment(horizontal="left")
+        period_cell.alignment = Alignment(horizontal="right")
+        if pd.notna(period_int):
+            period_cell.number_format = "0"  # Integer format for period
         for c_idx, age in enumerate(ages, start=2):
             val = row.get(age, np.nan)
             _write_data_cell(ws.cell(row=r_idx, column=c_idx),
-                             None if pd.isna(val) else val, num_fmt)
+                             None if pd.isna(val) else val, num_fmt, is_numeric=True)
 
 
 def write_post_method_triangles(triangles_df, combined, path):
@@ -471,13 +489,28 @@ def write_notes_sheet(ws):
     row += 1
     
     # Creation date
-    ws.cell(row=row, column=1, value="Created:").font = LABEL_FONT
-    ws.cell(row=row, column=2, value=datetime.now().strftime("%B %d, %Y %I:%M %p")).font = DATA_FONT
+    date_label = ws.cell(row=row, column=1, value="Created:")
+    date_label.font = LABEL_FONT
+    date_label.border = THIN_BORDER
+    date_label.alignment = Alignment(horizontal="left", vertical="center")
+    
+    date_value = ws.cell(row=row, column=2, value=datetime.now().strftime("%B %d, %Y %I:%M %p"))
+    date_value.font = DATA_FONT
+    date_value.border = THIN_BORDER
+    date_value.alignment = Alignment(horizontal="left", vertical="center")
     row += 1
     
     # Description
-    ws.cell(row=row, column=1, value="Description:").font = LABEL_FONT
-    ws.cell(row=row, column=2, value="Complete actuarial reserve analysis combining selections and projections").font = DATA_FONT
+    desc_label = ws.cell(row=row, column=1, value="Description:")
+    desc_label.font = LABEL_FONT
+    desc_label.border = THIN_BORDER
+    desc_label.alignment = Alignment(horizontal="left", vertical="center")
+    
+    desc_value = ws.cell(row=row, column=2, value="Complete actuarial reserve analysis combining selections and projections")
+    desc_value.font = DATA_FONT
+    desc_value.border = THIN_BORDER
+    desc_value.alignment = Alignment(horizontal="left", vertical="center")
+    ws.merge_cells(start_row=row, start_column=2, end_row=row, end_column=3)
     row += 2
     
     # Table of contents section
@@ -487,10 +520,17 @@ def write_notes_sheet(ws):
     row += 1
     
     # Headers for TOC
-    ws.cell(row=row, column=1, value="Sheet Name").font = SUBHEADER_FONT
-    ws.cell(row=row, column=1).fill = SUBHEADER_FILL
-    ws.cell(row=row, column=2, value="Description").font = SUBHEADER_FONT
-    ws.cell(row=row, column=2).fill = SUBHEADER_FILL
+    toc_name_header = ws.cell(row=row, column=1, value="Sheet Name")
+    toc_name_header.font = SUBHEADER_FONT
+    toc_name_header.fill = SUBHEADER_FILL
+    toc_name_header.border = THIN_BORDER
+    toc_name_header.alignment = Alignment(horizontal="center", vertical="center")
+    
+    toc_desc_header = ws.cell(row=row, column=2, value="Description")
+    toc_desc_header.font = SUBHEADER_FONT
+    toc_desc_header.fill = SUBHEADER_FILL
+    toc_desc_header.border = THIN_BORDER
+    toc_desc_header.alignment = Alignment(horizontal="center", vertical="center")
     row += 1
     
     # Return the row number where sheet list should start
@@ -527,14 +567,42 @@ def write_full_analysis(output_path, source_files, internal_files):
         if not os.path.exists(file_path):
             print(f"  Skipping (not found): {file_path}")
             continue
-        wb = load_workbook(file_path, data_only=True)
+        wb = load_workbook(file_path, data_only=False)  # Keep formatting
         for sname in wb.sheetnames:
             new_name = (f"{prefix}{sname}" if prefix else sname)[:31]
             ws_src = wb[sname]
             ws_dst = master.create_sheet(title=new_name)
+            
+            # Copy cell values, formats, and styles
             for row in ws_src.iter_rows():
                 for cell in row:
-                    ws_dst[cell.coordinate].value = cell.value
+                    dst_cell = ws_dst[cell.coordinate]
+                    dst_cell.value = cell.value
+                    if cell.has_style:
+                        dst_cell.font = copy.copy(cell.font)
+                        dst_cell.border = copy.copy(cell.border)
+                        dst_cell.fill = copy.copy(cell.fill)
+                        dst_cell.number_format = cell.number_format
+                        dst_cell.protection = copy.copy(cell.protection)
+                        dst_cell.alignment = copy.copy(cell.alignment)
+            
+            # Copy column widths
+            for col_letter in ws_src.column_dimensions:
+                if col_letter in ws_src.column_dimensions:
+                    ws_dst.column_dimensions[col_letter].width = ws_src.column_dimensions[col_letter].width
+            
+            # Copy row heights
+            for row_num in ws_src.row_dimensions:
+                if row_num in ws_src.row_dimensions:
+                    ws_dst.row_dimensions[row_num].height = ws_src.row_dimensions[row_num].height
+            
+            # Copy merged cells
+            for merged_cell_range in ws_src.merged_cells.ranges:
+                ws_dst.merge_cells(str(merged_cell_range))
+            
+            # Copy freeze panes
+            if ws_src.freeze_panes:
+                ws_dst.freeze_panes = ws_src.freeze_panes
             
             # Determine description based on sheet name patterns
             desc = _get_sheet_description(new_name, prefix)
@@ -544,8 +612,15 @@ def write_full_analysis(output_path, source_files, internal_files):
     
     # Write TOC entries to Notes sheet
     for idx, (sheet_name, desc) in enumerate(sheet_descriptions, start=toc_start_row):
-        notes_ws.cell(row=idx, column=1, value=sheet_name).font = DATA_FONT
-        notes_ws.cell(row=idx, column=2, value=desc).font = DATA_FONT
+        name_cell = notes_ws.cell(row=idx, column=1, value=sheet_name)
+        name_cell.font = DATA_FONT
+        name_cell.border = THIN_BORDER
+        name_cell.alignment = Alignment(horizontal="left", vertical="center")
+        
+        desc_cell = notes_ws.cell(row=idx, column=2, value=desc)
+        desc_cell.font = DATA_FONT
+        desc_cell.border = THIN_BORDER
+        desc_cell.alignment = Alignment(horizontal="left", vertical="center")
 
     os.makedirs(pathlib.Path(output_path).parent, exist_ok=True)
     master.save(output_path)
