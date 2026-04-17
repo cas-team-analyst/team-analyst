@@ -21,6 +21,7 @@ run-note: When copied to a project, run from the scripts/ directory:
 
 import pandas as pd
 import numpy as np
+import re
 from pathlib import Path
 
 from modules import config
@@ -29,6 +30,70 @@ from modules import config
 INPUT_TRIANGLE_DATA    = config.PROCESSED_DATA + "1_triangles.parquet"
 INPUT_SELECTIONS_EXCEL = config.SELECTIONS + "Chain Ladder Selections.xlsx"
 OUTPUT_PATH            = config.ULTIMATES
+
+
+# Excel reading helpers
+_INTERVAL_RE = re.compile(r'^\d+-\d+$')
+
+
+def _is_interval_row(row_series) -> bool:
+    """Return True if the row looks like an interval label row (e.g. '12-24', 'Tail')."""
+    vals = [str(v).strip() for v in row_series.iloc[1:] if pd.notna(v) and str(v).strip()]
+    matches = sum(1 for v in vals if _INTERVAL_RE.match(v) or v.lower() == 'tail')
+    return matches >= 3
+
+
+def find_row_by_label(df: pd.DataFrame, label: str):
+    """Return (row_index, row_series) for the first row whose first cell matches label."""
+    mask = df.iloc[:, 0].astype(str).str.strip() == label
+    indices = df[mask].index
+    if len(indices) == 0:
+        return None, None
+    idx = indices[0]
+    return idx, df.iloc[idx]
+
+
+def find_interval_row_above(df: pd.DataFrame, row_idx: int, max_scan: int = 20):
+    """
+    Scan upward from row_idx to find the nearest interval header row.
+    Returns the row series or None.
+    """
+    for offset in range(1, min(max_scan, row_idx + 1)):
+        candidate = df.iloc[row_idx - offset]
+        if _is_interval_row(candidate):
+            return candidate
+    return None
+
+
+def read_labeled_selections(df: pd.DataFrame, label: str) -> dict:
+    """
+    Read a selection row identified by its label in column 0.
+    Finds the matching interval header by scanning upward.
+    Returns {interval_str: float_value} or empty dict.
+    """
+    row_idx, sel_row = find_row_by_label(df, label)
+    if sel_row is None:
+        return {}
+
+    interval_row = find_interval_row_above(df, row_idx)
+    if interval_row is None:
+        return {}
+
+    selections = {}
+    for col_idx in range(1, len(sel_row)):
+        interval = interval_row.iloc[col_idx]
+        ldf_value = sel_row.iloc[col_idx]
+        if pd.notna(interval) and pd.notna(ldf_value):
+            try:
+                selections[str(interval).strip()] = float(ldf_value)
+            except (ValueError, TypeError):
+                continue
+    return selections
+
+
+def get_tail(selections: dict) -> float:
+    """Return tail factor from selections dict, checking both 'Tail' and 'tail'."""
+    return float(selections.get('Tail', selections.get('tail', 1.0)))
 
 
 def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
@@ -54,52 +119,23 @@ def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
     return diagonal
 
 
-def _extract_selections_from_row(df, label: str) -> tuple[dict, pd.Series | None]:
-    """Find a labeled row and extract interval->LDF mapping. Returns (selections, interval_row)."""
-    idx = df[df.iloc[:, 0].astype(str).str.strip() == label].index
-    if len(idx) == 0:
-        return {}, None
-    sel_row = df.iloc[idx[0]]
-    interval_row = df.iloc[idx[0] - 1]
-    selections = {}
-    for col_idx in range(1, len(sel_row)):
-        interval = interval_row.iloc[col_idx]
-        ldf_value = sel_row.iloc[col_idx]
-        if pd.notna(interval) and pd.notna(ldf_value):
-            try:
-                selections[str(interval).strip()] = float(ldf_value)
-            except (ValueError, TypeError):
-                continue
-    return selections, interval_row
-
-
 def read_selections_from_excel(excel_path: str, measure: str, ages: list) -> dict:
     """
     Read LDF selections from the Chain Ladder Selections Excel file for a specific measure.
-
-    Priority: 'Selection' row (actuary final) → 'AI Selection' row (experimental fallback).
-
-    Args:
-        excel_path: Path to the Chain Ladder Selections.xlsx file
-        measure: Measure name (sheet name in Excel)
-        ages: List of age values to create intervals
-
-    Returns:
-        Dictionary mapping interval (e.g., "11-23") to selected LDF value
+    Priority: 'Selection' row (actuary final) → 'AI Selection' row (fallback).
+    Uses robust upward-scanning interval detection.
     """
     try:
-        df = pd.read_excel(excel_path, sheet_name=measure)
-
-        selections, _ = _extract_selections_from_row(df, "Selection")
-        if selections:
-            print(f"  Found {len(selections)} LDF selection(s) for {measure}")
-            return selections
-
+        df = pd.read_excel(excel_path, sheet_name=measure, engine='openpyxl', engine_kwargs={'data_only': True})
+        # Try actuary selection first, fall back to AI selection
+        for label in ("Selection", "AI Selection"):
+            selections = read_labeled_selections(df, label)
+            if selections:
+                print(f"  Found {len(selections)} LDF selection(s) for {measure} (row: '{label}')")
+                return selections
         raise ValueError(
-            f"No values found in 'Selection' row for sheet '{measure}'. "
-            "Fill in the Selection row in Chain Ladder Selections.xlsx before running ultimates."
+            f"No values found in 'Selection' or 'AI Selection' row for sheet '{measure}'."
         )
-
     except Exception as e:
         print(f"  Warning: Could not read selections for {measure}: {e}")
         return {}
@@ -124,7 +160,7 @@ def build_cdfs(selections: dict, ages: list, measure: str) -> pd.DataFrame:
     intervals = {f"{ages[i]}-{ages[i+1]}": i for i in range(len(ages) - 1)}
     
     # Get tail factor (if present, otherwise 1.0)
-    tail = selections.get("tail", 1.0)
+    tail = get_tail(selections)
     
     # Build CDFs from oldest to youngest
     # Start with tail at the oldest age

@@ -22,7 +22,7 @@ from modules import config
 # Paths from modules/config.py — override here if needed:
 DATA_FILE_PATH = config.RAW_DATA
 OUTPUT_PATH    = config.PROCESSED_DATA
-EXPECTED_LOSS_RATES_FILE = "expected-loss-rates.csv"  # Optional: Set to None if not using expected loss rates
+EXPECTED_LOSS_RATES_FILE = None  # Optional: Set to None if not using expected loss rates, otherwise set to the file name like "my-file.xlsx"
 
 def read_and_process_triangles():
     """
@@ -81,12 +81,14 @@ def read_and_process_triangles():
             source = file_path
         else:
             # Assume Excel format (.xlsx, .xls)
+            # data_only=True reads cached cell values instead of formula strings
             df = pd.read_excel(
                 file_path,
                 sheet_name=sheet_name,
                 header=None,
                 dtype=str,
-                engine='openpyxl'
+                engine='openpyxl',
+                engine_kwargs={'data_only': True}
             )
             source = f'{file_path} - Sheet: {sheet_name}'
         
@@ -209,8 +211,21 @@ def read_and_process_triangles():
         details="Example closed data"
     )
 
+    # This will probably need extra work. Exposure is sometimes in a different file or not available at all.
+    # Set exposure = None if you don't have exposure data or want to skip it.
+    exposure = read_triangle_data(
+        file_path=DATA_FILE_PATH + "canonical-triangles.xlsx",
+        sheet_name="Exposure",
+        header_row=1,
+        period_column=1,
+        first_data_column=2,
+        data_type="Exposure",
+        unit_type="Count",
+        details="Example exposure data"
+    )
+
     # Concatenate all dataframes
-    all_data = pd.concat([incurred, paid, reported, closed], ignore_index=True)
+    all_data = pd.concat([incurred, paid, reported, closed, exposure], ignore_index=True)
     
     # Get unique age and period categories in the order they first appear (should be consistent across all triangles)
     age_categories = incurred['age'].cat.categories.tolist()
@@ -387,13 +402,14 @@ def read_and_process_expected_loss_rates(triangle_data: pd.DataFrame, file_path:
     print(f"  Found expected loss rates file: {file_path}")
     
     # This is a simple implementation for reading expected loss rate data.
-    # However, data may come in a different format so you may need to replace this code.
+    # However, data will likely come in a different format so you may need to replace this code.
     
     # Read the data
     if file_path.lower().endswith('.csv'):
         df_expected = pd.read_csv(file_path)
     elif file_path.lower().endswith(('.xlsx', '.xls')):
-        df_expected = pd.read_excel(file_path, engine='openpyxl')
+        # data_only=True reads cached cell values instead of formula strings
+        df_expected = pd.read_excel(file_path, engine='openpyxl', engine_kwargs={'data_only': True})
     else:
         raise ValueError(f"Unsupported file format: {file_path}. Use .csv, .xlsx, or .xls")
     
@@ -406,6 +422,11 @@ def read_and_process_expected_loss_rates(triangle_data: pd.DataFrame, file_path:
     #     'Expected_Loss_Rate': 'expected_loss_rate',
     #     'Expected_Frequency': 'expected_freq'
     # })
+    
+    # Drop blank rows
+    df_expected = df_expected.dropna(subset=['period', 'expected_loss_rate', 'expected_freq'])
+    # Ensure period values are strings
+    df_expected['period'] = df_expected['period'].astype(str).str.strip()
     # ============================================================================
     
     # Validate the data
@@ -572,7 +593,7 @@ def validate_triangle_data(df: pd.DataFrame) -> None:
     
     # Check measure values
     if 'measure' in df.columns:
-        valid_measures = ['Incurred Loss', 'Paid Loss', 'Reported Count', 'Closed Count']
+        valid_measures = ['Incurred Loss', 'Paid Loss', 'Reported Count', 'Closed Count', 'Exposure']
         invalid_measures = df[~df['measure'].isin(valid_measures)]['measure'].unique()
         if len(invalid_measures) > 0:
             errors.append(f"Unexpected measure value(s): {', '.join(map(str, invalid_measures))}")

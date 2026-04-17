@@ -12,8 +12,8 @@ Outputs:
   - complete-analysis.xlsx      Master workbook combining all prior Excel outputs + above
 
 Gracefully handles optional data:
-  - expected_ultimate (IE method, script 3): omits IE columns if not present
-  - bf_ultimate (BF method, script 4): omits BF columns if not present
+  - ultimate_ie (IE method, script 3): omits IE columns if not present
+  - ultimate_bf (BF method, script 4): omits BF columns if not present
   - Exposure in triangles: omits Loss Rate and Frequency if not present
   - ultimates.json selections: falls back to bf > cl > ie if file is absent or a row is missing
 
@@ -134,17 +134,17 @@ def load_combined(ultimates_path, selections_json_path):
     Returns:
         combined  (DataFrame): one row per (period, measure) with columns
                                period, measure, current_age, actual,
-                               cl_ultimate, [expected_ultimate], [bf_ultimate],
+                               ultimate_cl, [ultimate_ie], [ultimate_bf],
                                selected_ultimate, selected_ibnr, selected_unpaid
-        has_ie    (bool): True when expected_ultimate data is present
-        has_bf    (bool): True when bf_ultimate data is present
+        has_ie    (bool): True when ultimate_ie data is present
+        has_bf    (bool): True when ultimate_bf data is present
     """
     df = pd.read_parquet(ultimates_path)
     df["period"]  = df["period"].astype(str)
     df["measure"] = df["measure"].astype(str)
 
-    has_ie = _col_has_data(df, "expected_ultimate")
-    has_bf = _col_has_data(df, "bf_ultimate")
+    has_ie = _col_has_data(df, "ultimate_ie")
+    has_bf = _col_has_data(df, "ultimate_bf")
 
     # Load actuary selections; missing file or missing row both gracefully fall back.
     sel_lookup = {}
@@ -163,7 +163,7 @@ def load_combined(ultimates_path, selections_json_path):
         key = (row["measure"], row["period"])
         if key in sel_lookup:
             return sel_lookup[key]
-        for col in ("bf_ultimate", "cl_ultimate", "expected_ultimate"):
+        for col in ("ultimate_bf", "ultimate_cl", "ultimate_ie"):
             if col in df.columns:
                 v = row.get(col, np.nan)
                 if pd.notna(v):
@@ -261,12 +261,12 @@ def write_selected_ultimates(combined, has_ie, has_bf, path):
                 _try_int(pd.Series([period])).iloc[0],
                 _get(df_m, period, "current_age"),
                 _get(df_m, period, "actual"),
-                _get(df_m, period, "cl_ultimate"),
+                _get(df_m, period, "ultimate_cl"),
             ]
             if has_ie:
-                vals.append(_get(df_m, period, "expected_ultimate"))
+                vals.append(_get(df_m, period, "ultimate_ie"))
             if has_bf:
-                vals.append(_get(df_m, period, "bf_ultimate"))
+                vals.append(_get(df_m, period, "ultimate_bf"))
             vals += [
                 _get(df_m, period, "selected_ultimate"),
                 _get(df_m, period, "selected_ibnr"),
@@ -517,12 +517,12 @@ def main():
             continue
         parts = [
             f"Actual={sub['actual'].sum():,.0f}",
-            f"CL={sub['cl_ultimate'].sum():,.0f}",
+            f"CL={sub['ultimate_cl'].sum():,.0f}",
         ]
         if has_ie:
-            parts.append(f"IE={sub['expected_ultimate'].sum():,.0f}")
+            parts.append(f"IE={sub['ultimate_ie'].sum():,.0f}")
         if has_bf:
-            parts.append(f"BF={sub['bf_ultimate'].sum():,.0f}")
+            parts.append(f"BF={sub['ultimate_bf'].sum():,.0f}")
         parts += [
             f"Selected={sub['selected_ultimate'].sum():,.0f}",
             f"IBNR={sub['selected_ibnr'].sum():,.0f}",

@@ -99,7 +99,7 @@ def enhance_triangle_data(df_long: pd.DataFrame) -> pd.DataFrame:
 if __name__ == "__main__":
     """Test the enhance_triangle_data function."""
     # Read prepped data from step 1
-    input_file = OUTPUT_PATH + f"1_prepped.parquet"
+    input_file = OUTPUT_PATH + f"1_triangles.parquet"
     df = pd.read_parquet(input_file)
     print(f"Loaded {len(df)} rows, {df['measure'].nunique()} measures, {df['source'].nunique()} sources")
     
