@@ -26,10 +26,10 @@ Single column:
 Multiple columns (always end with Tail):
 ```json
 [
-  {"column": "12-24", "selection": 1.6573, "reasoning": "..."},
-  {"column": "24-36", "selection": 1.2341, "reasoning": "..."},
+  {"interval": "12-24", "selection": 1.6573, "reasoning": "..."},
+  {"interval": "24-36", "selection": 1.2341, "reasoning": "..."},
   ...
-  {"column": "Tail", "selection": 1.0150, "reasoning": "..."}
+  {"interval": "Tail", "selection": 1.0150, "reasoning": "..."}
 ]
 ```
 

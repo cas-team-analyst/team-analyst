@@ -54,53 +54,52 @@ def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
     return diagonal
 
 
+def _extract_selections_from_row(df, label: str) -> tuple[dict, pd.Series | None]:
+    """Find a labeled row and extract interval->LDF mapping. Returns (selections, interval_row)."""
+    idx = df[df.iloc[:, 0].astype(str).str.strip() == label].index
+    if len(idx) == 0:
+        return {}, None
+    sel_row = df.iloc[idx[0]]
+    interval_row = df.iloc[idx[0] - 1]
+    selections = {}
+    for col_idx in range(1, len(sel_row)):
+        interval = interval_row.iloc[col_idx]
+        ldf_value = sel_row.iloc[col_idx]
+        if pd.notna(interval) and pd.notna(ldf_value):
+            try:
+                selections[str(interval).strip()] = float(ldf_value)
+            except (ValueError, TypeError):
+                continue
+    return selections, interval_row
+
+
 def read_selections_from_excel(excel_path: str, measure: str, ages: list) -> dict:
     """
     Read LDF selections from the Chain Ladder Selections Excel file for a specific measure.
-    
+
+    Priority: 'Selection' row (actuary final) → 'AI Selection' row (experimental fallback).
+
     Args:
         excel_path: Path to the Chain Ladder Selections.xlsx file
         measure: Measure name (sheet name in Excel)
         ages: List of age values to create intervals
-    
+
     Returns:
         Dictionary mapping interval (e.g., "11-23") to selected LDF value
     """
     try:
-        # Read the sheet for this measure
         df = pd.read_excel(excel_path, sheet_name=measure)
-        
-        # Find the Selection row (row where first column == 'Selection')
-        sel_idx = df[df.iloc[:, 0].astype(str).str.strip() == 'Selection'].index
-        
-        if len(sel_idx) == 0:
-            print(f"  Warning: No 'Selection' row found in sheet '{measure}', skipping")
-            return {}
-        
-        # Get the selection row
-        sel_row = df.iloc[sel_idx[0]]
-        
-        # The intervals should be in the row above (row with interval headers)
-        intervals_idx = sel_idx[0] - 1
-        interval_row = df.iloc[intervals_idx]
-        
-        # Build dictionary of interval -> selected LDF
-        selections = {}
-        for col_idx in range(1, len(sel_row)):  # Skip first column (label)
-            interval = interval_row.iloc[col_idx]
-            ldf_value = sel_row.iloc[col_idx]
-            
-            # Only add if both interval and LDF are valid
-            if pd.notna(interval) and pd.notna(ldf_value):
-                interval_str = str(interval).strip()
-                try:
-                    selections[interval_str] = float(ldf_value)
-                except (ValueError, TypeError):
-                    continue
-        
-        print(f"  Found {len(selections)} LDF selection(s) for {measure}")
-        return selections
-        
+
+        selections, _ = _extract_selections_from_row(df, "Selection")
+        if selections:
+            print(f"  Found {len(selections)} LDF selection(s) for {measure}")
+            return selections
+
+        raise ValueError(
+            f"No values found in 'Selection' row for sheet '{measure}'. "
+            "Fill in the Selection row in Chain Ladder Selections.xlsx before running ultimates."
+        )
+
     except Exception as e:
         print(f"  Warning: Could not read selections for {measure}: {e}")
         return {}
