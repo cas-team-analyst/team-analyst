@@ -29,6 +29,16 @@ Interaction modes:
 - Pause for Selections: pauses after LDF selections and after ultimate selections for your review
 - Fully Automatic: runs start to finish with no pauses (except to confirm data format)
 
+Three standard documents will be created in your project folder and filled in
+as the analysis progresses:
+- REPORT.md — the primary deliverable: a structured actuarial report
+  (purpose, scope, data, methodology, assumptions, results, diagnostics,
+  uncertainty, ASOP self-check). This is what you share with reviewers.
+- PROGRESS.md — a running checklist of the workflow: which steps are done,
+  in progress, and what scripts were produced along the way.
+- REPLICATE.md — a reproducibility log so someone without AI assistance
+  can follow the steps and arrive at the same results.
+
 Throughout the workflow, keep the user you'll be kept informed of what is happening and why.
 ```
 
