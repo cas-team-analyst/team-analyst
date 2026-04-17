@@ -449,6 +449,59 @@ def write_post_method_triangles(triangles_df, combined, path):
     print(f"  Saved -> {path}")
 
 
+def write_notes_sheet(ws):
+    """
+    Write a Notes sheet with workbook overview and table of contents.
+    """
+    from datetime import datetime
+    
+    row = 1
+    
+    # Main title
+    title_cell = ws.cell(row=row, column=1, value="Reserve Analysis Workbook")
+    _style_cell(title_cell, "header")
+    ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=3)
+    ws.row_dimensions[row].height = 24
+    row += 1
+    
+    # Metadata section
+    meta_cell = ws.cell(row=row, column=1, value="Workbook Information")
+    _style_cell(meta_cell, "section")
+    ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=3)
+    row += 1
+    
+    # Creation date
+    ws.cell(row=row, column=1, value="Created:").font = LABEL_FONT
+    ws.cell(row=row, column=2, value=datetime.now().strftime("%B %d, %Y %I:%M %p")).font = DATA_FONT
+    row += 1
+    
+    # Description
+    ws.cell(row=row, column=1, value="Description:").font = LABEL_FONT
+    ws.cell(row=row, column=2, value="Complete actuarial reserve analysis combining selections and projections").font = DATA_FONT
+    row += 2
+    
+    # Table of contents section
+    toc_cell = ws.cell(row=row, column=1, value="Table of Contents")
+    _style_cell(toc_cell, "section")
+    ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=3)
+    row += 1
+    
+    # Headers for TOC
+    ws.cell(row=row, column=1, value="Sheet Name").font = SUBHEADER_FONT
+    ws.cell(row=row, column=1).fill = SUBHEADER_FILL
+    ws.cell(row=row, column=2, value="Description").font = SUBHEADER_FONT
+    ws.cell(row=row, column=2).fill = SUBHEADER_FILL
+    row += 1
+    
+    # Return the row number where sheet list should start
+    ws.column_dimensions["A"].width = 35
+    ws.column_dimensions["B"].width = 60
+    ws.column_dimensions["C"].width = 15
+    ws.freeze_panes = "A8"
+    
+    return row
+
+
 def write_full_analysis(output_path, source_files, internal_files):
     """
     Combine all Excel files into a single master complete-analysis.xlsx.
@@ -460,8 +513,15 @@ def write_full_analysis(output_path, source_files, internal_files):
     """
     master = Workbook()
     master.remove(master.active)
+    
+    # Create Notes sheet first
+    notes_ws = master.create_sheet(title="Notes", index=0)
+    toc_start_row = write_notes_sheet(notes_ws)
 
     all_files = list(source_files) + [(f, None) for f in internal_files]
+    
+    # Track all sheet names and their descriptions for TOC
+    sheet_descriptions = []
 
     for file_path, prefix in all_files:
         if not os.path.exists(file_path):
@@ -475,11 +535,69 @@ def write_full_analysis(output_path, source_files, internal_files):
             for row in ws_src.iter_rows():
                 for cell in row:
                     ws_dst[cell.coordinate].value = cell.value
+            
+            # Determine description based on sheet name patterns
+            desc = _get_sheet_description(new_name, prefix)
+            sheet_descriptions.append((new_name, desc))
+            
         print(f"  Added sheets from {file_path}")
+    
+    # Write TOC entries to Notes sheet
+    for idx, (sheet_name, desc) in enumerate(sheet_descriptions, start=toc_start_row):
+        notes_ws.cell(row=idx, column=1, value=sheet_name).font = DATA_FONT
+        notes_ws.cell(row=idx, column=2, value=desc).font = DATA_FONT
 
     os.makedirs(pathlib.Path(output_path).parent, exist_ok=True)
     master.save(output_path)
     print(f"  Saved -> {output_path}")
+
+
+def _get_sheet_description(sheet_name, prefix):
+    """Generate a description for a sheet based on its name."""
+    # Remove prefix for pattern matching
+    base_name = sheet_name
+    if prefix:
+        base_name = sheet_name[len(prefix):]
+    
+    # Common patterns
+    descriptions = {
+        # Chain Ladder sheets
+        "Development Age-to-Age": "Historical age-to-age development factors",
+        "Simple Averages": "Simple averages of age-to-age factors",
+        "Vol-Weighted Avgs": "Volume-weighted averages of age-to-age factors",
+        "Medians": "Median age-to-age factors",
+        "Selections": "Selected loss development factors",
+        
+        # Ultimates selection sheets
+        "Summary": "Ultimate loss selections summary",
+        
+        # Measure-specific sheets
+        "Incurred Loss": "Incurred loss projections and selections",
+        "Paid Loss": "Paid loss projections and selections",
+        "Reported Count": "Reported claim count projections",
+        "Closed Count": "Closed claim count projections",
+        
+        # Diagnostic sheets
+        "Diagnostics": "Post-method diagnostic calculations",
+        "Incurred-to-Ult": "Incurred to ultimate development ratios",
+        "Paid-to-Ult": "Paid to ultimate development ratios",
+        "Reported-to-Ult": "Reported to ultimate development ratios",
+        "Closed-to-Ult": "Closed to ultimate development ratios",
+        "Average IBNR": "Average IBNR by development age",
+        "Average Unpaid": "Average unpaid by development age",
+    }
+    
+    # Try exact match first
+    if base_name in descriptions:
+        return descriptions[base_name]
+    
+    # Try partial matches
+    for key, desc in descriptions.items():
+        if key in base_name or base_name in key:
+            return desc
+    
+    # Default
+    return "Analysis results"
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
