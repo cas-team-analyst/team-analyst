@@ -29,6 +29,16 @@ Interaction modes:
 - Pause for Selections: pauses after LDF selections and after ultimate selections for your review
 - Fully Automatic: runs start to finish with no pauses (except to confirm data format)
 
+Three standard documents will be created in your project folder and filled in
+as the analysis progresses:
+- REPORT.md — the primary deliverable: a structured actuarial report
+  (purpose, scope, data, methodology, assumptions, results, diagnostics,
+  uncertainty, ASOP self-check). This is what you share with reviewers.
+- PROGRESS.md — a running checklist of the workflow: which steps are done,
+  in progress, and what scripts were produced along the way.
+- REPLICATE.md — a reproducibility log so someone without AI assistance
+  can follow the steps and arrive at the same results.
+
 Throughout the workflow, keep the user you'll be kept informed of what is happening and why.
 ```
 
@@ -60,6 +70,17 @@ As you go:
 # OTHER GUIDELINES
 
 - Never include checkmarks or other unicode symbols in PowerShell commands - only use standard ASCII text and operators.
+
+## Never Rewrite the Numbered Scripts
+
+The numbered Python scripts in `scripts/` (1a through 7, plus `modules/`) are the canonical, tested pipeline. Do not rewrite them from scratch under any circumstances. They are long but complete — a partial Read view is not evidence of truncation.
+
+If you suspect a script is truncated or broken:
+1. Run `wc -l <script>` to check the line count against what you see.
+2. Read the tail of the file to confirm it ends with `if __name__ == "__main__": main()` or a proper final statement.
+3. Only if the file is genuinely incomplete, tell the user and ask how to proceed — do not silently regenerate it.
+
+Real bugs (wrong path variable, wrong column name, missing customization for the user's data format) should be fixed with a targeted Edit, not a full rewrite. Rewriting loses tested logic and introduces divergence from the skill's canonical scripts.
 
 ## Protecting Manual Edits to Excel Files
 

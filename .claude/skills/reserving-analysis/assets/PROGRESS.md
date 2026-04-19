@@ -31,7 +31,54 @@ Goal: Understand what data is available.
   - Customizing `read_and_process_triangles()` to read triangle data from your source
   - If prior selections exist, customizing `read_and_process_prior_selections()` to read from your source.
   - Run it to verify it works and passes validation. Only mark this step complete once the tests in the script have passed to verify the output is in the necessary format.
-- [ ] **Confirm data format with the user.** Show samples of the processed triangle data (row counts, date ranges, sample rows) and ask the user to confirm it looks correct before proceeding. This always happens regardless of mode.
+- [ ] **Confirm data format with the user.** This step always runs, regardless of interaction mode. Use the exact template below so every analysis presents data validation the same way. Do not improvise the format, reorder sections, or omit headings — even if a section is short or trivial.
+
+````
+## Data Validation — Please Review
+
+I've processed your raw data into the canonical triangle format. Please
+confirm the summary below looks correct before I continue.
+
+### 1. Measures Loaded
+
+| Measure | # Records | AY Range | Dev Ages (months) | Min Value | Max Value |
+|---|---|---|---|---|---|
+| [measure 1] | [n] | [YYYY–YYYY] | [min–max] | [min] | [max] |
+| ... | | | | | |
+
+**Total records:** [N] across [K] measures.
+
+### 2. Sample Rows
+
+First 3 and last 3 rows of the processed triangle table (all measures combined):
+
+| measure | accident_year | dev_age | value |
+|---|---|---|---|
+| ... | ... | ... | ... |
+
+### 3. Spot-Check: One Full Triangle
+
+Showing [Paid Loss] (cumulative) as a sanity check on shape and magnitude:
+
+| AY \ Dev | 12 | 24 | 36 | ... | [ultimate age] |
+|---|---|---|---|---|---|
+| 2015 | ... | ... | ... | ... | ... |
+| 2016 | ... | ... | ... | ... | |
+| ... | | | | | |
+
+### 4. Adjustments Made to `1a-prep-data.py`
+
+- [Bullet each customization — column renames, source-specific parsing, outlier handling, etc.]
+- If no changes were made, say: "No adjustments required — data matched the expected format."
+
+### 5. Confirmation Needed
+
+Please reply with one of:
+- **"Looks good"** — I'll continue to LDF averages and diagnostics.
+- **"Fix <issue>"** — describe what's wrong and I'll address it before moving on.
+````
+
+Populate every section from the actual processed data. The spot-check triangle should default to Paid Loss; if Paid Loss is not present, use the first loss measure available (Incurred, then Reported). Do not proceed until the user confirms.
 - [ ] Report to the user what LDF averages (review `1d-averages-qa.py`) and metrics will be calculated. _(Pause for Selections only: also ask if they'd like to add others before continuing.)_
 - [ ] Run all the other Python scripts to create output in `processed-data/`.
 - [ ] **Update REPORT.md:**
@@ -43,10 +90,10 @@ Goal: Understand what data is available.
 # Step 4: Actuarial Selections: Chain Ladder LDFs
 
 - [ ] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. This framework includes 14 selection criteria and 10 diagnostic adjustment rules. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
-- [ ] Create a JSON file to hold selections: `selections/chain-ladder.json` with just "[]" for now.
-- [ ] Task a single `selector-chain-ladder-ldf` subagent to: Review `selections/Chain Ladder Selections.xlsx` in full (NOT the files at `processed-data`), use this information to make actuarial LDF selections for each combination of Chain Ladder measure and interval **including a tail factor (interval "Tail") for each measure**, and add the selections and specific reasoning for each selection to `selections/chain-ladder.json`, each as a dict/object/map in the array with keys "measure", "interval", "selection", "reasoning" (along with other selections).
-- [ ] Task a single `selector-chain-ladder-ldf-ai` subagent to: Review `selections/Chain Ladder Selections.xlsx` in full, independently make LDF selections for each combination of measure and interval **including a tail factor** using its own actuarial judgment (no rigid rules framework), and save results to `selections/chain-ladder-ai.json` with the same schema (`"measure"`, `"interval"`, `"selection"`, `"reasoning"`).
-- [ ] Run `2b-chainladder-update-selections.py` to insert the selections and reasoning into the Excel file. This will populate both the **Selection** row (from `chain-ladder.json`) and the **AI Selection** row (from `chain-ladder-ai.json`, if present) in each sheet.
+- [ ] Create a JSON file to hold selections: `selections/chainladder.json` with just "[]" for now.
+- [ ] Task a single `selector-chain-ladder-ldf` subagent to: Review `selections/Chain Ladder Selections.xlsx` in full (NOT the files at `processed-data`), use this information to make actuarial LDF selections for each combination of Chain Ladder measure and interval **including a tail factor (interval "Tail") for each measure**, and add the selections and specific reasoning for each selection to `selections/chainladder.json`, each as a dict/object/map in the array with keys "measure", "interval", "selection", "reasoning" (along with other selections).
+- [ ] Task a single `selector-chain-ladder-ldf-ai` subagent to: Review `selections/Chain Ladder Selections.xlsx` in full, independently make LDF selections for each combination of measure and interval **including a tail factor** using its own actuarial judgment (no rigid rules framework), and save results to `selections/chainladder-ai.json` with the same schema (`"measure"`, `"interval"`, `"selection"`, `"reasoning"`).
+- [ ] Run `2b-chainladder-update-selections.py` to insert the selections and reasoning into the Excel file. This will populate both the **Selection** row (from `chainladder.json`) and the **AI Selection** row (from `chainladder-ai.json`, if present) in each sheet.
 - [ ] Tell the user where `selections/Chain Ladder Selections.xlsx` is located. Explain that both rule-based and AI selections (purple rows) are visible. The **Selection** row is what gets used for ultimates — the user can override it manually. If the Selection row is left blank, the AI Selection will be used as a fallback.
 
 _(Pause for Selections only):_
@@ -97,3 +144,30 @@ _(Pause for Selections only):_
 # Step 8: Suggest Peer Review
 
 - [ ] Suggest to the user that they get a Peer Review of the results. If they would like TeamAnalyst to do this, they should close the current workflow (this will clear context to get an independent review) and use the /peer-review skill to get a AI Peer Review.
+
+# Step 9: Summarize Final Outputs for the User
+
+Be explicit and exhaustive. The user should leave this step knowing exactly what was produced, where it lives, and what each file is for. Present the list below (adapted to what actually ran in this analysis — skip items that did not run, e.g., BF if it was skipped).
+
+- [ ] Tell the user the analysis is complete and list every output file produced, grouped by folder. For each file, give the path and a one-line description of what it contains and who it is for.
+
+**Standard documents (project root):**
+- `REPORT.md` — The primary deliverable. Structured actuarial report covering purpose, scope, data, methodology, assumptions, results by segment, diagnostics, uncertainty, open questions, and ASOP self-check. This is the document to share with reviewers or stakeholders.
+- `PROGRESS.md` — Workflow checklist showing every step that was completed and the scripts produced at each step. Useful for auditing how the analysis proceeded.
+- `REPLICATE.md` — Reproducibility log listing input files, scripts run, and manual edits (with reasoning). A reviewer without AI support should be able to follow this to reproduce the results.
+
+**Data and analysis files:**
+- `raw-data/` — The original input files the user supplied.
+- `processed-data/` — Cleaned triangles, diagnostics, and LDF averages produced by scripts 1a–1d.
+- `scripts/` — All numbered Python scripts (1a through 7) and `scripts/modules/`, exactly as run for this analysis. Re-running them against `raw-data/` should reproduce `processed-data/` and the selection workbooks.
+- `selections/Chain Ladder Selections.xlsx` — Workbook with age-to-age factors, averages, rule-based Selection row, AI Selection row, and the tail factor. This is the record of LDF selections and reasoning.
+- `selections/chainladder.json` and `selections/chainladder-ai.json` — Machine-readable LDF selections (rule-based and AI-based) with per-selection reasoning.
+- `selections/Ultimates.xlsx` — Workbook with method indications (Chain Ladder, Initial Expected, BF where applicable) and the selected ultimate by measure and period.
+- `selections/ultimates.json` — Machine-readable ultimate selections with per-selection reasoning.
+- `ultimates/` — Per-method ultimate outputs from scripts 2c, 3, and 4 (Chain Ladder, Initial Expected, Bornhuetter-Ferguson). Note any methods that were skipped and why.
+- `output/complete-analysis.xlsx` — Consolidated workbook from `6-create-complete-analysis.py` containing paid-to-date, case reserves, IBNR, total unpaid, and selected ultimates by segment/period. This is the single-file view of the results.
+- `output/tech-review.*` — Output from `7-tech-review.py` flagging any internal-consistency or reasonableness issues found in the analysis.
+
+- [ ] After listing the files, tell the user the single most important takeaway: **REPORT.md is the primary narrative deliverable, and `output/complete-analysis.xlsx` is the primary numerical deliverable.** Everything else is supporting evidence or reproducibility material.
+
+- [ ] Ask the user if anything is unclear about any of the outputs before the workflow closes.
