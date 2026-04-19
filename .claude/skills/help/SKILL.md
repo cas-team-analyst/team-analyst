@@ -51,4 +51,12 @@ Mention the three interaction levels available during analysis:
 2. **Selections Only** — automated data prep and calculations, user input only for LDF selections
 3. **Fully Automated** — end-to-end execution with no manual intervention
 
+## Step 4: Explain the Three Standard Documents
+
+Let the user know that every reserving analysis produces three standard markdown documents in the project folder. These are created at the start of the workflow and filled in as the analysis progresses:
+
+- **REPORT.md** — The primary deliverable. A structured actuarial report (purpose, scope, data, methodology, assumptions, results, diagnostics, uncertainty, ASOP self-check, etc.). This is what the user will share with reviewers or stakeholders. It starts as boilerplate and gets filled in at every step of the workflow.
+- **PROGRESS.md** — A running checklist of the workflow steps. Tracks what has been completed, what is in progress, and which scripts were produced at each step. Useful for resuming work across sessions and seeing where the analysis stands.
+- **REPLICATE.md** — A reproducibility log. Captures the inputs, scripts run, and any manual edits (with reasoning) needed to reproduce the analysis without AI assistance. A reviewer or future analyst should be able to follow REPLICATE.md to arrive at the same results.
+
 Wait for the user's response and guide them to the appropriate skill by explaining the way that they can invoke that skill.
