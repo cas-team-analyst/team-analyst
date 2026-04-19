@@ -167,6 +167,7 @@ Sub-1.000 paid LDFs always indicate data issues — investigate and correct.
 - Large = >10% of column's incremental development, or removal changes LDF by >5%.
 - Compute LDF with and without. If difference >5%, use ex-large LDF + separate large loss load.
 - Diagnostic signal: `paid_severity_incr` or `incremental_incurred_severity` spike with normal `reported_counts` = large loss, not frequency.
+- **Severity vs frequency shock test:** severity shock = losses spike, counts flat (→ treat as large loss / CAT). Frequency shock = counts and losses move proportionally (→ §15 Frequency Shock row, not this section).
 
 ### 13. Calendar Year Effects
 
@@ -177,10 +178,58 @@ Sub-1.000 paid LDFs always indicate data issues — investigate and correct.
 
 ### 14. Tail Factor
 
+**Requirement & Baseline:**
 - Required if last observable LDF >1.005 (incurred) or >1.010 (paid).
-- Methods: exponential/inverse power curve extrapolation; industry benchmarks.
+- Methods: exponential/inverse power curve extrapolation; industry benchmarks; Boor complementary loss ratio methods.
 - Long-tail casualty minimum: rarely <1.010 paid or <1.005 incurred unless 120+ month triangle with strong closure diagnostics.
-- Diagnostic checks: `open_counts` >10% above norms at last maturity → add +0.005–0.015; rising `average_case_reserve` on remaining opens → increase incurred tail; `paid_to_incurred` below benchmark at last maturity → increase paid tail.
+- Tail of 1.000 only defensible if: open counts <2%, closure >97%, last 3 LDFs within 0.002 of 1.000.
+- Paid tail ≥ incurred tail always.
+
+**Primary Diagnostic Signals:**
+- `open_counts` >10% above norms at last maturity → add +0.005–0.015 to baseline tail.
+- Rising `average_case_reserve` on remaining opens → increase incurred tail.
+- `paid_to_incurred` below benchmark at last maturity → increase paid tail.
+- `claim_closure_rate`: For every 5pp slowdown vs. historical norm, add approx. +0.5–1.5% to tail factor.
+- `incr_closure_rate`: 3+ diagonal slowdown pattern → extend tail and re-weight to recent experience.
+
+**Settlement & Reporting Pattern Signals:**
+
+| Pattern | Typical Signals | Tail Adjustment |
+|---|---|---|
+| **Decreased settlement rates** | Closed % of reported lower at late maturities; paid link ratios at later ages above history; case reserves flat or rising late | Raise late-age LDFs; extend tail |
+| **Increased settlement rates** | Closed % of reported higher early; paid link ratios at later ages below history; case reserves drop faster than usual | Reduce late-age LDFs; shorten tail |
+| **Slower reporting rates** | Lower % of ultimate reported at 12/24m; count link ratios early above history; loss cumulative lags history | Raise early-age LDFs; lengthen tail |
+| **Faster reporting rates** | Higher % of ultimate reported at 12/24m; count link ratios early below history; early cumulative loss % also higher | Reduce early-age LDFs; shorten tail |
+| **Reopened claims increase** | Late-age count increments spike; late-age loss increments spike; paid link ratios at late ages above history | Increase late-age LDFs; longer tail |
+
+**Combined Patterns Affecting Tail:**
+
+| Combination | Signals & Tail Action |
+|---|---|
+| **Slower reporting + Decreased settlement** | Both reported counts and closure % lag norms; paid slow to emerge; case reserves stay high throughout → Higher early and late LDFs; longer tail |
+| **Shrinking book + Increased settlement** | Lower total counts in recent years; higher early closure %; lower late-age paid link ratios → Shorten tail; adjust for low credibility |
+| **Growing book + Faster reporting** | Higher total counts in recent years; higher early % reported; lower early count link ratios → Reduce early LDFs but adjust for volume; tail may be unaffected |
+
+**Differentiating Reporting vs. Settlement Pace:**
+
+When late-age development persists, determine whether it stems from slower reporting or slower settlement:
+
+| Diagnostic | Slower Reporting | Decreased Settlement |
+|---|---|---|
+| **Counts** | Reported counts lag prior patterns at early maturities | Reported counts normal but closure % lags historical |
+| **Case Reserves** | Case reserves inflated at early maturities | Case reserves remain higher at later maturities |
+| **Paid/Incurred** | Both paid and incurred slower to emerge early | Paid slower to emerge late while incurred may be on track |
+| **Tail Implication** | Lengthens entire development tail from origin | Extends tail at late maturities only |
+
+**Persistence & Magnitude:**
+- If tail-related signals (high open counts, slow closures, rising case reserves) appear at only the last maturity → add modest tail adjustment (+0.005–0.010).
+- If signals persist across multiple late maturities (e.g., 72+, 84+, 96+ all elevated) → treat as structural; select tail at upper range (+0.015–0.030+).
+- Cross-view confirmation: tail signal in both paid and incurred diagnostics → higher confidence, full adjustment. Signal in one view only → dampen adjustment or require corroboration.
+
+**Caution & Validation:**
+- Never reduce tail below 1.000 based solely on recent favorable closure data; validate against multi-year trends.
+- If selected tail differs from prior tail by >0.010, document reasoning explicitly and cross-check against benchmark tail factors for similar lines/maturities.
+- For thin data or short triangles (<8 years), rely on industry benchmarks more heavily than extrapolation.
 
 ### 15. Additional Diagnostic Patterns
 
@@ -188,7 +237,10 @@ Apply via the same sequence as §Diagnostic Adjustment Rules (baseline → scree
 
 | Pattern | Key Signals | LDF Action |
 |---|---|---|
-| **Legislative / Benefit Change** | Severity step-change post-effective date; count/closure shift after law change | Segment pre/post; select from post-change years only |
+| **Catastrophic Claims** | Large incremental loss spike at one origin/development age; severity jump not matched by counts; isolated to 1–2 development ages | Exclude or cap CAT diagonals; use unaffected years; do not let CAT inflate column averages |
+| **Case Reserve Adequacy Change** | Widening paid/incurred gap + rising case-per-open = *increased* adequacy (lower paid / raise incurred LDFs). Narrowing gap + falling case-per-open = *decreased* adequacy (raise paid / lower incurred LDFs) | Adjust per direction above; cross-check with `average_case_reserve` diagnostic |
+| **Bulk Reserve Release or Strengthening** | Incremental incurred spike or drop across *multiple* origins in the same calendar period; case-per-open jumps sharply; distinct from gradual adequacy drift | Exclude impacted diagonals or restate; pairs with §13 calendar year detection |
+| **Legislative / Benefit Change** | *Abrupt* severity step-change at the effective date; count/closure shift after law change. (Contrast with inflation: *gradual* drift across calendar years, counts often unaffected.) | Segment pre/post; select from post-change years only |
 | **Reopened Claims** | Late-age count or paid increments spike vs. history | Increase late-age LDFs; extend tail |
 | **Reinsurance Attachment Change** | Severity drops without count change; paid increments shrink on large claims | Lower loss LDFs; adjust severity loading separately |
 | **Mix-of-Business Shift** | Severity pattern or closure/reporting rates change by period; claim-type composition shifts | Segment and select LDFs separately per segment |
