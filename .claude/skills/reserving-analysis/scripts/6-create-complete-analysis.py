@@ -26,6 +26,7 @@ import copy
 import json
 import os
 import pathlib
+import re
 
 import numpy as np
 import pandas as pd
@@ -74,6 +75,40 @@ OUTPUT_COMPLETE_ANALYSIS  = OUTPUT_PATH + "complete-analysis.xlsx"
 
 _NUM_FMT = "#,##0"
 _DEC_FMT = "#,##0.000"
+
+# Sheet-ref patterns for rewriting formulas after the prefix rename.
+# Quoted names may contain anything except ' and !; unquoted names are alphanumerics + underscore.
+_QUOTED_SHEET_REF = re.compile(r"'([^'!]+)'!")
+_UNQUOTED_SHEET_REF = re.compile(r"(?<![A-Za-z0-9_'\"\]])([A-Za-z_][A-Za-z0-9_]*)!")
+
+
+def _quote_sheet_name(name):
+    """Quote a sheet name for use in a formula, unless it's a simple identifier."""
+    if re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", name):
+        return name
+    return f"'{name}'"
+
+
+def rewrite_formula_sheet_refs(formula, rename_map):
+    """
+    Rewrite sheet references in a formula string per rename_map {old_name: new_name}.
+    Preserves non-formula values unchanged. Handles both quoted and unquoted refs.
+
+    Applied during the sheet-copy loop so that formulas like ='Closed Count'!E56 in
+    a source workbook continue to resolve after that sheet is renamed to 'CL - Closed Count'
+    in the master workbook.
+    """
+    if not isinstance(formula, str) or not formula.startswith("="):
+        return formula
+
+    def _sub(m):
+        old = m.group(1)
+        new = rename_map.get(old, old)
+        return f"{_quote_sheet_name(new)}!"
+
+    result = _QUOTED_SHEET_REF.sub(_sub, formula)
+    result = _UNQUOTED_SHEET_REF.sub(_sub, result)
+    return result
 
 
 def _style_cell(cell, level="subheader"):
@@ -568,16 +603,23 @@ def write_full_analysis(output_path, source_files, internal_files):
             print(f"  Skipping (not found): {file_path}")
             continue
         wb = load_workbook(file_path, data_only=False)  # Keep formatting
+
+        # Build per-workbook rename map so formulas like ='Closed Count'!E56 can be
+        # rewritten to ='CL - Closed Count'!E56 during the copy.
+        rename_map = {
+            s: (f"{prefix}{s}" if prefix else s)[:31] for s in wb.sheetnames
+        }
+
         for sname in wb.sheetnames:
-            new_name = (f"{prefix}{sname}" if prefix else sname)[:31]
+            new_name = rename_map[sname]
             ws_src = wb[sname]
             ws_dst = master.create_sheet(title=new_name)
-            
+
             # Copy cell values, formats, and styles
             for row in ws_src.iter_rows():
                 for cell in row:
                     dst_cell = ws_dst[cell.coordinate]
-                    dst_cell.value = cell.value
+                    dst_cell.value = rewrite_formula_sheet_refs(cell.value, rename_map)
                     if cell.has_style:
                         dst_cell.font = copy.copy(cell.font)
                         dst_cell.border = copy.copy(cell.border)
