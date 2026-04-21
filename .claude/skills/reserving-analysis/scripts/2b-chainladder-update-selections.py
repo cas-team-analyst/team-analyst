@@ -23,7 +23,7 @@ from modules.xl_styles import SELECTION_FILL, AI_FILL, LABEL_FONT, DATA_FONT, TH
 METHOD_ID = "chainladder"
 SELECTIONS_FILE    = config.SELECTIONS + f"{METHOD_ID}.json"
 AI_SELECTIONS_FILE = config.SELECTIONS + f"{METHOD_ID}-ai.json"
-EXCEL_FILE         = config.SELECTIONS + "Chain Ladder Selections.xlsx"
+EXCEL_FILE         = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
 
 
 def find_selections_section(ws):

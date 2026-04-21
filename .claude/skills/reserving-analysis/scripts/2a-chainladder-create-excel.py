@@ -32,7 +32,7 @@ from modules.xl_styles import (
 OUTPUT_PATH = config.PROCESSED_DATA
 SELECTIONS_OUTPUT_PATH = config.SELECTIONS
 METHOD_ID = "chainladder"
-OUTPUT_FILE_NAME = "Chain Ladder Selections.xlsx"
+OUTPUT_FILE_NAME = "Chain Ladder Selections - LDFs.xlsx"
 
 # Short labels for diagnostic sheet names (max ~14 chars to fit in 31-char sheet name)
 DIAG_SHEET_LABELS = {

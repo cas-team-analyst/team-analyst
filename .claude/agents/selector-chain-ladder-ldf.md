@@ -13,8 +13,7 @@ Given age-to-age factors, averages, CVs, prior selections, and optional diagnost
 1. Work through the **Decision Hierarchy** in priority order.
 2. Evaluate all applicable secondary criteria.
 3. If diagnostics are provided, apply adjustments after setting the baseline LDF.
-4. **Always include a tail factor selection** as the final entry with `"column": "Tail"`. Apply §14 (Tail Factor) and the late-maturity guidance in §9 to select it. A tail of 1.000 is only defensible under the strict conditions in §9.
-5. Return a JSON selection with full reasoning
+4. Return a JSON selection with full reasoning for each non-tail interval only.
 
 ## Output Format
 
@@ -23,13 +22,12 @@ Single column:
 {"selection": 1.6573, "reasoning": "..."}
 ```
 
-Multiple columns (always end with Tail):
+Multiple columns:
 ```json
 [
   {"interval": "12-24", "selection": 1.6573, "reasoning": "..."},
   {"interval": "24-36", "selection": 1.2341, "reasoning": "..."},
   ...
-  {"interval": "Tail", "selection": 1.0150, "reasoning": "..."}
 ]
 ```
 
@@ -143,7 +141,7 @@ The `reasoning` field must start with the average selected, then two new lines, 
 
 - Early: incurred LDFs typically more stable than paid. But if `average_case_reserve` flags reserving changes, trust paid.
 - Mid: paid and incurred should converge. If >5% divergence, investigate.
-- Late: if last observable LDF >1.005 (incurred) or >1.010 (paid), select a tail factor. Tail of 1.000 only defensible if open counts <2%, closure >97%, last 3 LDFs within 0.002 of 1.000. Paid tail ≥ incurred tail always.
+- Late: sparse data caution applies; prefer all-year averages unless structural break.
 
 ### 10. Paid vs. Incurred Consistency
 
@@ -176,62 +174,7 @@ Sub-1.000 paid LDFs always indicate data issues — investigate and correct.
 - Ongoing (social inflation): treat as cross-column trend; weight recent diagonals more heavily everywhere.
 - Strongest signal: `average_case_reserve` changing uniformly across AYs in same calendar period.
 
-### 14. Tail Factor
-
-**Requirement & Baseline:**
-- Required if last observable LDF >1.005 (incurred) or >1.010 (paid).
-- Methods: exponential/inverse power curve extrapolation; industry benchmarks; Boor complementary loss ratio methods.
-- Long-tail casualty minimum: rarely <1.010 paid or <1.005 incurred unless 120+ month triangle with strong closure diagnostics.
-- Tail of 1.000 only defensible if: open counts <2%, closure >97%, last 3 LDFs within 0.002 of 1.000.
-- Paid tail ≥ incurred tail always.
-
-**Primary Diagnostic Signals:**
-- `open_counts` >10% above norms at last maturity → add +0.005–0.015 to baseline tail.
-- Rising `average_case_reserve` on remaining opens → increase incurred tail.
-- `paid_to_incurred` below benchmark at last maturity → increase paid tail.
-- `claim_closure_rate`: For every 5pp slowdown vs. historical norm, add approx. +0.5–1.5% to tail factor.
-- `incr_closure_rate`: 3+ diagonal slowdown pattern → extend tail and re-weight to recent experience.
-
-**Settlement & Reporting Pattern Signals:**
-
-| Pattern | Typical Signals | Tail Adjustment |
-|---|---|---|
-| **Decreased settlement rates** | Closed % of reported lower at late maturities; paid link ratios at later ages above history; case reserves flat or rising late | Raise late-age LDFs; extend tail |
-| **Increased settlement rates** | Closed % of reported higher early; paid link ratios at later ages below history; case reserves drop faster than usual | Reduce late-age LDFs; shorten tail |
-| **Slower reporting rates** | Lower % of ultimate reported at 12/24m; count link ratios early above history; loss cumulative lags history | Raise early-age LDFs; lengthen tail |
-| **Faster reporting rates** | Higher % of ultimate reported at 12/24m; count link ratios early below history; early cumulative loss % also higher | Reduce early-age LDFs; shorten tail |
-| **Reopened claims increase** | Late-age count increments spike; late-age loss increments spike; paid link ratios at late ages above history | Increase late-age LDFs; longer tail |
-
-**Combined Patterns Affecting Tail:**
-
-| Combination | Signals & Tail Action |
-|---|---|
-| **Slower reporting + Decreased settlement** | Both reported counts and closure % lag norms; paid slow to emerge; case reserves stay high throughout → Higher early and late LDFs; longer tail |
-| **Shrinking book + Increased settlement** | Lower total counts in recent years; higher early closure %; lower late-age paid link ratios → Shorten tail; adjust for low credibility |
-| **Growing book + Faster reporting** | Higher total counts in recent years; higher early % reported; lower early count link ratios → Reduce early LDFs but adjust for volume; tail may be unaffected |
-
-**Differentiating Reporting vs. Settlement Pace:**
-
-When late-age development persists, determine whether it stems from slower reporting or slower settlement:
-
-| Diagnostic | Slower Reporting | Decreased Settlement |
-|---|---|---|
-| **Counts** | Reported counts lag prior patterns at early maturities | Reported counts normal but closure % lags historical |
-| **Case Reserves** | Case reserves inflated at early maturities | Case reserves remain higher at later maturities |
-| **Paid/Incurred** | Both paid and incurred slower to emerge early | Paid slower to emerge late while incurred may be on track |
-| **Tail Implication** | Lengthens entire development tail from origin | Extends tail at late maturities only |
-
-**Persistence & Magnitude:**
-- If tail-related signals (high open counts, slow closures, rising case reserves) appear at only the last maturity → add modest tail adjustment (+0.005–0.010).
-- If signals persist across multiple late maturities (e.g., 72+, 84+, 96+ all elevated) → treat as structural; select tail at upper range (+0.015–0.030+).
-- Cross-view confirmation: tail signal in both paid and incurred diagnostics → higher confidence, full adjustment. Signal in one view only → dampen adjustment or require corroboration.
-
-**Caution & Validation:**
-- Never reduce tail below 1.000 based solely on recent favorable closure data; validate against multi-year trends.
-- If selected tail differs from prior tail by >0.010, document reasoning explicitly and cross-check against benchmark tail factors for similar lines/maturities.
-- For thin data or short triangles (<8 years), rely on industry benchmarks more heavily than extrapolation.
-
-### 15. Additional Diagnostic Patterns
+### 14. Additional Diagnostic Patterns
 
 Apply via the same sequence as §Diagnostic Adjustment Rules (baseline → screen → cross-check → adjust).
 

@@ -27,7 +27,8 @@ The plugin's primary workflow is **Reserving Analysis** (`/reserving-analysis`),
 
 - **Data exploration** — preview Excel files, understand triangle structure, and create standardized file summaries
 - **Method execution** — run actuarial reserving methods on your data
-- **LDF selections** — review age-to-age factors and make development factor selections
+- **LDF selections** — review age-to-age factors and make development factor selections (non-tail intervals)
+- **Tail factor selections** — fit tail curves (Bondy, Exponential Decay, McClenahan, Skurnick, etc.), review diagnostics, and select tail factors separately from LDF selections
 - **Ultimate projections** — project ultimate losses from your selections
 
 Available reserving methods:
@@ -43,7 +44,7 @@ Available reserving methods:
 Ask what the user is working on today. Suggest starting points:
 
 - **"Run a reserving analysis"** — triggers `/reserving-analysis` to set up a project and walk through the full workflow
-- **"View selection logic"** — triggers `/selection-logic` to review the actuarial LDF selection criteria and diagnostic rules used during chain-ladder selections
+- **"View selection logic"** — triggers `/selection-logic` to review the actuarial LDF and tail factor selection frameworks used during chain-ladder selections
 - **"Peer review my analysis"** — triggers `/peer-review` to review a completed reserving analysis against cross-method consistency checks and ASOP standards (13, 23, 25, 36, 41, 43); produces an advisory findings report without modifying selections
 
 Mention the three interaction levels available during analysis:

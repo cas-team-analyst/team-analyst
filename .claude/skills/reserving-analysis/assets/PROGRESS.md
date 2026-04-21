@@ -25,6 +25,7 @@ Goal: Understand what data is available.
 - [ ] Copy all the numbered python scripts from the reserving-analysis skill scripts folder to `scripts/` (use `cp` or `mv`, don't rewrite it yourself): 1a-prep-data.py through 2b-chainladder-update-selections.py. Also copy the `modules/` subfolder (containing `config.py`, `xl_styles.py`, `__init__.py`) into `scripts/modules/` — all scripts import from it.
 - [ ] Based on available data, determine which triangles we will use to come up with Ultimates estimates using the Chain Ladder method: Paid Losses, Incurred Losses, Reported Claims, Closed Claims, etc.
 - [ ] If you haven't already found prior selections, ask the user if prior LDF selections exist from a previous analysis. If they do, ask where they are located (Excel file, CSV, database, etc.). You will need to modify `read_and_process_prior_selections()` in `1a-prep-data.py` to read from that source during data extraction.
+- [ ] Ask the user if prior tail factor selections exist from a previous analysis. If they do, ask where they are located and what tail factor was used for each measure. Create a CSV file at `selections/tail-factor-prior.csv` with columns: `measure`, `cutoff_age`, `tail_factor`, `method`, `reasoning`. This will be loaded by `2d-tail-create-excel.py` and shown in the "Prior Selection" row for reference. If no prior tail selections exist, skip this step.
 - [ ] If you haven't already found an input file with Expected Loss Rates (containing period, expected loss rate, and expected frequency), ask the user if this file exists and to place it in the raw-data folder. Without this file, we won't be able to use the Initial Expected or Bornhuetter-Ferguson methods.
 - [ ] Modify the variables at the top of each script with the appropriate DATA_FILE_PATH, OUTPUT_PATH, and TEMPLATE_PATH.
 - [ ] Modify `1a-prep-data.py` to accept the format of the data provided by the user. This includes:
@@ -91,23 +92,41 @@ Populate every section from the actual processed data. The spot-check triangle s
 
 - [ ] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. This framework includes 14 selection criteria and 10 diagnostic adjustment rules. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
 - [ ] Create a JSON file to hold selections: `selections/chainladder.json` with just "[]" for now.
-- [ ] Task a single `selector-chain-ladder-ldf` subagent to: Review `selections/Chain Ladder Selections.xlsx` in full (NOT the files at `processed-data`), use this information to make actuarial LDF selections for each combination of Chain Ladder measure and interval **including a tail factor (interval "Tail") for each measure**, and add the selections and specific reasoning for each selection to `selections/chainladder.json`, each as a dict/object/map in the array with keys "measure", "interval", "selection", "reasoning" (along with other selections).
-- [ ] Task a single `selector-chain-ladder-ldf-ai` subagent to: Review `selections/Chain Ladder Selections.xlsx` in full, independently make LDF selections for each combination of measure and interval **including a tail factor** using its own actuarial judgment (no rigid rules framework), and save results to `selections/chainladder-ai.json` with the same schema (`"measure"`, `"interval"`, `"selection"`, `"reasoning"`).
+- [ ] Task a single `selector-chain-ladder-ldf` subagent to: Review `selections/Chain Ladder Selections - LDFs.xlsx` in full (NOT the files at `processed-data`), use this information to make actuarial LDF selections for each combination of Chain Ladder measure and interval, and add the selections and specific reasoning for each selection to `selections/chainladder.json`, each as a dict/object/map in the array with keys "measure", "interval", "selection", "reasoning" (along with other selections).
+- [ ] Task a single `selector-chain-ladder-ldf-ai` subagent to: Review `selections/Chain Ladder Selections - LDFs.xlsx` in full, independently make LDF selections for each combination of measure and interval using its own actuarial judgment (no rigid rules framework), and save results to `selections/chainladder-ai.json` with the same schema (`"measure"`, `"interval"`, `"selection"`, `"reasoning"`).
 - [ ] Run `2b-chainladder-update-selections.py` to insert the selections and reasoning into the Excel file. This will populate both the **Selection** row (from `chainladder.json`) and the **AI Selection** row (from `chainladder-ai.json`, if present) in each sheet.
-- [ ] Tell the user where `selections/Chain Ladder Selections.xlsx` is located. Explain that both rule-based and AI selections (purple rows) are visible. The **Selection** row is what gets used for ultimates — the user can override it manually. If the Selection row is left blank, the AI Selection will be used as a fallback.
+- [ ] Tell the user where `selections/Chain Ladder Selections - LDFs.xlsx` is located. Explain that both rule-based and AI selections (purple rows) are visible. The **Selection** row is what gets used for ultimates — the user can override it manually. If the Selection row is left blank, the AI Selection will be used as a fallback.
 
 _(Pause for Selections only):_
-- [ ] Open `selections/Chain Ladder Selections.xlsx` for the user. Let them know they can review and override any AI selections. Pause and wait for the user to confirm they are done reviewing before continuing.
+- [ ] Open `selections/Chain Ladder Selections - LDFs.xlsx` for the user. Let them know they can review and override any AI selections. Pause and wait for the user to confirm they are done reviewing before continuing.
 
 - [ ] **Update REPORT.md:**
   - Fill in **Section 4.1** Methods Applied: add "Paid LDF" and/or "Reported LDF" rows for each triangle measure used; note "Selected via rule-based framework + AI cross-check."
   - Fill in **Section 4.2** Method Weighting / Selection Logic: briefly describe the 14-criteria rule-based framework and that AI selections were used as a cross-check. Note maturity-based weighting approach.
-  - Fill in **Section 5.1** Development Patterns: note the selection basis (volume-weighted averages, which average windows were considered) and the tail factor source (curve fit, benchmark, or judgment).
+  - Fill in **Section 5.1** Development Patterns: note the selection basis (volume-weighted averages, which average windows were considered).
   - Add to **Section 11** Open Questions any selections flagged as low-confidence or where the rule-based and AI selections diverged materially.
+
+# Step 4.5: Actuarial Selections: Chain Ladder Tail Factors
+
+- [ ] Tell the user: "I'm about to apply the tail factor selection framework. This uses curve fitting diagnostics (Bondy, Exponential Decay, McClenahan, Skurnick, etc.), leave-one-out testing, and a 15-point decision framework to select tail factors. Tail selections are separate from LDF selections and are used in the Chain Ladder ultimates calculation."
+- [ ] Run `2c-tail-methods-diagnostics.py` to fit tail curves and generate diagnostics. Debug any errors.
+- [ ] Run `2d-tail-create-excel.py` to create `selections/Chain Ladder Selections - Tail.xlsx` with curve fit results and diagnostics. If prior tail selections exist (`selections/tail-factor-prior.csv`), they will be included in a "Prior Selection" row for reference.
+- [ ] Create a JSON file to hold selections: `selections/tail-factor.json` with just "[]" for now.
+- [ ] Task a single `selector-tail-factor` subagent to: Review `selections/Chain Ladder Selections - Tail.xlsx` in full (NOT the files at `processed-data`), including prior tail factor selections if present, use this information to make actuarial tail factor selections for each measure using the 15-point tail factor decision framework, and add the selections and specific reasoning to `selections/tail-factor.json`, each as a dict/object/map in the array with keys "measure", "cutoff_age", "tail_factor", "method", "reasoning", "pct_of_cdf", "prior_selection", "prior_delta", "prior_delta_driver", "alternatives_considered", "diagnostics_summary", "decision_points". Document any changes from prior selections and explain what drove the change.
+- [ ] Task a single `selector-tail-factor-ai` subagent to: Review `selections/Chain Ladder Selections - Tail.xlsx` in full, including prior selections if present, independently make tail factor selections for each measure using holistic actuarial judgment (no rigid rules framework), and save results to `selections/tail-factor-ai.json` with the same schema. If selections differ from prior year, explain what drove the change.
+- [ ] Run `2e-tail-update-selections.py` to insert the selections into the Excel file. This will populate both the **Rule-Based Selection** row (from `tail-factor.json`) and the **AI Selection** row (from `tail-factor-ai.json`, if present) in each sheet.
+- [ ] Tell the user where `selections/Chain Ladder Selections - Tail.xlsx` is located. Explain that both rule-based and AI selections (purple rows) are visible. The **Rule-Based Selection** row is what gets used for ultimates — the user can override it manually. If the Rule-Based Selection row is left blank, the AI Selection will be used as a fallback.
+
+_(Pause for Selections only):_
+- [ ] Open `selections/Chain Ladder Selections - Tail.xlsx` for the user. Let them know they can review and override any tail factor selections. Pause and wait for the user to confirm they are done reviewing before continuing.
+
+- [ ] **Update REPORT.md:**
+  - Update **Section 5.1** Development Patterns: add tail factor source (curve fit method selected, R² values, leave-one-out diagnostics).
+  - Add to **Section 11** Open Questions any tail selections flagged as low-confidence or where curve fit diagnostics were poor or rule-based and AI selections diverged materially.
 
 # Step 5: Run Methods That Don't Require Selections
 
-- [ ] Run `2c-chainladder-ultimates.py`, `3-ie-ultimates.py`, and `4-bf-ultimates.py`. Debug any errors that occur. It is normal for IE and BF to get skipped if the user didn't provide the necessary data (exposure, initial expected).
+- [ ] Run `2f-chainladder-ultimates.py`, `3-ie-ultimates.py`, and `4-bf-ultimates.py`. Debug any errors that occur. It is normal for IE and BF to get skipped if the user didn't provide the necessary data (exposure, initial expected). Note: `2f-chainladder-ultimates.py` will use tail factors from `selections/Chain Ladder Selections - Tail.xlsx` (priority 1 — user's final selection), falling back to `selections/tail-factor.json` (priority 2), then `selections/tail-factor-ai.json` (priority 3) if Excel is empty.
 - [ ] **Update REPORT.md:**
   - Update **Section 4.1** Methods Applied: confirm which methods actually ran vs. were skipped, and why (e.g., "BF skipped — no ELR file provided").
   - Update **Section 5.2** Expected Loss Ratios: if IE/BF ran, fill in the ELR table from the input file.
@@ -160,11 +179,13 @@ Be explicit and exhaustive. The user should leave this step knowing exactly what
 - `raw-data/` — The original input files the user supplied.
 - `processed-data/` — Cleaned triangles, diagnostics, and LDF averages produced by scripts 1a–1d.
 - `scripts/` — All numbered Python scripts (1a through 7) and `scripts/modules/`, exactly as run for this analysis. Re-running them against `raw-data/` should reproduce `processed-data/` and the selection workbooks.
-- `selections/Chain Ladder Selections.xlsx` — Workbook with age-to-age factors, averages, rule-based Selection row, AI Selection row, and the tail factor. This is the record of LDF selections and reasoning.
+- `selections/Chain Ladder Selections - LDFs.xlsx` — Workbook with age-to-age factors, averages, rule-based Selection row, and AI Selection row. This is the record of LDF selections and reasoning (excluding tail).
 - `selections/chainladder.json` and `selections/chainladder-ai.json` — Machine-readable LDF selections (rule-based and AI-based) with per-selection reasoning.
+- `selections/Chain Ladder Selections - Tail.xlsx` — Workbook with tail curve fits (Bondy, Exponential Decay, etc.), diagnostics, rule-based tail selection, and AI tail selection. This is the record of tail factor selections and reasoning.
+- `selections/tail-factor.json` and `selections/tail-factor-ai.json` — Machine-readable tail factor selections (rule-based and AI-based) with per-selection reasoning and decision points.
 - `selections/Ultimates.xlsx` — Workbook with method indications (Chain Ladder, Initial Expected, BF where applicable) and the selected ultimate by measure and period.
 - `selections/ultimates.json` — Machine-readable ultimate selections with per-selection reasoning.
-- `ultimates/` — Per-method ultimate outputs from scripts 2c, 3, and 4 (Chain Ladder, Initial Expected, Bornhuetter-Ferguson). Note any methods that were skipped and why.
+- `ultimates/` — Per-method ultimate outputs from scripts 2f, 3, and 4 (Chain Ladder, Initial Expected, Bornhuetter-Ferguson). Note any methods that were skipped and why.
 - `output/complete-analysis.xlsx` — Consolidated workbook from `6-create-complete-analysis.py` containing paid-to-date, case reserves, IBNR, total unpaid, and selected ultimates by segment/period. This is the single-file view of the results.
 - `output/tech-review.*` — Output from `7-tech-review.py` flagging any internal-consistency or reasonableness issues found in the analysis.
 

@@ -52,7 +52,7 @@ OUTPUT_PATH           = config.OUTPUT
 # Each entry: (path_to_file, sheet_name_prefix_or_None).
 # Files that do not exist are silently skipped.
 ANALYSIS_SOURCE_FILES = [
-    (config.SELECTIONS + "Chain Ladder Selections.xlsx", "CL - "),
+    (config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx", "CL - "),
     (config.SELECTIONS + "Ultimates.xlsx",               "Sel - "),
 ]
 
