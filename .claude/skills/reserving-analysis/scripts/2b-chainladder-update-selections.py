@@ -14,10 +14,10 @@ run-note: When copied to a project, run from the scripts/ directory. Close the E
 import json
 import os
 import openpyxl
-from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.styles import Alignment, Font
 
 from modules import config
-from modules.xl_styles import SELECTION_FILL, AI_FILL, USER_FILL, LABEL_FONT, DATA_FONT, THIN_BORDER
+from modules.xl_styles import SELECTION_FILL, AI_FILL, DATA_FONT, THIN_BORDER
 
 # Paths from modules/config.py — override here if needed:
 METHOD_ID = "chainladder"

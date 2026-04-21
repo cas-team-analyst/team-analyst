@@ -14,7 +14,6 @@ run-note: When copied to a project, run from the scripts/ directory:
 
 import pandas as pd
 import numpy as np
-from typing import Optional
 
 from modules import config
 

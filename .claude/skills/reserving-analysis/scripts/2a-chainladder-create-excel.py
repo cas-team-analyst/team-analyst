@@ -17,14 +17,14 @@ run-note: When copied to a project, run from the scripts/ directory:
 
 import pandas as pd
 import openpyxl
-from openpyxl.styles import Alignment, Font
+from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 from pathlib import Path
 
 from modules import config
 from modules.xl_styles import (
-    HEADER_FILL, SUBHEADER_FILL, SECTION_FILL, SELECTION_FILL, PRIOR_FILL, AI_FILL, USER_FILL,
-    HEADER_FONT, SUBHEADER_FONT, SECTION_FONT, LABEL_FONT, DATA_FONT,
+    SUBHEADER_FILL, SELECTION_FILL, PRIOR_FILL, AI_FILL, USER_FILL,
+    SUBHEADER_FONT, LABEL_FONT, DATA_FONT,
     THIN_BORDER, style_header,
 )
 
@@ -297,7 +297,6 @@ def build_main_sheet(ws, measure, df2, df4, df_prior=None):
     ws.column_dimensions['A'].width = 22
     for c_idx in range(2, len(ages) + 2):
         ws.column_dimensions[get_column_letter(c_idx)].width = 12
-    ws.freeze_panes = "B2"
 
 
 def build_diagnostic_sheet(ws, diag_col, df2, df3):
@@ -319,7 +318,6 @@ def build_diagnostic_sheet(ws, diag_col, df2, df3):
     ws.column_dimensions['A'].width = 22
     for c_idx in range(2, len(ages) + 2):
         ws.column_dimensions[get_column_letter(c_idx)].width = 12
-    ws.freeze_panes = "B2"
 
 
 def build_cv_slopes_sheet(ws, measure, df2, df4):
@@ -346,7 +344,6 @@ def build_cv_slopes_sheet(ws, measure, df2, df4):
     ws.column_dimensions['A'].width = 22
     for c_idx in range(2, len(intervals_with_tail) + 2):
         ws.column_dimensions[get_column_letter(c_idx)].width = 12
-    ws.freeze_panes = "B2"
 
 
 def main():

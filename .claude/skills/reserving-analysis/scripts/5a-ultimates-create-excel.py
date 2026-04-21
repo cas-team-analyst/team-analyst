@@ -31,8 +31,8 @@ from modules.xl_styles import (
 
 # Paths from modules/config.py — override here if needed:
 INPUT_ULTIMATES  = config.ULTIMATES + "projected-ultimates.parquet"
-PRIOR_SELECTIONS_RB = config.SELECTIONS + "ultimates-ai-rules-based.json"   # Optional, priority 1
-PRIOR_SELECTIONS_OE = config.SELECTIONS + "ultimates-ai-open-ended.json"   # Optional, priority 2
+PRIOR_SELECTIONS_RB = config.SELECTIONS + "ultimates-prior.json"             # Optional, priority 1 — set to prior cycle's selected ultimates
+PRIOR_SELECTIONS_OE = config.SELECTIONS + "ultimates-prior-oe.json"          # Optional, priority 2 — fallback prior
 OUTPUT_FILE      = config.SELECTIONS + "Ultimates.xlsx"
 
 
@@ -82,7 +82,7 @@ def format_sheet(ws, measure, df_ult, df_prior):
     if df_prior is not None and measure in df_prior['measure'].values:
         mp = df_prior[df_prior['measure'] == measure]
         for _, r in mp.iterrows():
-            prior_dict[str(r['period'])] = {"sel": r['selection'], "reason": r['reasoning']}
+            prior_dict[str(r['period'])] = {"sel": r.get('selection', r.get('selected_ultimate')), "reason": r.get('reasoning', '')}
             
     # Write rows
     for r_idx, (_, row) in enumerate(df_m.iterrows(), start=2):
@@ -141,10 +141,12 @@ def format_sheet(ws, measure, df_ult, df_prior):
         
         # User Selection (blank - actuary input)
         c = ws.cell(row=r_idx, column=13)
+        c.fill = USER_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
         c = ws.cell(row=r_idx, column=14)
+        c.fill = USER_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
 

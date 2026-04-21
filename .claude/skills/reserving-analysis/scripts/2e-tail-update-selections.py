@@ -22,7 +22,7 @@ from modules import config
 from modules.xl_styles import SELECTION_FILL, AI_FILL, USER_FILL, LABEL_FONT, DATA_FONT, THIN_BORDER
 
 # Paths from modules/config.py — override here if needed:
-METHOD_ID = "tail-factor"
+METHOD_ID = "tail"
 SELECTIONS_FILE    = config.SELECTIONS + f"{METHOD_ID}-ai-rules-based.json"
 AI_SELECTIONS_FILE = config.SELECTIONS + f"{METHOD_ID}-ai-open-ended.json"
 EXCEL_FILE         = config.SELECTIONS + "Chain Ladder Selections - Tail.xlsx"

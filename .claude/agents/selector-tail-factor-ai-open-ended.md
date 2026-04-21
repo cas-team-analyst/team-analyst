@@ -23,7 +23,7 @@ You are not bound by any rigid decision framework. Use your experience and patte
 
 ## Output Instructions
 
-**File Location:** Write your selections to `selections/tail-ai-open-ended.json`
+**File Location:** Write your selections to `selections/tail-factor-ai-open-ended.json`
 
 **Format:**
 

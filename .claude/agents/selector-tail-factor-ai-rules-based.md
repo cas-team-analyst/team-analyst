@@ -20,7 +20,7 @@ Given tail scenarios, diagnostics, observed factors, and prior selections from `
 
 ## Output Instructions
 
-**File Location:** Write your selections to `selections/tail-ai-rules-based.json`
+**File Location:** Write your selections to `selections/tail-factor-ai-rules-based.json`
 
 **Format:**
 

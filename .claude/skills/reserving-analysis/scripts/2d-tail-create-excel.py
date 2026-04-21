@@ -10,7 +10,6 @@ Sheet layout per measure:
   - Section B: Observed Factors Table (AY x age triangle + weighted avg + CV)
   - Section C: Scenario Comparison Table (method x starting_age scenarios with diagnostics)
   - Section D: Selection Area (prior, rule-based, AI, final selection rows)
-  - Section E: Documentation Checklist (manual actuary verification checkboxes)
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
@@ -18,16 +17,14 @@ run-note: When copied to a project, run from the scripts/ directory:
 """
 
 import pandas as pd
-import json
 import openpyxl
 from openpyxl.styles import Alignment, Font, PatternFill
-from openpyxl.utils import get_column_letter
 from pathlib import Path
 
 from modules import config
 from modules.xl_styles import (
-    HEADER_FILL, SUBHEADER_FILL, SECTION_FILL, SELECTION_FILL, PRIOR_FILL, AI_FILL, USER_FILL,
-    HEADER_FONT, SUBHEADER_FONT, SECTION_FONT, LABEL_FONT, DATA_FONT,
+    SUBHEADER_FILL, SELECTION_FILL, PRIOR_FILL, AI_FILL,
+    SUBHEADER_FONT, LABEL_FONT, DATA_FONT,
     THIN_BORDER, style_header,
 )
 
@@ -132,7 +129,11 @@ def write_observed_factors_section(ws, start_row, measure, df_enhanced):
         return start_row
     
     periods = sorted(df_m['period'].unique())
-    ages = sorted([a for a in df_m['age'].unique() if pd.notna(a)])
+    # Use categorical order from parquet (preserves original numeric ordering)
+    if hasattr(df_m['age'], 'cat'):
+        ages = [a for a in df_m['age'].cat.categories if a in df_m['age'].values and pd.notna(a)]
+    else:
+        ages = sorted([a for a in df_m['age'].unique() if pd.notna(a)], key=lambda x: int(str(x)))
     
     row = write_section_header(ws, start_row, len(ages) + 1, "Observed Age-to-Age Factors", "section")
     
@@ -430,80 +431,13 @@ def write_selection_section(ws, start_row, measure, prior_selections=None):
     style_header(cell, "user")
     for c_idx in range(2, 7):
         cell = ws.cell(row=row, column=c_idx, value='')
+        cell.fill = USER_FILL
         cell.border = THIN_BORDER
         cell.alignment = Alignment(horizontal="left", wrap_text=True)
     row += 1
     
-    # Additional info rows
-    info_rows = [
-        ('Pct of CDF', ''),
-        ('Anchor Basis', '(Closure/payment data OR Materiality <0.1% of CDF)'),
-        ('Sensitivity +10% Reserve Delta', ''),
-        ('Sensitivity +20% Reserve Delta', ''),
-    ]
-    
-    for label, note in info_rows:
-        label_cell = ws.cell(row=row, column=1, value=label)
-        label_cell.font = LABEL_FONT
-        label_cell.border = THIN_BORDER
-        
-        for c_idx in range(2, 7):
-            cell = ws.cell(row=row, column=c_idx, value='')
-            cell.border = THIN_BORDER
-            cell.alignment = Alignment(horizontal="left", wrap_text=True)
-        
-        if note:
-            ws.cell(row=row, column=2, value=note).font = Font(italic=True, size=8)
-        
-        row += 1
-    
     return row + 1
 
-
-def write_checklist_section(ws, start_row):
-    """Section E: Documentation Checklist."""
-    row = write_section_header(ws, start_row, 3, "Documentation Checklist", "section")
-    
-    checklist_items = [
-        'Alternatives considered and documented',
-        'Diagnostics reviewed (R2, residuals, LOO stability)',
-        'Sensitivity results documented',
-        'Override justification (if selection differs from top scenario)',
-        'Prior vs current delta and driver documented',
-        'Peer review notes',
-        'Sign-off',
-    ]
-    
-    ws.cell(row=row, column=1, value="Item").font = SUBHEADER_FONT
-    ws.cell(row=row, column=1).fill = SUBHEADER_FILL
-    ws.cell(row=row, column=1).border = THIN_BORDER
-    ws.cell(row=row, column=1).alignment = Alignment(horizontal="center")
-    
-    ws.cell(row=row, column=2, value="Complete?").font = SUBHEADER_FONT
-    ws.cell(row=row, column=2).fill = SUBHEADER_FILL
-    ws.cell(row=row, column=2).border = THIN_BORDER
-    ws.cell(row=row, column=2).alignment = Alignment(horizontal="center")
-    
-    ws.cell(row=row, column=3, value="Notes").font = SUBHEADER_FONT
-    ws.cell(row=row, column=3).fill = SUBHEADER_FILL
-    ws.cell(row=row, column=3).border = THIN_BORDER
-    ws.cell(row=row, column=3).alignment = Alignment(horizontal="center")
-    row += 1
-    
-    for item in checklist_items:
-        ws.cell(row=row, column=1, value=item).font = DATA_FONT
-        ws.cell(row=row, column=1).border = THIN_BORDER
-        ws.cell(row=row, column=1).alignment = Alignment(horizontal="left", wrap_text=True)
-        
-        ws.cell(row=row, column=2, value='').border = THIN_BORDER
-        ws.cell(row=row, column=2).alignment = Alignment(horizontal="center")
-        
-        ws.cell(row=row, column=3, value='').border = THIN_BORDER
-        ws.cell(row=row, column=3).alignment = Alignment(horizontal="left", wrap_text=True)
-        
-        row += 1
-    
-    return row
 
 
 def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, prior_selections=None):
@@ -522,9 +456,6 @@ def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, 
     # Section D: Selection Area
     row = write_selection_section(ws, row, measure, prior_selections)
     
-    # Section E: Documentation Checklist
-    write_checklist_section(ws, row)
-    
     # Column widths
     ws.column_dimensions['A'].width = 30
     ws.column_dimensions['B'].width = 12
@@ -532,8 +463,6 @@ def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, 
     ws.column_dimensions['D'].width = 15
     ws.column_dimensions['E'].width = 25
     ws.column_dimensions['F'].width = 30
-    
-    ws.freeze_panes = "B2"
 
 
 def main():

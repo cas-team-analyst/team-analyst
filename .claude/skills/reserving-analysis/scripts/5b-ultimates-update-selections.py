@@ -16,7 +16,6 @@ run-note: When copied to a project, run from the scripts/ directory. Close the E
 import json
 import pandas as pd
 from openpyxl import load_workbook
-import pathlib
 
 from modules import config
 
@@ -108,7 +107,7 @@ def main():
                 by_measure[meas] = {}
             # Key by period
             by_measure[meas][str(entry['period'])] = {
-                'selection': entry['selection'],
+                'selection': entry.get('selection', entry.get('selected_ultimate')),  # support both key names
                 'reasoning': entry['reasoning']
             }
         return by_measure

@@ -20,7 +20,6 @@ run-note: When copied to a project, run from the scripts/ directory:
 
 import json
 import math
-import warnings
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -96,7 +95,7 @@ def read_selections(excel_path, measure):
     try:
         df = pd.read_excel(excel_path, sheet_name=measure, engine='openpyxl',
                            engine_kwargs={'data_only': True})
-        for label in ("User Selection", "Selection", "AI Selection"):
+        for label in ("User Selection", "Rules-Based AI Selection", "Open-Ended AI Selection"):
             sels = _read_labeled_selections(df, label)
             sels_no_tail = {k: v for k, v in sels.items() if k.lower() != 'tail'}
             if sels_no_tail:
