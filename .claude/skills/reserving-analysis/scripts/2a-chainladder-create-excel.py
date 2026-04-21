@@ -186,31 +186,34 @@ def write_selections_section(ws, start_row, col_labels, prior_selections=None, m
 
             start_row += 1
 
-    for label in ["AI Selection", "AI Reasoning"]:
-        cell = ws.cell(row=start_row, column=1, value=label)
-        style_header(cell, "ai")
-        for c_idx in range(2, len(col_labels) + 2):
-            c = ws.cell(row=start_row, column=c_idx, value="")
-            c.fill = AI_FILL
-            c.border = THIN_BORDER
-            if label == "AI Selection":
-                c.number_format = "0.0000"
-            if label == "AI Reasoning":
-                c.alignment = Alignment(horizontal="left", wrap_text=True)
-                c.font = DATA_FONT
-        start_row += 1
-
-    start_row += 1
-
-    for label in ["Selection", "Reasoning"]:
+    for label in ["Rules-Based AI Selection", "Rules-Based AI Reasoning"]:
         cell = ws.cell(row=start_row, column=1, value=label)
         style_header(cell, "selection")
         for c_idx in range(2, len(col_labels) + 2):
             c = ws.cell(row=start_row, column=c_idx, value="")
             c.fill = SELECTION_FILL
             c.border = THIN_BORDER
-            if label == "Selection":
+            if label == "Rules-Based AI Selection":
                 c.number_format = "0.0000"
+            if label == "Rules-Based AI Reasoning":
+                c.alignment = Alignment(horizontal="left", wrap_text=True)
+                c.font = DATA_FONT
+        start_row += 1
+
+    start_row += 1
+
+    for label in ["Open-Ended AI Selection", "Open-Ended AI Reasoning"]:
+        cell = ws.cell(row=start_row, column=1, value=label)
+        style_header(cell, "ai")
+        for c_idx in range(2, len(col_labels) + 2):
+            c = ws.cell(row=start_row, column=c_idx, value="")
+            c.fill = AI_FILL
+            c.border = THIN_BORDER
+            if label == "Open-Ended AI Selection":
+                c.number_format = "0.0000"
+            if label == "Open-Ended AI Reasoning":
+                c.alignment = Alignment(horizontal="left", wrap_text=True)
+                c.font = DATA_FONT
         start_row += 1
 
     start_row += 1

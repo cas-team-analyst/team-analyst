@@ -41,7 +41,7 @@ def update_sheet_selections(ws, periods_data, selection_type="rules-based"):
     updates_made = 0
     
     # Rules-based: Column 9 is Selection, 10 is Reasoning
-    # Open-ended: Column 11 is Open-Ended Selection, 12 is Open-Ended Reasoning
+    # Open-ended: Column 11 is Selection, 12 is Reasoning
     if selection_type == "rules-based":
         sel_col = 9
         reason_col = 10

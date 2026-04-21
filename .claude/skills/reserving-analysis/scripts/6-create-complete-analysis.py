@@ -44,6 +44,7 @@ from modules.xl_styles import (
 # Paths from modules/config.py — override here if needed:
 
 INPUT_ULTIMATES         = config.ULTIMATES + "projected-ultimates.parquet"
+INPUT_SELECTIONS_EXCEL  = config.SELECTIONS + "Ultimates.xlsx"
 INPUT_SELECTIONS_RB_JSON = config.SELECTIONS + "ultimates-ai-rules-based.json"
 INPUT_SELECTIONS_OE_JSON = config.SELECTIONS + "ultimates-ai-open-ended.json"
 INPUT_TRIANGLES         = config.PROCESSED_DATA + "1_triangles.parquet"
@@ -140,10 +141,10 @@ def _safe(val):
 
 # ── Data loading ──────────────────────────────────────────────────────────────
 
-def load_combined(ultimates_path, selections_rb_json_path, selections_oe_json_path):
+def load_combined(ultimates_path, selections_excel_path, selections_rb_json_path, selections_oe_json_path):
     """
-    Load projected ultimates and merge in actuary selections from JSON files.
-    Prioritizes rules-based selections over open-ended selections.
+    Load projected ultimates and merge in actuary selections from Excel and JSON files.
+    Priority: Excel User Selection > Excel Rules-Based AI > Excel Open-Ended AI > JSON rules-based > JSON open-ended.
 
     Returns:
         combined  (DataFrame): one row per (period, measure) with columns
@@ -160,22 +161,70 @@ def load_combined(ultimates_path, selections_rb_json_path, selections_oe_json_pa
     has_ie = _col_has_data(df, "ultimate_ie")
     has_bf = _col_has_data(df, "ultimate_bf")
 
-    # Load actuary selections from both files; priority: rules-based > open-ended
+    # Load actuary selections from Excel and JSON files
+    # Priority: Excel User Selection (col 13) > Excel Rules-Based AI (col 9) > Excel Open-Ended AI (col 11) > JSON files
     sel_lookup = {}
     
-    # Load rules-based selections (priority 1)
+    # Try to read from Excel first
+    excel_path = pathlib.Path(selections_excel_path)
+    if excel_path.exists():
+        try:
+            from openpyxl import load_workbook
+            wb = load_workbook(excel_path, data_only=True)
+            excel_count = 0
+            
+            for sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+                measure = sheet_name
+                
+                # Read from row 2 onwards (row 1 is header)
+                row = 2
+                while True:
+                    period_cell = ws.cell(row=row, column=1)
+                    if not period_cell.value:
+                        break
+                    
+                    period = str(period_cell.value).strip()
+                    key = (measure, period)
+                    
+                    # Check User Selection (col 13), then Rules-Based AI (col 9), then Open-Ended AI (col 11)
+                    for col_idx in [13, 9, 11]:
+                        val = ws.cell(row=row, column=col_idx).value
+                        if val is not None and str(val).strip() and key not in sel_lookup:
+                            try:
+                                sel_lookup[key] = float(val)
+                                excel_count += 1
+                                break
+                            except (ValueError, TypeError):
+                                pass
+                    
+                    row += 1
+            
+            wb.close()
+            if excel_count > 0:
+                print(f"  Loaded {excel_count} selections from Excel {selections_excel_path}")
+        except Exception as e:
+            print(f"  Note: Could not read Excel selections from {selections_excel_path}: {e}")
+    else:
+        print(f"  Note: {selections_excel_path} not found")
+    
+    # Load rules-based JSON selections (only for missing keys)
     rb_path = pathlib.Path(selections_rb_json_path)
     if rb_path.exists():
         with open(rb_path, "r") as f:
             entries = json.load(f)
+        rb_count = 0
         for entry in entries:
             key = (str(entry["measure"]), str(entry["period"]))
-            sel_lookup[key] = float(entry["selection"])
-        print(f"  Loaded {len(entries)} rules-based selections from {selections_rb_json_path}")
+            if key not in sel_lookup:  # Don't overwrite Excel selections
+                sel_lookup[key] = float(entry["selection"])
+                rb_count += 1
+        if rb_count > 0:
+            print(f"  Loaded {rb_count} rules-based selections from {selections_rb_json_path} (fallback)")
     else:
         print(f"  Note: {selections_rb_json_path} not found")
     
-    # Load open-ended selections (priority 2) - only for missing keys
+    # Load open-ended JSON selections (only for missing keys)
     oe_path = pathlib.Path(selections_oe_json_path)
     if oe_path.exists():
         with open(oe_path, "r") as f:
@@ -183,7 +232,7 @@ def load_combined(ultimates_path, selections_rb_json_path, selections_oe_json_pa
         oe_count = 0
         for entry in entries:
             key = (str(entry["measure"]), str(entry["period"]))
-            if key not in sel_lookup:  # Don't overwrite rules-based
+            if key not in sel_lookup:  # Don't overwrite Excel or rules-based
                 sel_lookup[key] = float(entry["selection"])
                 oe_count += 1
         if oe_count > 0:
@@ -192,7 +241,7 @@ def load_combined(ultimates_path, selections_rb_json_path, selections_oe_json_pa
         print(f"  Note: {selections_oe_json_path} not found")
     
     if not sel_lookup:
-        print("  Using method fallback for selected ultimate (no JSON selections found).")
+        print("  Using method fallback for selected ultimate (no selections found in Excel or JSON).")
 
     # selected_ultimate: JSON entry → bf → cl → ie (first non-NaN available)
     def _pick_selected(row):
@@ -705,7 +754,7 @@ def main():
     os.makedirs(OUTPUT_PATH, exist_ok=True)
 
     print("Loading data...")
-    combined, has_ie, has_bf = load_combined(INPUT_ULTIMATES, INPUT_SELECTIONS_RB_JSON, INPUT_SELECTIONS_OE_JSON)
+    combined, has_ie, has_bf = load_combined(INPUT_ULTIMATES, INPUT_SELECTIONS_EXCEL, INPUT_SELECTIONS_RB_JSON, INPUT_SELECTIONS_OE_JSON)
     print(f"  has_ie={has_ie}, has_bf={has_bf}, rows={len(combined)}")
 
     triangles_df = pd.read_parquet(INPUT_TRIANGLES)

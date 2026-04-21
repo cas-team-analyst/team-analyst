@@ -19,7 +19,7 @@ import openpyxl
 from openpyxl.styles import Alignment, Font, PatternFill
 
 from modules import config
-from modules.xl_styles import SELECTION_FILL, AI_FILL, LABEL_FONT, DATA_FONT, THIN_BORDER
+from modules.xl_styles import SELECTION_FILL, AI_FILL, USER_FILL, LABEL_FONT, DATA_FONT, THIN_BORDER
 
 # Paths from modules/config.py — override here if needed:
 METHOD_ID = "tail-factor"
@@ -27,41 +27,38 @@ SELECTIONS_FILE    = config.SELECTIONS + f"{METHOD_ID}-ai-rules-based.json"
 AI_SELECTIONS_FILE = config.SELECTIONS + f"{METHOD_ID}-ai-open-ended.json"
 EXCEL_FILE         = config.SELECTIONS + "Chain Ladder Selections - Tail.xlsx"
 
-# Light blue fill for rules-based selections
-RULES_BASED_FILL = PatternFill("solid", fgColor="D6E4F0")
-
 
 def find_selection_rows(ws):
-    """Find the row numbers for Rule-Based Selection, AI Selection, and FINAL SELECTION rows."""
+    """Find the row numbers for Rules-Based AI Selection, Open-Ended AI Selection, and User Selection rows."""
     rules_row = None
     ai_row = None
-    final_row = None
+    user_row = None
     
     for row in ws.iter_rows():
         for cell in row:
-            if cell.value == "Rule-Based Selection":
+            if cell.value == "Rules-Based AI Selection":
                 rules_row = cell.row
-            elif cell.value == "AI Selection":
+            elif cell.value == "Open-Ended AI Selection":
                 ai_row = cell.row
-            elif cell.value == "FINAL SELECTION":
-                final_row = cell.row
+            elif cell.value == "User Selection":
+                user_row = cell.row
     
-    return rules_row, ai_row, final_row
+    return rules_row, ai_row, user_row
 
 
 def has_existing_final_selection(ws):
-    """Return True if the FINAL SELECTION row already has values."""
-    _, _, final_row = find_selection_rows(ws)
-    if final_row is None:
+    """Return True if the User Selection row already has values."""
+    _, _, user_row = find_selection_rows(ws)
+    if user_row is None:
         return False
-    for cell in ws[final_row]:
+    for cell in ws[user_row]:
         if cell.column > 1 and cell.value not in (None, ""):
             return True
     return False
 
 
 def has_existing_rules_selection(ws):
-    """Return True if the Rule-Based Selection row already has values."""
+    """Return True if the Rules-Based AI Selection row already has values."""
     rules_row, _, _ = find_selection_rows(ws)
     if rules_row is None:
         return False
@@ -72,7 +69,7 @@ def has_existing_rules_selection(ws):
 
 
 def has_existing_ai_selection(ws):
-    """Return True if the AI Selection row already has values."""
+    """Return True if the Open-Ended AI Selection row already has values."""
     _, ai_row, _ = find_selection_rows(ws)
     if ai_row is None:
         return False
@@ -83,10 +80,10 @@ def has_existing_ai_selection(ws):
 
 
 def update_rules_based_selection(ws, selection):
-    """Update the Rule-Based Selection row with data from JSON."""
+    """Update the Rules-Based AI Selection row with data from JSON."""
     rules_row, _, _ = find_selection_rows(ws)
     if rules_row is None:
-        print(f"  WARNING: Could not find 'Rule-Based Selection' row in sheet '{ws.title}'")
+        print(f"  WARNING: Could not find 'Rules-Based AI Selection' row in sheet '{ws.title}'")
         return False
     
     # Column mapping (based on Section D in 2d-tail-create-excel.py)
@@ -104,7 +101,7 @@ def update_rules_based_selection(ws, selection):
         value = selection.get(field, '')
         cell = ws.cell(row=rules_row, column=col_idx)
         cell.value = value
-        cell.fill = RULES_BASED_FILL
+        cell.fill = SELECTION_FILL
         cell.border = THIN_BORDER
         cell.font = DATA_FONT
         cell.alignment = Alignment(horizontal="left", wrap_text=True)
@@ -121,10 +118,10 @@ def update_rules_based_selection(ws, selection):
 
 
 def update_ai_selection(ws, selection):
-    """Update the AI Selection row with data from JSON."""
+    """Update the Open-Ended AI Selection row with data from JSON."""
     _, ai_row, _ = find_selection_rows(ws)
     if ai_row is None:
-        print(f"  WARNING: Could not find 'AI Selection' row in sheet '{ws.title}'")
+        print(f"  WARNING: Could not find 'Open-Ended AI Selection' row in sheet '{ws.title}'")
         return False
     
     # Column mapping
@@ -198,8 +195,8 @@ def main():
     sheets_with_final = [s for s in wb.sheetnames if has_existing_final_selection(wb[s])]
     if sheets_with_final:
         raise ValueError(
-            f"Existing final selections found in sheet(s): {sheets_with_final}\n"
-            "Clear final selections manually before re-running to avoid overwriting actuary edits."
+            f"Existing user selections found in sheet(s): {sheets_with_final}\n"
+            "Clear user selections manually before re-running to avoid overwriting actuary edits."
         )
 
     # Abort if rules-based rows already have values

@@ -33,11 +33,11 @@ def find_selections_section(ws):
             if cell.value == "LDF Selections":
                 section_row = cell.row
                 header_row = section_row + 1
-                # Scan for the "Selection" label row (not "Prior Selection")
+                # Scan for the "Rules-Based AI Selection" label row (not "Prior Selection")
                 # It may be offset by prior selection rows if they exist
                 for check_row in range(header_row + 1, header_row + 10):
                     label = ws.cell(row=check_row, column=1).value
-                    if label == "Selection":
+                    if label == "Rules-Based AI Selection":
                         selection_row = check_row
                         reasoning_row = check_row + 1
                         return header_row, selection_row, reasoning_row
@@ -55,10 +55,10 @@ def get_interval_columns(ws, header_row):
 
 
 def find_ai_section(ws):
-    """Find the row numbers for the AI Selection and AI Reasoning rows."""
+    """Find the row numbers for the Open-Ended AI Selection and Open-Ended AI Reasoning rows."""
     for row in ws.iter_rows():
         for cell in row:
-            if cell.value == "AI Selection":
+            if cell.value == "Open-Ended AI Selection":
                 ai_selection_row = cell.row
                 ai_reasoning_row = ai_selection_row + 1
                 return ai_selection_row, ai_reasoning_row
@@ -77,7 +77,7 @@ def find_user_section(ws):
 
 
 def has_existing_selections(ws):
-    """Return True if the Selection row (not AI Selection) already has values."""
+    """Return True if the Rules-Based AI Selection row already has values."""
     _, selection_row, _ = find_selections_section(ws)
     if selection_row is None:
         return False
@@ -88,7 +88,7 @@ def has_existing_selections(ws):
 
 
 def has_existing_ai_selections(ws):
-    """Return True if the AI Selection row already has values."""
+    """Return True if the Open-Ended AI Selection row already has values."""
     ai_row, _ = find_ai_section(ws)
     if ai_row is None:
         return False

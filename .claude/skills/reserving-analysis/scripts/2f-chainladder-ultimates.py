@@ -29,6 +29,7 @@ from modules import config
 # Paths from modules/config.py — override here if needed:
 INPUT_TRIANGLE_DATA    = config.PROCESSED_DATA + "1_triangles.parquet"
 INPUT_SELECTIONS_EXCEL = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
+INPUT_TAIL_EXCEL       = config.SELECTIONS + "Chain Ladder Selections - Tail.xlsx"
 OUTPUT_PATH            = config.ULTIMATES
 
 
@@ -96,6 +97,35 @@ def get_tail(selections: dict) -> float:
     return float(selections.get('Tail', selections.get('tail', 1.0)))
 
 
+def read_tail_from_excel(excel_path: str, measure: str) -> float:
+    """
+    Read tail factor from the Tail selections Excel file for a specific measure.
+    Priority: 'User Selection' row → 'Rules-Based AI Selection' row → 'Open-Ended AI Selection' row.
+    Returns None if file doesn't exist or no selection found.
+    """
+    tail_path = Path(excel_path)
+    if not tail_path.exists():
+        return None
+    
+    try:
+        # Read the measure sheet
+        df = pd.read_excel(excel_path, sheet_name=measure[:31], engine='openpyxl', engine_kwargs={'data_only': True})
+        
+        # Look for selection rows (tail factor is in column 3)
+        for label in ("User Selection", "Rules-Based AI Selection", "Open-Ended AI Selection"):
+            for idx, row in df.iterrows():
+                if str(row.iloc[0]).strip() == label:
+                    tail_val = row.iloc[2]  # Column C (index 2) is Tail Factor
+                    if pd.notna(tail_val):
+                        try:
+                            return float(tail_val)
+                        except (ValueError, TypeError):
+                            pass
+        return None
+    except Exception as e:
+        return None
+
+
 def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
     """
     Extract the latest (diagonal) value for each period × measure combination.
@@ -122,26 +152,26 @@ def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
 def read_selections_from_excel(excel_path: str, measure: str, ages: list) -> dict:
     """
     Read LDF selections from the Chain Ladder Selections Excel file for a specific measure.
-    Priority: 'User Selection' row (actuary manual) → 'Selection' row (rules-based AI) → 'AI Selection' row (open-ended AI fallback).
+    Priority: 'User Selection' row (actuary manual) → 'Rules-Based AI Selection' row → 'Open-Ended AI Selection' row (fallback).
     Uses robust upward-scanning interval detection.
     """
     try:
         df = pd.read_excel(excel_path, sheet_name=measure, engine='openpyxl', engine_kwargs={'data_only': True})
         # Try user selection first, then rules-based AI selection, then open-ended AI selection
-        for label in ("User Selection", "Selection", "AI Selection"):
+        for label in ("User Selection", "Rules-Based AI Selection", "Open-Ended AI Selection"):
             selections = read_labeled_selections(df, label)
             if selections:
                 print(f"  Found {len(selections)} LDF selection(s) for {measure} (row: '{label}')")
                 return selections
         raise ValueError(
-            f"No values found in 'User Selection', 'Selection', or 'AI Selection' row for sheet '{measure}'."
+            f"No values found in 'User Selection', 'Rules-Based AI Selection', or 'Open-Ended AI Selection' row for sheet '{measure}'."
         )
     except Exception as e:
         print(f"  Warning: Could not read selections for {measure}: {e}")
         return {}
 
 
-def build_cdfs(selections: dict, ages: list, measure: str) -> pd.DataFrame:
+def build_cdfs(selections: dict, ages: list, measure: str, tail_override: float = None) -> pd.DataFrame:
     """
     Convert selected LDFs (including tail if present) into cumulative CDFs per age.
     
@@ -149,6 +179,7 @@ def build_cdfs(selections: dict, ages: list, measure: str) -> pd.DataFrame:
         selections: Dictionary mapping interval to selected LDF
         ages: List of ordered age values
         measure: Measure name
+        tail_override: If provided, use this tail factor instead of reading from selections dict
     
     Returns:
         DataFrame with columns: measure, age, cdf, pct_developed
@@ -159,8 +190,11 @@ def build_cdfs(selections: dict, ages: list, measure: str) -> pd.DataFrame:
     # Create interval labels from ages
     intervals = {f"{ages[i]}-{ages[i+1]}": i for i in range(len(ages) - 1)}
     
-    # Get tail factor (if present, otherwise 1.0)
-    tail = get_tail(selections)
+    # Get tail factor
+    if tail_override is not None:
+        tail = tail_override
+    else:
+        tail = get_tail(selections)
     
     # Build CDFs from oldest to youngest
     # Start with tail at the oldest age
@@ -262,6 +296,20 @@ if __name__ == "__main__":
     
     print(f"\nReading LDF selections from: {INPUT_SELECTIONS_EXCEL}")
     
+    # Try to read tail factors from separate Tail Excel file first
+    tail_factors = {}  # {measure: tail_factor}
+    tail_path = Path(INPUT_TAIL_EXCEL)
+    if tail_path.exists():
+        print(f"Reading tail factors from: {INPUT_TAIL_EXCEL}")
+        for measure in measures:
+            tail = read_tail_from_excel(str(tail_path), measure)
+            if tail is not None:
+                tail_factors[measure] = tail
+                print(f"  Found tail factor for {measure}: {tail:.4f}")
+    else:
+        print(f"Note: Tail selections file not found: {INPUT_TAIL_EXCEL}")
+        print("  Will use 'Tail' column from LDF selections if present")
+    
     # Read selections for each measure and build CDFs
     all_cdfs = []
     for measure in measures:
@@ -269,7 +317,9 @@ if __name__ == "__main__":
         selections = read_selections_from_excel(str(selections_path), measure, ages)
         
         if selections:
-            cdf_df = build_cdfs(selections, ages, measure)
+            # Use tail from Tail Excel if available, otherwise from LDF selections
+            tail_override = tail_factors.get(measure)
+            cdf_df = build_cdfs(selections, ages, measure, tail_override)
             all_cdfs.append(cdf_df)
         else:
             print(f"  Skipping {measure} (no valid selections found)")

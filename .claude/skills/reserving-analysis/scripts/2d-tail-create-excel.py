@@ -26,7 +26,7 @@ from pathlib import Path
 
 from modules import config
 from modules.xl_styles import (
-    HEADER_FILL, SUBHEADER_FILL, SECTION_FILL, SELECTION_FILL, PRIOR_FILL, AI_FILL,
+    HEADER_FILL, SUBHEADER_FILL, SECTION_FILL, SELECTION_FILL, PRIOR_FILL, AI_FILL, USER_FILL,
     HEADER_FONT, SUBHEADER_FONT, SECTION_FONT, LABEL_FONT, DATA_FONT,
     THIN_BORDER, style_header,
 )
@@ -356,7 +356,7 @@ def write_scenario_comparison_section(ws, start_row, measure, df_scenarios):
 
 
 def write_selection_section(ws, start_row, measure, prior_selections=None):
-    """Section D: Selection Area (prior, rule-based, AI, final selection)."""
+    """Section D: Selection Area (prior, rules-based AI, open-ended AI, user selection)."""
     row = write_section_header(ws, start_row, 6, "Tail Factor Selection", "section")
     
     # Column headers
@@ -403,19 +403,18 @@ def write_selection_section(ws, start_row, measure, prior_selections=None):
             
             row += 1  # Blank row
     
-    # Rule-Based Selection (blue background - filled by 2e script)
-    cell = ws.cell(row=row, column=1, value="Rule-Based Selection")
-    style_header(cell, "ai")
-    cell.fill = PatternFill("solid", fgColor="D6E4F0")  # light blue
+    # Rules-Based AI Selection (yellow background - filled by 2e script)
+    cell = ws.cell(row=row, column=1, value="Rules-Based AI Selection")
+    style_header(cell, "selection")
     for c_idx in range(2, 7):
         cell = ws.cell(row=row, column=c_idx, value='')
-        cell.fill = PatternFill("solid", fgColor="D6E4F0")
+        cell.fill = SELECTION_FILL
         cell.border = THIN_BORDER
         cell.alignment = Alignment(horizontal="left", wrap_text=True)
     row += 1
     
-    # AI Selection (purple background - filled by 2e script)
-    cell = ws.cell(row=row, column=1, value="AI Selection")
+    # Open-Ended AI Selection (purple background - filled by 2e script)
+    cell = ws.cell(row=row, column=1, value="Open-Ended AI Selection")
     style_header(cell, "ai")
     for c_idx in range(2, 7):
         cell = ws.cell(row=row, column=c_idx, value='')
@@ -426,12 +425,11 @@ def write_selection_section(ws, start_row, measure, prior_selections=None):
     
     row += 1  # Blank row
     
-    # Final Selection (yellow - actuary input)
-    cell = ws.cell(row=row, column=1, value="FINAL SELECTION")
-    style_header(cell, "selection")
+    # User Selection (white/blank - actuary input)
+    cell = ws.cell(row=row, column=1, value="User Selection")
+    style_header(cell, "user")
     for c_idx in range(2, 7):
         cell = ws.cell(row=row, column=c_idx, value='')
-        cell.fill = SELECTION_FILL
         cell.border = THIN_BORDER
         cell.alignment = Alignment(horizontal="left", wrap_text=True)
     row += 1

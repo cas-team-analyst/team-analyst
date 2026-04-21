@@ -26,7 +26,7 @@ import json
 
 from modules import config
 from modules.xl_styles import (
-    HEADER_FILL, HEADER_FONT, SELECTION_FILL, PRIOR_FILL, THIN_BORDER,
+    HEADER_FILL, HEADER_FONT, SELECTION_FILL, AI_FILL, PRIOR_FILL, THIN_BORDER,
 )
 
 # Paths from modules/config.py — override here if needed:
@@ -58,7 +58,9 @@ def format_sheet(ws, measure, df_ult, df_prior):
         "Period", "Current Age", "Actual", 
         "Initial Expected Ultimate", "Chain Ladder Ultimate", "BF Ultimate",
         "Prior Selection", "Prior Reasoning", 
-        "Selected Ultimate", "Reasoning"
+        "Rules-Based AI Selection", "Rules-Based AI Reasoning",
+        "Open-Ended AI Selection", "Open-Ended AI Reasoning",
+        "User Selection", "User Reasoning"
     ]
     
     ws.append(headers)
@@ -71,7 +73,9 @@ def format_sheet(ws, measure, df_ult, df_prior):
         ws.column_dimensions[cell.column_letter].width = 18
     
     ws.column_dimensions['H'].width = 30
-    ws.column_dimensions['J'].width = 40
+    ws.column_dimensions['J'].width = 30
+    ws.column_dimensions['L'].width = 30
+    ws.column_dimensions['N'].width = 40
     
     # Create dict of prior
     prior_dict = {}
@@ -113,7 +117,7 @@ def format_sheet(ws, measure, df_ult, df_prior):
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
-        # New selection
+        # Rules-Based AI Selection (yellow fill - will be populated by 5b script)
         c = ws.cell(row=r_idx, column=9)
         c.fill = SELECTION_FILL
         c.border = THIN_BORDER
@@ -121,6 +125,27 @@ def format_sheet(ws, measure, df_ult, df_prior):
         
         c = ws.cell(row=r_idx, column=10)
         c.fill = SELECTION_FILL
+        c.border = THIN_BORDER
+        c.alignment = Alignment(wrap_text=True)
+        
+        # Open-Ended AI Selection (purple fill - will be populated by 5b script)
+        c = ws.cell(row=r_idx, column=11)
+        c.fill = AI_FILL
+        c.border = THIN_BORDER
+        c.number_format = "#,##0"
+        
+        c = ws.cell(row=r_idx, column=12)
+        c.fill = AI_FILL
+        c.border = THIN_BORDER
+        c.alignment = Alignment(wrap_text=True)
+        
+        # User Selection (blank - actuary input)
+        c = ws.cell(row=r_idx, column=13)
+        c.border = THIN_BORDER
+        c.number_format = "#,##0"
+        
+        c = ws.cell(row=r_idx, column=14)
+        c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
 
 
