@@ -122,19 +122,19 @@ def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
 def read_selections_from_excel(excel_path: str, measure: str, ages: list) -> dict:
     """
     Read LDF selections from the Chain Ladder Selections Excel file for a specific measure.
-    Priority: 'Selection' row (actuary final) → 'AI Selection' row (fallback).
+    Priority: 'User Selection' row (actuary manual) → 'Selection' row (rules-based AI) → 'AI Selection' row (open-ended AI fallback).
     Uses robust upward-scanning interval detection.
     """
     try:
         df = pd.read_excel(excel_path, sheet_name=measure, engine='openpyxl', engine_kwargs={'data_only': True})
-        # Try actuary selection first, fall back to AI selection
-        for label in ("Selection", "AI Selection"):
+        # Try user selection first, then rules-based AI selection, then open-ended AI selection
+        for label in ("User Selection", "Selection", "AI Selection"):
             selections = read_labeled_selections(df, label)
             if selections:
                 print(f"  Found {len(selections)} LDF selection(s) for {measure} (row: '{label}')")
                 return selections
         raise ValueError(
-            f"No values found in 'Selection' or 'AI Selection' row for sheet '{measure}'."
+            f"No values found in 'User Selection', 'Selection', or 'AI Selection' row for sheet '{measure}'."
         )
     except Exception as e:
         print(f"  Warning: Could not read selections for {measure}: {e}")

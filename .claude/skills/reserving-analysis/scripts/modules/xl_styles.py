@@ -8,6 +8,7 @@ SECTION_FILL   = PatternFill("solid", fgColor="D6E4F0")   # light blue
 SELECTION_FILL = PatternFill("solid", fgColor="FFF2CC")   # yellow
 PRIOR_FILL     = PatternFill("solid", fgColor="E2EFDA")   # light green
 AI_FILL        = PatternFill("solid", fgColor="EDE7F6")   # light purple
+USER_FILL      = PatternFill("solid", fgColor="FFE6CC")   # light orange
 
 HEADER_FONT    = Font(bold=True, color="FFFFFF", size=11)
 SUBHEADER_FONT = Font(bold=True, color="FFFFFF", size=10)
@@ -25,6 +26,7 @@ _STYLE_MAP = {
     "selection": (SELECTION_FILL, LABEL_FONT),
     "prior":     (PRIOR_FILL,     LABEL_FONT),
     "ai":        (AI_FILL,        LABEL_FONT),
+    "user":      (USER_FILL,      LABEL_FONT),
 }
 
 

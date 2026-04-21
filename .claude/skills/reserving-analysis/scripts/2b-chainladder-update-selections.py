@@ -17,12 +17,12 @@ import openpyxl
 from openpyxl.styles import Alignment, Font, PatternFill
 
 from modules import config
-from modules.xl_styles import SELECTION_FILL, AI_FILL, LABEL_FONT, DATA_FONT, THIN_BORDER
+from modules.xl_styles import SELECTION_FILL, AI_FILL, USER_FILL, LABEL_FONT, DATA_FONT, THIN_BORDER
 
 # Paths from modules/config.py — override here if needed:
 METHOD_ID = "chainladder"
-SELECTIONS_FILE    = config.SELECTIONS + f"{METHOD_ID}.json"
-AI_SELECTIONS_FILE = config.SELECTIONS + f"{METHOD_ID}-ai.json"
+SELECTIONS_FILE    = config.SELECTIONS + f"{METHOD_ID}-ai-rules-based.json"
+AI_SELECTIONS_FILE = config.SELECTIONS + f"{METHOD_ID}-ai-open-ended.json"
 EXCEL_FILE         = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
 
 
@@ -65,6 +65,17 @@ def find_ai_section(ws):
     return None, None
 
 
+def find_user_section(ws):
+    """Find the row numbers for the User Selection and User Reasoning rows."""
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value == "User Selection":
+                user_selection_row = cell.row
+                user_reasoning_row = user_selection_row + 1
+                return user_selection_row, user_reasoning_row
+    return None, None
+
+
 def has_existing_selections(ws):
     """Return True if the Selection row (not AI Selection) already has values."""
     _, selection_row, _ = find_selections_section(ws)
@@ -87,6 +98,17 @@ def has_existing_ai_selections(ws):
     return False
 
 
+def has_existing_user_selections(ws):
+    """Return True if the User Selection row already has values."""
+    user_row, _ = find_user_section(ws)
+    if user_row is None:
+        return False
+    for cell in ws[user_row]:
+        if cell.column > 1 and cell.value not in (None, ""):
+            return True
+    return False
+
+
 def update_sheet(ws, measure_selections):
     """Update the selections section of a single sheet."""
     header_row, selection_row, reasoning_row = find_selections_section(ws)
@@ -104,7 +126,7 @@ def update_sheet(ws, measure_selections):
 
         col = interval_to_col[interval]
 
-        # Write selection value
+        # Write selection value (this is rules-based now)
         sel_cell = ws.cell(row=selection_row, column=col)
         sel_cell.value = sel["selection"]
         sel_cell.fill = SELECTION_FILL
@@ -124,7 +146,7 @@ def update_sheet(ws, measure_selections):
     # Set row height for reasoning row
     ws.row_dimensions[reasoning_row].height = 60
 
-    print(f"  Updated {len(measure_selections)} selections in '{ws.title}'")
+    print(f"  Updated {len(measure_selections)} rules-based selections in '{ws.title}'")
 
 
 def update_ai_sheet(ws, measure_selections, interval_to_col):
@@ -158,7 +180,7 @@ def update_ai_sheet(ws, measure_selections, interval_to_col):
         reason_cell.border = THIN_BORDER
 
     ws.row_dimensions[ai_reasoning_row].height = 60
-    print(f"  Updated {len(measure_selections)} AI selections in '{ws.title}'")
+    print(f"  Updated {len(measure_selections)} open-ended AI selections in '{ws.title}'")
 
 
 def main():
@@ -179,18 +201,26 @@ def main():
         print("Skipping update - selections array is empty.")
         return
 
-    print(f"Loaded {len(selections)} selections from {SELECTIONS_FILE}")
+    print(f"Loaded {len(selections)} rules-based selections from {SELECTIONS_FILE}")
 
     # Load AI selections if available
     ai_selections = []
     if os.path.exists(AI_SELECTIONS_FILE):
         with open(AI_SELECTIONS_FILE) as f:
             ai_selections = json.load(f) or []
-        print(f"Loaded {len(ai_selections)} AI selections from {AI_SELECTIONS_FILE}")
+        print(f"Loaded {len(ai_selections)} open-ended AI selections from {AI_SELECTIONS_FILE}")
     else:
-        print(f"No AI selections file found at {AI_SELECTIONS_FILE} (optional)")
+        print(f"No open-ended AI selections file found at {AI_SELECTIONS_FILE} (optional)")
 
     wb = openpyxl.load_workbook(EXCEL_FILE)
+
+    # Abort if any sheet has user selections to avoid overwriting manual work
+    sheets_with_user = [s for s in wb.sheetnames if has_existing_user_selections(wb[s])]
+    if sheets_with_user:
+        raise ValueError(
+            f"Existing user selections found in sheet(s): {sheets_with_user}\n"
+            "Clear user selections manually before re-running to avoid overwriting manual edits."
+        )
 
     # Abort if any sheet already has manual selections to avoid overwriting actuary work
     sheets_with_selections = [s for s in wb.sheetnames if has_existing_selections(wb[s])]

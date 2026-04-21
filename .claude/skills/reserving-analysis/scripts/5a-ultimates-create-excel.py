@@ -31,7 +31,8 @@ from modules.xl_styles import (
 
 # Paths from modules/config.py — override here if needed:
 INPUT_ULTIMATES  = config.ULTIMATES + "projected-ultimates.parquet"
-PRIOR_SELECTIONS = config.SELECTIONS + "ultimates.json"   # Optional
+PRIOR_SELECTIONS_RB = config.SELECTIONS + "ultimates-ai-rules-based.json"   # Optional, priority 1
+PRIOR_SELECTIONS_OE = config.SELECTIONS + "ultimates-ai-open-ended.json"   # Optional, priority 2
 OUTPUT_FILE      = config.SELECTIONS + "Ultimates.xlsx"
 
 
@@ -135,14 +136,27 @@ def main():
         exit(1)
         
     df_prior = None
+    # Try loading prior selections - prioritize rules-based, fall back to open-ended
+    prior_loaded = False
     try:
-        if pathlib.Path(PRIOR_SELECTIONS).exists():
-            with open(PRIOR_SELECTIONS, 'r') as f:
+        if pathlib.Path(PRIOR_SELECTIONS_RB).exists():
+            with open(PRIOR_SELECTIONS_RB, 'r') as f:
                 prior_data = json.load(f)
             df_prior = pd.DataFrame(prior_data)
-            print(f"Loaded prior selections from {PRIOR_SELECTIONS}")
+            print(f"Loaded prior selections from {PRIOR_SELECTIONS_RB} (rules-based)")
+            prior_loaded = True
     except Exception as e:
-        print(f"  No prior selections found or error: {e}")
+        print(f"  Could not load rules-based prior selections: {e}")
+    
+    if not prior_loaded:
+        try:
+            if pathlib.Path(PRIOR_SELECTIONS_OE).exists():
+                with open(PRIOR_SELECTIONS_OE, 'r') as f:
+                    prior_data = json.load(f)
+                df_prior = pd.DataFrame(prior_data)
+                print(f"Loaded prior selections from {PRIOR_SELECTIONS_OE} (open-ended)")
+        except Exception as e:
+            print(f"  No prior selections found: {e}")
 
     wb = Workbook()
     wb.remove(wb.active)  # Remove default sheet

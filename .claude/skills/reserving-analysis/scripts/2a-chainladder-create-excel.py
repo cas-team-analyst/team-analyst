@@ -23,7 +23,7 @@ from pathlib import Path
 
 from modules import config
 from modules.xl_styles import (
-    HEADER_FILL, SUBHEADER_FILL, SECTION_FILL, SELECTION_FILL, PRIOR_FILL, AI_FILL,
+    HEADER_FILL, SUBHEADER_FILL, SECTION_FILL, SELECTION_FILL, PRIOR_FILL, AI_FILL, USER_FILL,
     HEADER_FONT, SUBHEADER_FONT, SECTION_FONT, LABEL_FONT, DATA_FONT,
     THIN_BORDER, style_header,
 )
@@ -211,6 +211,22 @@ def write_selections_section(ws, start_row, col_labels, prior_selections=None, m
             c.border = THIN_BORDER
             if label == "Selection":
                 c.number_format = "0.0000"
+        start_row += 1
+
+    start_row += 1
+
+    for label in ["User Selection", "User Reasoning"]:
+        cell = ws.cell(row=start_row, column=1, value=label)
+        style_header(cell, "user")
+        for c_idx in range(2, len(col_labels) + 2):
+            c = ws.cell(row=start_row, column=c_idx, value="")
+            c.fill = USER_FILL
+            c.border = THIN_BORDER
+            if label == "User Selection":
+                c.number_format = "0.0000"
+            if label == "User Reasoning":
+                c.alignment = Alignment(horizontal="left", wrap_text=True)
+                c.font = DATA_FONT
         start_row += 1
 
     return start_row

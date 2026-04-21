@@ -91,11 +91,12 @@ def _read_labeled_selections(df, label):
 
 
 def read_selections(excel_path, measure):
-    """Read selected LDFs for a measure. Error if no selections. Returns {interval: ldf} without Tail."""
+    """Read selected LDFs for a measure. Error if no selections. Returns {interval: ldf} without Tail.
+    Priority: 'User Selection' → 'Selection' (rules-based AI) → 'AI Selection' (open-ended AI)."""
     try:
         df = pd.read_excel(excel_path, sheet_name=measure, engine='openpyxl',
                            engine_kwargs={'data_only': True})
-        for label in ("Selection", "AI Selection"):
+        for label in ("User Selection", "Selection", "AI Selection"):
             sels = _read_labeled_selections(df, label)
             sels_no_tail = {k: v for k, v in sels.items() if k.lower() != 'tail'}
             if sels_no_tail:

@@ -15,7 +15,7 @@ Gracefully handles optional data:
   - ultimate_ie (IE method, script 3): omits IE columns if not present
   - ultimate_bf (BF method, script 4): omits BF columns if not present
   - Exposure in triangles: omits Loss Rate and Frequency if not present
-  - ultimates.json selections: falls back to bf > cl > ie if file is absent or a row is missing
+  - ultimates-ai-rules-based.json selections: falls back to open-ended > bf > cl > ie if file is absent or a row is missing
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
@@ -43,10 +43,11 @@ from modules.xl_styles import (
 # ── User-configurable properties ─────────────────────────────────────────────
 # Paths from modules/config.py — override here if needed:
 
-INPUT_ULTIMATES       = config.ULTIMATES + "projected-ultimates.parquet"
-INPUT_SELECTIONS_JSON = config.SELECTIONS + "ultimates.json"
-INPUT_TRIANGLES       = config.PROCESSED_DATA + "1_triangles.parquet"
-OUTPUT_PATH           = config.OUTPUT
+INPUT_ULTIMATES         = config.ULTIMATES + "projected-ultimates.parquet"
+INPUT_SELECTIONS_RB_JSON = config.SELECTIONS + "ultimates-ai-rules-based.json"
+INPUT_SELECTIONS_OE_JSON = config.SELECTIONS + "ultimates-ai-open-ended.json"
+INPUT_TRIANGLES         = config.PROCESSED_DATA + "1_triangles.parquet"
+OUTPUT_PATH             = config.OUTPUT
 
 # Excel files from prior scripts to fold into the complete analysis workbook.
 # Each entry: (path_to_file, sheet_name_prefix_or_None).
@@ -139,9 +140,10 @@ def _safe(val):
 
 # ── Data loading ──────────────────────────────────────────────────────────────
 
-def load_combined(ultimates_path, selections_json_path):
+def load_combined(ultimates_path, selections_rb_json_path, selections_oe_json_path):
     """
-    Load projected ultimates and merge in actuary selections from JSON.
+    Load projected ultimates and merge in actuary selections from JSON files.
+    Prioritizes rules-based selections over open-ended selections.
 
     Returns:
         combined  (DataFrame): one row per (period, measure) with columns
@@ -158,17 +160,39 @@ def load_combined(ultimates_path, selections_json_path):
     has_ie = _col_has_data(df, "ultimate_ie")
     has_bf = _col_has_data(df, "ultimate_bf")
 
-    # Load actuary selections; missing file or missing row both gracefully fall back.
+    # Load actuary selections from both files; priority: rules-based > open-ended
     sel_lookup = {}
-    sel_path = pathlib.Path(selections_json_path)
-    if sel_path.exists():
-        with open(sel_path, "r") as f:
+    
+    # Load rules-based selections (priority 1)
+    rb_path = pathlib.Path(selections_rb_json_path)
+    if rb_path.exists():
+        with open(rb_path, "r") as f:
             entries = json.load(f)
         for entry in entries:
             key = (str(entry["measure"]), str(entry["period"]))
             sel_lookup[key] = float(entry["selection"])
+        print(f"  Loaded {len(entries)} rules-based selections from {selections_rb_json_path}")
     else:
-        print(f"  Note: {selections_json_path} not found — using method fallback for selected ultimate.")
+        print(f"  Note: {selections_rb_json_path} not found")
+    
+    # Load open-ended selections (priority 2) - only for missing keys
+    oe_path = pathlib.Path(selections_oe_json_path)
+    if oe_path.exists():
+        with open(oe_path, "r") as f:
+            entries = json.load(f)
+        oe_count = 0
+        for entry in entries:
+            key = (str(entry["measure"]), str(entry["period"]))
+            if key not in sel_lookup:  # Don't overwrite rules-based
+                sel_lookup[key] = float(entry["selection"])
+                oe_count += 1
+        if oe_count > 0:
+            print(f"  Loaded {oe_count} open-ended selections from {selections_oe_json_path} (fallback)")
+    else:
+        print(f"  Note: {selections_oe_json_path} not found")
+    
+    if not sel_lookup:
+        print("  Using method fallback for selected ultimate (no JSON selections found).")
 
     # selected_ultimate: JSON entry → bf → cl → ie (first non-NaN available)
     def _pick_selected(row):
@@ -681,7 +705,7 @@ def main():
     os.makedirs(OUTPUT_PATH, exist_ok=True)
 
     print("Loading data...")
-    combined, has_ie, has_bf = load_combined(INPUT_ULTIMATES, INPUT_SELECTIONS_JSON)
+    combined, has_ie, has_bf = load_combined(INPUT_ULTIMATES, INPUT_SELECTIONS_RB_JSON, INPUT_SELECTIONS_OE_JSON)
     print(f"  has_ie={has_ie}, has_bf={has_bf}, rows={len(combined)}")
 
     triangles_df = pd.read_parquet(INPUT_TRIANGLES)

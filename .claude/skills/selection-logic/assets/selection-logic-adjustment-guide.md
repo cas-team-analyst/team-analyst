@@ -27,7 +27,7 @@ You can then ask for a detailed explanation of any specific criterion or diagnos
 The selection logic lives in a single file:
 
 ```
-.claude/agents/selector-chain-ladder-ldf.md
+.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md
 ```
 
 You can read it directly or ask Claude: "Read and explain the selection logic reference file."
@@ -36,7 +36,7 @@ You can read it directly or ask Claude: "Read and explain the selection logic re
 
 ## How Selection Logic Is Applied
 
-During a chain-ladder analysis, the `selector-chain-ladder-ldf` agent is tasked with making LDF selections. This agent (defined in `.claude/agents/selector-chain-ladder-ldf.md`) embeds the full selection logic framework in its prompt. When it evaluates your triangle data, it works through:
+During a chain-ladder analysis, the `selector-chain-ladder-ldf-ai-rules-based` agent is tasked with making LDF selections. This agent (defined in `.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md`) embeds the full selection logic framework in its prompt. When it evaluates your triangle data, it works through:
 
 1. **Decision Hierarchy** — A priority-ordered sequence that determines which criteria take precedence. For example, if all averages converge within +/-2%, that overrides Bayesian anchoring and asymmetric conservatism.
 
@@ -56,13 +56,13 @@ Since the selection logic is defined in markdown files, you can modify it direct
 
 | Change Type | Example | Where to Edit |
 |---|---|---|
-| Adjust thresholds | Change CV outlier boundary from 0.10 to 0.15 | `selector-chain-ladder-ldf.md` |
-| Change averaging windows | Default to 3-year instead of 5-year | `selector-chain-ladder-ldf.md` |
-| Modify conservatism | Make downward movements faster (e.g., 50-70% instead of 30-50%) | `selector-chain-ladder-ldf.md` |
-| Reorder decision hierarchy | Prioritize trending over Bayesian anchoring | `selector-chain-ladder-ldf.md` |
-| Add a new criterion | Add a "Reinsurance Impact" criterion | `selector-chain-ladder-ldf.md` |
-| Remove a criterion | Remove tail factor requirements | `selector-chain-ladder-ldf.md` |
-| Adjust diagnostic sensitivity | Widen the no-action zone for closure rate from +/-3pp to +/-5pp | `selector-chain-ladder-ldf.md` |
+| Adjust thresholds | Change CV outlier boundary from 0.10 to 0.15 | `selector-chain-ladder-ldf-ai-rules-based.md` |
+| Change averaging windows | Default to 3-year instead of 5-year | `selector-chain-ladder-ldf-ai-rules-based.md` |
+| Modify conservatism | Make downward movements faster (e.g., 50-70% instead of 30-50%) | `selector-chain-ladder-ldf-ai-rules-based.md` |
+| Reorder decision hierarchy | Prioritize trending over Bayesian anchoring | `selector-chain-ladder-ldf-ai-rules-based.md` |
+| Add a new criterion | Add a "Reinsurance Impact" criterion | `selector-chain-ladder-ldf-ai-rules-based.md` |
+| Remove a criterion | Remove tail factor requirements | `selector-chain-ladder-ldf-ai-rules-based.md` |
+| Adjust diagnostic sensitivity | Widen the no-action zone for closure rate from +/-3pp to +/-5pp | `selector-chain-ladder-ldf-ai-rules-based.md` |
 
 ### Step-by-Step: Editing the Selection Logic
 
@@ -76,7 +76,7 @@ Navigate to your local clone of the TeamAnalyst plugin repository.
 Show me the current selection logic reference file
 ```
 
-Claude will read and present `.claude/agents/selector-chain-ladder-ldf.md`.
+Claude will read and present `.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md`.
 
 #### 3. Tell Claude what you want to change
 
@@ -110,7 +110,7 @@ Run a chain-ladder analysis on sample data to see how your changes affect select
 The decision hierarchy lives in the agent definition:
 
 ```
-.claude/agents/selector-chain-ladder-ldf.md
+.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md
 ```
 
 This file defines the priority order:
@@ -124,7 +124,7 @@ This file defines the priority order:
 
 To reorder, ask Claude:
 
-> "In the selector-chain-ladder-ldf agent, move Sparse Data Caution above Bayesian Anchoring in the decision hierarchy. For our book of business, sparse data concerns should take priority over anchoring to priors."
+> "In the selector-chain-ladder-ldf-ai-rules-based agent, move Sparse Data Caution above Bayesian Anchoring in the decision hierarchy. For our book of business, sparse data concerns should take priority over anchoring to priors."
 
 ### Important Considerations
 
@@ -141,4 +141,4 @@ To reorder, ask Claude:
 | File | Purpose |
 |---|---|
 | `.claude/skills/selection-logic/SKILL.md` | View-only skill for inspecting selection logic in Cowork |
-| `.claude/agents/selector-chain-ladder-ldf.md` | Agent definition that embeds the full selection logic framework (14 criteria + 10 diagnostics) and applies it to triangle data |
+| `.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md` | Agent definition that embeds the full selection logic framework (14 criteria + 10 diagnostics) and applies it to triangle data |
