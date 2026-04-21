@@ -70,7 +70,7 @@ As you go:
 # OTHER GUIDELINES
 
 - Never include checkmarks or other unicode symbols in PowerShell commands - only use standard ASCII text and operators.
-- If you are working in a sandbox, run scripts in the sandbox and then copy the results (and various files you modify) to the user's project folder. 
+- If you are having folder access issues, it may mean the user hasn't accepted your request to access that folder. IMPORTANT: STOP WHAT YOU ARE DOING and wait for the user to approve any open requests. 
 
 ## Never Rewrite the Numbered Scripts
 
