@@ -1,0 +1,442 @@
+[
+  {
+    "measure": "Incurred Loss",
+    "period": "2015",
+    "selected_ultimate": 50712217.73,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (120.0 mo). Indications: CL $46.4mm, IE $63.9mm, BF $46.9mm. Spread 33.4% > 2%. Weighted selection $48,175,711, asymmetric conservatism applied \u2192 $50,712,218. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": "2016",
+    "selected_ultimate": 63239336.31,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (108.0 mo). Indications: CL $63.0mm, IE $63.5mm, BF $63.0mm. Methods converge within \u00b12% (spread 0.7%). Selected midpoint. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": "2017",
+    "selected_ultimate": 42795351.28,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (96.0 mo). Indications: CL $38.4mm, IE $59.5mm, BF $40.1mm. Spread 45.9% > 2%. Weighted selection $40,634,190, asymmetric conservatism applied \u2192 $42,795,351. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": "2018",
+    "selected_ultimate": 61121603.7,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (84.0 mo). Indications: CL $62.7mm, IE $54.3mm, BF $61.7mm. Spread 14.0% > 2%. Weighted selection $61,787,375, asymmetric conservatism applied \u2192 $61,121,604. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": "2019",
+    "selected_ultimate": 49159410.45,
+    "method_weights": {
+      "CL": 0.7,
+      "IE": 0.15,
+      "BF": 0.15
+    },
+    "reasoning": "Maturity Late (72.0 mo). Indications: CL $48.4mm, IE $52.6mm, BF $49.1mm. Spread 8.4% > 2%. Weighted selection applied. Weights: CL 70%, IE 15%, BF 15%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": "2020",
+    "selected_ultimate": 45596215.93,
+    "method_weights": {
+      "CL": 0.7,
+      "IE": 0.15,
+      "BF": 0.15
+    },
+    "reasoning": "Maturity Late (60.0 mo). Indications: CL $45.0mm, IE $48.4mm, BF $45.7mm. Spread 7.5% > 2%. Weighted selection applied. Weights: CL 70%, IE 15%, BF 15%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": "2021",
+    "selected_ultimate": 68485956.57,
+    "method_weights": {
+      "CL": 0.55,
+      "IE": 0.2,
+      "BF": 0.25
+    },
+    "reasoning": "Maturity Mid (48.0 mo). Indications: CL $79.1mm, IE $46.2mm, BF $69.2mm. Spread 50.7% > 2%. Weighted selection $70,047,962, asymmetric conservatism applied \u2192 $68,485,957. Weights: CL 55%, IE 20%, BF 25%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": "2022",
+    "selected_ultimate": 48282564.49,
+    "method_weights": {
+      "CL": 0.55,
+      "IE": 0.2,
+      "BF": 0.25
+    },
+    "reasoning": "Maturity Mid (36.0 mo). Indications: CL $46.5mm, IE $52.4mm, BF $49.0mm. Spread 12.1% > 2%. Weighted selection applied. Weights: CL 55%, IE 20%, BF 25%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": "2023",
+    "selected_ultimate": 48211213.57,
+    "method_weights": {
+      "CL": 0.35,
+      "IE": 0.3,
+      "BF": 0.35
+    },
+    "reasoning": "Maturity Early (24.0 mo). Indications: CL $49.0mm, IE $47.4mm, BF $48.1mm. Spread 3.2% > 2%. Weighted selection applied. Weights: CL 35%, IE 30%, BF 35%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": "2024",
+    "selected_ultimate": 47059206.78,
+    "method_weights": {
+      "CL": 0.15,
+      "IE": 0.4,
+      "BF": 0.45
+    },
+    "reasoning": "Maturity Green (12.0 mo). Indications: CL $66.3mm, IE $36.6mm, BF $43.8mm. Spread 60.7% > 2%. Weighted selection $44,291,399, asymmetric conservatism applied \u2192 $47,059,207. Weights: CL 15%, IE 40%, BF 45%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2015",
+    "selected_ultimate": 56011525.98,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (120.0 mo). Indications: CL $53.1mm, IE $63.9mm, BF $54.7mm. Spread 18.9% > 2%. Weighted selection $54,216,002, asymmetric conservatism applied \u2192 $56,011,526. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2016",
+    "selected_ultimate": 71047560.65,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (108.0 mo). Indications: CL $72.9mm, IE $63.5mm, BF $71.1mm. Spread 13.6% > 2%. Weighted selection $71,857,990, asymmetric conservatism applied \u2192 $71,047,561. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2017",
+    "selected_ultimate": 49534432.14,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (96.0 mo). Indications: CL $45.4mm, IE $59.5mm, BF $48.7mm. Spread 27.6% > 2%. Weighted selection $47,001,135, asymmetric conservatism applied \u2192 $49,534,432. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2018",
+    "selected_ultimate": 68598857.01,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (84.0 mo). Indications: CL $72.3mm, IE $54.3mm, BF $67.4mm. Spread 27.8% > 2%. Weighted selection $70,278,072, asymmetric conservatism applied \u2192 $68,598,857. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2019",
+    "selected_ultimate": 55973462.96,
+    "method_weights": {
+      "CL": 0.7,
+      "IE": 0.15,
+      "BF": 0.15
+    },
+    "reasoning": "Maturity Late (72.0 mo). Indications: CL $56.8mm, IE $52.6mm, BF $55.4mm. Spread 7.6% > 2%. Weighted selection applied. Weights: CL 70%, IE 15%, BF 15%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2020",
+    "selected_ultimate": 50533023.98,
+    "method_weights": {
+      "CL": 0.7,
+      "IE": 0.15,
+      "BF": 0.15
+    },
+    "reasoning": "Maturity Late (60.0 mo). Indications: CL $51.1mm, IE $48.4mm, BF $50.0mm. Spread 5.3% > 2%. Weighted selection applied. Weights: CL 70%, IE 15%, BF 15%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2021",
+    "selected_ultimate": 73656211.76,
+    "method_weights": {
+      "CL": 0.55,
+      "IE": 0.2,
+      "BF": 0.25
+    },
+    "reasoning": "Maturity Mid (48.0 mo). Indications: CL $88.1mm, IE $46.2mm, BF $68.2mm. Spread 62.0% > 2%. Weighted selection $74,741,774, asymmetric conservatism applied \u2192 $73,656,212. Weights: CL 55%, IE 20%, BF 25%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2022",
+    "selected_ultimate": 52897397.09,
+    "method_weights": {
+      "CL": 0.55,
+      "IE": 0.2,
+      "BF": 0.25
+    },
+    "reasoning": "Maturity Mid (36.0 mo). Indications: CL $53.4mm, IE $52.4mm, BF $52.8mm. Methods converge within \u00b12% (spread 1.8%). Selected midpoint. Weights: CL 55%, IE 20%, BF 25%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2023",
+    "selected_ultimate": 51670298.89,
+    "method_weights": {
+      "CL": 0.35,
+      "IE": 0.3,
+      "BF": 0.35
+    },
+    "reasoning": "Maturity Early (24.0 mo). Indications: CL $56.6mm, IE $47.4mm, BF $50.3mm. Spread 17.8% > 2%. Weighted selection applied. Weights: CL 35%, IE 30%, BF 35%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Paid Loss",
+    "period": "2024",
+    "selected_ultimate": 48105357.95,
+    "method_weights": {
+      "CL": 0.15,
+      "IE": 0.4,
+      "BF": 0.45
+    },
+    "reasoning": "Maturity Green (12.0 mo). Indications: CL $75.7mm, IE $36.6mm, BF $43.5mm. Spread 75.2% > 2%. Weighted selection $45,561,577, asymmetric conservatism applied \u2192 $48,105,358. Weights: CL 15%, IE 40%, BF 45%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2015",
+    "selected_ultimate": 5344.5,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (120.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 29.0% > 2%. Weighted selection $5,120, asymmetric conservatism applied \u2192 $5,345. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2016",
+    "selected_ultimate": 5298.06,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (108.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 24.8% > 2%. Weighted selection $5,108, asymmetric conservatism applied \u2192 $5,298. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2017",
+    "selected_ultimate": 5140.33,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (96.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 15.7% > 2%. Weighted selection $5,024, asymmetric conservatism applied \u2192 $5,140. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2018",
+    "selected_ultimate": 5059.1,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (84.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Methods converge within \u00b12% (spread 1.7%). Selected midpoint. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2019",
+    "selected_ultimate": 4969.1,
+    "method_weights": {
+      "CL": 0.7,
+      "IE": 0.15,
+      "BF": 0.15
+    },
+    "reasoning": "Maturity Late (72.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 4.1% > 2%. Weighted selection applied. Weights: CL 70%, IE 15%, BF 15%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2020",
+    "selected_ultimate": 4862.99,
+    "method_weights": {
+      "CL": 0.7,
+      "IE": 0.15,
+      "BF": 0.15
+    },
+    "reasoning": "Maturity Late (60.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 15.6% > 2%. Weighted selection applied. Weights: CL 70%, IE 15%, BF 15%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2021",
+    "selected_ultimate": 4824.03,
+    "method_weights": {
+      "CL": 0.55,
+      "IE": 0.2,
+      "BF": 0.25
+    },
+    "reasoning": "Maturity Mid (48.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 25.3% > 2%. Weighted selection $4,877, asymmetric conservatism applied \u2192 $4,824. Weights: CL 55%, IE 20%, BF 25%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2022",
+    "selected_ultimate": 4887.35,
+    "method_weights": {
+      "CL": 0.55,
+      "IE": 0.2,
+      "BF": 0.25
+    },
+    "reasoning": "Maturity Mid (36.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 14.8% > 2%. Weighted selection applied. Weights: CL 55%, IE 20%, BF 25%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2023",
+    "selected_ultimate": 4421.5,
+    "method_weights": {
+      "CL": 0.35,
+      "IE": 0.3,
+      "BF": 0.35
+    },
+    "reasoning": "Maturity Early (24.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 24.4% > 2%. Weighted selection applied. Weights: CL 35%, IE 30%, BF 35%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Reported Count",
+    "period": "2024",
+    "selected_ultimate": 3809.54,
+    "method_weights": {
+      "CL": 0.15,
+      "IE": 0.4,
+      "BF": 0.45
+    },
+    "reasoning": "Maturity Green (12.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 61.5% > 2%. Weighted selection $3,597, asymmetric conservatism applied \u2192 $3,810. Weights: CL 15%, IE 40%, BF 45%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2015",
+    "selected_ultimate": 5364.41,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (120.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 28.5% > 2%. Weighted selection $5,142, asymmetric conservatism applied \u2192 $5,364. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2016",
+    "selected_ultimate": 5314.37,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (108.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 24.5% > 2%. Weighted selection $5,123, asymmetric conservatism applied \u2192 $5,314. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2017",
+    "selected_ultimate": 5151.75,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (96.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 15.5% > 2%. Weighted selection $5,031, asymmetric conservatism applied \u2192 $5,152. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2018",
+    "selected_ultimate": 5088.46,
+    "method_weights": {
+      "CL": 0.85,
+      "IE": 0.1,
+      "BF": 0.05
+    },
+    "reasoning": "Maturity Tail (84.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Methods converge within \u00b12% (spread 0.6%). Selected midpoint. Weights: CL 85%, IE 10%, BF 5%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2019",
+    "selected_ultimate": 4975.13,
+    "method_weights": {
+      "CL": 0.7,
+      "IE": 0.15,
+      "BF": 0.15
+    },
+    "reasoning": "Maturity Late (72.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 4.4% > 2%. Weighted selection applied. Weights: CL 70%, IE 15%, BF 15%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2020",
+    "selected_ultimate": 4840.82,
+    "method_weights": {
+      "CL": 0.7,
+      "IE": 0.15,
+      "BF": 0.15
+    },
+    "reasoning": "Maturity Late (60.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 15.5% > 2%. Weighted selection applied. Weights: CL 70%, IE 15%, BF 15%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2021",
+    "selected_ultimate": 4940.99,
+    "method_weights": {
+      "CL": 0.55,
+      "IE": 0.2,
+      "BF": 0.25
+    },
+    "reasoning": "Maturity Mid (48.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 29.8% > 2%. Weighted selection $5,008, asymmetric conservatism applied \u2192 $4,941. Weights: CL 55%, IE 20%, BF 25%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2022",
+    "selected_ultimate": 4959.77,
+    "method_weights": {
+      "CL": 0.55,
+      "IE": 0.2,
+      "BF": 0.25
+    },
+    "reasoning": "Maturity Mid (36.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 18.7% > 2%. Weighted selection applied. Weights: CL 55%, IE 20%, BF 25%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2023",
+    "selected_ultimate": 4357.35,
+    "method_weights": {
+      "CL": 0.35,
+      "IE": 0.3,
+      "BF": 0.35
+    },
+    "reasoning": "Maturity Early (24.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 23.3% > 2%. Weighted selection applied. Weights: CL 35%, IE 30%, BF 35%. No diagnostic overrides or prior anchoring applied."
+  },
+  {
+    "measure": "Closed Count",
+    "period": "2024",
+    "selected_ultimate": 3529.08,
+    "method_weights": {
+      "CL": 0.15,
+      "IE": 0.4,
+      "BF": 0.45
+    },
+    "reasoning": "Maturity Green (12.0 mo). Indications: CL $0.0mm, IE $0.0mm, BF $0.0mm. Spread 48.7% > 2%. Weighted selection $3,369, asymmetric conservatism applied \u2192 $3,529. Weights: CL 15%, IE 40%, BF 45%. No diagnostic overrides or prior anchoring applied."
+  }
+]

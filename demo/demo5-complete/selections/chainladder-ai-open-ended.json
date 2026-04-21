@@ -1,0 +1,218 @@
+[
+  {
+    "measure": "Incurred Loss",
+    "interval": "12-24",
+    "selection": 1.8093,
+    "reasoning": "Weighted average: 1.8093.\n\nData shows highly consistent development across all years (1.7763-1.8913). Individual year factors cluster tightly around weighted mean. Volume-weighted average captures the true central tendency. All diagnostic windows (3yr, 5yr, 10yr) confirm similar values. CV is low at 0.0247-0.0289. Strong reliance on weighted average appropriate."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "24-36",
+    "selection": 1.3321,
+    "reasoning": "Weighted average: 1.3321.\n\nConsistent development across all years (1.3028-1.3691). Factors tightly distributed with minimal outliers. CV remains low (0.0154-0.0204). Slope diagnostics near zero indicating no time trend. Weighted average is highly credible."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "36-48",
+    "selection": 1.2015,
+    "reasoning": "Weighted average: 1.2015.\n\nYear-to-year factors range 1.1832-1.2171. Exclude-high-low average identical to weighted (1.2015), indicating no outliers. Very stable development. CV only 0.0067-0.0088. Weighted average is optimal."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "48-60",
+    "selection": 1.1128,
+    "reasoning": "Weighted average: 1.1128.\n\nExcellent consistency with all factors within 1.1027-1.1128. Minimal dispersion. Exclude-high-low matches weighted (1.1128). Near-zero CV (0.0028-0.0081) and slope. Moving into tail territory with very tight development."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "60-72",
+    "selection": 1.0733,
+    "reasoning": "Weighted average: 1.0733.\n\nTight clustering (1.0700-1.0757). All averaging methods yield similar results (1.0733-1.0739). CV only 0.0020-0.0027. Minimal tail development. Weighted average appropriate."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "72-84",
+    "selection": 1.0587,
+    "reasoning": "Weighted average: 1.0587.\n\nStable development (1.0559-1.0612). All methods converge (1.0586-1.0587). CV very low (0.0022-0.0024). Approaching tail. Use weighted average."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "84-96",
+    "selection": 1.0424,
+    "reasoning": "Weighted average: 1.0424.\n\nConsistent factors (1.0406-1.0439). Minimal variation (CV 0.0016). All methods highly aligned. Very late development with minimal remaining change expected."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "96-108",
+    "selection": 1.0332,
+    "reasoning": "Weighted average: 1.0332.\n\nTight clustering (1.0326-1.0332). All methods virtually identical. CV only 0.0007. Late-stage development with very minimal incremental growth."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "108-120",
+    "selection": 1.0202,
+    "reasoning": "Weighted average: 1.0202.\n\nAll available factors identical at 1.0202. Final interval showing minimal development. Use consensus value."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "12-24",
+    "selection": 1.8309,
+    "reasoning": "Weighted average: 1.8309.\n\nYear-to-year factors range 1.7758-1.8822 with most recent years (2020-2022) showing 1.7758-1.8499. Weighted average captures volume effect. CV low at 0.0187-0.0213. All methods cluster tightly (1.8088-1.8334). Weighted average appropriate."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "24-36",
+    "selection": 1.3693,
+    "reasoning": "Weighted average: 1.3693.\n\nFactors range 1.3346-1.3901. Weighted average sits at upper range but is volume-justified. All averaging windows (3yr, 5yr, 10yr) between 1.3640-1.3893. CV low (0.0139-0.0232). Weighted best reflects data distribution."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "36-48",
+    "selection": 1.2121,
+    "reasoning": "Weighted average: 1.2121.\n\nConsistent development (1.2088-1.2201). Exclude-high-low at 1.2127, very close to weighted. CV only 0.0071-0.0103. All methods yield 1.2104-1.2149. Very stable. Use weighted average."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "48-60",
+    "selection": 1.1468,
+    "reasoning": "Weighted average: 1.1468.\n\nTight range (1.1401-1.1525). Exclude-high-low at 1.1468, confirming no outliers. CV low (0.0041-0.0057). All methods 1.1463-1.1502. Stable development. Weighted average is credible."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "60-72",
+    "selection": 1.1087,
+    "reasoning": "Weighted average: 1.1087.\n\nAll factors cluster tightly (1.1066-1.1098). Exclude-high-low at 1.1091, very similar. CV minimal (0.0006-0.0012). All windows yield 1.1087-1.1092. Consistent pattern. Use weighted."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "72-84",
+    "selection": 1.0858,
+    "reasoning": "Weighted average: 1.0858.\n\nDevelopment factors range 1.0792-1.0916. Exclude-high-low at 1.0858, confirming central value. CV low (0.0036-0.0047). All windows 1.0836-1.0858. Use weighted average."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "84-96",
+    "selection": 1.0602,
+    "reasoning": "Weighted average: 1.0602.\n\nFactors range 1.0599-1.0630. Exclude-high-low at 1.0599. Minimal dispersion (CV 0.0026). All methods 1.0599-1.0602. Use weighted average."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "96-108",
+    "selection": 1.0581,
+    "reasoning": "Weighted average: 1.0581.\n\nFactors range 1.0555-1.0616. Weighted best reflects observed pattern. CV low (0.0041). All windows 1.0555-1.0586. Very late development. Use weighted."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "108-120",
+    "selection": 1.0434,
+    "reasoning": "Weighted average: 1.0434.\n\nAll available factors identical at 1.0434. Final development interval. Use consensus value."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "12-24",
+    "selection": 1.6631,
+    "reasoning": "Weighted average: 1.6631.\n\nFactors range 1.6123-1.7235. Weighted average captures volume. Recent years (2020-2023) show 1.6933-1.6996, slightly higher than historical. CV at 0.0230-0.0255 is moderate but acceptable. Weighted-all and weighted-5yr both 1.6631, supporting this choice."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "24-36",
+    "selection": 1.293,
+    "reasoning": "Weighted average: 1.2930.\n\nConsistent development (1.2705-1.3193). Weighted-all and weighted-5yr both 1.2930 and 1.2950. Exclude-high-low at 1.2925. CV low (0.0124-0.0147). Very stable. Weighted average appropriate."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "36-48",
+    "selection": 1.1859,
+    "reasoning": "Weighted average: 1.1859.\n\nTight range (1.1743-1.1963). All methods yield 1.1850-1.1887. Exclude-high-low at 1.1850. CV minimal (0.0085-0.0112). Excellent data consistency. Use weighted."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "48-60",
+    "selection": 1.0999,
+    "reasoning": "Weighted average: 1.0999.\n\nFactors range 1.0923-1.1101. Weighted-all at 1.0999, weighted-5yr at 1.0979. Exclude-high-low at 1.0993. CV low (0.0047-0.0065). Data supports weighted-all as best estimate."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "60-72",
+    "selection": 1.0425,
+    "reasoning": "Weighted average: 1.0425.\n\nVery tight clustering (1.0394-1.0451). Weighted-all at 1.0425, exclude-high-low at 1.0427. CV minimal (0.0021-0.0022). All windows highly aligned (1.0420-1.0431). Use weighted."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "72-84",
+    "selection": 1.022,
+    "reasoning": "Weighted average: 1.0220.\n\nConsistent factors (1.0210-1.0237). Weighted-all at 1.0220, all windows 1.0216-1.0221. CV low (0.0012-0.0014). Very stable tail development. Use weighted."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "84-96",
+    "selection": 1.0105,
+    "reasoning": "Weighted average: 1.0105.\n\nTight range (1.0099-1.0108). All methods yield 1.0105-1.0108. CV minimal (0.0005). Late development with very small increments. Use weighted."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "96-108",
+    "selection": 1.0098,
+    "reasoning": "Weighted average: 1.0098.\n\nAll factors identical at 1.0098. Final incremental development stage. Use consensus value."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "108-120",
+    "selection": 1.0,
+    "reasoning": "All available factors: 1.0000.\n\nAll historical factors are exactly 1.0 for this final interval. Development essentially complete by 120 months. Use 1.0000 as final tail."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "12-24",
+    "selection": 1.63,
+    "reasoning": "Weighted average: 1.6300.\n\nFactors range 1.5450-1.6832. Weighted average captures volume effects. Recent years show moderate consistency. CV at 0.0317-0.0420 is acceptable. Weighted-10yr at 1.6323 very similar. Use weighted-all for overall stability."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "24-36",
+    "selection": 1.3011,
+    "reasoning": "Weighted average: 1.3011.\n\nConsistent development (1.2857-1.3293). Weighted-all at 1.3011, weighted-10yr at 1.3011, exclude-high-low at 1.2997. CV low (0.0024-0.0123). Very stable. Use weighted average."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "36-48",
+    "selection": 1.2026,
+    "reasoning": "Weighted average: 1.2026.\n\nRange 1.1788-1.2255. Weighted-all at 1.2026, weighted-10yr at 1.2026. Exclude-high-low at 1.2036. CV moderate (0.0116-0.0149). Development clearly present. Use weighted."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "48-60",
+    "selection": 1.1333,
+    "reasoning": "Weighted average: 1.1333.\n\nFactors range 1.1282-1.1406. Weighted at 1.1333, exclude-high-low at 1.1328. CV low (0.0030-0.0042). All windows 1.1312-1.1338. Stable. Use weighted."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "60-72",
+    "selection": 1.086,
+    "reasoning": "Weighted average: 1.0860.\n\nTight range (1.0827-1.0895). Weighted and exclude-high-low both around 1.0860. CV minimal (0.0015-0.0030). All windows 1.0860-1.0882. Use weighted."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "72-84",
+    "selection": 1.0595,
+    "reasoning": "Weighted average: 1.0595.\n\nDevelopment factors 1.0568-1.0621. Weighted-all at 1.0595, weighted-10yr at 1.0595. CV low (0.0022-0.0024). All methods converge. Use weighted."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "84-96",
+    "selection": 1.0325,
+    "reasoning": "Weighted average: 1.0325.\n\nFactors range 1.0316-1.0338. Weighted at 1.0325, exclude-high-low at 1.0320. CV very low (0.0011). All windows 1.0320-1.0325. Use weighted."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "96-108",
+    "selection": 1.0307,
+    "reasoning": "Weighted average: 1.0307.\n\nAll factors identical at 1.0307. Late development with minimal incremental growth. Use consensus value."
+  },
+  {
+    "measure": "Closed Count",
+    "interval": "108-120",
+    "selection": 1.0098,
+    "reasoning": "All available factors: 1.0098.\n\nAll historical factors identical at 1.0098. Development essentially complete. Use final increment value."
+  }
+]

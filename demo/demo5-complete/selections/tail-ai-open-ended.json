@@ -1,0 +1,54 @@
+[
+  {
+    "measure": "Closed Count",
+    "cutoff_age": 84,
+    "tail_factor": 1.0013,
+    "method": "exp_dev_quick_exact_last",
+    "reasoning": "Age 84 cutoff appropriate given 100% closure at max age. exp_dev_quick_exact_last provides strong R\u00b2 (0.9097) with smooth connection to last observed LDF (1.0098). Avoids overfit of double_exp perfect fit at expense of robustness. Closed counts show minimal tail beyond observed range.",
+    "pct_of_cdf": 0.13,
+    "prior_selection": null,
+    "prior_delta": null,
+    "prior_delta_driver": "N/A - initial selection",
+    "alternatives_considered": "double_exp (age 84, 1.0011) shows perfect R\u00b2 but appears to overfit last age; exp_dev_quick (age 84, 1.0017) slightly higher; age 60 scenarios less justified given closure already at 100%",
+    "diagnostics_summary": "R\u00b2=0.9097, LOO std dev=0.0015, exact match to last observed LDF via Boor rescale, closure 100% at max age"
+  },
+  {
+    "measure": "Incurred Loss",
+    "cutoff_age": 60,
+    "tail_factor": 1.0309,
+    "method": "double_exp",
+    "reasoning": "Age 60 provides better curve fit (R\u00b2=0.9934) capturing incurred loss development patterns. double_exp at age 60 balances goodness-of-fit with robustness. Avoids age 84 perfect-fit double_exp which appears to overfit terminal ages. Incurred loss shows longer development than closed count, justifying age 60 cutoff.",
+    "pct_of_cdf": 3.09,
+    "prior_selection": null,
+    "prior_delta": null,
+    "prior_delta_driver": "N/A - initial selection",
+    "alternatives_considered": "double_exp at age 84 (1.0143) shows perfect R\u00b2 but overfits; exp_dev_quick_exact_last at age 60 (1.0244) lower but poorer fit; age 84 methods generally show weaker diagnostics",
+    "diagnostics_summary": "R\u00b2=0.9934, LOO std dev=0.0063, strong fit to observed development, 100% closure at max age"
+  },
+  {
+    "measure": "Paid Loss",
+    "cutoff_age": 60,
+    "tail_factor": 1.0835,
+    "method": "exp_dev_quick",
+    "reasoning": "Age 60 captures paid loss's characteristically longer development. exp_dev_quick shows strong R\u00b2 (0.9610) with stable LOO (0.0026). Avoids age 84 scenarios which show weak LOO stability (0.343) or suspicious perfect fits. Paid loss justifies longest tail given last LDF of 1.0434.",
+    "pct_of_cdf": 8.35,
+    "prior_selection": null,
+    "prior_delta": null,
+    "prior_delta_driver": "N/A - initial selection",
+    "alternatives_considered": "Age 84 double_exp (1.0415) shows perfect R\u00b2 but overfits; exp_dev_quick_exact_last at 60 (1.0850) nearly identical; age 84 exp_dev methods show LOO instability",
+    "diagnostics_summary": "R\u00b2=0.9610, LOO std dev=0.0026, captures paid loss development characteristics, 100% closure at max age"
+  },
+  {
+    "measure": "Reported Count",
+    "cutoff_age": 60,
+    "tail_factor": 1.0012,
+    "method": "exp_dev_quick",
+    "reasoning": "Reported count development is nearly complete at observation with last LDF at 1.0000. Age 60 exp_dev_quick tail (1.0012) appropriately near unity. Age 84 scenarios produce unrealistic jumps to 1.09+ despite perfect fits, indicating overfitting. Age 60 provides sensible tail reflecting actual closure patterns.",
+    "pct_of_cdf": 0.12,
+    "prior_selection": null,
+    "prior_delta": null,
+    "prior_delta_driver": "N/A - initial selection",
+    "alternatives_considered": "Age 84 scenarios (1.0407-1.0907) show perfect R\u00b2 but are disconnected from observed development; exp_dev_quick_exact_last identical to exp_dev_quick at age 60",
+    "diagnostics_summary": "R\u00b2=0.9150, LOO std dev=0.0001, last observed LDF 1.0000 indicates closure near completion, age 84 methods overfit despite perfect R\u00b2"
+  }
+]
