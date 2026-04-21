@@ -11,6 +11,9 @@ Goal: Set up the project structure and standard documents.
   - Fill in the header fields: Analysis name, Valuation Date (if known), Prepared by (user name), Draft Date (today).
   - Fill in **Section 1.1** with the purpose of this analysis (e.g., "quarterly reserve review") and **Section 1.2** Scope table with any known segment/LOB/coverage/basis info.
   - Add a row to **Section 14** Version History: v0.1, today's date, analyst, "Initial draft".
+- [ ] **Update REPLICATE.md:**
+  - Fill in the Overview section: Analysis name, Valuation Date, Prepared by, Date
+  - Fill in Step 1: List folders created, note interaction mode selected
 
 # Step 2: Exploratory Data Analysis
 Goal: Understand what data is available.
@@ -87,6 +90,12 @@ Populate every section from the actual processed data. The spot-check triangle s
   - Update **Section 3.3** Data Quality Observations: note any adjustments made to `1a-prep-data.py` (e.g., outlier exclusions, coding changes), any data limitations discovered.
   - Update **Section 3.4** Data Limitations: note missing data types (e.g., no ELR file → IE/BF skipped) and how limitations were handled.
   - Update **Section 1.2** Scope table: fill in accident/underwriting years, coverages, and basis once confirmed from the data.
+- [ ] **Update REPLICATE.md Step 2:**
+  - List all input files in raw-data/ with brief descriptions
+  - Document which scripts were run (1a through 1d)
+  - List any customizations made to `1a-prep-data.py` (column mappings, data transformations, outlier handling)
+  - Note the output files created in `processed-data/`
+  - Record the data validation confirmation date
 
 # Step 4: Actuarial Selections: Chain Ladder LDFs
 
@@ -105,6 +114,12 @@ _(Pause for Selections only):_
   - Fill in **Section 4.2** Method Weighting / Selection Logic: briefly describe the 14-criteria rule-based framework and that AI selections were used as a cross-check. Note maturity-based weighting approach.
   - Fill in **Section 5.1** Development Patterns: note the selection basis (volume-weighted averages, which average windows were considered).
   - Add to **Section 11** Open Questions any selections flagged as low-confidence or where the rule-based and AI selections diverged materially.
+- [ ] **Update REPLICATE.md Step 3:**
+  - Document that `2a-chainladder-create-excel.py` was run to create the selection workbook
+  - Note that AI selectors made rules-based and open-ended selections (JSON files created)
+  - Document that `2b-chainladder-update-selections.py` populated the Excel file with AI selections
+  - **Critical:** If user made manual overrides in the "User Selection" row, list each one with measure, interval, selected LDF, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection row."
+  - Add instruction: "To replicate: Extract final selections from User Selection row if present, otherwise use Rules-Based AI Selection row. Do not re-run AI selector."
 
 # Step 4.5: Actuarial Selections: Chain Ladder Tail Factors
 
@@ -123,6 +138,13 @@ _(Pause for Selections only):_
 - [ ] **Update REPORT.md:**
   - Update **Section 5.1** Development Patterns: add tail factor source (curve fit method selected, R² values, leave-one-out diagnostics).
   - Add to **Section 11** Open Questions any tail selections flagged as low-confidence or where curve fit diagnostics were poor or rule-based and AI selections diverged materially.
+- [ ] **Update REPLICATE.md Step 4:**
+  - Document that `2c-tail-methods-diagnostics.py` was run to fit curves and create diagnostics
+  - Document that `2d-tail-create-excel.py` created the tail selection workbook
+  - Note that AI selectors made rules-based and open-ended tail selections (JSON files created)
+  - Document that `2e-tail-update-selections.py` populated the Excel file with AI selections
+  - **Critical:** If user made manual overrides in the "User Selection" row, list each one with measure, cutoff age, tail factor, method, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection row."
+  - Add instruction: "To replicate: Extract final tail factors from User Selection row if present, otherwise use Rules-Based AI Selection row. Do not re-run AI selector."
 
 # Step 5: Run Methods That Don't Require Selections
 
@@ -131,6 +153,11 @@ _(Pause for Selections only):_
   - Update **Section 4.1** Methods Applied: confirm which methods actually ran vs. were skipped, and why (e.g., "BF skipped — no ELR file provided").
   - Update **Section 5.2** Expected Loss Ratios: if IE/BF ran, fill in the ELR table from the input file.
   - Update **Section 4.3** LAE Treatment: fill in how DCC/ALAE and A&O/ULAE are handled, if applicable.
+- [ ] **Update REPLICATE.md Step 5:**
+  - Document that `2f-chainladder-ultimates.py` was run (note which Excel file it read LDFs and tail factors from)
+  - Document whether `3-ie-ultimates.py` ran or was skipped (and why)
+  - Document whether `4-bf-ultimates.py` ran or was skipped (and why)
+  - Note the output file: `ultimates/projected-ultimates.parquet` with columns added by each method
 
 # Step 6: Actuarial Selections: Ultimates
 
@@ -149,6 +176,12 @@ _(Pause for Selections only):_
   - Fill in **Section 6** Results by Segment: one subsection per measure (Paid LDF, Incurred LDF, etc.) with selected ultimates and method weighting summary; note any low-confidence selections or overrides.
   - Fill in **Section 5.2** Expected Loss Ratios: if IE/BF ran, populate from the ELR input file.
   - Add to **Section 11** Open Questions any AYs where method indications diverged materially or selections required significant judgment.
+- [ ] **Update REPLICATE.md Step 6:**
+  - Document that `5a-ultimates-create-excel.py` was run to create the ultimates workbook
+  - Note that AI selectors made rules-based and open-ended ultimate selections (JSON files created)
+  - Document that `5b-ultimates-update-selections.py` populated the Excel file with AI selections
+  - **Critical:** If user made manual overrides in the "User Selection" column, list each one with measure, period, selected ultimate, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection columns."
+  - Add instruction: "To replicate: Extract final ultimates from User Selection column if present, otherwise use Rules-Based AI Selection column. Do not re-run AI selector."
 
 # Step 7: Build Complete Analysis Output
 
@@ -161,6 +194,14 @@ _(Pause for Selections only):_
   - Fill in **Section 8.2** Sources of Uncertainty: note key risk factors — process risk (thin data), parameter risk (trend/tail uncertainty), model risk (method selection), any systemic risks flagged.
   - Update **Section 14** Version History: add a row for the current version with today's date and a summary of changes since v0.1.
   - Fill any other sections to complete the first draft of the report.
+- [ ] **Update REPLICATE.md Step 7:**
+  - Document that `6-create-complete-analysis.py` was run
+  - Note which files it read (projected-ultimates.parquet, Ultimates.xlsx)
+  - List the output files created (selected-ultimates.xlsx, post-method-series.xlsx, post-method-triangles.xlsx, complete-analysis.xlsx)
+  - Document that `7-tech-review.py` was run
+  - List any issues flagged, or note "None - all checks passed"
+  - Fill in the "Key Outputs" section listing primary deliverables
+  - Add any final notes about special considerations or known issues
 
 # Step 8: Suggest Peer Review
 
