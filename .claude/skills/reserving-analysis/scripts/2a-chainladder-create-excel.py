@@ -7,17 +7,22 @@ goal: Create Chain Ladder Selections.xlsx for actuarial LDF review and selection
 
 Sheet layout:
   - One main sheet per measure: loss triangle, LDF triangle, averages (no CV/slopes), selections
-  - One sheet per diagnostic triangle: "Diag - {Name}" (shared across measures)
+  - "Sel Ults - {measure}": dashboard of selected ultimates for that measure
+  - "Ult Severity": ultimate severity diagnostic
+  - "X-to-Ult {measure}": Paid-to-Ult, Incurred-to-Ult, etc.
+  - "Avg IBNR", "Avg Unpaid": IBNR/Unpaid diagnostics
   - One CV & slopes sheet per measure: "{Measure} - CV & Slopes"
+  - One sheet per diagnostic triangle: "Diag - {Name}" (shared across measures)
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
     python 2a-chainladder-create-excel.py
 """
 
+import sys
 import pandas as pd
 import openpyxl
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Font
 from openpyxl.utils import get_column_letter
 from pathlib import Path
 
@@ -34,7 +39,6 @@ SELECTIONS_OUTPUT_PATH = config.SELECTIONS
 METHOD_ID = "chainladder"
 OUTPUT_FILE_NAME = "Chain Ladder Selections - LDFs.xlsx"
 
-# Short labels for diagnostic sheet names (max ~14 chars to fit in 31-char sheet name)
 DIAG_SHEET_LABELS = {
     'reported_claims': 'Rptd Claims',
     'incurred_severity': 'Inc Severity',
@@ -48,7 +52,6 @@ DIAG_SHEET_LABELS = {
     'incremental_closure_rate': 'Incr Closure Rt',
 }
 
-# Number formats for each diagnostic column
 DIAG_NUMBER_FORMATS = {
     'reported_claims': '#,##0',
     'incurred_severity': '#,##0',
@@ -62,18 +65,14 @@ DIAG_NUMBER_FORMATS = {
     'incremental_closure_rate': '0.00%',
 }
 
-
 def diag_sheet_name(diag_col):
     label = DIAG_SHEET_LABELS.get(diag_col, diag_col.replace('_', ' ').title()[:14])
     return f"Diag - {label}"[:31]
 
-
 def cv_slopes_sheet_name(measure):
     return f"{measure} - CV & Slopes"[:31]
 
-
-def write_triangle(ws, start_row, title, row_labels, col_labels, data_dict, number_format="#,##0"):
-    """Write a titled triangle section. data_dict: {(row_label, col_label): value}"""
+def write_triangle(ws, start_row, title, row_labels, col_labels, data_dict, number_format="#,##0", is_formula=False):
     title_cell = ws.cell(row=start_row, column=1, value=title)
     style_header(title_cell, "section")
     ws.merge_cells(start_row=start_row, start_column=1, end_row=start_row, end_column=len(col_labels) + 1)
@@ -85,26 +84,25 @@ def write_triangle(ws, start_row, title, row_labels, col_labels, data_dict, numb
         style_header(cell, "subheader")
     start_row += 1
 
-    for row_label in row_labels:
+    data_start_row = start_row
+    for r_idx, row_label in enumerate(row_labels):
         row_cell = ws.cell(row=start_row, column=1, value=row_label)
         row_cell.font = LABEL_FONT
         row_cell.alignment = Alignment(horizontal="left")
         row_cell.border = THIN_BORDER
         for c_idx, col in enumerate(col_labels, start=2):
             val = data_dict.get((str(row_label), str(col)))
-            cell = ws.cell(row=start_row, column=c_idx, value=val)
-            cell.font = DATA_FONT
-            cell.alignment = Alignment(horizontal="right")
-            cell.border = THIN_BORDER
             if val is not None:
+                cell = ws.cell(row=start_row, column=c_idx, value=val)
+                cell.font = DATA_FONT
+                cell.alignment = Alignment(horizontal="right")
+                cell.border = THIN_BORDER
                 cell.number_format = number_format
         start_row += 1
 
-    return start_row + 1
+    return start_row + 1, data_start_row, start_row - 1
 
-
-def write_metrics_table(ws, start_row, title, metric_rows, col_labels, data_dict):
-    """Write a metrics table. data_dict: {(metric_name, col_label): value}"""
+def write_metrics_table(ws, start_row, title, metric_rows, col_labels, data_dict, is_formula=False):
     title_cell = ws.cell(row=start_row, column=1, value=title)
     style_header(title_cell, "section")
     ws.merge_cells(start_row=start_row, start_column=1, end_row=start_row, end_column=len(col_labels) + 1)
@@ -119,25 +117,24 @@ def write_metrics_table(ws, start_row, title, metric_rows, col_labels, data_dict
         style_header(cell, "subheader")
     start_row += 1
 
-    for metric in metric_rows:
+    data_start_row = start_row
+    for r_idx, metric in enumerate(metric_rows):
         row_cell = ws.cell(row=start_row, column=1, value=metric)
         row_cell.font = LABEL_FONT
         row_cell.border = THIN_BORDER
         for c_idx, col in enumerate(col_labels, start=2):
             val = data_dict.get((metric, str(col)))
-            cell = ws.cell(row=start_row, column=c_idx, value=val)
-            cell.font = DATA_FONT
-            cell.alignment = Alignment(horizontal="right")
-            cell.border = THIN_BORDER
             if val is not None:
+                cell = ws.cell(row=start_row, column=c_idx, value=val)
+                cell.font = DATA_FONT
+                cell.alignment = Alignment(horizontal="right")
+                cell.border = THIN_BORDER
                 cell.number_format = "0.0000"
         start_row += 1
 
-    return start_row + 1
-
+    return start_row + 1, data_start_row, start_row - 1
 
 def write_selections_section(ws, start_row, col_labels, prior_selections=None, measure=None):
-    """Write selection section with optional prior selections followed by blank rows for new selections."""
     title_cell = ws.cell(row=start_row, column=1, value="LDF Selections")
     style_header(title_cell, "section")
     ws.merge_cells(start_row=start_row, start_column=1, end_row=start_row, end_column=len(col_labels) + 1)
@@ -218,6 +215,7 @@ def write_selections_section(ws, start_row, col_labels, prior_selections=None, m
 
     start_row += 1
 
+    sel_row = None
     for label in ["User Selection", "User Reasoning"]:
         cell = ws.cell(row=start_row, column=1, value=label)
         style_header(cell, "user")
@@ -227,20 +225,19 @@ def write_selections_section(ws, start_row, col_labels, prior_selections=None, m
             c.border = THIN_BORDER
             if label == "User Selection":
                 c.number_format = "0.0000"
+                if sel_row is None:
+                    sel_row = start_row
             if label == "User Reasoning":
                 c.alignment = Alignment(horizontal="left", wrap_text=True)
                 c.font = DATA_FONT
         start_row += 1
 
-    return start_row
-
+    return start_row, sel_row
 
 _AVG_PERIOD_ORDER = ['all', '3yr', '5yr', '10yr']
 _AVG_TYPE_ORDER = ['simple', 'weighted', 'exclude_high_low']
 
-
 def _sort_avg_cols(cols):
-    """Sort average columns: group by period (all/3yr/5yr/10yr), within each: simple > weighted > exclude_high_low."""
     def key(col):
         normalized = col.replace('avg_', '')
         for p_idx, p in enumerate(_AVG_PERIOD_ORDER):
@@ -250,57 +247,329 @@ def _sort_avg_cols(cols):
         return (99, 99)
     return sorted(cols, key=key)
 
-
 def _avg_display_name(col):
-    """Strip 'avg_' prefix from exclude_high_low variants for cleaner display."""
     return col.replace('avg_exclude_high_low', 'exclude_high_low')
 
+def atoa_formula(r, c, tri_data_start, ata_data_start):
+    tri_row = tri_data_start + (r - ata_data_start)
+    num_col = get_column_letter(c + 1)
+    den_col = get_column_letter(c)
+    return f"=IFERROR(IF({num_col}{tri_row}=\"\",\"\",{num_col}{tri_row}/{den_col}{tri_row}),\"\")"
+
+def simple_avg_formula(col, row_range, ata_range):
+    a, b = row_range
+    ata_a, ata_b = ata_range
+    return f"=IFERROR(AVERAGE({col}{a}:{col}{b}),AVERAGE({col}{ata_a}:{col}{ata_b}))"
+
+def weighted_avg_formula(col, ata_range, tri_range, all_ata_range, all_tri_range):
+    ata_a, ata_b = ata_range
+    tri_a, tri_b = tri_range
+    ata_ref = f"{col}{ata_a}:{col}{ata_b}"
+    tri_ref = f"{col}{tri_a}:{col}{tri_b}"
+    all_ata = f"{col}{all_ata_range[0]}:{col}{all_ata_range[1]}"
+    all_tri = f"{col}{all_tri_range[0]}:{col}{all_tri_range[1]}"
+    primary = f"SUMPRODUCT({ata_ref},{tri_ref})/SUMPRODUCT(({ata_ref}<>\"\")*{tri_ref})"
+    fallback = f"SUMPRODUCT({all_ata},{all_tri})/SUMPRODUCT(({all_ata}<>\"\")*{all_tri})"
+    return f"=IFERROR({primary},{fallback})"
+
+def excl_hl_formula(col, row_range, ata_range):
+    a, b = row_range
+    ata_a, ata_b = ata_range
+    rng = f"{col}{a}:{col}{b}"
+    all_rng = f"{col}{ata_a}:{col}{ata_b}"
+    primary = f"TRIMMEAN({rng},2/COUNT({rng}))"
+    fallback = f"AVERAGE({all_rng})"
+    return f"=IFERROR({primary},{fallback})"
 
 def build_main_sheet(ws, measure, df2, df4, df_prior=None):
-    """Build main measure sheet: loss triangle, age-to-age factors, averages (no CV/slopes), selections."""
     df_m = df2[df2['measure'] == measure].copy()
     periods = df_m['period'].cat.categories.tolist()
     ages = [str(a) for a in df_m['age'].cat.categories.tolist()]
     intervals = [str(i) for i in df_m['interval'].dropna().cat.categories.tolist()]
 
-    # Loss Triangle — title is just the measure name
+    # 1. Loss Triangle
     loss_dict = {}
     for _, row in df_m.iterrows():
         loss_dict[(str(row['period']), str(row['age']))] = row['value']
-    row_ptr = write_triangle(ws, 1, measure, periods, ages, loss_dict, "#,##0")
-
-    # Age-to-Age Factors
+    row_ptr, tri_start, tri_end = write_triangle(ws, 1, measure, periods, ages, loss_dict, "#,##0")
+    
+    # 2. Age-to-Age Factors (formulas)
     ldf_dict = {}
-    for _, row in df_m[df_m['ldf'].notna()].iterrows():
-        ldf_dict[(str(row['period']), str(row['interval']))] = row['ldf']
-    row_ptr = write_triangle(ws, row_ptr, "Age-to-Age Factors", periods, intervals, ldf_dict, "0.0000")
+    # We populate ldf_dict with dummy string to reserve cells, will overwrite with formula
+    for p in periods:
+        for i in intervals:
+            ldf_dict[(str(p), str(i))] = ""
+            
+    row_ptr, ata_start, ata_end = write_triangle(ws, row_ptr, "Age-to-Age Factors", periods, intervals, ldf_dict, "0.0000", is_formula=True)
+    
+    # Overwrite LDFs with formula
+    for r in range(ata_start, ata_end + 1):
+        for c in range(2, len(intervals) + 2):
+            ws.cell(row=r, column=c).value = atoa_formula(r, c, tri_start, ata_start)
 
-    # Averages (exclude CV and slope columns; reorder and rename for display)
+    # 3. Averages (formulas)
     df_avg = df4[df4['measure'] == measure].copy()
-    raw_avg_cols = [col for col in df_avg.columns
-                    if col not in ['measure', 'interval']
-                    and not col.startswith('cv_')
-                    and not col.startswith('slope_')]
+    raw_avg_cols = [col for col in df_avg.columns if col not in ['measure', 'interval'] and not col.startswith('cv_') and not col.startswith('slope_')]
     avg_cols = _sort_avg_cols(raw_avg_cols)
     display_cols = [_avg_display_name(c) for c in avg_cols]
+    intervals_with_tail = intervals + ["Tail"]
 
     avg_dict = {}
-    for _, row in df_avg.iterrows():
-        for raw, display in zip(avg_cols, display_cols):
-            avg_dict[(display, str(row['interval']))] = row[raw]
-    intervals_with_tail = intervals + ["Tail"]
-    row_ptr = write_metrics_table(ws, row_ptr, "Averages", display_cols, intervals_with_tail, avg_dict)
+    for d in display_cols:
+        for i in intervals_with_tail:
+            avg_dict[(d, str(i))] = ""
+            
+    row_ptr, avg_start, avg_end = write_metrics_table(ws, row_ptr, "Averages", display_cols, intervals_with_tail, avg_dict, is_formula=True)
+    
+    # Map periods to ranges
+    all_ata_rng = (ata_start, ata_end)
+    all_tri_rng = (tri_start, tri_end)
+    n_periods = len(periods)
+    
+    def get_ranges(n):
+        if n >= n_periods:
+            return all_ata_rng, all_tri_rng
+        return (ata_end - n + 1, ata_end), (tri_end - n + 1, tri_end)
 
-    # Selections
-    write_selections_section(ws, row_ptr, intervals_with_tail, prior_selections=df_prior, measure=measure)
+    # Overwrite Averages with formulas
+    for r_idx, display in enumerate(display_cols):
+        r = avg_start + r_idx
+        for c in range(2, len(intervals) + 2):
+            col = get_column_letter(c)
+            if "all" in display:
+                ata_rng, tri_rng = all_ata_rng, all_tri_rng
+            elif "3yr" in display:
+                ata_rng, tri_rng = get_ranges(3)
+            elif "5yr" in display:
+                ata_rng, tri_rng = get_ranges(5)
+            elif "10yr" in display:
+                ata_rng, tri_rng = get_ranges(10)
+            else:
+                ata_rng, tri_rng = all_ata_rng, all_tri_rng
+                
+            if "simple" in display:
+                ws.cell(row=r, column=c).value = simple_avg_formula(col, ata_rng, all_ata_rng)
+            elif "weighted" in display:
+                ws.cell(row=r, column=c).value = weighted_avg_formula(col, ata_rng, tri_rng, all_ata_rng, all_tri_rng)
+            elif "exclude_high_low" in display:
+                ws.cell(row=r, column=c).value = excl_hl_formula(col, ata_rng, all_ata_rng)
 
+    # 4. Selections
+    row_ptr, sel_row = write_selections_section(ws, row_ptr, intervals_with_tail, prior_selections=df_prior, measure=measure)
+    
+    # 5. CDFs and Ultimates
+    # CDFs
+    row_ptr += 1
+    title_cell = ws.cell(row=row_ptr, column=1, value="Cumulative Development Factors")
+    title_cell.font = Font(bold=True, size=10)
+    ws.merge_cells(start_row=row_ptr, start_column=1, end_row=row_ptr, end_column=len(ages))
+    row_ptr += 1
+    
+    cdf_ages_row = row_ptr
+    ws.cell(row=cdf_ages_row, column=1, value="Age").font = Font(bold=True, size=9)
+    for c_idx, age in enumerate(ages, start=2):
+        cell = ws.cell(row=cdf_ages_row, column=c_idx, value=f"=${get_column_letter(c_idx)}$2")
+        cell.font = Font(bold=True, size=9)
+    row_ptr += 1
+    
+    cdf_vals_row = row_ptr
+    ws.cell(row=cdf_vals_row, column=1, value="CDF").font = Font(bold=True, size=9)
+    
+    # Tail CDF
+    tail_col = len(intervals_with_tail) + 1
+    cell = ws.cell(row=cdf_vals_row, column=tail_col, value=f"={get_column_letter(tail_col)}{sel_row}")
+    cell.number_format = "0.0000"
+    
+    # Walk backwards
+    for c_idx in range(tail_col - 1, 1, -1):
+        col = get_column_letter(c_idx)
+        next_col = get_column_letter(c_idx + 1)
+        cell = ws.cell(row=cdf_vals_row, column=c_idx, value=f"={col}{sel_row}*{next_col}{cdf_vals_row}")
+        cell.number_format = "0.0000"
+    
+    row_ptr += 2
+    
+    # Ultimates
+    title_cell = ws.cell(row=row_ptr, column=1, value="Projected Ultimates")
+    title_cell.font = Font(bold=True, size=10)
+    ws.merge_cells(start_row=row_ptr, start_column=1, end_row=row_ptr, end_column=6)
+    row_ptr += 1
+    
+    headers = ["Period", "Latest Age", "Latest Value", "CDF at Age", "Projected Ultimate", "IBNR"]
+    for i, h in enumerate(headers, start=1):
+        c = ws.cell(row=row_ptr, column=i, value=h)
+        c.font = Font(bold=True, size=9)
+        c.alignment = Alignment(horizontal="center")
+    ult_header_row = row_ptr
+    row_ptr += 1
+    
+    ult_start_row = row_ptr
+    for i, tri_r in enumerate(range(tri_start, tri_end + 1)):
+        r = row_ptr + i
+        ws.cell(row=r, column=1, value=f"=A{tri_r}")
+        
+        last_col_letter = get_column_letter(len(ages) + 1)
+        ws.cell(row=r, column=2, value=f"=LOOKUP(2,1/(B{tri_r}:{last_col_letter}{tri_r}<>\"\"),$B$2:${last_col_letter}$2)")
+        
+        cell = ws.cell(row=r, column=3, value=f"=LOOKUP(2,1/(B{tri_r}:{last_col_letter}{tri_r}<>\"\"),B{tri_r}:{last_col_letter}{tri_r})")
+        cell.number_format = "#,##0"
+        
+        cell = ws.cell(row=r, column=4, value=f"=HLOOKUP(B{r},$B${cdf_ages_row}:${last_col_letter}${cdf_vals_row},2,FALSE)")
+        cell.number_format = "0.0000"
+        
+        cell = ws.cell(row=r, column=5, value=f"=C{r}*D{r}")
+        cell.number_format = "#,##0"
+        
+        cell = ws.cell(row=r, column=6, value=f"=E{r}-C{r}")
+        cell.number_format = "#,##0"
+        
+    row_ptr += len(periods)
+    
     ws.column_dimensions['A'].width = 22
     for c_idx in range(2, len(ages) + 2):
         ws.column_dimensions[get_column_letter(c_idx)].width = 12
 
+    return {
+        "tri_start": tri_start, "tri_end": tri_end,
+        "sel_row": sel_row,
+        "ult_start": ult_start_row, "ult_end": ult_start_row + len(periods) - 1
+    }
+
+def build_sel_ults_sheet(wb, measure, layout_info):
+    new_name = f"Sel Ults - {measure}"[:31]
+    ws = wb.create_sheet(new_name)
+
+    title = ws.cell(row=1, column=1, value=f"Selected Ultimates — {measure}")
+    title.font = Font(bold=True, size=12)
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=5)
+
+    headers = ["Accident Period", "Actual (Latest)", "Chain Ladder Ult", "Selected Ultimate", "IBNR"]
+    for i, h in enumerate(headers, start=1):
+        c = ws.cell(row=2, column=i, value=h)
+        c.font = Font(bold=True, size=10)
+        c.alignment = Alignment(horizontal="center")
+
+    for i, w in enumerate([18, 16, 18, 20, 14], start=1):
+        ws.column_dimensions[get_column_letter(i)].width = w
+
+    ws.freeze_panes = "A3"
+
+    ult_start = layout_info["ult_start"]
+    ult_end = layout_info["ult_end"]
+    
+    for i, src_row in enumerate(range(ult_start, ult_end + 1)):
+        r = 3 + i
+        ws.cell(row=r, column=1, value=f"='{measure}'!A{src_row}")
+        cell = ws.cell(row=r, column=2, value=f"='{measure}'!C{src_row}")
+        cell.number_format = "#,##0"
+        cell = ws.cell(row=r, column=3, value=f"='{measure}'!E{src_row}")
+        cell.number_format = "#,##0"
+        cell = ws.cell(row=r, column=4, value=f"=C{r}")
+        cell.number_format = "#,##0"
+        cell = ws.cell(row=r, column=5, value=f"=D{r}-B{r}")
+        cell.number_format = "#,##0"
+
+    total_row = 3 + (ult_end - ult_start + 1)
+    ws.cell(row=total_row, column=1, value="Total").font = Font(bold=True)
+    for col_letter, col_idx in [("B", 2), ("C", 3), ("D", 4), ("E", 5)]:
+        cell = ws.cell(row=total_row, column=col_idx, value=f"=SUM({col_letter}3:{col_letter}{total_row - 1})")
+        cell.number_format = "#,##0"
+        cell.font = Font(bold=True)
+
+def sel_ref(measure, sel_row):
+    return f"'Sel Ults - {measure}'!D{sel_row}"
+
+def build_ult_severity(wb, num_periods):
+    ws = wb.create_sheet("Ult Severity")
+    title = ws.cell(row=1, column=1, value="Ultimate Severity — Incurred / Reported")
+    title.font = Font(bold=True, size=12)
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
+
+    headers = ["Period", "Incurred Ultimate", "Reported Ultimate", "Ultimate Severity"]
+    for i, h in enumerate(headers, start=1):
+        c = ws.cell(row=2, column=i, value=h)
+        c.font = Font(bold=True, size=10)
+        c.alignment = Alignment(horizontal="center")
+
+    for i, w in enumerate([14, 20, 20, 20], start=1):
+        ws.column_dimensions[get_column_letter(i)].width = w
+    ws.freeze_panes = "A3"
+
+    for i in range(num_periods):
+        r = 3 + i
+        sel_row = 3 + i
+        ws.cell(row=r, column=1, value=f"='Sel Ults - Incurred Loss'!A{sel_row}")
+        cell = ws.cell(row=r, column=2, value=f"={sel_ref('Incurred Loss', sel_row)}")
+        cell.number_format = "#,##0"
+        cell = ws.cell(row=r, column=3, value=f"={sel_ref('Reported Count', sel_row)}")
+        cell.number_format = "#,##0"
+        cell = ws.cell(row=r, column=4, value=f"=IFERROR(B{r}/C{r},\"\")")
+        cell.number_format = "#,##0.00"
+
+def build_x_to_ult(wb, measure, short_name, layout_info, num_ages):
+    sheet_name = f"X-to-Ult {short_name}"[:31]
+    ws = wb.create_sheet(sheet_name)
+
+    title = ws.cell(row=1, column=1, value=f"{short_name} to Ultimate — ratio triangle")
+    title.font = Font(bold=True, size=12)
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=num_ages + 1)
+
+    ws.cell(row=2, column=1, value="Period").font = Font(bold=True, size=10)
+    for c in range(2, num_ages + 2):
+        cell = ws.cell(row=2, column=c, value=f"='{measure}'!{get_column_letter(c)}$2")
+        cell.font = Font(bold=True, size=10)
+        cell.alignment = Alignment(horizontal="center")
+
+    ws.column_dimensions["A"].width = 14
+    for c in range(2, num_ages + 2):
+        ws.column_dimensions[get_column_letter(c)].width = 12
+    ws.freeze_panes = "B3"
+
+    tri_start = layout_info["tri_start"]
+    tri_end = layout_info["tri_end"]
+
+    for i, tri_row in enumerate(range(tri_start, tri_end + 1)):
+        r = 3 + i
+        sel_row = 3 + i
+        ws.cell(row=r, column=1, value=f"='{measure}'!A{tri_row}")
+        sel_ult = sel_ref(measure, sel_row)
+        for c in range(2, num_ages + 2):
+            tri_ref = f"'{measure}'!{get_column_letter(c)}{tri_row}"
+            cell = ws.cell(row=r, column=c, value=f"=IFERROR(IF({tri_ref}=\"\",\"\",{tri_ref}/{sel_ult}),\"\")")
+            cell.number_format = "0.0000"
+
+def build_avg_triangle(wb, sheet_name, title, proxy_measure, layout_info, num_ages):
+    ws = wb.create_sheet(sheet_name)
+
+    title_cell = ws.cell(row=1, column=1, value=title)
+    title_cell.font = Font(bold=True, size=12)
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=num_ages + 1)
+
+    ws.cell(row=2, column=1, value="Period").font = Font(bold=True, size=10)
+    for c in range(2, num_ages + 2):
+        cell = ws.cell(row=2, column=c, value=f"='Incurred Loss'!{get_column_letter(c)}$2")
+        cell.font = Font(bold=True, size=10)
+        cell.alignment = Alignment(horizontal="center")
+
+    ws.column_dimensions["A"].width = 14
+    for c in range(2, num_ages + 2):
+        ws.column_dimensions[get_column_letter(c)].width = 12
+    ws.freeze_panes = "B3"
+
+    tri_start = layout_info["tri_start"]
+    tri_end = layout_info["tri_end"]
+
+    for i, tri_row in enumerate(range(tri_start, tri_end + 1)):
+        r = 3 + i
+        sel_row = 3 + i
+        ws.cell(row=r, column=1, value=f"='Incurred Loss'!A{tri_row}")
+        inc_ult = sel_ref("Incurred Loss", sel_row)
+        for c in range(2, num_ages + 2):
+            proxy_ref = f"'{proxy_measure}'!{get_column_letter(c)}{tri_row}"
+            cell = ws.cell(row=r, column=c, value=f"=IFERROR(IF({proxy_ref}=\"\",\"\",{inc_ult}-{proxy_ref}),\"\")")
+            cell.number_format = "#,##0"
 
 def build_diagnostic_sheet(ws, diag_col, df2, df3):
-    """Build a single diagnostic triangle sheet (shared across all measures)."""
     first_measure = df2['measure'].cat.categories[0]
     df_m = df2[df2['measure'] == first_measure].copy()
     periods = df_m['period'].cat.categories.tolist()
@@ -319,9 +588,7 @@ def build_diagnostic_sheet(ws, diag_col, df2, df3):
     for c_idx in range(2, len(ages) + 2):
         ws.column_dimensions[get_column_letter(c_idx)].width = 12
 
-
 def build_cv_slopes_sheet(ws, measure, df2, df4):
-    """Build CV & slopes metrics sheet for one measure."""
     df_m = df2[df2['measure'] == measure].copy()
     intervals = [str(i) for i in df_m['interval'].dropna().cat.categories.tolist()]
     intervals_with_tail = intervals + ["Tail"]
@@ -346,8 +613,50 @@ def build_cv_slopes_sheet(ws, measure, df2, df4):
         ws.column_dimensions[get_column_letter(c_idx)].width = 12
 
 
+def df_to_markdown(df, index=False):
+    if df.empty:
+        return "No data\n"
+    if index:
+        df = df.reset_index()
+    str_df = df.astype(str)
+    headers = list(str_df.columns)
+    header_str = "| " + " | ".join(headers) + " |"
+    sep_str = "|" + "|".join(["---"] * len(headers)) + "|"
+    rows = []
+    for _, row in str_df.iterrows():
+        rows.append("| " + " | ".join(row.values) + " |")
+    return "\n".join([header_str, sep_str] + rows) + "\n"
+def export_md_data(measures, df2, df3, df4, exp_md):
+    for measure in measures:
+        safe_name = measure.lower().replace(' ', '_')
+        md_path = Path(SELECTIONS_OUTPUT_PATH) / f"chainladder-context-{safe_name}.md"
+        
+        tri_sub = df2[(df2['measure'] == measure) & df2['value'].notna()]
+        if not tri_sub.empty:
+            tri_piv = tri_sub.pivot(index='period', columns='age', values='value')
+            tri_md = df_to_markdown(tri_piv, index=True)
+        else:
+            tri_md = "No data\n"
+            
+        diag_md = df_to_markdown(df3, index=False)
+        avg_md = df_to_markdown(df4[df4['measure'] == measure], index=False)
+        
+        md_content = f"# Chain Ladder Context: {measure}\n\n"
+        md_content += "## Table of Contents\n"
+        md_content += "- [Exposure Background](#exposure-background)\n"
+        md_content += "- [Triangle](#triangle)\n"
+        md_content += "- [Diagnostics](#diagnostics)\n"
+        md_content += "- [Averages](#averages)\n\n"
+        md_content += "## Exposure Background\n" + exp_md + "\n"
+        md_content += "## Triangle\n" + tri_md + "\n"
+        md_content += "## Diagnostics\n" + diag_md + "\n"
+        md_content += "## Averages\n" + avg_md + "\n"
+        
+        with open(md_path, 'w') as f:
+            f.write(md_content)
+        print(f"Exported MD: {md_path}")
+
 def main():
-    """Create Chain Ladder Selections Excel file with all measures."""
     output_file = SELECTIONS_OUTPUT_PATH + OUTPUT_FILE_NAME
     if Path(output_file).exists():
         raise FileExistsError(
@@ -378,23 +687,61 @@ def main():
     wb = openpyxl.Workbook()
     wb.remove(wb.active)
 
-    measures = df2['measure'].cat.categories.tolist()
+    raw_measures = df2['measure'].cat.categories.tolist()
+    
+    exp_sub = df2[(df2['measure'] == 'Exposure') & df2['value'].notna()]
+    if not exp_sub.empty:
+        exp_piv = exp_sub.pivot(index='period', columns='age', values='value')
+        exp_md = df_to_markdown(exp_piv, index=True)
+    else:
+        exp_md = "No Exposure data\n"
+        
+    measures = [m for m in raw_measures if m != 'Exposure']
+    
     diagnostic_cols = [col for col in df3.columns if col not in ['period', 'age']]
+    
+    layout_infos = {}
 
-    # Main sheet per measure
     for measure in measures:
         ws = wb.create_sheet(title=measure[:31])
-        build_main_sheet(ws, measure, df2, df4, df_prior=df_prior)
+        layout_infos[measure] = build_main_sheet(ws, measure, df2, df4, df_prior=df_prior)
         print(f"Built main sheet: {measure[:31]}")
 
-    # One sheet per diagnostic (shared across measures)
+    for measure in measures:
+        build_sel_ults_sheet(wb, measure, layout_infos[measure])
+
+    first_measure = measures[0]
+    num_periods = layout_infos[first_measure]["tri_end"] - layout_infos[first_measure]["tri_start"] + 1
+    num_ages = len(df2[df2['measure'] == first_measure]['age'].cat.categories)
+
+    if "Incurred Loss" in measures and "Reported Count" in measures:
+        build_ult_severity(wb, num_periods)
+        print(f"Built Ult Severity sheet")
+
+    MEASURE_SHORT = {
+        "Incurred Loss": "Incurred",
+        "Paid Loss": "Paid",
+        "Reported Count": "Reported",
+        "Closed Count": "Closed",
+    }
+    for measure in measures:
+        if measure in MEASURE_SHORT:
+            build_x_to_ult(wb, measure, MEASURE_SHORT[measure], layout_infos[measure], num_ages)
+            print(f"Built X-to-Ult sheet for {measure}")
+
+    if "Incurred Loss" in measures:
+        build_avg_triangle(wb, "Avg IBNR", "Average IBNR (Incurred Ult - Incurred)", "Incurred Loss", layout_infos["Incurred Loss"], num_ages)
+        print("Built Avg IBNR sheet")
+    if "Incurred Loss" in measures and "Paid Loss" in measures:
+        build_avg_triangle(wb, "Avg Unpaid", "Average Unpaid (Incurred Ult - Paid)", "Paid Loss", layout_infos["Incurred Loss"], num_ages)
+        print("Built Avg Unpaid sheet")
+
     for diag_col in diagnostic_cols:
         sheet_title = diag_sheet_name(diag_col)
         ws = wb.create_sheet(title=sheet_title)
         build_diagnostic_sheet(ws, diag_col, df2, df3)
         print(f"Built diagnostic sheet: {sheet_title}")
 
-    # CV & slopes sheet per measure
     for measure in measures:
         sheet_title = cv_slopes_sheet_name(measure)
         ws = wb.create_sheet(title=sheet_title)
@@ -403,7 +750,8 @@ def main():
 
     wb.save(output_file)
     print(f"\nSaved: {output_file}")
-
+    
+    export_md_data(measures, df2, df3, df4, exp_md)
 
 if __name__ == "__main__":
     main()

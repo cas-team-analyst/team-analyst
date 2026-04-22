@@ -22,7 +22,6 @@ import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Alignment
 import pathlib
-import json
 
 from modules import config
 from modules.xl_styles import (
@@ -31,9 +30,49 @@ from modules.xl_styles import (
 
 # Paths from modules/config.py — override here if needed:
 INPUT_ULTIMATES  = config.ULTIMATES + "projected-ultimates.parquet"
+INPUT_TRIANGLES = config.PROCESSED_DATA + "triangles.parquet"
 PRIOR_SELECTIONS_RB = config.SELECTIONS + "ultimates-prior.json"             # Optional, priority 1 — set to prior cycle's selected ultimates
 PRIOR_SELECTIONS_OE = config.SELECTIONS + "ultimates-prior-oe.json"          # Optional, priority 2 — fallback prior
 OUTPUT_FILE      = config.SELECTIONS + "Ultimates.xlsx"
+SELECTIONS_OUTPUT_PATH = config.SELECTIONS
+
+
+def df_to_markdown(df, index=False):
+    if df.empty:
+        return "No data\n"
+    if index:
+        df = df.reset_index()
+    str_df = df.astype(str)
+    headers = list(str_df.columns)
+    header_str = "| " + " | ".join(headers) + " |"
+    sep_str = "|" + "|".join(["---"] * len(headers)) + "|"
+    rows = []
+    for _, row in str_df.iterrows():
+        rows.append("| " + " | ".join(row.values) + " |")
+    return "\n".join([header_str, sep_str] + rows) + "\n"
+def export_md_data(measures, df_ult, exp_md):
+    import pathlib
+    for measure in measures:
+        df_m = df_ult[df_ult['measure'] == measure].copy()
+        if df_m.empty:
+            continue
+        
+        safe_name = measure.lower().replace(' ', '_')
+        md_path = pathlib.Path(SELECTIONS_OUTPUT_PATH) / f"ultimates-context-{safe_name}.md"
+        
+        df_m = df_m.drop(columns=['measure'], errors='ignore')
+        
+        md_content = f"# Ultimates Context: {measure}\n\n"
+        md_content += "## Table of Contents\n"
+        md_content += "- [Exposure Background](#exposure-background)\n"
+        md_content += "- [Projected Ultimates](#projected-ultimates)\n\n"
+        md_content += "## Exposure Background\n" + exp_md + "\n"
+        md_content += "## Projected Ultimates\n" + df_to_markdown(df_m, index=False) + "\n"
+        
+        with open(md_path, 'w') as f:
+            f.write(md_content)
+        print(f"  Exported MD: {md_path}")
+
 
 
 def format_sheet(ws, measure, df_ult, df_prior):
@@ -201,6 +240,18 @@ def main():
     
     wb.save(OUTPUT_FILE)
     print(f"\nSaved: {OUTPUT_FILE}")
+    
+    exp_md = "No Exposure data\n"
+    try:
+        tri_df = pd.read_parquet(INPUT_TRIANGLES)
+        exp_sub = tri_df[(tri_df['measure'] == 'Exposure') & tri_df['value'].notna()]
+        if not exp_sub.empty:
+            exp_piv = exp_sub.pivot(index='period', columns='age', values='value')
+            exp_md = df_to_markdown(exp_piv, index=True)
+    except Exception:
+        pass
+        
+    export_md_data(measures, df_ult, exp_md)
 
 
 if __name__ == "__main__":

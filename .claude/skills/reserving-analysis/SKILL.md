@@ -1,6 +1,6 @@
 ---
 name: reserving-analysis
-description: Entry skill for performing reserving analysis using the skills in this plugin.
+description: Main skill. Use when asked to work on a reserving analysis project. Do NOT use for peer review, there is a separate skill for that.
 ---
 
 # WELCOME
@@ -70,15 +70,5 @@ As you go:
 # OTHER GUIDELINES
 
 - Never include checkmarks or other unicode symbols in PowerShell commands - only use standard ASCII text and operators.
-- If you are having folder access issues, it may mean the user hasn't accepted your request to access that folder. IMPORTANT: STOP WHAT YOU ARE DOING and wait for the user to approve any open requests. 
-
-## Never Rewrite the Numbered Scripts
-
-The numbered Python scripts in `scripts/` (1a through 7, plus `modules/`) are the canonical, tested pipeline. Do not rewrite them from scratch under any circumstances. They are long but complete — a partial Read view is not evidence of truncation.
-
-If you suspect a script is truncated or broken:
-1. Run `wc -l <script>` to check the line count against what you see.
-2. Read the tail of the file to confirm it ends with `if __name__ == "__main__": main()` or a proper final statement.
-3. Only if the file is genuinely incomplete, tell the user and ask how to proceed — do not silently regenerate it.
-
-Real bugs (wrong path variable, wrong column name, missing customization for the user's data format) should be fixed with a targeted Edit, not a full rewrite. Rewriting loses tested logic and introduces divergence from the skill's canonical scripts.
+- If you are having folder access or file copy issues, it may mean the user hasn't accepted your request to access that folder. IMPORTANT: STOP WHAT YOU ARE DOING and wait for the user to approve any open requests. 
+- CRITICAL: USE POWERSHELL `cp` COMMAND TO COPY FILES. DO NOT use the create_file tool to write new files from scratch. Template files exist in `.claude\skills\reserving-analysis\assets\` and scripts exist in `.claude\skills\reserving-analysis\scripts\` — use PowerShell `cp` to copy these to the project directory. If the copy operation fails STOP AND WORK WITH THE USER TO DEBUG IT. Real bugs (wrong path variable, wrong column name, missing customization for the user's data format) should be fixed with a targeted Edit after copying, not a full rewrite. Rewriting loses tested logic and introduces divergence from the skill's canonical scripts.

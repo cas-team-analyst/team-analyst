@@ -1,6 +1,6 @@
 ---
 name: help
-description: Get oriented with the TeamAnalyst plugin and explore available skills. Use when first getting started, checking what analysis capabilities are available, or surveying skills before beginning work. Trigger phrases: "start", "get started", "what can you do", "help", "overview", "show skills".
+description: Get oriented with the TeamAnalyst plugin and explore available skills. Use when first getting started, checking what analysis capabilities are available, or surveying skills before beginning work. Trigger phrases "start", "get started", "what can you do", "help", "overview", "show skills".
 ---
 
 # TeamAnalyst Start

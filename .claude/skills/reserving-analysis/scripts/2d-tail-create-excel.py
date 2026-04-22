@@ -19,11 +19,12 @@ run-note: When copied to a project, run from the scripts/ directory:
 import pandas as pd
 import openpyxl
 from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.utils import get_column_letter
 from pathlib import Path
 
 from modules import config
 from modules.xl_styles import (
-    SUBHEADER_FILL, SELECTION_FILL, PRIOR_FILL, AI_FILL,
+    SUBHEADER_FILL, SELECTION_FILL, PRIOR_FILL, AI_FILL, USER_FILL,
     SUBHEADER_FONT, LABEL_FONT, DATA_FONT,
     THIN_BORDER, style_header,
 )
@@ -123,13 +124,12 @@ def write_banner_section(ws, start_row, measure, df_enhanced, df_diagnostics):
 
 
 def write_observed_factors_section(ws, start_row, measure, df_enhanced):
-    """Section B: Observed Factors Table (triangle + weighted avg + CV)."""
+    """Section B: Observed Factors Table (triangle + simple avg + CV)."""
     df_m = df_enhanced[df_enhanced['measure'] == measure].copy()
     if df_m.empty:
         return start_row
     
     periods = sorted(df_m['period'].unique())
-    # Use categorical order from parquet (preserves original numeric ordering)
     if hasattr(df_m['age'], 'cat'):
         ages = [a for a in df_m['age'].cat.categories if a in df_m['age'].values and pd.notna(a)]
     else:
@@ -137,7 +137,6 @@ def write_observed_factors_section(ws, start_row, measure, df_enhanced):
     
     row = write_section_header(ws, start_row, len(ages) + 1, "Observed Age-to-Age Factors", "section")
     
-    # Header row with ages
     ws.cell(row=row, column=1, value="Accident Year").border = THIN_BORDER
     ws.cell(row=row, column=1).font = SUBHEADER_FONT
     ws.cell(row=row, column=1).fill = SUBHEADER_FILL
@@ -148,17 +147,12 @@ def write_observed_factors_section(ws, start_row, measure, df_enhanced):
         style_header(cell, "subheader")
     row += 1
     
-    # Build factor lookup
     factor_dict = {}
     for _, r in df_m[df_m['ldf'].notna()].iterrows():
         key = (str(r['period']), r['age'])
         factor_dict[key] = r['ldf']
     
-    # Determine candidate starting ages (highlight these columns)
-    candidate_ages = set()
-    # We'll mark them after we know which ages have scenarios
-    
-    # Period rows
+    data_start_row = row
     for period in periods:
         period_cell = ws.cell(row=row, column=1, value=period)
         period_cell.font = LABEL_FONT
@@ -174,61 +168,32 @@ def write_observed_factors_section(ws, start_row, measure, df_enhanced):
             if val is not None:
                 cell.number_format = "0.0000"
         row += 1
+    data_end_row = row - 1
     
-    # Weighted average row
-    weighted_avg_dict = {}
-    weight_dict = {}
-    for _, r in df_m[df_m['ldf'].notna()].iterrows():
-        age_key = r['age']
-        ldf = r['ldf']
-        weight = r.get('weight', 1.0)
-        if age_key not in weighted_avg_dict:
-            weighted_avg_dict[age_key] = 0.0
-            weight_dict[age_key] = 0.0
-        weighted_avg_dict[age_key] += ldf * weight
-        weight_dict[age_key] += weight
-    
-    for age_key in weighted_avg_dict:
-        if weight_dict[age_key] > 0:
-            weighted_avg_dict[age_key] /= weight_dict[age_key]
-    
-    avg_cell = ws.cell(row=row, column=1, value="Weighted Avg")
+    avg_cell = ws.cell(row=row, column=1, value="Average")
     avg_cell.font = LABEL_FONT
     avg_cell.border = THIN_BORDER
     for c_idx, age in enumerate(ages, start=2):
-        val = weighted_avg_dict.get(age)
-        cell = ws.cell(row=row, column=c_idx, value=val)
+        col_letter = get_column_letter(c_idx)
+        rng = f"{col_letter}{data_start_row}:{col_letter}{data_end_row}"
+        cell = ws.cell(row=row, column=c_idx, value=f"=IFERROR(AVERAGE({rng}),"")")
         cell.font = DATA_FONT
         cell.alignment = Alignment(horizontal="right")
         cell.border = THIN_BORDER
-        if val is not None:
-            cell.number_format = "0.0000"
+        cell.number_format = "0.0000"
     row += 1
-    
-    # CV row
-    cv_dict = {}
-    for age in ages:
-        age_factors = [factor_dict.get((str(p), age)) for p in periods]
-        age_factors = [f for f in age_factors if f is not None]
-        if len(age_factors) > 1:
-            mean_val = sum(age_factors) / len(age_factors)
-            variance = sum((f - mean_val)**2 for f in age_factors) / len(age_factors)
-            std_dev = variance ** 0.5
-            cv_dict[age] = std_dev / mean_val if mean_val != 0 else None
     
     cv_cell = ws.cell(row=row, column=1, value="CV")
     cv_cell.font = LABEL_FONT
     cv_cell.border = THIN_BORDER
     for c_idx, age in enumerate(ages, start=2):
-        val = cv_dict.get(age)
-        cell = ws.cell(row=row, column=c_idx, value=val)
+        col_letter = get_column_letter(c_idx)
+        rng = f"{col_letter}{data_start_row}:{col_letter}{data_end_row}"
+        cell = ws.cell(row=row, column=c_idx, value=f"=IFERROR(STDEV.S({rng})/AVERAGE({rng}),"")")
         cell.font = DATA_FONT
         cell.alignment = Alignment(horizontal="right")
         cell.border = THIN_BORDER
-        if val is not None:
-            cell.number_format = "0.0000"
-        # Highlight candidate starting age columns (light yellow)
-        # We'll do this after we process scenarios to know which ages are candidates
+        cell.number_format = "0.0000"
     row += 1
     
     return row + 1
@@ -360,14 +325,12 @@ def write_selection_section(ws, start_row, measure, prior_selections=None):
     """Section D: Selection Area (prior, rules-based AI, open-ended AI, user selection)."""
     row = write_section_header(ws, start_row, 6, "Tail Factor Selection", "section")
     
-    # Column headers
     headers = ['Label', 'Cutoff Age', 'Tail Factor', 'Method', 'Reasoning', 'Additional Notes']
     for c_idx, header in enumerate(headers, start=1):
         cell = ws.cell(row=row, column=c_idx, value=header)
         style_header(cell, "subheader")
     row += 1
     
-    # Prior selection (if available)
     if prior_selections is not None:
         prior_m = prior_selections[prior_selections['measure'] == measure]
         if not prior_m.empty:
@@ -386,11 +349,13 @@ def write_selection_section(ws, start_row, measure, prior_selections=None):
                 cell.border = THIN_BORDER
                 cell.font = DATA_FONT
                 cell.alignment = Alignment(horizontal="left", wrap_text=True)
-                if c_idx in [2, 3] and val:  # Cutoff Age, Tail Factor
+                if c_idx in [2, 3] and val:
                     cell.number_format = "0.0000" if c_idx == 3 else "0"
+            
+            prior_data_row = row
+            user_data_row = row + 7
             row += 1
             
-            # Prior delta row
             cell = ws.cell(row=row, column=1, value="Prior Delta")
             cell.fill = PRIOR_FILL
             cell.border = THIN_BORDER
@@ -399,12 +364,14 @@ def write_selection_section(ws, start_row, measure, prior_selections=None):
                 cell = ws.cell(row=row, column=c_idx, value='')
                 cell.fill = PRIOR_FILL
                 cell.border = THIN_BORDER
+                if c_idx == 3:
+                    cell.value = f"=IFERROR(C{user_data_row}-C{prior_data_row}, "")"
+                    cell.number_format = "0.0000"
             ws.cell(row=row, column=5, value="(current - prior)").font = Font(italic=True, size=8)
             row += 1
             
-            row += 1  # Blank row
+            row += 1
     
-    # Rules-Based AI Selection (yellow background - filled by 2e script)
     cell = ws.cell(row=row, column=1, value="Rules-Based AI Selection")
     style_header(cell, "selection")
     for c_idx in range(2, 7):
@@ -414,7 +381,6 @@ def write_selection_section(ws, start_row, measure, prior_selections=None):
         cell.alignment = Alignment(horizontal="left", wrap_text=True)
     row += 1
     
-    # Open-Ended AI Selection (purple background - filled by 2e script)
     cell = ws.cell(row=row, column=1, value="Open-Ended AI Selection")
     style_header(cell, "ai")
     for c_idx in range(2, 7):
@@ -424,9 +390,8 @@ def write_selection_section(ws, start_row, measure, prior_selections=None):
         cell.alignment = Alignment(horizontal="left", wrap_text=True)
     row += 1
     
-    row += 1  # Blank row
+    row += 1
     
-    # User Selection (white/blank - actuary input)
     cell = ws.cell(row=row, column=1, value="User Selection")
     style_header(cell, "user")
     for c_idx in range(2, 7):
@@ -465,6 +430,48 @@ def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, 
     ws.column_dimensions['F'].width = 30
 
 
+
+def df_to_markdown(df, index=False):
+    if df.empty:
+        return "No data\n"
+    if index:
+        df = df.reset_index()
+    str_df = df.astype(str)
+    headers = list(str_df.columns)
+    header_str = "| " + " | ".join(headers) + " |"
+    sep_str = "|" + "|".join(["---"] * len(headers)) + "|"
+    rows = []
+    for _, row in str_df.iterrows():
+        rows.append("| " + " | ".join(row.values) + " |")
+    return "\n".join([header_str, sep_str] + rows) + "\n"
+def export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, exp_md):
+    for measure in measures:
+        safe_name = measure.lower().replace(' ', '_')
+        md_path = Path(SELECTIONS_OUTPUT_PATH) / f"tail-context-{safe_name}.md"
+        
+        scen_sub = df_scenarios[df_scenarios['measure'] == measure].drop(columns=['measure'], errors='ignore')
+        scen_md = df_to_markdown(scen_sub, index=False)
+        
+        obs_sub = df_enhanced[df_enhanced['measure'] == measure][['period', 'age', 'ldf']].dropna()
+        if not obs_sub.empty:
+            obs_piv = obs_sub.pivot(index='period', columns='age', values='ldf')
+            obs_md = df_to_markdown(obs_piv, index=True)
+        else:
+            obs_md = "No data\n"
+            
+        md_content = f"# Tail Context: {measure}\n\n"
+        md_content += "## Table of Contents\n"
+        md_content += "- [Exposure Background](#exposure-background)\n"
+        md_content += "- [Scenarios](#scenarios)\n"
+        md_content += "- [Observed Factors](#observed-factors)\n\n"
+        md_content += "## Exposure Background\n" + exp_md + "\n"
+        md_content += "## Scenarios\n" + scen_md + "\n"
+        md_content += "## Observed Factors\n" + obs_md + "\n"
+        
+        with open(md_path, 'w') as f:
+            f.write(md_content)
+        print(f"  Exported MD: {md_path}")
+
 def main():
     """Create Tail Factor Selections Excel file."""
     output_file = SELECTIONS_OUTPUT_PATH + OUTPUT_FILE_NAME
@@ -501,7 +508,17 @@ def main():
     wb = openpyxl.Workbook()
     wb.remove(wb.active)
     
-    measures = sorted(df_scenarios['measure'].unique())
+    raw_measures = sorted(df_scenarios['measure'].unique())
+    
+    exp_sub = df_enhanced[(df_enhanced['measure'] == 'Exposure') & df_enhanced['value'].notna()]
+    if not exp_sub.empty:
+        exp_piv = exp_sub.pivot(index='period', columns='age', values='value')
+        exp_md = df_to_markdown(exp_piv, index=True)
+    else:
+        exp_md = "No Exposure data\n"
+        
+    measures = [m for m in raw_measures if m != 'Exposure']
+    
     print(f"\nCreating sheets for measures: {measures}")
     
     for measure in measures:
@@ -510,6 +527,7 @@ def main():
         print(f"  Built sheet: {measure[:31]}")
     
     wb.save(output_file)
+    export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, exp_md)
     print(f"\nSaved: {output_file}")
 
 

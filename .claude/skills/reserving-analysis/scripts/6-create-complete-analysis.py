@@ -32,6 +32,7 @@ import pandas as pd
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
+from modules.formulas import rewrite_formula_sheet_refs
 
 from modules import config
 from modules.xl_styles import (
@@ -55,6 +56,7 @@ OUTPUT_PATH             = config.OUTPUT
 # Files that do not exist are silently skipped.
 ANALYSIS_SOURCE_FILES = [
     (config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx", "CL - "),
+    (config.SELECTIONS + "Chain Ladder Selections - Tail.xlsx", "Tail - "),
     (config.SELECTIONS + "Ultimates.xlsx",               "Sel - "),
 ]
 
@@ -69,9 +71,6 @@ UNPAID_PROXY = {
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Derived output paths — do not modify.
-OUTPUT_SELECTED_ULTIMATES = OUTPUT_PATH + "selected-ultimates.xlsx"
-OUTPUT_POST_SERIES        = OUTPUT_PATH + "post-method-series.xlsx"
-OUTPUT_POST_TRIANGLES     = OUTPUT_PATH + "post-method-triangles.xlsx"
 OUTPUT_COMPLETE_ANALYSIS  = OUTPUT_PATH + "complete-analysis.xlsx"
 
 _NUM_FMT = "#,##0"
@@ -292,254 +291,6 @@ def get_exposure(triangles_df):
 
 # ── Excel writers ─────────────────────────────────────────────────────────────
 
-def write_selected_ultimates(combined, has_ie, has_bf, path):
-    """
-    Write selected-ultimates.xlsx with one sheet per measure found in data.
-
-    Sheet order follows MEASURE_ORDER when measures are present; unknown measures
-    appended at end. Columns included/excluded dynamically based on which methods ran.
-    """
-    MEASURE_ORDER = ["Incurred Loss", "Paid Loss", "Reported Count", "Closed Count"]
-
-    present = combined["measure"].unique().tolist()
-    measures = [m for m in MEASURE_ORDER if m in present]
-    measures += [m for m in present if m not in MEASURE_ORDER]  # any extras
-
-    def _get(df_idx, period, col):
-        if period not in df_idx.index or col not in df_idx.columns:
-            return None
-        return _safe(df_idx.loc[period, col])
-
-    wb = Workbook()
-    wb.remove(wb.active)
-
-    for measure in measures:
-        df_m = combined[combined["measure"] == measure].set_index("period")
-        if df_m.empty:
-            continue
-
-        headers = ["Accident Period", "Current Age", "Actual", "Chain Ladder"]
-        if has_ie:
-            headers.append("Initial Expected")
-        if has_bf:
-            headers.append("BF")
-        headers += ["Selected Ultimate", "IBNR", "Unpaid"]
-
-        ws = wb.create_sheet(title=measure[:31])
-
-        # Section title spanning all columns
-        title_cell = ws.cell(row=1, column=1, value=measure)
-        _style_cell(title_cell, "section")
-        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(headers))
-
-        # Column headers
-        _write_header_row(ws, headers, row=2, level="subheader", col_width=20)
-        ws.column_dimensions["A"].width = 18
-        ws.freeze_panes = "A3"
-
-        periods = sorted(
-            df_m.index,
-            key=lambda x: (int(x) if str(x).isdigit() else x)
-        )
-        for row_idx, period in enumerate(periods, start=3):
-            vals = [
-                _try_int(period),
-                _get(df_m, period, "current_age"),
-                _get(df_m, period, "actual"),
-                _get(df_m, period, "ultimate_cl"),
-            ]
-            if has_ie:
-                vals.append(_get(df_m, period, "ultimate_ie"))
-            if has_bf:
-                vals.append(_get(df_m, period, "ultimate_bf"))
-            vals += [
-                _get(df_m, period, "selected_ultimate"),
-                _get(df_m, period, "selected_ibnr"),
-                _get(df_m, period, "selected_unpaid"),
-            ]
-
-            for c_idx, val in enumerate(vals, start=1):
-                is_numeric = c_idx >= 1  # All columns are numeric (period is year)
-                num_fmt = _NUM_FMT if c_idx > 2 else None  # Currency formatting for cols 3+
-                if c_idx == 2:  # Age column gets 0 decimals but no comma
-                    num_fmt = "0"
-                _write_data_cell(ws.cell(row=row_idx, column=c_idx), val, num_fmt, is_numeric)
-
-    os.makedirs(pathlib.Path(path).parent, exist_ok=True)
-    wb.save(path)
-    print(f"  Saved -> {path}")
-
-
-def write_post_method_series(combined, exp_map, path):
-    """
-    Write post-method-series.xlsx with Ultimate Severity and, when exposure
-    is available, Ultimate Loss Rate and Frequency.
-    """
-    has_exp = len(exp_map) > 0
-
-    inc = combined[combined["measure"] == "Incurred Loss"].set_index("period")
-    rep = combined[combined["measure"] == "Reported Count"].set_index("period")
-
-    headers = ["Accident Period", "Ultimate Severity"]
-    if has_exp:
-        headers += ["Ultimate Loss Rate", "Ultimate Frequency"]
-
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Diagnostics"
-
-    title_cell = ws.cell(row=1, column=1, value="Post-Method Series Diagnostics")
-    _style_cell(title_cell, "section")
-    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(headers))
-
-    _write_header_row(ws, headers, row=2, level="subheader", col_width=22)
-    ws.column_dimensions["A"].width = 18
-    ws.freeze_panes = "A3"
-
-    periods = sorted(
-        inc.index,
-        key=lambda x: (int(x) if str(x).isdigit() else x)
-    )
-    for row_idx, period in enumerate(periods, start=3):
-        ult_loss   = inc.loc[period, "selected_ultimate"] if period in inc.index else np.nan
-        ult_counts = rep.loc[period, "selected_ultimate"] if period in rep.index else np.nan
-        exp_val    = exp_map.get(period, np.nan)
-
-        sev  = (ult_loss / ult_counts
-                if pd.notna(ult_loss) and pd.notna(ult_counts) and ult_counts != 0
-                else None)
-        lr   = (ult_loss / exp_val
-                if has_exp and pd.notna(ult_loss) and pd.notna(exp_val) and exp_val != 0
-                else None)
-        freq = (ult_counts / exp_val
-                if has_exp and pd.notna(ult_counts) and pd.notna(exp_val) and exp_val != 0
-                else None)
-
-        row_vals = [_try_int(period), sev]
-        if has_exp:
-            row_vals += [lr, freq]
-
-        for c_idx, val in enumerate(row_vals, start=1):
-            is_numeric = True  # All columns are numeric
-            num_fmt = _DEC_FMT if c_idx > 1 else None
-            _write_data_cell(ws.cell(row=row_idx, column=c_idx), val, num_fmt, is_numeric)
-
-    os.makedirs(pathlib.Path(path).parent, exist_ok=True)
-    wb.save(path)
-    print(f"  Saved -> {path}")
-
-
-def _write_triangle_sheet(ws, label, data, num_fmt):
-    """Write a pivoted triangle DataFrame to a worksheet with 2a-consistent styling."""
-    ages = sorted(data.columns)
-
-    # Section title spanning all columns
-    title_cell = ws.cell(row=1, column=1, value=label)
-    _style_cell(title_cell, "section")
-    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(ages) + 1)
-
-    # Column headers (age labels)
-    ws.column_dimensions["A"].width = 18
-    period_hdr = ws.cell(row=2, column=1, value="Period")
-    _style_cell(period_hdr, "subheader")
-    for c_idx, age in enumerate(ages, start=2):
-        cell = ws.cell(row=2, column=c_idx, value=int(age) if pd.notna(age) else age)
-        _style_cell(cell, "subheader")
-        ws.column_dimensions[cell.column_letter].width = 14
-
-    ws.freeze_panes = "B3"
-
-    # Data rows
-    for r_idx, (period_int, row) in enumerate(data.iterrows(), start=3):
-        period_cell = ws.cell(row=r_idx, column=1,
-                              value=int(period_int) if pd.notna(period_int) else period_int)
-        period_cell.font   = LABEL_FONT
-        period_cell.border = THIN_BORDER
-        period_cell.alignment = Alignment(horizontal="right")
-        if pd.notna(period_int):
-            period_cell.number_format = "0"  # Integer format for period
-        for c_idx, age in enumerate(ages, start=2):
-            val = row.get(age, np.nan)
-            _write_data_cell(ws.cell(row=r_idx, column=c_idx),
-                             None if pd.isna(val) else val, num_fmt, is_numeric=True)
-
-
-def write_post_method_triangles(triangles_df, combined, path):
-    """
-    Write post-method-triangles.xlsx with:
-      - X-to-Ultimate development triangles (one sheet per measure present)
-      - Average IBNR:   Incurred Ultimate − Incurred at each age
-      - Average Unpaid: Incurred Ultimate − Paid at each age
-
-    Sheets are omitted when the underlying data is missing.
-    """
-    sel_lookup = combined.set_index(["period", "measure"])["selected_ultimate"].to_dict()
-
-    df = triangles_df.copy()
-    df["period"]     = df["period"].astype(str)
-    df["measure"]    = df["measure"].astype(str)
-    df["age_int"]    = pd.to_numeric(df["age"].astype(str), errors="coerce")
-    df["period_int"] = pd.to_numeric(df["period"], errors="coerce")
-
-    def _pivot(measure):
-        sub = df[df["measure"] == measure]
-        if sub.empty:
-            return None
-        return sub.pivot_table(
-            index="period_int", columns="age_int", values="value", aggfunc="first"
-        ).astype(float)
-
-    def _period_str(period_int):
-        return str(int(period_int)) if pd.notna(period_int) else str(period_int)
-
-    wb = Workbook()
-    wb.remove(wb.active)
-
-    # X-to-Ultimate ratio triangles
-    for meas, label in [
-        ("Incurred Loss",  "Incurred-to-Ult"),
-        ("Paid Loss",      "Paid-to-Ult"),
-        ("Reported Count", "Reported-to-Ult"),
-        ("Closed Count",   "Closed-to-Ult"),
-    ]:
-        pivot = _pivot(meas)
-        if pivot is None:
-            continue
-        result = pivot.copy()
-        for period_int in result.index:
-            sel = sel_lookup.get((_period_str(period_int), meas), np.nan)
-            if pd.notna(sel) and sel != 0:
-                result.loc[period_int] = result.loc[period_int] / sel
-        ws = wb.create_sheet(title=label)
-        _write_triangle_sheet(ws, label, result, "0.0000")
-
-    # Average IBNR = Incurred Ultimate − Incurred at each historical age
-    pivot_inc = _pivot("Incurred Loss")
-    if pivot_inc is not None:
-        avg_ibnr = pivot_inc.copy()
-        for period_int in avg_ibnr.index:
-            sel = sel_lookup.get((_period_str(period_int), "Incurred Loss"), np.nan)
-            if pd.notna(sel):
-                avg_ibnr.loc[period_int] = sel - avg_ibnr.loc[period_int]
-        ws = wb.create_sheet(title="Average IBNR")
-        _write_triangle_sheet(ws, "Average IBNR", avg_ibnr, _NUM_FMT)
-
-    # Average Unpaid = Incurred Ultimate − Paid at each historical age
-    pivot_paid = _pivot("Paid Loss")
-    if pivot_paid is not None and pivot_inc is not None:
-        avg_unpaid = pivot_paid.copy()
-        for period_int in avg_unpaid.index:
-            sel = sel_lookup.get((_period_str(period_int), "Incurred Loss"), np.nan)
-            if pd.notna(sel):
-                avg_unpaid.loc[period_int] = sel - avg_unpaid.loc[period_int]
-        ws = wb.create_sheet(title="Average Unpaid")
-        _write_triangle_sheet(ws, "Average Unpaid", avg_unpaid, _NUM_FMT)
-
-    os.makedirs(pathlib.Path(path).parent, exist_ok=True)
-    wb.save(path)
-    print(f"  Saved -> {path}")
-
-
 def write_notes_sheet(ws):
     """
     Write a Notes sheet with workbook overview and table of contents.
@@ -621,8 +372,6 @@ def write_full_analysis(output_path, source_files, internal_files):
 
     source_files  : list of (file_path, sheet_prefix_or_None) from prior scripts
     internal_files: list of file_paths generated by this script (no prefix)
-
-    Files that do not exist on disk are silently skipped.
     """
     master = Workbook()
     master.remove(master.active)
@@ -633,24 +382,33 @@ def write_full_analysis(output_path, source_files, internal_files):
 
     all_files = list(source_files) + [(f, None) for f in internal_files]
     
-    # Track all sheet names and their descriptions for TOC
     sheet_descriptions = []
 
     for file_path, prefix in all_files:
         if not os.path.exists(file_path):
             print(f"  Skipping (not found): {file_path}")
             continue
-        wb = load_workbook(file_path, data_only=False)  # Keep formatting
+        wb = load_workbook(file_path, data_only=False)
+        
+        rename_map = {}
         for sname in wb.sheetnames:
             new_name = (f"{prefix}{sname}" if prefix else sname)[:31]
+            rename_map[sname] = new_name
+            
+        for sname in wb.sheetnames:
+            new_name = rename_map[sname]
             ws_src = wb[sname]
             ws_dst = master.create_sheet(title=new_name)
             
-            # Copy cell values, formats, and styles
             for row in ws_src.iter_rows():
                 for cell in row:
                     dst_cell = ws_dst[cell.coordinate]
-                    dst_cell.value = cell.value
+                    # REWRITE FORMULA REFS
+                    if isinstance(cell.value, str) and cell.value.startswith('='):
+                        dst_cell.value = rewrite_formula_sheet_refs(cell.value, rename_map)
+                    else:
+                        dst_cell.value = cell.value
+                        
                     if cell.has_style:
                         dst_cell.font = copy.copy(cell.font)
                         dst_cell.border = copy.copy(cell.border)
@@ -659,31 +417,25 @@ def write_full_analysis(output_path, source_files, internal_files):
                         dst_cell.protection = copy.copy(cell.protection)
                         dst_cell.alignment = copy.copy(cell.alignment)
             
-            # Copy column widths
             for col_letter in ws_src.column_dimensions:
                 if col_letter in ws_src.column_dimensions:
                     ws_dst.column_dimensions[col_letter].width = ws_src.column_dimensions[col_letter].width
             
-            # Copy row heights
             for row_num in ws_src.row_dimensions:
                 if row_num in ws_src.row_dimensions:
                     ws_dst.row_dimensions[row_num].height = ws_src.row_dimensions[row_num].height
             
-            # Copy merged cells
             for merged_cell_range in ws_src.merged_cells.ranges:
                 ws_dst.merge_cells(str(merged_cell_range))
             
-            # Copy freeze panes
             if ws_src.freeze_panes:
                 ws_dst.freeze_panes = ws_src.freeze_panes
             
-            # Determine description based on sheet name patterns
             desc = _get_sheet_description(new_name, prefix)
             sheet_descriptions.append((new_name, desc))
             
         print(f"  Added sheets from {file_path}")
     
-    # Write TOC entries to Notes sheet
     for idx, (sheet_name, desc) in enumerate(sheet_descriptions, start=toc_start_row):
         name_cell = notes_ws.cell(row=idx, column=1, value=sheet_name)
         name_cell.font = DATA_FONT
@@ -698,7 +450,6 @@ def write_full_analysis(output_path, source_files, internal_files):
     os.makedirs(pathlib.Path(output_path).parent, exist_ok=True)
     master.save(output_path)
     print(f"  Saved -> {output_path}")
-
 
 def _get_sheet_description(sheet_name, prefix):
     """Generate a description for a sheet based on its name."""
@@ -750,6 +501,189 @@ def _get_sheet_description(sheet_name, prefix):
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
+import json
+import glob
+import numpy as np
+
+def build_measure_dfs():
+    INPUT_ULTIMATES = config.ULTIMATES + "projected-ultimates.parquet"
+    if not os.path.exists(INPUT_ULTIMATES):
+        return {}
+    df = pd.read_parquet(INPUT_ULTIMATES)
+    
+    excel_path = config.SELECTIONS + "Ultimates.xlsx"
+    wb = None
+    if os.path.exists(excel_path):
+        try:
+            import openpyxl
+            wb = openpyxl.load_workbook(excel_path, data_only=True)
+        except Exception:
+            pass
+            
+    measures = df['measure'].unique()
+    measure_dfs = {}
+    for m in measures:
+        json_path = config.SELECTIONS + "ultimates-ai-rules-based.json"
+        m_df = df[df['measure'] == m].copy()
+        m_df = m_df.rename(columns={
+            "period": "Accident Period",
+            "current_age": "Current Age",
+            "actual": "Actual",
+            "ultimate_cl": "Chain Ladder",
+            "ultimate_ie": "Initial Expected",
+            "ultimate_bf": "BF"
+        })
+        
+        sel_col = pd.Series(index=m_df.index, dtype=float)
+        
+        if os.path.exists(json_path):
+            with open(json_path, 'r') as jf:
+                jdata = json.load(jf)
+                if isinstance(jdata, dict) and "measures" in jdata:
+                    m_data = next((md for md in jdata["measures"] if md["measure"] == m), None)
+                    if m_data:
+                        for row in m_data.get("selections", []):
+                            period_val = row.get("period")
+                            sel = row.get("selection")
+                            idx = m_df.index[m_df["Accident Period"] == period_val]
+                            if len(idx) > 0 and sel is not None:
+                                sel_col.loc[idx] = sel
+                                
+        if wb and f"Sel - {m}" in wb.sheetnames:
+            ws = wb[f"Sel - {m}"]
+            user_col = None
+            period_col = None
+            for cell in ws[1]:
+                if cell.value == "User Selection":
+                    user_col = cell.column
+                if cell.value == "Period":
+                    period_col = cell.column
+            if user_col and period_col:
+                for row in range(2, ws.max_row + 1):
+                    period_val = ws.cell(row=row, column=period_col).value
+                    user_val = ws.cell(row=row, column=user_col).value
+                    if user_val is not None and isinstance(user_val, (int, float)):
+                        idx = m_df.index[m_df["Accident Period"] == period_val]
+                        if len(idx) > 0:
+                            sel_col.loc[idx] = user_val
+                            
+        for idx in sel_col.index:
+            if pd.isna(sel_col.loc[idx]):
+                sel_col.loc[idx] = m_df.loc[idx, "BF"] if not pd.isna(m_df.loc[idx, "BF"]) else m_df.loc[idx, "Chain Ladder"]
+        
+        m_df["Selected Ultimate"] = sel_col
+        m_df["IBNR"] = m_df["Selected Ultimate"] - m_df["Actual"]
+        m_df["Unpaid"] = np.nan
+        measure_dfs[m] = m_df
+        
+    return measure_dfs
+
+def build_cl_dfs():
+    INPUT_TRIANGLES = config.PROCESSED_DATA + "triangles.parquet"
+    if not os.path.exists(INPUT_TRIANGLES):
+        return {}
+    tri_df = pd.read_parquet(INPUT_TRIANGLES)
+    measures = tri_df['measure'].unique()
+    cl_dfs = {}
+    
+    excel_path_ldf = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
+    wb_ldf = None
+    if os.path.exists(excel_path_ldf):
+        try:
+            import openpyxl
+            wb_ldf = openpyxl.load_workbook(excel_path_ldf, data_only=True)
+        except Exception:
+            pass
+            
+    excel_path_tail = config.SELECTIONS + "Chain Ladder Selections - Tail.xlsx"
+    wb_tail = None
+    if os.path.exists(excel_path_tail):
+        try:
+            import openpyxl
+            wb_tail = openpyxl.load_workbook(excel_path_tail, data_only=True)
+        except Exception:
+            pass
+
+    for m in measures:
+        m_tri = tri_df[tri_df['measure'] == m]
+        # We need the factors. LDFs are built from triangles.
+        # Wait, the MD context replaced the json context. We can just rebuild the triangle here!
+        # But wait! We just need the "Selected LDF" row for Tech Review! We can just put it in a dataframe.
+        df_piv = m_tri.pivot(index="period", columns="age", values="value")
+        df_piv.index = df_piv.index.astype(str)
+        # Drop current age columns, actually LDFs have intervals like '12-24'.
+        ages = sorted([int(c) for c in df_piv.columns if str(c).isdigit()])
+        intervals = [f"{ages[i]}-{ages[i+1]}" for i in range(len(ages)-1)]
+        
+        sel_ldf = pd.Series(index=[str(a) for a in ages[:-1]] + ["Tail"], dtype=float)
+        
+        rb_json_path = config.SELECTIONS + "chainladder-ai-rules-based.json"
+        if os.path.exists(rb_json_path):
+            with open(rb_json_path, 'r') as rb_f:
+                rb_data = json.load(rb_f)
+                if isinstance(rb_data, dict) and "measures" in rb_data:
+                    m_data = next((md for md in rb_data["measures"] if md["measure"] == m), None)
+                    if m_data:
+                        for interval_data in m_data.get("selections", []):
+                            age = str(interval_data.get("interval", "")).split("-")[0]
+                            sel = interval_data.get("selection")
+                            if age in sel_ldf.index and sel is not None:
+                                sel_ldf[age] = sel
+                                
+        if wb_ldf and m in wb_ldf.sheetnames:
+            ws = wb_ldf[m]
+            user_row = None
+            header_row = None
+            for row in range(1, ws.max_row + 1):
+                if ws.cell(row=row, column=1).value == "User Selection":
+                    user_row = row
+                    for hr in range(row-1, max(0, row-10), -1):
+                        if str(ws.cell(row=hr, column=2).value).endswith("24"):
+                            header_row = hr
+                            break
+                    break
+            if user_row and header_row:
+                for col in range(2, ws.max_column + 1):
+                    interval = ws.cell(row=header_row, column=col).value
+                    user_val = ws.cell(row=user_row, column=col).value
+                    if interval and isinstance(user_val, (int, float)):
+                        age = str(interval).split("-")[0]
+                        if age in sel_ldf.index:
+                            sel_ldf[age] = user_val
+                            
+        sel_ldf["Tail"] = 1.0 
+        rb_tail_path = config.SELECTIONS + "tail-ai-rules-based.json"
+        if os.path.exists(rb_tail_path):
+            with open(rb_tail_path, 'r') as t_f:
+                t_data = json.load(t_f)
+                if isinstance(t_data, dict) and "measures" in t_data:
+                    tm_data = next((md for md in t_data["measures"] if md["measure"] == m), None)
+                    if tm_data and tm_data.get("selection") is not None:
+                        sel_ldf["Tail"] = tm_data.get("selection")
+                        
+        if wb_tail and m in wb_tail.sheetnames:
+            ws_t = wb_tail[m]
+            for row in range(1, ws_t.max_row + 1):
+                if ws_t.cell(row=row, column=1).value == "User Selection":
+                    u_val = ws_t.cell(row=row, column=2).value
+                    if isinstance(u_val, (int, float)):
+                        sel_ldf["Tail"] = u_val
+                    break
+        
+        # We don't need the whole triangle for Tech Review, just the 'Selected LDF' dataframe
+        # Wait, check_cl_factors checks df.loc["Selected LDF"]!
+        cl_dfs[f"CL - {m}"] = pd.DataFrame([sel_ldf], index=["Selected LDF"])
+        
+    return cl_dfs
+
+def write_hardcoded_excel(measure_dfs, cl_dfs, filepath):
+    with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
+        for m, df in measure_dfs.items():
+            df.to_excel(writer, sheet_name=f"Sel - {m[:25]}", index=False)
+        for name, df in cl_dfs.items():
+            df.to_excel(writer, sheet_name=name[:31])
+
+
 def main():
     os.makedirs(OUTPUT_PATH, exist_ok=True)
 
@@ -757,25 +691,12 @@ def main():
     combined, has_ie, has_bf = load_combined(INPUT_ULTIMATES, INPUT_SELECTIONS_EXCEL, INPUT_SELECTIONS_RB_JSON, INPUT_SELECTIONS_OE_JSON)
     print(f"  has_ie={has_ie}, has_bf={has_bf}, rows={len(combined)}")
 
-    triangles_df = pd.read_parquet(INPUT_TRIANGLES)
-    exp_map      = get_exposure(triangles_df)
-    print(f"  has_exposure={len(exp_map) > 0} ({len(exp_map)} periods)")
-
-    print("\nWriting selected ultimates...")
-    write_selected_ultimates(combined, has_ie, has_bf, OUTPUT_SELECTED_ULTIMATES)
-
-    print("\nWriting post-method series diagnostics...")
-    write_post_method_series(combined, exp_map, OUTPUT_POST_SERIES)
-
-    print("\nWriting post-method triangle diagnostics...")
-    write_post_method_triangles(triangles_df, combined, OUTPUT_POST_TRIANGLES)
-
-    print("\nWriting complete analysis workbook...")
-    internal = [OUTPUT_SELECTED_ULTIMATES, OUTPUT_POST_SERIES, OUTPUT_POST_TRIANGLES]
+    print("\\nWriting complete analysis workbook...")
+    internal = []
     write_full_analysis(OUTPUT_COMPLETE_ANALYSIS, ANALYSIS_SOURCE_FILES, internal)
 
     # Console IBNR summary
-    print("\n=== IBNR Summary ===")
+    print("\\n=== IBNR Summary ===")
     pd.set_option("display.float_format", lambda x: f"{x:,.0f}")
     for m in ["Incurred Loss", "Paid Loss", "Reported Count", "Closed Count"]:
         sub = combined[combined["measure"] == m]
@@ -795,7 +716,16 @@ def main():
         ]
         print(f"  {m}: " + "  ".join(parts))
 
-
 if __name__ == "__main__":
     print("=== Step 6: Creating complete analysis workbook ===")
     main()
+    print("\nWriting evaluated hard-coded analysis workbook...")
+    try:
+        m_dfs = build_measure_dfs()
+        c_dfs = build_cl_dfs()
+        write_hardcoded_excel(m_dfs, c_dfs, OUTPUT_PATH + "complete-analysis-values.xlsx")
+        print(f"  Created: {OUTPUT_PATH + 'complete-analysis-values.xlsx'}")
+    except Exception as e:
+        print(f"  Warning: could not write hardcoded excel: {e}")
+
+    

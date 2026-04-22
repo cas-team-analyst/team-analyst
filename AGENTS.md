@@ -2,6 +2,8 @@
 
 This project will always use the same flow. Start with the reserve-analysis skill.
 
+Skills are available at .claude\skills.
+
 # MODIFYING THE SKILLS  
 
 Alternatively, the user may ask to modify the skills to change the way this project behaves. 

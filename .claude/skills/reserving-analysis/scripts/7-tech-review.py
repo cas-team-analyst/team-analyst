@@ -31,8 +31,8 @@ from modules import config
 from modules.xl_styles import HEADER_FILL, HEADER_FONT, THIN_BORDER
 
 # ── User-configurable properties ─────────────────────────────────────────────
-# Paths from modules/config.py — override here if needed:
-INPUT_COMPLETE_ANALYSIS = config.OUTPUT + "complete-analysis.xlsx"
+# Paths from modules/config.py - override here if needed:
+INPUT_COMPLETE_ANALYSIS = config.OUTPUT + "complete-analysis-values.xlsx"
 OUTPUT_REVIEW           = config.OUTPUT + "tech-review.xlsx"
 
 IBNR_NEG_TOLERANCE     = -500   # WARN if IBNR < this (small negatives OK from rounding)
@@ -419,6 +419,9 @@ def check_selected_ultimates(ck, measure_dfs):
     count_measures = {"Reported Count", "Closed Count"}
 
     for m, df in measure_dfs.items():
+        if m == 'Exposure':
+            continue
+            
         if "Selected Ultimate" not in df.columns:
             ck.fail(g, f"'{m}' has Selected Ultimate column", "Column missing")
             continue
