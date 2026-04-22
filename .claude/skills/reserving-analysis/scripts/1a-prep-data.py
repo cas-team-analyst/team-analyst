@@ -423,10 +423,15 @@ def read_and_process_expected_loss_rates(triangle_data: pd.DataFrame, file_path:
     #     'Expected_Frequency': 'expected_freq'
     # })
     
-    # Drop blank rows
-    df_expected = df_expected.dropna(subset=['period', 'expected_loss_rate', 'expected_freq'])
-    # Ensure period values are strings
+    # Drop rows that are completely empty across period/rates first
+    df_expected = df_expected.dropna(subset=['period', 'expected_loss_rate', 'expected_freq'], how='all')
+    
+    # Ensure period values are present and clean
+    df_expected = df_expected.dropna(subset=['period'])
     df_expected['period'] = df_expected['period'].astype(str).str.strip()
+    
+    # Drop rows where BOTH rates are missing, as we can't do anything with those
+    df_expected = df_expected.dropna(subset=['expected_loss_rate', 'expected_freq'], how='all')
     # ============================================================================
     
     # Validate the data
@@ -464,20 +469,26 @@ def validate_expected_loss_rates(df: pd.DataFrame, triangle_data: pd.DataFrame) 
     if missing_columns:
         errors.append(f"Missing required columns: {', '.join(missing_columns)}")
     
-    # If we have the required columns, perform detailed validation
-    if not missing_columns:
-        # Check data types
-        if not pd.api.types.is_numeric_dtype(df['expected_loss_rate']):
-            errors.append("'expected_loss_rate' column must be numeric (decimal)")
+        # Check data types if values are provided
+        if 'expected_loss_rate' in df.columns:
+            # Dropna just to check the types of valid entries, as NaN would pass is_numeric_dtype but we want to be clean
+            valid_loss = df['expected_loss_rate'].dropna()
+            if not valid_loss.empty and not pd.api.types.is_numeric_dtype(valid_loss):
+                errors.append("'expected_loss_rate' column must be numeric (decimal)")
         
-        if not pd.api.types.is_numeric_dtype(df['expected_freq']):
-            errors.append("'expected_freq' column must be numeric (decimal)")
-        
-        # Check for null values
-        for col in required_columns:
-            null_count = df[col].isna().sum()
-            if null_count > 0:
-                errors.append(f"Column '{col}' contains {null_count} null value(s)")
+        if 'expected_freq' in df.columns:
+            valid_freq = df['expected_freq'].dropna()
+            if not valid_freq.empty and not pd.api.types.is_numeric_dtype(valid_freq):
+                errors.append("'expected_freq' column must be numeric (decimal)")
+                
+        # We allow nulls in expected_loss_rate or expected_freq independently, but period must not have nulls
+        if df['period'].isna().sum() > 0:
+            errors.append(f"Column 'period' contains {df['period'].isna().sum()} null value(s)")
+            
+        # Ensure no row is missing BOTH expected rates
+        both_null = df[['expected_loss_rate', 'expected_freq']].isna().all(axis=1)
+        if both_null.any():
+            errors.append(f"Found {both_null.sum()} row(s) missing both expected_loss_rate and expected_freq")
         
         # Check for duplicate periods (only one value per period)
         if 'period' in df.columns:
