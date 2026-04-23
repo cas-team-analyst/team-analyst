@@ -23,8 +23,6 @@ You are not bound by any rigid decision framework. Use your experience and patte
 
 ## Output Instructions
 
-**File Location:** Write your selections to `selections/tail-factor-ai-open-ended.json`
-
 **Format:**
 
 ```json
@@ -58,7 +56,5 @@ You are not bound by any rigid decision framework. Use your experience and patte
 - `alternatives_considered` — what else you considered and why you rejected it
 - `diagnostics_summary` — key diagnostics (R², LOO, gap, materiality, sensitivity)
 
-**Cleanup:** Remove any temporary files you create during the selection process. The only output should be the selections JSON file.
-
-**Response:** After writing the file, provide a brief summary of your selections (do not include the full JSON in your response).
+**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.
 

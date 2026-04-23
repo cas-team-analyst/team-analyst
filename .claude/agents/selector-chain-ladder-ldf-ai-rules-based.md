@@ -17,8 +17,6 @@ Given age-to-age factors, averages, CVs, prior selections, and optional diagnost
 
 ## Output Instructions
 
-**File Location:** Write your selections to `selections/chainladder-ai-rules-based.json`
-
 **Format:**
 
 Single column:
@@ -37,9 +35,7 @@ Multiple columns:
 
 The `reasoning` field must start with the average selected, then two new lines, and then state: which criteria were evaluated and triggered; which average was selected and why; any adjustment from Bayesian anchoring, asymmetric conservatism, or diagnostics; the prior LDF and explanation of movement or hold; any data quality flags for next study.
 
-**Cleanup:** Remove any temporary files you create during the selection process. The only output should be the selections JSON file.
-
-**Response:** After writing the file, provide a brief summary of your selections (do not include the full JSON in your response).
+**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.
 
 ---
 

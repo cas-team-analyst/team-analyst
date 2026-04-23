@@ -17,8 +17,6 @@ You may reference method weights, but you are not bound to a fixed maturity sche
 
 ## Output Instructions
 
-**File Location:** Write your selections to `selections/ultimates-ai-open-ended.json`
-
 **Format:**
 
 Single period:
@@ -38,6 +36,4 @@ Multiple periods:
 
 The `reasoning` field must start with the method(s) you weighted most heavily, then two new lines, and then state: what you saw in the data, which methods you considered credible and why, your weighting rationale, how maturity influenced your decision, any notable departures from the prior ultimate, and any cross-year patterns or data quality flags for next study.
 
-**Cleanup:** Remove any temporary files you create during the selection process. The only output should be the selections JSON file.
-
-**Response:** After writing the file, provide a brief summary of your selections (do not include the full JSON in your response).
+**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.

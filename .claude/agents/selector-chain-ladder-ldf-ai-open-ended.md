@@ -17,8 +17,6 @@ You may reference averages, but you are not bound to them. You may reference pri
 
 ## Output Instructions
 
-**File Location:** Write your selections to `selections/chainladder-ai-open-ended.json`
-
 **Format:**
 
 Single column:
@@ -37,7 +35,5 @@ Multiple columns:
 
 The `reasoning` field must start with the average selected, then two new lines, and then state: what you saw in the data, what average or blend you used and why, any notable departures from the data (e.g., trend, outlier, sparse data), and any data quality flags for next study.
 
-**Cleanup:** Remove any temporary files you create during the selection process. The only output should be the selections JSON file.
-
-**Response:** After writing the file, provide a brief summary of your selections (do not include the full JSON in your response).
+**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.
 

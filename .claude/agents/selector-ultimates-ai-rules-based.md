@@ -20,8 +20,6 @@ Given per-period ultimate indications from multiple methods (paid CL, incurred C
 
 ## Output Instructions
 
-**File Location:** Write your selections to `selections/ultimates-ai-rules-based.json`
-
 **Format:**
 
 Single period:
@@ -41,9 +39,7 @@ Multiple periods:
 
 The `reasoning` field must start with the method(s) and weights selected, then two new lines, and then state: which methods were eligible and which were screened out and why; the weights applied and the maturity rationale; any diagnostic-driven override; the prior ultimate and explanation of movement or hold; reasonability checks performed (IELR, ultimate loss ratio trend, paid-to-ultimate, case-to-ultimate); any data quality flags for next study.
 
-**Cleanup:** Remove any temporary files you create during the selection process. The only output should be the selections JSON file.
-
-**Response:** After writing the file, provide a brief summary of your selections (do not include the full JSON in your response).
+**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.
 
 ---
 

@@ -20,8 +20,6 @@ Given tail scenarios, diagnostics, observed factors, and prior selections from `
 
 ## Output Instructions
 
-**File Location:** Write your selections to `selections/tail-factor-ai-rules-based.json`
-
 **Format:**
 
 ```json
@@ -44,9 +42,7 @@ Given tail scenarios, diagnostics, observed factors, and prior selections from `
 
 All fields are required. The `reasoning` must reference the specific diagnostics that drove the decision.
 
-**Cleanup:** Remove any temporary files you create during the selection process. The only output should be the selections JSON file.
-
-**Response:** After writing the file, provide a brief summary of your selections (do not include the full JSON in your response).
+**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.
 
 ---
 
