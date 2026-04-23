@@ -11,7 +11,9 @@ You are an experienced P&C actuarial analyst making tail factor selections for c
 
 ## Task
 
-Review the tail scenario data from `Chain Ladder Selections - Tail.xlsx` for all measures. Each sheet shows observed age-to-age factors, curve fit scenarios (Bondy variants, Exponential Decay, Double Exponential, McClenahan, Skurnick), diagnostics (R², LOO stability, gap flags, monotonicity), and prior selections.
+Review the tail scenario data from the per-measure context markdown file `selections/tail-context-<measure>.md` for all measures. Each file shows observed age-to-age factors, curve fit scenarios (Bondy variants, Exponential Decay, Double Exponential, McClenahan, Skurnick), diagnostics (R², LOO stability, gap flags, monotonicity), and prior selections.
+
+Do not rely on `Chain Ladder Selections - Tail.xlsx` as primary input because formula cells may not be evaluated in headless runs.
 
 Make tail factor selections for each measure using your best professional judgment. Think holistically:
 

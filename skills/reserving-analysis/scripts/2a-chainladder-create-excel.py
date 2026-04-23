@@ -627,6 +627,9 @@ def df_to_markdown(df, index=False):
         rows.append("| " + " | ".join(row.values) + " |")
     return "\n".join([header_str, sep_str] + rows) + "\n"
 def export_md_data(measures, df2, df3, df4, exp_md):
+    # Subagents should use these markdown files as canonical context.
+    # The workbook contains formulas that may not be recalculated in headless environments,
+    # so cached Excel values can be stale or missing.
     for measure in measures:
         safe_name = measure.lower().replace(' ', '_')
         md_path = Path(SELECTIONS_OUTPUT_PATH) / f"chainladder-context-{safe_name}.md"

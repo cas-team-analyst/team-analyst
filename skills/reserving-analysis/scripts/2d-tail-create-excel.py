@@ -445,6 +445,9 @@ def df_to_markdown(df, index=False):
         rows.append("| " + " | ".join(row.values) + " |")
     return "\n".join([header_str, sep_str] + rows) + "\n"
 def export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, exp_md):
+    # Subagents should use these markdown files as canonical context.
+    # The workbook can include formulas that are not recalculated in headless runs,
+    # which makes direct Excel reads unreliable for selection inputs.
     for measure in measures:
         safe_name = measure.lower().replace(' ', '_')
         md_path = Path(SELECTIONS_OUTPUT_PATH) / f"tail-context-{safe_name}.md"

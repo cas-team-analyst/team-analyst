@@ -52,6 +52,9 @@ def df_to_markdown(df, index=False):
     return "\n".join([header_str, sep_str] + rows) + "\n"
 def export_md_data(measures, df_ult, exp_md):
     import pathlib
+    # Subagents should use these markdown files as canonical context.
+    # Workbook formulas may not be evaluated in headless execution, so markdown
+    # context avoids dependence on stale Excel caches.
     for measure in measures:
         df_m = df_ult[df_ult['measure'] == measure].copy()
         if df_m.empty:
