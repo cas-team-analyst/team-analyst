@@ -17,7 +17,7 @@ These files can be used with many different agentic tools. For most users, we su
 5. Click "New task"
 6. Type "/reserving-analysis" (it will auto-complete and you can press enter to select it) in the chat box and press enter to get started!
 
-Want to test the workflow quickly? Sample data is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data. Provide a file from the sample-data to the agent as your input data.
+Want to test the workflow quickly? Sample input data is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data. Provide a file from sample-data to the agent as your input data. A sample workflow run with example output files is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data/sample-run.
 
 ## This Repository
 

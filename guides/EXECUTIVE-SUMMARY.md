@@ -45,7 +45,7 @@ TeamAnalyst is meant to be used as a guided starting point rather than a finishe
 
 First, the user installs the bundle into a supported AI environment. For many users, Claude CoWork is the most approachable path. For more technical users, the same content can also be used with Agent Skills-compatible environments such as GitHub Copilot, Claude Code, Cursor, Windsurf, Cline, and Gemini CLI. Installation instructions are available at https://github.com/cas-team-analyst/team-analyst. 
 
-To test the tool quickly, users can provide the project sample data to the agent. Sample data is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data.
+To test the tool quickly, users can provide the project sample data to the agent. Sample input data is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data, and a sample workflow run with example output files is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data/sample-run.
 
 Once installed, the tool itself will guide the user through setup, data exploration, data intake, calculations, selections, review, and draft reporting. The experience is conversational, but the work is anchored by project files that document progress, replication steps, and reporting language.
 
@@ -62,10 +62,11 @@ The simplest way to describe use of TeamAnalyst is:
 1. Install the TeamAnalyst bundle into a supported AI tool.
 2. Start the reserving-analysis workflow.
 3. Provide the analysis folder and input data (the sample data at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data can be used for testing).
-4. Follow the guided prompts as the tool prepares data, runs methods, and supports selections.
-5. Review the generated analysis materials, technical checks, and peer review output.
-6. Start a new session to run the peer-review.
-7. Use the resulting files as a draft and learning aid, not as a final unchecked work product.
+4. If helpful, review the sample workflow run and output at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data/sample-run to see the expected structure.
+5. Follow the guided prompts as the tool prepares data, runs methods, and supports selections.
+6. Review the generated analysis materials, technical checks, and peer review output.
+7. Start a new session to run the peer-review.
+8. Use the resulting files as a draft and learning aid, not as a final unchecked work product.
 
 In practical terms, this means TeamAnalyst can be used in several ways: as a learning aid for actuaries who want to understand agentic workflows, as a demonstration of AI-assisted reserving, as a reusable template for internal experimentation, or as a base that technical users can adapt to their own methods and preferences.
 
