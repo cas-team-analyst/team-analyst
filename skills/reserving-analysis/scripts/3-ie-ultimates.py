@@ -1,12 +1,17 @@
 # Computes initial expected ultimates by multiplying expected loss rates and frequencies
 # by exposure to get expected ultimate losses and claim counts for each period.
+#
+# Fallback behavior:
+# If the expected loss rates file is not provided, this script derives an expected
+# loss rate by period from diagonal loss/exposure and smooths it with a 3-year
+# rolling average (rounded to 3 decimals).
 
 """
 goal: Calculate Initial Expected ultimates for all periods and measures.
 
 inputs:
     ../processed-data/1_triangles.parquet - Triangle data including Exposure measure (diagonal used)
-    ../processed-data/1_expected_loss_rates.parquet - Expected loss rates and frequencies by period
+    ../processed-data/1_expected_loss_rates.parquet - Optional expected loss rates and frequencies by period
 
 outputs:
     ../ultimates/projected-ultimates.parquet - Combined ultimates file with IE columns
@@ -19,14 +24,14 @@ run-note: When copied to a project, run from the scripts/ directory:
 
 import pandas as pd
 import numpy as np
-import sys
 from pathlib import Path
 
 from modules import config
 
 # Paths from modules/config.py — override here if needed:
 # NOTE: Set INPUT_EXPECTED_RATES to None if expected loss rate data is not available.
-#       This script will exit gracefully since Initial Expected requires this data.
+#       In that case, this script uses the built-in fallback based on
+#       a 3-year rolling average of diagonal loss per unit of exposure.
 INPUT_TRIANGLE_DATA  = config.PROCESSED_DATA + "1_triangles.parquet"
 INPUT_EXPECTED_RATES = config.PROCESSED_DATA + "1_expected_loss_rates.parquet"  # Set to None if not available
 OUTPUT_PATH          = config.ULTIMATES
@@ -89,6 +94,63 @@ def extract_exposure_diagonal(triangle_data: pd.DataFrame) -> dict:
     
     print(f"  Extracted exposure for {len(exposure_dict)} period(s)")
     return exposure_dict
+
+
+def build_fallback_expected_rates(diagonal: pd.DataFrame, exposure: dict) -> pd.DataFrame:
+    """
+    Build fallback expected loss rates when no expected rates input file is available.
+
+    Method by period:
+    1. Compute diagonal loss per unit exposure
+    2. Smooth with a 3-year rolling average
+    3. Round to 3 decimals
+
+    The fallback produces expected_loss_rate only. expected_freq is left as NaN.
+
+    Args:
+        diagonal: DataFrame with diagonal values (period, measure, age, value)
+        exposure: Dictionary mapping period (str) to exposure value (float)
+
+    Returns:
+        DataFrame with columns: period, expected_loss_rate, expected_freq
+    """
+    diagonal_loss = diagonal[diagonal['measure'].isin(['Incurred Loss', 'Paid Loss'])].copy()
+
+    if diagonal_loss.empty:
+        raise ValueError(
+            "Fallback expected-rate calculation requires 'Incurred Loss' or 'Paid Loss' in triangle data."
+        )
+
+    preferred_measure = 'Incurred Loss' if (diagonal_loss['measure'] == 'Incurred Loss').any() else 'Paid Loss'
+    diagonal_loss = diagonal_loss[diagonal_loss['measure'] == preferred_measure].copy()
+
+    diagonal_loss['period'] = diagonal_loss['period'].astype(str)
+    diagonal_loss['loss_value'] = diagonal_loss['value'].astype(float)
+    diagonal_loss['exposure'] = diagonal_loss['period'].map(exposure).astype(float)
+
+    if (diagonal_loss['exposure'] <= 0).any():
+        bad_periods = diagonal_loss.loc[diagonal_loss['exposure'] <= 0, 'period'].tolist()
+        raise ValueError(
+            f"Fallback expected-rate calculation requires positive exposure. Non-positive exposure for period(s): {bad_periods}"
+        )
+
+    diagonal_loss['raw_loss_rate'] = diagonal_loss['loss_value'] / diagonal_loss['exposure']
+    diagonal_loss['period_num'] = pd.to_numeric(diagonal_loss['period'], errors='coerce')
+    diagonal_loss = diagonal_loss.sort_values(by=['period_num', 'period'], kind='stable')
+    diagonal_loss['expected_loss_rate'] = (
+        diagonal_loss['raw_loss_rate']
+        .rolling(window=3, min_periods=1)
+        .mean()
+        .round(3)
+    )
+
+    fallback = diagonal_loss[['period', 'expected_loss_rate']].copy()
+    fallback['expected_freq'] = np.nan
+
+    print(f"  Built fallback expected loss rates from '{preferred_measure}' using 3-year rolling average")
+    print(f"  Fallback generated for {len(fallback)} period(s)")
+
+    return fallback
 
 
 def compute_initial_ultimate_ies(expected_rates: pd.DataFrame, exposure: dict, diagonal: pd.DataFrame) -> pd.DataFrame:
@@ -192,39 +254,36 @@ def compute_initial_ultimate_ies(expected_rates: pd.DataFrame, exposure: dict, d
 
 if __name__ == "__main__":
     print("Computing Initial Expected ultimates...")
-    
-    # Check if expected rates data is configured
-    if INPUT_EXPECTED_RATES is None:
-        print("\nINPUT_EXPECTED_RATES is set to None.")
-        print("Initial Expected calculation requires expected loss rate data.")
-        print("Skipping Initial Expected calculation.")
-        sys.exit(0)
-    
+
     # Load triangle data
     print(f"\nReading triangle data from: {INPUT_TRIANGLE_DATA}")
     df_triangles = pd.read_parquet(INPUT_TRIANGLE_DATA)
-    
-    # Load expected rates (optional - skip if not available)
-    if not Path(INPUT_EXPECTED_RATES).exists():
-        print("  Expected loss rates file not found (optional). Skipping Initial Expected calculation.")
-        sys.exit(0)
-    print(f"Reading expected rates from: {INPUT_EXPECTED_RATES}")
-    
-    df_expected_rates = pd.read_parquet(INPUT_EXPECTED_RATES)
-    
+
     # Extract diagonal values
     print("\nExtracting diagonal values...")
     diagonal = extract_diagonal(df_triangles)
-    
+
     # Ensure string types for matching
     diagonal['period'] = diagonal['period'].astype(str)
     diagonal['measure'] = diagonal['measure'].astype(str)
     diagonal['age'] = diagonal['age'].astype(str)
-    
+
     # Extract exposure diagonal
     print("\nExtracting exposure values...")
     exposure_dict = extract_exposure_diagonal(df_triangles)
-    
+
+    # Load expected rates, or build fallback if not available
+    if INPUT_EXPECTED_RATES is not None and Path(INPUT_EXPECTED_RATES).exists():
+        print(f"\nReading expected rates from: {INPUT_EXPECTED_RATES}")
+        df_expected_rates = pd.read_parquet(INPUT_EXPECTED_RATES)
+    else:
+        if INPUT_EXPECTED_RATES is None:
+            print("\nINPUT_EXPECTED_RATES is set to None. Using fallback expected-rate method.")
+        else:
+            print(f"\nExpected rates file not found: {INPUT_EXPECTED_RATES}")
+            print("Using fallback expected-rate method.")
+        df_expected_rates = build_fallback_expected_rates(diagonal, exposure_dict)
+
     # Compute initial expected ultimates
     print("\nComputing initial expected ultimates...")
     df_ie = compute_initial_ultimate_ies(df_expected_rates, exposure_dict, diagonal)
