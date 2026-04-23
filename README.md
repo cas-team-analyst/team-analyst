@@ -4,7 +4,7 @@ TeamAnalyst is the result of a research initiative by the Casualty Actuarial Soc
 
 The project is a collection of Markdown files and Python scripts that agentic tools can use to run the workflow, organized to match the expected organization of these files for different tools.
 
-> **DISCLAIMER**: This is a proof of concept research initiative and is not meant for real-world actuarial work. 
+> **DISCLAIMER**: TeamAnalyst is a proof of concept and should be presented that way. It is not intended to be a complete, error-free, or production-approved actuarial system. The CAS does not guarantee the accuracy of the output, and users should not rely on the generated material as a final actuarial work product without appropriate professional review.
 
 ## Quick Start
 
@@ -16,6 +16,8 @@ These files can be used with many different agentic tools. For most users, we su
 4. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files > Select `teamanalyst-cowork.zip`
 5. Click "New task"
 6. Type "/reserving-analysis" (it will auto-complete and you can press enter to select it) in the chat box and press enter to get started!
+
+Want to test the workflow quickly? Sample data is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data. Provide a file from the sample-data to the agent as your input data.
 
 ## This Repository
 
