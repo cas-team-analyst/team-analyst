@@ -1,8 +1,9 @@
 {
   "name": "team-analyst",
-  "version": "0.0.1",
-  "description": "Supports the development of actuarial reserve ultimate estimates using systematic methodology and thorough documentation, with the help of an AI coding agent.",
+  "version": "1.0.0",
+  "description": "TeamAnalyst actuarial reserving workflow bundle. Installs all skills and selector agent references for reserve analysis workflows.",
   "author": {
-    "name": "CAS TeamAnalyst Research Team"
+    "name": "CAS TeamAnalyst Research Team",
+    "url": "https://github.com/cas-team-analyst"
   }
 }

@@ -1,0 +1,6 @@
+{
+  "name": "team-analyst",
+  "description": "Actuarial reserving workflow bundle with all TeamAnalyst skills and selector references.",
+  "version": "1.0.0",
+  "contextFileName": "GEMINI.md"
+}

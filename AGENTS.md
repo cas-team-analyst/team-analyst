@@ -1,10 +1,10 @@
-# MAIN OPERATION FLOW
+@./skills/help/SKILL.md
+@./skills/reserving-analysis/SKILL.md
+@./skills/selection-logic/SKILL.md
+@./skills/peer-review/SKILL.md
 
-This project will always use the same flow. Start with the reserve-analysis skill.
+Start with `/help` for orientation or `/reserving-analysis` for the main workflow.
 
-Skills are available at .claude\skills.
+Skills live in `skills/`. Selector and reference subagent prompts live in `skills/reserving-analysis/agents/`.
 
-# MODIFYING THE SKILLS  
-
-Alternatively, the user may ask to modify the skills to change the way this project behaves. 
-- There is sample/checkpoint data representing the workflow at different stages at `demo/`. Use it to test your changes. 
+When modifying the workflow itself, treat the files in `skills/` as the primary behavior surface and use `demo/` as the test bed for checkpoint/sample validation.

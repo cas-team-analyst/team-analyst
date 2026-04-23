@@ -14,30 +14,52 @@ These files can be used with many different agentic tools. For most users, we su
 
 1. Sign up for a Claude Pro account (~$20/month) at https://claude.ai/ and follow installation instructions at https://support.claude.com/en/articles/10065433-installing-claude-desktop.
 2. Open Claude Desktop and select "CoWork" on the top left (default is "Chat").
-2. Download the `team-analyst-plugin.zip` from [LOCATION_TBD].
-3. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files > Select `team-analyst-plugin.zip`.
-4. Click "New task".
-5. Type "/reserving-analysis" (it will auto-complete and you can press enter to select it) in the chat box and press enter to get started!
+3. Download the `team-analyst-plugin.zip` from [LOCATION_TBD].
+4. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files > Select `team-analyst-plugin.zip`.
+5. Click "New task".
+6. Type "/reserving-analysis" (it will auto-complete and you can press enter to select it) in the chat box and press enter to get started!
 
-## Advanced 
+## What You Get
 
-See `guides/` for more information for advanced users looking to build on this work. 
+The repository ships as a full bundle, not a single-skill install. The plugin and extension layouts include:
+
+- every skill under `skills/`
+- selector custom subagents under `skills/reserving-analysis/agents/`
+- skill-local assets and scripts used by the reserving workflow
+
+The primary end-user entry points are:
+
+- `/help` for orientation and available workflows
+- `/reserving-analysis` for the full reserving workflow
+- `/selection-logic` to inspect the LDF and tail selection framework
+- `/peer-review` to review a completed analysis
+
+> [!NOTE]
+> `npx skills add` installs the skills for supported agents, but it does not install repo-specific always-on instruction files. For agents without their own marketplace/context system, users may still need to invoke a TeamAnalyst skill explicitly in each session.
+
+## Repository Layout
+
+- `skills/` contains the TeamAnalyst skills, each with its own `SKILL.md` plus any `assets/` and `scripts/`
+- `skills/reserving-analysis/agents/` contains selector custom subagents used by the reserving workflow
+- `.claude-plugin/` contains the Claude marketplace metadata and generated plugin zip
+- `.github/workflows/build-plugin.yml` automatically packages the full bundle for manual plugin import on push to main
+
+## Advanced
+
+See `guides/` for more information for advanced users looking to build on this work.
 
 Contributions via GitHub Issues and Pull Requests are welcome!
 
 ## Other Tools
 
-TeamAnalyst can also be imported into other tools:
+| Agent | Install |
+|-------|---------|
+| **Claude Code** | `claude plugin marketplace add cas-team-analyst/team-analyst && claude plugin install team-analyst@team-analyst` |
+| **Gemini CLI** | `gemini extensions install https://github.com/cas-team-analyst/team-analyst` |
+| **Cursor** | `npx skills add cas-team-analyst/team-analyst -a cursor` |
+| **Windsurf** | `npx skills add cas-team-analyst/team-analyst -a windsurf` |
+| **Copilot** | `npx skills add cas-team-analyst/team-analyst -a github-copilot` |
+| **Cline** | `npx skills add cas-team-analyst/team-analyst -a cline` |
+| **Any other** | `npx skills add cas-team-analyst/team-analyst` |
 
-### Claude Code
-
-1. Sign up for a Claude account at https://claude.ai/ and follow installation instructions at https://code.claude.com/docs/en/setup.
-2. Clone (download) this repository into a new folder (Learn Git at https://www.w3schools.com/git/default.asp) or download it from [this link](https://storage.googleapis.com/data-downloads-by-bryce/team-analyst.zip) and unzip it. 
-3. Open the folder in your favorite terminal. For example: 
-  - Unzip the file. 
-  - Click into the "team-analyst" folder, you should see another "team-analyst" folder. If you don't, go back.
-  - Right-click the "team-analyst" folder > Open in Terminal
-  - Run this command: `claude "Let's go!"`
-  - To run without having to confirm all the agent's operations, use `claude --dangerously-skip-permissions "Let's go!"`
-
-The agent will run you through Chain Ladder selections. That's as far as we've gotten.
+Uninstall: `npx skills remove team-analyst`

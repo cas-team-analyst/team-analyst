@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "team-analyst",
+  "description": "Actuarial reserving workflow bundle for Claude Code, shipping all TeamAnalyst skills and selector agent references in one plugin.",
+  "owner": {
+    "name": "CAS TeamAnalyst Research Team",
+    "url": "https://github.com/cas-team-analyst"
+  },
+  "plugins": [
+    {
+      "name": "team-analyst",
+      "description": "Install the full TeamAnalyst bundle, including all skills under skills/ and selector references under agents/.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

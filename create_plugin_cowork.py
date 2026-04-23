@@ -1,15 +1,15 @@
 # Creates team-analyst-plugin.zip in the .claude-plugin folder.
 #
 # Usage (run from project root):
-#   .venv\Scripts\Activate.ps1; python admin/create_plugin_zip.py
+#   .venv\Scripts\Activate.ps1; python create_plugin_cowork.py
 
 import zipfile
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent
 PLUGIN_DIR = PROJECT_ROOT / ".claude-plugin"
-OUTPUT_ZIP = PLUGIN_DIR / "team-analyst-plugin.zip"
-ZIP_FILENAME = "team-analyst-plugin.zip"
+OUTPUT_ZIP = PROJECT_ROOT / "plugin_cowork.zip"
+ZIP_FILENAME = "plugin_cowork.zip"
 
 TOP_LEVEL_FILES = []
 
@@ -42,11 +42,11 @@ def collect_files():
     else:
         print(f"WARNING: skills/ not found, skipping")
 
-    # Add .claude-plugin directory (excluding the output zip file)
+    # Add .claude-plugin directory (excluding marketplace.json and the output zip file)
     plugin_dir = PROJECT_ROOT / ".claude-plugin"
     if plugin_dir.exists():
         for child in sorted(plugin_dir.rglob("*")):
-            if child.is_file() and child.name != ZIP_FILENAME:
+            if child.is_file() and child.name not in (ZIP_FILENAME, "marketplace.json"):
                 arcname = child.relative_to(PROJECT_ROOT).as_posix()
                 files.append((child, arcname))
     else:
