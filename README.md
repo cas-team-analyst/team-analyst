@@ -1,8 +1,6 @@
 # TeamAnalyst
 
-## Project Overview
-
-TeamAnalyst is the result of a research initiative by the Casualty Actuarial Society (CAS) to explore using agentic tools in actuarial work. It targets a specific workflow: development of actuarial reserve ultimate estimates. 
+TeamAnalyst is the result of a research initiative by the Casualty Actuarial Society (CAS) to explore the use of agentic tools in actuarial work. It targets a specific workflow: development of actuarial reserve ultimate estimates. 
 
 The project is a collection of Markdown files and Python scripts that agentic tools can use to run the workflow, organized to match the expected organization of these files for different tools.
 
@@ -12,14 +10,14 @@ The project is a collection of Markdown files and Python scripts that agentic to
 
 These files can be used with many different agentic tools. For most users, we suggest Claude CoWork:
 
-1. Sign up for a Claude Pro account (~$20/month) at https://claude.ai/ and follow installation instructions at https://support.claude.com/en/articles/10065433-installing-claude-desktop.
-2. Open Claude Desktop and select "CoWork" on the top left (default is "Chat").
-3. Download `teamanalyst-cowork.zip` from https://github.com/cas-team-analyst/team-analyst/blob/main/plugins/teamanalyst-cowork.zip.
-4. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files > Select `team-analyst-plugin.zip`.
-5. Click "New task".
+1. Sign up for a Claude Pro account (~$20/month) at https://claude.ai/ and follow installation instructions at https://support.claude.com/en/articles/10065433-installing-claude-desktop
+2. Open Claude Desktop and select "CoWork" on the top left (default is "Chat")
+3. Download `teamanalyst-cowork.zip` from https://github.com/cas-team-analyst/team-analyst/blob/main/plugins/teamanalyst-cowork.zip
+4. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files > Select `teamanalyst-cowork.zip`
+5. Click "New task"
 6. Type "/reserving-analysis" (it will auto-complete and you can press enter to select it) in the chat box and press enter to get started!
 
-## What You Get
+## This Repository
 
 The repository ships as a full bundle, not a single-skill install. The plugin and extension layouts include:
 
@@ -34,15 +32,12 @@ The primary end-user entry points are:
 - `/selection-logic` to inspect the LDF and tail selection framework
 - `/peer-review` to review a completed analysis
 
-> [!NOTE]
-> `npx skills add` installs the skills for supported agents, but it does not install repo-specific always-on instruction files. For agents without their own marketplace/context system, users may still need to invoke a TeamAnalyst skill explicitly in each session.
-
 ## Repository Layout
 
 - `skills/` contains the TeamAnalyst skills, each with its own `SKILL.md` plus any `assets/` and `scripts/`
 - `skills/reserving-analysis/agents/` contains selector custom subagents used by the reserving workflow
-- `.claude-plugin/` contains the Claude marketplace metadata and generated plugin zip
-- `.github/workflows/build-plugin.yml` automatically packages the full bundle for manual plugin import on push to main
+- `.claude-plugin/` contains the Claude marketplace and plugin metadata
+- `create_plugin_cowork.py` packages skills for upload into CoWork, saves the plugin at `plugins/teamanalyst-cowork.zip`
 
 ## Advanced
 

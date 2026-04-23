@@ -1,7 +1,7 @@
 # Creates team-analyst-plugin.zip in the .claude-plugin folder.
 #
 # Usage (run from project root):
-#   .venv\Scripts\Activate.ps1; python create_plugin_cowork.py
+#  python create_plugin_cowork.py
 
 import zipfile
 from pathlib import Path
