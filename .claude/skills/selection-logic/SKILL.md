@@ -5,6 +5,20 @@ description: View the base actuarial LDF selection logic used for chain-ladder s
 
 # Selection Logic
 
+## Quick Reference
+
+**What this covers:** LDF selection framework (non-tail factors), tail factor selection framework (15-point decision), diagnostic adjustment rules (10 types), AI selector approaches (rules-based vs open-ended)
+
+**Four views available:**
+1. LDF selection framework → [Section A](#a-view-ldf-selection-framework)
+2. Tail factor selection framework → [Section B](#b-view-tail-factor-selection-framework)  
+3. Diagnostic rules → [Section C](#c-view-diagnostic-rules)
+4. AI selector approach → [Section D](#d-view-ai-selector-approach)
+
+**Note:** LDF (age-to-age factors) and tail factors are handled separately with distinct frameworks.
+
+---
+
 ## Getting Started
 
 When a user invokes this skill, always begin by presenting the following introduction:

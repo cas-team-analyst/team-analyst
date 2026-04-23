@@ -3,6 +3,20 @@ name: reserving-analysis
 description: Main skill. Use when asked to work on a reserving analysis project. Do NOT use for peer review, there is a separate skill for that.
 ---
 
+# Reserving Analysis
+
+## Quick Reference
+
+**Workflow steps:** 1. Project Setup, 2. Exploratory Data Analysis, 3. Data Intake, 4. Chain Ladder Selections, 5. Run Methods, 6. Ultimate Selections
+
+**Methods:** Chain Ladder (always), Initial Expected (requires ELRs + exposures), BF (requires both CL + IE)  
+**Documents:** REPORT.md (deliverable), PROGRESS.md (progress tracking), REPLICATE.md (reproducibility)  
+**Modes:** Pause for Selections, Fully Automatic  
+
+→ [Welcome message](#welcome) | [Main operation flow](#main-operation-flow) | [Other guidelines](#other-guidelines)
+
+---
+
 # WELCOME
 
 When the user first triggers this skill, present the following message:
@@ -70,6 +84,7 @@ As you go:
 # OTHER GUIDELINES
 
 - Never include checkmarks or other unicode symbols in PowerShell commands - only use standard ASCII text and operators.
+- Use the AskUserQuestion tools as applicable.
 - If you are having folder access or file copy issues, it may mean the user hasn't accepted your request to access that folder. IMPORTANT: STOP WHAT YOU ARE DOING and wait for the user to approve any open requests. 
 - CRITICAL: USE POWERSHELL `cp` COMMAND TO COPY FILES. DO NOT use the create_file tool to write new files from scratch. Template files exist in `.claude\skills\reserving-analysis\assets\` and scripts exist in `.claude\skills\reserving-analysis\scripts\` — use PowerShell `cp` to copy these to the project directory. If the copy operation fails STOP AND WORK WITH THE USER TO DEBUG IT. Real bugs (wrong path variable, wrong column name, missing customization for the user's data format) should be fixed with a targeted Edit after copying, not a full rewrite. Rewriting loses tested logic and introduces divergence from the skill's canonical scripts.
 - If you are CoWork and finding your file cache is out of date, STOP and suggest the user close and reopen CoWork.

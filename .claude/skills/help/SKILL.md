@@ -5,7 +5,18 @@ description: Get oriented with the TeamAnalyst plugin and explore available skil
 
 # TeamAnalyst Start
 
-Walk the user through orientation with the TeamAnalyst plugin.
+## Quick Reference
+
+**Main workflow:** `/reserving-analysis` — end-to-end loss reserving (data → methods → selections → projections)  
+**View selection logic:** `/selection-logic` — review LDF and tail factor decision frameworks  
+**Peer review:** `/peer-review` — validate completed analysis against ASOP standards  
+
+**Interaction modes:** Careful (step-by-step), Selections Only (automated prep), Fully Automated (no pauses)  
+**Three standard documents:** REPORT.md (deliverable), PROGRESS.md (checklist), REPLICATE.md (reproducibility log)
+
+→ [Full orientation](#step-1-welcome)
+
+---
 
 ## Step 1: Welcome
 

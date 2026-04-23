@@ -5,6 +5,18 @@ description: Guidelines and utility knowledge for working with formula-driven Ex
 
 # Formula-Driven Excel Workbooks
 
+## Quick Reference
+
+**Core principle:** Inject live Excel formulas (not hard-coded values) so workbooks recalculate when actuaries change selections.
+
+**Critical pattern:** Generate formula-driven Excel + JSON replica (openpyxl can't evaluate formulas, so JSON stores evaluated data for downstream scripts).
+
+**Key utilities:** Use `rewrite_formula_sheet_refs()` from `modules/formulas.py` when aggregating sheets → [Best Practices](#best-practices)
+
+---
+
+## Overview
+
 This codebase relies heavily on Excel workbooks not just for displaying outputs, but as live, interactive dashboards. To support this, generated workbooks must inject live Excel formulas rather than hard-coded values wherever a value can be derived. 
 
 ## Key Concepts
