@@ -27,7 +27,7 @@ You can then ask for a detailed explanation of any specific criterion or diagnos
 The selection logic lives in a single file:
 
 ```
-.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md
+./agents/selector-chain-ladder-ldf-ai-rules-based.md
 ```
 
 You can read it directly or ask Claude: "Read and explain the selection logic reference file."
@@ -36,7 +36,7 @@ You can read it directly or ask Claude: "Read and explain the selection logic re
 
 ## How Selection Logic Is Applied
 
-During a chain-ladder analysis, the `selector-chain-ladder-ldf-ai-rules-based` agent is tasked with making LDF selections. This agent (defined in `.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md`) embeds the full selection logic framework in its prompt. When it evaluates your triangle data, it works through:
+During a chain-ladder analysis, the `selector-chain-ladder-ldf-ai-rules-based` agent is tasked with making LDF selections. This agent (defined in `./agents/selector-chain-ladder-ldf-ai-rules-based.md`) embeds the full selection logic framework in its prompt. When it evaluates your triangle data, it works through:
 
 1. **Decision Hierarchy** — A priority-ordered sequence that determines which criteria take precedence. For example, if all averages converge within +/-2%, that overrides Bayesian anchoring and asymmetric conservatism.
 
@@ -76,7 +76,7 @@ Navigate to your local clone of the TeamAnalyst plugin repository.
 Show me the current selection logic reference file
 ```
 
-Claude will read and present `.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md`.
+Claude will read and present `./agents/selector-chain-ladder-ldf-ai-rules-based.md`.
 
 #### 3. Tell Claude what you want to change
 
@@ -110,7 +110,7 @@ Run a chain-ladder analysis on sample data to see how your changes affect select
 The decision hierarchy lives in the agent definition:
 
 ```
-.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md
+./agents/selector-chain-ladder-ldf-ai-rules-based.md
 ```
 
 This file defines the priority order:
@@ -140,5 +140,5 @@ To reorder, ask Claude:
 
 | File | Purpose |
 |---|---|
-| `.claude/skills/selection-logic/SKILL.md` | View-only skill for inspecting selection logic in Cowork |
-| `.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md` | Agent definition that embeds the full selection logic framework (14 criteria + 10 diagnostics) and applies it to triangle data |
+| `./skills/selection-logic/SKILL.md` | View-only skill for inspecting selection logic in Cowork |
+| `./agents/selector-chain-ladder-ldf-ai-rules-based.md` | Agent definition that embeds the full selection logic framework (14 criteria + 10 diagnostics) and applies it to triangle data |

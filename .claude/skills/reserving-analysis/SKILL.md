@@ -5,6 +5,10 @@ description: Main skill. Use when asked to work on a reserving analysis project.
 
 # Reserving Analysis
 
+## CRITICAL NOTES
+
+- Do not EVER create files when you are told to use a copy operation.  Find a way to get copy to work. If you are working in a sandbox or the skill source isn't accessible from bash, mount the skill folder. If you fail, try a different approach. If your cache is out of date, STOP and ask the user to close and reopen Cowork. Do NOT create files from scratch that should be copied from the skill's assets or scripts folders. This is a critical guardrail to prevent bugs and ensure consistency with the skill's tested scripts.
+
 ## Quick Reference
 
 **Workflow steps:** 1. Project Setup, 2. Exploratory Data Analysis, 3. Data Intake, 4. Chain Ladder Selections, 5. Run Methods, 6. Ultimate Selections

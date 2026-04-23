@@ -44,7 +44,7 @@ Then use the AskUserQuestion tool with exactly these four options and no others:
 
 ## A. View LDF Selection Framework
 
-**Authoritative Source:** `.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md`
+**Authoritative Source:** `./agents/selector-chain-ladder-ldf-ai-rules-based.md`
 
 Read the agent file and present a summary with this structure:
 
@@ -59,7 +59,7 @@ Once done, remind: "When you're ready to see this logic in action on your data, 
 
 ## B. View Tail Factor Selection Framework
 
-**Authoritative Source:** `.claude/agents/selector-tail-factor-ai-rules-based.md`
+**Authoritative Source:** `./agents/selector-tail-factor-ai-rules-based.md`
 
 Read the agent file and present a summary with this structure:
 
@@ -75,7 +75,7 @@ Once done, remind: "When you're ready to see this logic in action on your data, 
 
 ## C. View Diagnostic Rules
 
-**Authoritative Source:** `.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md` (Section 10)
+**Authoritative Source:** `./agents/selector-chain-ladder-ldf-ai-rules-based.md` (Section 10)
 
 Read Section 10 from the agent file and present a summary with this structure:
 
@@ -92,12 +92,12 @@ Once done, remind: "When you're ready to see this logic in action on your data, 
 ## D. View AI Selector Approach
 
 **Authoritative Sources:**
-- `.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md` (LDF selections, rules-based)
-- `.claude/agents/selector-chain-ladder-ldf-ai-open-ended.md` (LDF selections, open-ended)
-- `.claude/agents/selector-tail-factor-ai-rules-based.md` (Tail selections, rules-based)
-- `.claude/agents/selector-tail-factor-ai-open-ended.md` (Tail selections, open-ended)
-- `.claude/agents/selector-ultimates-ai-rules-based.md` (Ultimate selections, rules-based)
-- `.claude/agents/selector-ultimates-ai-open-ended.md` (Ultimate selections, open-ended)
+- `./agents/selector-chain-ladder-ldf-ai-rules-based.md` (LDF selections, rules-based)
+- `./agents/selector-chain-ladder-ldf-ai-open-ended.md` (LDF selections, open-ended)
+- `./agents/selector-tail-factor-ai-rules-based.md` (Tail selections, rules-based)
+- `./agents/selector-tail-factor-ai-open-ended.md` (Tail selections, open-ended)
+- `./agents/selector-ultimates-ai-rules-based.md` (Ultimate selections, rules-based)
+- `./agents/selector-ultimates-ai-open-ended.md` (Ultimate selections, open-ended)
 
 Read all AI agent files and present a summary with this structure:
 
@@ -117,12 +117,12 @@ Once done, remind: "When you're ready to see both selectors in action on your da
 
 - This is a **read-only** skill. It does not create, modify, or save any files.
 - It reads from these authoritative sources only:
-  - `.claude/agents/selector-chain-ladder-ldf-ai-rules-based.md` (LDF rules-based framework)
-  - `.claude/agents/selector-chain-ladder-ldf-ai-open-ended.md` (LDF open-ended AI framework)
-  - `.claude/agents/selector-tail-factor-ai-rules-based.md` (Tail rules-based framework)
-  - `.claude/agents/selector-tail-factor-ai-open-ended.md` (Tail open-ended AI framework)
-  - `.claude/agents/selector-ultimates-ai-rules-based.md` (Ultimate selection rules-based framework)
-  - `.claude/agents/selector-ultimates-ai-open-ended.md` (Ultimate selection open-ended AI framework)
+  - `./agents/selector-chain-ladder-ldf-ai-rules-based.md` (LDF rules-based framework)
+  - `./agents/selector-chain-ladder-ldf-ai-open-ended.md` (LDF open-ended AI framework)
+  - `./agents/selector-tail-factor-ai-rules-based.md` (Tail rules-based framework)
+  - `./agents/selector-tail-factor-ai-open-ended.md` (Tail open-ended AI framework)
+  - `./agents/selector-ultimates-ai-rules-based.md` (Ultimate selection rules-based framework)
+  - `./agents/selector-ultimates-ai-open-ended.md` (Ultimate selection open-ended AI framework)
 - Do NOT invent, assume, or present any selection logic that is not in these reference files.
 - Do NOT offer to create or modify custom logic files.
 - Do NOT suggest other skills, plugin customizers, or workarounds for modifying selection logic.
