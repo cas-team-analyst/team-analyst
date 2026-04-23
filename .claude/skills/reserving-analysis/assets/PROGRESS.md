@@ -1,7 +1,6 @@
 # Step 1: Project Setup
 Goal: Set up the project structure and standard documents.
-- [ ] Copy markdown files from assets to the project folder (use `cp` or `mv`, don't rewrite it yourself): PROGRESS, REPLICATE, REPORT.
-- [ ] Install the Python packages in `requirements.txt`.
+- [ ] Copy markdown files from assets to the project folder: PROGRESS, REPLICATE, REPORT. IMPORTANT: Use `cp` or `mv`, DO NOT REGENERATE THE FILES. Find a way to get copy to work. If you are working in a sandbox or the skill source isn't accessible from bash, mount the skill folder.
 - [ ] Ask the user the level of interaction they would like:
   - **Pause for Selections** — Runs automatically, but pauses after LDF selections and again after ultimate selections so you can explore and override them before the analysis continues.
   - **Fully Automatic** — Runs start to finish without stopping for input (except to confirm data format). Selections are made automatically.
@@ -25,7 +24,7 @@ Goal: Understand what data is available.
 
 # Step 3: Data Intake
 
-- [ ] Copy all the numbered python scripts from the reserving-analysis skill scripts folder to `scripts/` (use `cp` or `mv`, don't rewrite it yourself): 1a-prep-data.py through 2b-chainladder-update-selections.py. Also copy the `modules/` subfolder (containing `config.py`, `xl_styles.py`, `__init__.py`) into `scripts/modules/` — all scripts import from it.
+- [ ] Copy all the numbered python scripts from the reserving-analysis skill scripts folder to `scripts/` (use `cp` or `mv`, don't rewrite it yourself): 1a-prep-data.py through 2b-chainladder-update-selections.py. Also copy the `modules/` subfolder (containing `config.py`, etc.) into `scripts/modules/` — all scripts import from it. IMPORTANT: Use `cp` or `mv`, DO NOT REGENERATE THE FILES. Find a way to get copy to work. If you are working in a sandbox or the skill source isn't accessible from bash, mount the skill folder.
 - [ ] Based on available data, determine which triangles we will use to come up with Ultimates estimates using the Chain Ladder method: Paid Losses, Incurred Losses, Reported Claims, Closed Claims, etc.
 - [ ] If you haven't already found prior selections, ask the user if prior LDF selections exist from a previous analysis. If they do, ask where they are located (Excel file, CSV, database, etc.). You will need to modify `read_and_process_prior_selections()` in `1a-prep-data.py` to read from that source during data extraction.
 - [ ] Ask the user if prior tail factor selections exist from a previous analysis. If they do, ask where they are located and what tail factor was used for each measure. Create a CSV file at `selections/tail-factor-prior.csv` with columns: `measure`, `cutoff_age`, `tail_factor`, `method`, `reasoning`. This will be loaded by `2d-tail-create-excel.py` and shown in the "Prior Selection" row for reference. If no prior tail selections exist, skip this step.
