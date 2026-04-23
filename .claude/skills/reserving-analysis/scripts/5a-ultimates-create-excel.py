@@ -64,9 +64,9 @@ def export_md_data(measures, df_ult, exp_md):
         
         md_content = f"# Ultimates Context: {measure}\n\n"
         md_content += "## Table of Contents\n"
-        md_content += "- [Exposure Background](#exposure-background)\n"
+        md_content += "- [Exposure](#exposure)\n"
         md_content += "- [Projected Ultimates](#projected-ultimates)\n\n"
-        md_content += "## Exposure Background\n" + exp_md + "\n"
+        md_content += "## Exposure\n" + exp_md + "\n"
         md_content += "## Projected Ultimates\n" + df_to_markdown(df_m, index=False) + "\n"
         
         with open(md_path, 'w') as f:

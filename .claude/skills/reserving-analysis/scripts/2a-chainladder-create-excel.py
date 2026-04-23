@@ -643,11 +643,11 @@ def export_md_data(measures, df2, df3, df4, exp_md):
         
         md_content = f"# Chain Ladder Context: {measure}\n\n"
         md_content += "## Table of Contents\n"
-        md_content += "- [Exposure Background](#exposure-background)\n"
+        md_content += "- [Exposure](#exposure)\n"
         md_content += "- [Triangle](#triangle)\n"
         md_content += "- [Diagnostics](#diagnostics)\n"
         md_content += "- [Averages](#averages)\n\n"
-        md_content += "## Exposure Background\n" + exp_md + "\n"
+        md_content += "## Exposure\n" + exp_md + "\n"
         md_content += "## Triangle\n" + tri_md + "\n"
         md_content += "## Diagnostics\n" + diag_md + "\n"
         md_content += "## Averages\n" + avg_md + "\n"

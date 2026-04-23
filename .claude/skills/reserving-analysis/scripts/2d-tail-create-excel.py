@@ -461,10 +461,10 @@ def export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, exp_md):
             
         md_content = f"# Tail Context: {measure}\n\n"
         md_content += "## Table of Contents\n"
-        md_content += "- [Exposure Background](#exposure-background)\n"
+        md_content += "- [Exposure](#exposure)\n"
         md_content += "- [Scenarios](#scenarios)\n"
         md_content += "- [Observed Factors](#observed-factors)\n\n"
-        md_content += "## Exposure Background\n" + exp_md + "\n"
+        md_content += "## Exposure\n" + exp_md + "\n"
         md_content += "## Scenarios\n" + scen_md + "\n"
         md_content += "## Observed Factors\n" + obs_md + "\n"
         
