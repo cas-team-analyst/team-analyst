@@ -65,3 +65,5 @@ Contributions via GitHub Issues and Pull Requests are welcome!
 | **Any other** | `npx skills add cas-team-analyst/team-analyst` |
 
 Uninstall: `npx skills remove team-analyst`
+
+_Distribution strategy adapted from https://github.com/JuliusBrussee/caveman_
