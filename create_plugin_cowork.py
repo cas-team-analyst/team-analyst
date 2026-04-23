@@ -8,8 +8,9 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 PLUGIN_DIR = PROJECT_ROOT / ".claude-plugin"
-OUTPUT_ZIP = PROJECT_ROOT / "plugin_cowork.zip"
-ZIP_FILENAME = "plugin_cowork.zip"
+OUTPUT_DIR = PROJECT_ROOT / "plugins"
+OUTPUT_ZIP = OUTPUT_DIR / "teamanalyst-cowork.zip"
+ZIP_FILENAME = "teamanalyst-cowork.zip"
 
 TOP_LEVEL_FILES = []
 
@@ -56,8 +57,8 @@ def collect_files():
 
 
 def main():
-    # Ensure the .claude-plugin directory exists
-    PLUGIN_DIR.mkdir(exist_ok=True)
+    # Ensure the output directory exists
+    OUTPUT_DIR.mkdir(exist_ok=True)
     
     files = collect_files()
 

@@ -14,7 +14,7 @@ These files can be used with many different agentic tools. For most users, we su
 
 1. Sign up for a Claude Pro account (~$20/month) at https://claude.ai/ and follow installation instructions at https://support.claude.com/en/articles/10065433-installing-claude-desktop.
 2. Open Claude Desktop and select "CoWork" on the top left (default is "Chat").
-3. Download the `team-analyst-plugin.zip` from [LOCATION_TBD].
+3. Download `teamanalyst-cowork.zip` from https://github.com/cas-team-analyst/team-analyst/blob/main/plugins/teamanalyst-cowork.zip.
 4. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files > Select `team-analyst-plugin.zip`.
 5. Click "New task".
 6. Type "/reserving-analysis" (it will auto-complete and you can press enter to select it) in the chat box and press enter to get started!
