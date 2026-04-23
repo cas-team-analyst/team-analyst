@@ -40,7 +40,7 @@ The primary end-user entry points are:
 - `skills/reserving-analysis/agents/` contains selector custom subagents used by the reserving workflow
 - `.claude-plugin/` contains the Claude marketplace and plugin metadata
 - `GEMINI.md` and `gemini-extension.json` define Gemini extension context and manifest metadata
-- `create_plugin_cowork.py` packages skills for upload into CoWork and writes `plugins/teamanalyst-cowork.zip`
+- `plugins/create_plugin_cowork.py` packages skills for upload into CoWork and writes `plugins/teamanalyst-cowork.zip`
 - `plugins/` stores generated plugin artifacts for distribution
 - `sample-data/` contains example input data and a sample run with representative outputs
 - `guides/` contains supplementary notes for developers and advanced users
