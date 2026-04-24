@@ -37,12 +37,17 @@ This document provides step-by-step instructions to reproduce the analysis resul
 ## Step 2: Data Intake
 
 **Input files used:**
-- [List each file in raw-data/ with description]
+- `raw-data/input_data.xlsx` — Primary data file. Contains 5 sheets:
+  - `Tri 1`: Metadata (WC, low-hazard/clerical, payroll $100M–$500M)
+  - `Paid 1`: Paid loss triangle, 24 AYs (2001–2024), 24 eval ages (11–287 months)
+  - `Inc 1`: Incurred loss triangle, same structure as paid
+  - `Ct 1`: Closed claim count triangle, same structure
+  - `Exposure`: Annual payroll by accident year (2001–2024), ~$316M–$499M range
 
 **Scripts run:**
 1. `scripts/1a-prep-data.py` — Read raw data and create canonical triangle format
-   - **Customizations made:** [List any modifications to read_and_process_triangles() or other functions]
-   - **Output:** `processed-data/1_triangles.parquet`
+   - **Customizations made:** None — data matched expected format. Standard `read_triangle_data()` used. `EXPECTED_LOSS_RATES_FILE = None` (no ELR file).
+   - **Output:** `processed-data/1_triangles.parquet` (900 rows: 300 per measure × 3 measures)
 
 2. `scripts/1b-enhance-data.py` — Add LDFs, incremental values, cumulative data
    - **Output:** `processed-data/2_enhanced.parquet`
@@ -53,7 +58,12 @@ This document provides step-by-step instructions to reproduce the analysis resul
 4. `scripts/1d-averages-qa.py` — Calculate LDF averages (simple, weighted, exclude high/low)
    - **Output:** `processed-data/4_ldf_averages.parquet`
 
-**Data validation:** User confirmed data format on [date]
+**Data validation:** User confirmed data format on 04/24/2026
+
+**Key decisions:**
+- No prior LDF selections available
+- No prior tail factor selections available
+- No ELR file provided; BF will use fallback (diagonal paid/payroll, 3-yr rolling avg)
 
 ---
 

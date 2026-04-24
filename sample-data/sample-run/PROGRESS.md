@@ -30,51 +30,50 @@
 
 # Step 3: Data Intake
 
-- [ ] Use bash cp to copy all the numbered scripts and the modules folder from the reserving-analysis skill scripts folder to `scripts/` in the working directory. Do NOT regenerate. Ensure copied files are writable (use chmod +w if needed) since you will edit them to track progress.
+- [x] Use bash cp to copy all the numbered scripts and the modules folder from the reserving-analysis skill scripts folder to `scripts/` in the working directory. Do NOT regenerate. Ensure copied files are writable (use chmod +w if needed) since you will edit them to track progress. — ✓ Complete (scripts 1a–7 + modules/ copied in prior session)
 
-- [ ] Based on available data, determine which triangles we will use to come up with Ultimates estimates using the Chain Ladder method: Paid Losses, Incurred Losses, Reported Claims, Closed Claims, etc.
+- [x] Based on available data, determine which triangles we will use to come up with Ultimates estimates using the Chain Ladder method: Paid Losses, Incurred Losses, Reported Claims, Closed Claims, etc. — ✓ Complete (Paid Loss, Incurred Loss, Closed Count)
 
-- [ ] If you haven't already found prior selections, ask the user if prior LDF selections exist from a previous analysis. If they do, ask where they are located (Excel file, CSV, database, etc.). You will need to modify `read_and_process_prior_selections()` in `1a-prep-data.py` to read from that source during data extraction.
+- [x] If you haven't already found prior selections, ask the user if prior LDF selections exist from a previous analysis. — ✓ Complete 04/24/2026 (no prior selections)
 
-- [ ] Ask the user if prior tail factor selections exist from a previous analysis. If they do, ask where they are located and what tail factor was used for each measure. Create a CSV file at `selections/tail-factor-prior.csv` with columns: `measure`, `cutoff_age`, `tail_factor`, `method`, `reasoning`. This will be loaded by `2d-tail-create-excel.py` and shown in the "Prior Selection" row for reference. If no prior tail selections exist, skip this step.
+- [x] Ask the user if prior tail factor selections exist from a previous analysis. — ✓ Complete 04/24/2026 (no prior tail factors; step skipped)
 
-- [ ] If you haven't already found an input file with Expected Loss Rates (containing period, expected loss rate, and expected frequency), ask the user if this file exists and to place it in the raw-data folder. Without this file, we won't be able to use the Initial Expected or Bornhuetter-Ferguson methods.
+- [x] If you haven't already found an input file with Expected Loss Rates (containing period, expected loss rate, and expected frequency), ask the user if this file exists and to place it in the raw-data folder. — ✓ Complete 04/24/2026 (no ELR file; exposure sheet found in input_data.xlsx)
 
-- [ ] If initial expected data is not provided (no expected loss rate/frequency file) but exposure is available, confirm with the user whether to use the fallback approximation for BF expected rate: for each accident year, compute diagonal loss per dollar of exposure, smooth with a 3-year rolling average, and round to 3 decimals. Offer these options explicitly before continuing: (1) use this fallback (this is what `3-ie-ultimates.py` defaults to), (2) use a different approach the user specifies, (3) upload initial expected data in the required format, or (4) skip Initial Expected/BF and continue with Chain Ladder only. Note their response REPORT.md.
+- [x] If initial expected data is not provided (no expected loss rate/frequency file) but exposure is available, confirm with the user whether to use the fallback approximation for BF expected rate. — ✓ Complete 04/24/2026 (user selected option 1: use fallback approximation)
 
-- [ ] Modify the variables at the top of each script with the appropriate DATA_FILE_PATH, OUTPUT_PATH, and TEMPLATE_PATH.
+- [x] Modify the variables at the top of each script with the appropriate DATA_FILE_PATH, OUTPUT_PATH, and TEMPLATE_PATH. — ✓ Complete (paths handled via modules/config.py)
 
-- [ ] Modify `1a-prep-data.py` to accept the format of the data provided by the user. This includes:
-  - Customizing `read_and_process_triangles()` to read triangle data from your source
-  - If prior selections exist, customizing `read_and_process_prior_selections()` to read from your source.
-  - Run it to verify it works and passes validation. Only mark this step complete once the tests in the script have passed to verify the output is in the necessary format.
+- [x] Modify `1a-prep-data.py` to accept the format of the data provided by the user. — ✓ Complete (no modifications required; data matched expected format; output validated)
 
-- [ ] **Confirm data format with the user.** This step always runs, regardless of interaction mode. Use the data-validation template from assets so every analysis presents data validation the same way. Do not improvise the format, reorder sections, or omit headings — even if a section is short or trivial. Populate every section from the actual processed data. The spot-check triangle should default to Paid Loss; if Paid Loss is not present, use the first loss measure available (Incurred, then Reported). Do not proceed until the user confirms.
+- [x] **Confirm data format with the user.** — ✓ Complete 04/24/2026 (user confirmed "looks good")
 
-- [ ] Report to the user what LDF averages (review `1d-averages-qa.py`) and metrics will be calculated. _(Pause for Selections only: also ask if they'd like to add others before continuing.)_
+- [x] Report to the user what LDF averages and metrics will be calculated. — ✓ Complete 04/24/2026
 
-- [ ] Run all the other Python scripts to create output in `processed-data/`.
+- [x] Run all the other Python scripts to create output in `processed-data/`. — ✓ Complete (1b, 1c, 1d run in prior session; all outputs present)
 
-- [ ] **Update REPORT.md:**
+- [x] **Update REPORT.md:** — ✓ Complete 04/24/2026
   - Update **Section 3.1** Data Used table: add rows for triangle types used (paid, incurred, counts), confirm source file names and as-of dates; note if ELR file is present or absent.
   - Update **Section 3.3** Data Quality Observations: note any adjustments made to `1a-prep-data.py` (e.g., outlier exclusions, coding changes), any data limitations discovered.
   - Update **Section 3.4** Data Limitations: note missing data types (e.g., no ELR file → IE/BF skipped) and how limitations were handled.
   - Update **Section 1.2** Scope table: fill in accident/underwriting years, coverages, and basis once confirmed from the data.
 
-- [ ] **Update REPLICATE.md Step 2:**
+- [x] **Update REPLICATE.md Step 2:** — ✓ Complete 04/24/2026
   - List all input files in raw-data/ with brief descriptions
   - Document which scripts were run (1a through 1d)
   - List any customizations made to `1a-prep-data.py` (column mappings, data transformations, outlier handling)
   - Note the output files created in `processed-data/`
   - Record the data validation confirmation date
 
+**Step 3 Status: COMPLETE** ✓ 04/24/2026
+
 # Step 4: Actuarial Selections: Chain Ladder LDFs
 
-- [ ] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. This framework includes 14 selection criteria and 10 diagnostic adjustment rules. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
+- [x] Tell the user about the selection logic framework. — ✓ Complete 04/24/2026
 
-- [ ] Create JSON files to hold selections: `selections/chainladder-ai-rules-based.json` and `selections/chainladder-ai-open-ended.json` with just "[]" for now.
+- [x] Create JSON files to hold selections: `selections/chainladder-ai-rules-based.json` and `selections/chainladder-ai-open-ended.json` with just "[]" for now. — ✓ Complete 04/24/2026
 
-- [ ] Compress your context to make space for the upcoming subagent responses.
+- [x] Compress your context to make space for the upcoming subagent responses. — ✓ Complete 04/24/2026
 
 - [ ] For each measure, task a  `selector-chain-ladder-ldf-ai-rules-based.md` subagent (located in `agents/`) to: Review the per-measure context markdown exported by `2a-chainladder-create-excel.py` at `selections/chainladder-context-<measure>.md` (NOT the files at `processed-data`, and do NOT use Excel as the primary source because formulas may be unevaluated), use this information to make actuarial LDF selections for each combination of Chain Ladder measure and interval, and return the selections as JSON. The parent agent will extract the JSON from the subagent response and write it to `selections/chainladder-ai-rules-based.json`.
 

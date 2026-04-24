@@ -52,8 +52,8 @@ Demonstration of chain-ladder reserving analysis workflow on Workers Compensatio
 | Item | Detail |
 |---|---|
 | Segment(s) / LOB | Workers Compensation |
-| Accident / Underwriting years | 2001–2008 |
-| Coverages | Loss (Paid, Incurred); Reported Claim Count |
+| Accident / Underwriting years | 2001–2024 |
+| Coverages | Loss (Paid, Incurred); Closed Claim Count |
 | Basis | Gross |
 | Currency | USD |
 | Geography | Not specified (Commercial account, clerical/low hazard) |
@@ -89,11 +89,12 @@ Demonstration of chain-ladder reserving analysis workflow on Workers Compensatio
 ### 3.1 Data Used
 | Data Element | Source | As-of Date | Notes |
 |---|---|---|---|
-| Paid loss triangles | input_data.xlsx (Sheet: Paid 1) | 04/24/2026 | 8 AYs (2001–2008), 24 evaluation ages; fully developed through 287 months |
-| Incurred loss triangles | input_data.xlsx (Sheet: Inc 1) | 04/24/2026 | 8 AYs (2001–2008), 24 evaluation ages; same structure as paid |
-| Claim counts (reported) | input_data.xlsx (Sheet: Ct 1) | 04/24/2026 | 8 AYs (2001–2008), 24 evaluation ages; count-based development |
-| Payroll (exposure) | input_data.xlsx (Sheet: Exposure) | 04/24/2026 | 2001–2008+; base $316.4M with 2% annual growth formula |
+| Paid loss triangles | input_data.xlsx (Sheet: Paid 1) | 04/24/2026 | 24 AYs (2001–2024), 24 evaluation ages (11–287 months); staircase pattern |
+| Incurred loss triangles | input_data.xlsx (Sheet: Inc 1) | 04/24/2026 | 24 AYs (2001–2024), 24 evaluation ages (11–287 months); same structure as paid |
+| Closed claim counts | input_data.xlsx (Sheet: Ct 1) | 04/24/2026 | 24 AYs (2001–2024), 24 evaluation ages; count-based development |
+| Payroll (exposure) | input_data.xlsx (Sheet: Exposure) | 04/24/2026 | 24 AYs (2001–2024); base $316.4M with ~2% annual growth; used for BF fallback ELR |
 | Metadata | input_data.xlsx (Sheet: Tri 1) | 04/24/2026 | Workers Comp, low-hazard/clerical, payroll $100M–$500M range |
+| Expected Loss Rates | N/A | N/A | No ELR file provided. BF method will use fallback: diagonal paid loss per dollar of payroll, smoothed with 3-yr rolling average. Initial Expected method skipped. |
 
 ### 3.2 Data Reconciliation
 - Data source is a standalone triangle file; no external reconciliation performed.
@@ -108,7 +109,9 @@ Demonstration of chain-ladder reserving analysis workflow on Workers Compensatio
 - **No data adjustments required** at this stage; data appears clean and usable as-is.
 
 ### 3.4 Data Limitations
-- [Known limitations and how they were handled]
+- **No ELR file provided:** Initial Expected (IE) method was skipped. Bornhuetter-Ferguson (BF) will use the fallback approximation: for each accident year, diagonal paid loss per dollar of payroll exposure, smoothed with a 3-year rolling average and rounded to 3 decimals.
+- **No prior selections:** No LDF or tail factor selections from a prior analysis were available for comparison. All selections are new.
+- **Closed count vs. reported count:** The count triangle reflects closed claims (not reported/open). Development patterns differ from reported count — interpretation of count-based diagnostics should account for this.
 
 ---
 
