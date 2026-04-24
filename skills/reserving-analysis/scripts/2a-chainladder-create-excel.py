@@ -7,6 +7,7 @@ goal: Create Chain Ladder Selections.xlsx for actuarial LDF review and selection
 
 Sheet layout:
   - One main sheet per measure: loss triangle, LDF triangle, averages (no CV/slopes), selections
+  - "Exposure": exposure triangle (if exposure data is available)
   - One CV & slopes sheet per measure: "{Measure} - CV & Slopes"
   - One sheet per diagnostic triangle: "Diag - {Name}" (shared across measures)
 
@@ -362,6 +363,25 @@ def build_main_sheet(ws, measure, df2, df4, df_prior=None):
         "sel_row": sel_row
     }
 
+def build_exposure_sheet(ws, df2):
+    """Build exposure sheet displaying exposure triangle."""
+    exp_sub = df2[(df2['measure'] == 'Exposure') & df2['value'].notna()].copy()
+    if exp_sub.empty:
+        return
+    
+    periods = exp_sub['period'].cat.categories.tolist()
+    ages = [str(a) for a in exp_sub['age'].cat.categories.tolist()]
+    
+    exp_dict = {}
+    for _, row in exp_sub.iterrows():
+        exp_dict[(str(row['period']), str(row['age']))] = row['value']
+    
+    write_triangle(ws, 1, "Exposure", periods, ages, exp_dict, number_format="#,##0")
+    
+    ws.column_dimensions['A'].width = 22
+    for c_idx in range(2, len(ages) + 2):
+        ws.column_dimensions[get_column_letter(c_idx)].width = 12
+
 def build_diagnostic_sheet(ws, diag_col, df2, df3):
     first_measure = df2['measure'].cat.categories[0]
     df_m = df2[df2['measure'] == first_measure].copy()
@@ -502,6 +522,12 @@ def main():
         ws = wb.create_sheet(title=measure[:31])
         layout_infos[measure] = build_main_sheet(ws, measure, df2, df4, df_prior=df_prior)
         print(f"Built main sheet: {measure[:31]}")
+
+    # Add exposure sheet if exposure data is available
+    if not exp_sub.empty:
+        ws = wb.create_sheet(title="Exposure")
+        build_exposure_sheet(ws, df2)
+        print("Built Exposure sheet")
 
     for diag_col in diagnostic_cols:
         sheet_title = diag_sheet_name(diag_col)
