@@ -9,7 +9,7 @@ You are an expert P&C actuarial analyst selecting ultimate losses by accident ye
 
 **IMPORTANT:** You are handling ONE measure only (e.g., "Paid Loss" OR "Incurred Loss", not both). The parent agent will invoke you separately for each measure in the analysis.
 
-Use the per-measure context markdown file `selections/ultimates-context-<measure>.md` as the primary source. Do not rely on `selections/Ultimates.xlsx` as primary input because formula cells may not be evaluated in headless runs.
+**Your first step:** Read the per-measure context markdown file at `selections/ultimates-context-<measure>.md` (the parent agent will tell you which measure and which file). This is your primary data source. Do not rely on `Ultimates.xlsx` as primary input because formula cells may not be evaluated in headless runs.
 
 ## Task
 
@@ -44,11 +44,11 @@ Multiple periods:
 
 The `reasoning` field must start with the method(s) and weights selected, then two new lines, and then state: which methods were eligible and which were screened out and why; the weights applied and the maturity rationale; any diagnostic-driven override; the prior ultimate and explanation of movement or hold; reasonability checks performed (IELR, ultimate loss ratio trend, paid-to-ultimate, case-to-ultimate); any data quality flags for next study.
 
-**Important:** Include the `measure` field in each selection object (e.g., `"measure": "Paid Loss"`). This is required for the parent agent to route selections to the correct Excel sheet.
+**Important:** Include the `measure` field in each selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
 
-**File Output:** The parent agent will write your JSON response to `selections/ultimates-ai-rules-based-<measure>.json` where `<measure>` is normalized (e.g., `paid_loss`).
+**File Output:** Write your JSON selections to `selections/ultimates-ai-rules-based-<measure>.json` where `<measure>` is normalized (e.g., `paid_loss`).
 
-**Response:** Return ONLY the JSON array as specified above. Do not include explanatory text before or after the JSON.
+**Response:** Return ONLY the file path where you wrote the selections. Do not return the JSON content itself.
 
 ---
 

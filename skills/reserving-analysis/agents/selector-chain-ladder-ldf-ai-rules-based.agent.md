@@ -9,7 +9,7 @@ You are an expert P&C actuarial analyst selecting age-to-age factors for chain-l
 
 **IMPORTANT:** You are handling ONE measure only (e.g., "Paid Loss" OR "Incurred Loss", not both). The parent agent will invoke you separately for each measure in the analysis.
 
-Use the per-measure context markdown file `selections/chainladder-context-<measure>.md` as the primary source. Do not rely on `Chain Ladder Selections - LDFs.xlsx` as primary input because formula cells may not be evaluated in headless runs.
+**Your first step:** Read the per-measure context markdown file at `selections/chainladder-context-<measure>.md` (the parent agent will tell you which measure and which file). This is your primary data source. Do not rely on `Chain Ladder Selections - LDFs.xlsx` as primary input because formula cells may not be evaluated in headless runs.
 
 ## Task
 
@@ -40,11 +40,11 @@ Multiple columns:
 
 The `reasoning` field must start with the average selected, then two new lines, and then state: which criteria were evaluated and triggered; which average was selected and why; any adjustment from Bayesian anchoring, asymmetric conservatism, or diagnostics; the prior LDF and explanation of movement or hold; any data quality flags for next study.
 
-**Important:** Include the `measure` field in each selection object (e.g., `"measure": "Paid Loss"`). This is required for the parent agent to route selections to the correct Excel sheet.
+**Important:** Include the `measure` field in each selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
 
-**File Output:** The parent agent will write your JSON response to `selections/chainladder-ai-rules-based-<measure>.json` where `<measure>` is normalized (e.g., `paid_loss`).
+**File Output:** Write your JSON selections to `selections/chainladder-ai-rules-based-<measure>.json` where `<measure>` is normalized (e.g., `paid_loss`).
 
-**Response:** Return ONLY the JSON array as specified above. Do not include explanatory text before or after the JSON.
+**Response:** Return ONLY the file path where you wrote the selections. Do not return the JSON content itself.
 
 ---
 
