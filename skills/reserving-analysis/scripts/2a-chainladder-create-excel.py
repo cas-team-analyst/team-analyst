@@ -351,75 +351,7 @@ def build_main_sheet(ws, measure, df2, df4, df_prior=None):
                 ws.cell(row=r, column=c).value = excl_hl_formula(col, ata_rng, all_ata_rng)
 
     # 4. Selections
-    row_ptr, sel_row = write_selections_section(ws, row_ptr, intervals_with_tail, prior_selections=df_prior, measure=measure)
-    
-    # 5. CDFs and Ultimates
-    # CDFs
-    row_ptr += 1
-    title_cell = ws.cell(row=row_ptr, column=1, value="Cumulative Development Factors")
-    title_cell.font = Font(bold=True, size=10)
-    ws.merge_cells(start_row=row_ptr, start_column=1, end_row=row_ptr, end_column=len(ages))
-    row_ptr += 1
-    
-    cdf_ages_row = row_ptr
-    ws.cell(row=cdf_ages_row, column=1, value="Age").font = Font(bold=True, size=9)
-    for c_idx, age in enumerate(ages, start=2):
-        cell = ws.cell(row=cdf_ages_row, column=c_idx, value=f"=${get_column_letter(c_idx)}$2")
-        cell.font = Font(bold=True, size=9)
-    row_ptr += 1
-    
-    cdf_vals_row = row_ptr
-    ws.cell(row=cdf_vals_row, column=1, value="CDF").font = Font(bold=True, size=9)
-    
-    # Tail CDF
-    tail_col = len(intervals_with_tail) + 1
-    cell = ws.cell(row=cdf_vals_row, column=tail_col, value=f"={get_column_letter(tail_col)}{sel_row}")
-    cell.number_format = "0.0000"
-    
-    # Walk backwards
-    for c_idx in range(tail_col - 1, 1, -1):
-        col = get_column_letter(c_idx)
-        next_col = get_column_letter(c_idx + 1)
-        cell = ws.cell(row=cdf_vals_row, column=c_idx, value=f"={col}{sel_row}*{next_col}{cdf_vals_row}")
-        cell.number_format = "0.0000"
-    
-    row_ptr += 2
-    
-    # Ultimates
-    title_cell = ws.cell(row=row_ptr, column=1, value="Projected Ultimates")
-    title_cell.font = Font(bold=True, size=10)
-    ws.merge_cells(start_row=row_ptr, start_column=1, end_row=row_ptr, end_column=6)
-    row_ptr += 1
-    
-    headers = ["Period", "Latest Age", "Latest Value", "CDF at Age", "Projected Ultimate", "IBNR"]
-    for i, h in enumerate(headers, start=1):
-        c = ws.cell(row=row_ptr, column=i, value=h)
-        c.font = Font(bold=True, size=9)
-        c.alignment = Alignment(horizontal="center")
-    ult_header_row = row_ptr
-    row_ptr += 1
-    
-    ult_start_row = row_ptr
-    for i, tri_r in enumerate(range(tri_start, tri_end + 1)):
-        r = row_ptr + i
-        ws.cell(row=r, column=1, value=f"=A{tri_r}")
-        
-        last_col_letter = get_column_letter(len(ages) + 1)
-        ws.cell(row=r, column=2, value=f"=LOOKUP(2,1/(B{tri_r}:{last_col_letter}{tri_r}<>\"\"),$B$2:${last_col_letter}$2)")
-        
-        cell = ws.cell(row=r, column=3, value=f"=LOOKUP(2,1/(B{tri_r}:{last_col_letter}{tri_r}<>\"\"),B{tri_r}:{last_col_letter}{tri_r})")
-        cell.number_format = "#,##0"
-        
-        cell = ws.cell(row=r, column=4, value=f"=HLOOKUP(B{r},$B${cdf_ages_row}:${last_col_letter}${cdf_vals_row},2,FALSE)")
-        cell.number_format = "0.0000"
-        
-        cell = ws.cell(row=r, column=5, value=f"=C{r}*D{r}")
-        cell.number_format = "#,##0"
-        
-        cell = ws.cell(row=r, column=6, value=f"=E{r}-C{r}")
-        cell.number_format = "#,##0"
-        
-    row_ptr += len(periods)
+    row_ptr, sel_row = write_selections_section(ws, row_ptr, intervals, prior_selections=df_prior, measure=measure)
     
     ws.column_dimensions['A'].width = 22
     for c_idx in range(2, len(ages) + 2):
@@ -427,8 +359,7 @@ def build_main_sheet(ws, measure, df2, df4, df_prior=None):
 
     return {
         "tri_start": tri_start, "tri_end": tri_end,
-        "sel_row": sel_row,
-        "ult_start": ult_start_row, "ult_end": ult_start_row + len(periods) - 1
+        "sel_row": sel_row
     }
 
 def build_diagnostic_sheet(ws, diag_col, df2, df3):
