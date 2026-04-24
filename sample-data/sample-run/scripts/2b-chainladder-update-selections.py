@@ -275,14 +275,4 @@ def main():
             if matched in by_measure_ai:
                 header_row, _, _ = find_selections_section(wb[sheet_name])
                 if header_row:
-                    interval_to_col = get_interval_columns(wb[sheet_name], header_row)
-                    update_ai_sheet(wb[sheet_name], by_measure_ai[matched], interval_to_col)
-        else:
-            print(f"No selections found for sheet '{sheet_name}' - skipping")
-
-    wb.save(EXCEL_FILE)
-    print(f"\nSaved: {EXCEL_FILE}")
-
-
-if __name__ == "__main__":
-    main()
+          

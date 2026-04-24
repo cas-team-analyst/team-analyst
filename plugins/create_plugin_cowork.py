@@ -29,14 +29,26 @@ def collect_files():
         else:
             print(f"WARNING: {name} not found, skipping")
 
-    # Add skills directory (includes agents in skills/reserving-analysis/agents/)
+    # Add agent files from skills/*/agents/ to agents/ in the zip
     skills_dir = PROJECT_ROOT / "skills"
+    if skills_dir.exists():
+        for child in sorted(skills_dir.rglob("agents/*.agent.md")):
+            if child.is_file():
+                # Remove .agent from filename: selector-foo.agent.md -> selector-foo.md
+                filename = child.name.replace(".agent.md", ".md")
+                arcname = "agents/" + filename
+                files.append((child, arcname))
+
+    # Add skills directory (excluding agents subdirectories)
     if skills_dir.exists():
         for child in sorted(skills_dir.rglob("*")):
             if child.is_file():
                 # Skip improve-agent and python skill folders
                 relative_path = child.relative_to(skills_dir)
                 if relative_path.parts[0] in ("improve-agent", "python"):
+                    continue
+                # Skip agent files (already added to agents/ folder)
+                if "agents" in relative_path.parts and child.suffix == ".md" and child.stem.endswith(".agent"):
                     continue
                 arcname = "skills/" + relative_path.as_posix()
                 files.append((child, arcname))

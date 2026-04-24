@@ -7,8 +7,8 @@ description: Actuarial reserving analysis workflow. Do NOT use for peer review (
 
 ## Initial Setup
 
-**Identify working directory:**
-1. Identify and mount the plugin folder (if applicable) 
+Focus first exclusively on **orienting to the OS environment**.
+1. Identify and mount the plugin skill folder (if applicable, NOT the anthropic-skills folder).
 2. Identify and mount (if applicable) the project folder
 3. Check for existing `PROGRESS.md` file and use it to understand what the next step is
 4. If no `PROGRESS.md` exists:
@@ -33,25 +33,12 @@ description: Actuarial reserving analysis workflow. Do NOT use for peer review (
 ## Quick Reference
 
 **Sections in this skill:**
-- [Workflow Structure](#workflow-structure)
 - [Supporting Files](#supporting-files)
 - [Key Principles](#key-principles)
 - [Progress Tracking](#progress-tracking)
 - [User Communication](#user-communication)
 
 ---
-
-## Workflow Structure
-
-High-level phases (detailed steps in PROGRESS.md):
-1. Initial Setup → Project folder setup and interaction mode selection
-2. Progress Tracking → PROGRESS.md, REPORT.md, and REPLICATE.md management
-3. Data Preparation → Load, validate, and prepare triangle data
-4. Chain Ladder Development → LDF calculation and selection
-5. Tail Factor Selection → Tail analysis and selection
-6. Alternative Methods → IE and BF calculations
-7. Ultimate Selection → Final ultimate selections
-8. Finalization → Consolidation and technical review
 
 ## Supporting Files
 

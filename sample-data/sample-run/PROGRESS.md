@@ -1,28 +1,32 @@
 # Step 1: Project Setup
 
-- [ ] Respond to the user with the welcome message from assets and wait for their confirmation.
+- [x] Respond to the user with the welcome message from assets and wait for their confirmation. — ✓ Complete 04/24/2026
 
-- [ ] Use bash cp to copy PROGRESS.md, REPLICATE.md, and REPORT.md from skill assets. Do NOT read them or write them.
+- [x] Use bash cp to copy PROGRESS.md, REPLICATE.md, and REPORT.md from skill assets. Do NOT read them or write them. — ✓ Complete
 
-- [ ] Create folders `raw-data/`, `processed-data/`, `selections/`, `scripts/`, and `ultimates/` in the project folder and ask the user to copy relevant data files into the raw-data folder.
+- [x] Create folders `raw-data/`, `processed-data/`, `selections/`, `scripts/`, and `ultimates/` in the project folder and ask the user to copy relevant data files into the raw-data folder. — ✓ Complete (data file: input_data.xlsx)
 
-- [ ] **Update REPORT.md:**
+- [x] **Update REPORT.md:** — ✓ Complete 04/24/2026
   - Fill in the header fields: Analysis name, Valuation Date (if known), Prepared by (user name), Draft Date (today).
   - Fill in **Section 1.1** with the purpose of this analysis (e.g., "quarterly reserve review") and **Section 1.2** Scope table with any known segment/LOB/coverage/basis info.
   - Add a row to **Section 14** Version History: v0.1, today's date, analyst, "Initial draft".
 
-- [ ] **Update REPLICATE.md:**
+- [x] **Update REPLICATE.md:** — ✓ Complete 04/24/2026
   - Fill in the Overview section: Analysis name, Valuation Date, Prepared by, Date
   - Fill in Step 1: List folders created, note interaction mode selected
 
+**Step 1 Status: COMPLETE** ✓ 04/24/2026
+
 # Step 2: Exploratory Data Analysis
 
-- [ ] Review the files available using the explore-excel in the reserving-analysis skill scripts. For each file add a file summary subsection to REPORT.md in the data section.
+- [x] Review the files available using the explore-excel in the reserving-analysis skill scripts. For each file add a file summary subsection to REPORT.md in the data section. — ✓ Complete 04/24/2026 (manual review completed)
 
-- [ ] **Update REPORT.md:**
+- [x] **Update REPORT.md:** — ✓ Complete 04/24/2026
   - Fill in **Section 3.1** Data Used table: one row per file (source name, as-of date, any notes on format or coverage).
   - Fill in **Section 3.2** Data Reconciliation: note whether data was reconciled to a prior valuation or financial system and the result.
   - Fill in **Section 3.3** Data Quality Observations: any outliers, gaps, negative development, coding anomalies, or unusual patterns noticed during exploration.
+
+**Step 2 Status: COMPLETE** ✓ 04/24/2026
 
 # Step 3: Data Intake
 
@@ -68,26 +72,15 @@
 
 - [ ] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. This framework includes 14 selection criteria and 10 diagnostic adjustment rules. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
 
-- [ ] Create the selections directory if it doesn't exist.
+- [ ] Create JSON files to hold selections: `selections/chainladder-ai-rules-based.json` and `selections/chainladder-ai-open-ended.json` with just "[]" for now.
 
 - [ ] Compress your context to make space for the upcoming subagent responses.
 
-- [ ] **For each measure** (e.g., Paid Loss, Incurred Loss), invoke the `selector-chain-ladder-ldf-ai-rules-based.md` subagent (located in `agents/`) once per measure. Each subagent will:
-  - Review the per-measure context markdown exported by `2a-chainladder-create-excel.py` at `selections/chainladder-context-<measure>.md` (NOT the files at `processed-data`, and do NOT use Excel as the primary source because formulas may be unevaluated)
-  - Make actuarial LDF selections for all intervals for that one measure
-  - Write selections to `selections/chainladder-ai-rules-based-<measure>.json` (where `<measure>` is normalized, e.g., `paid_loss`)
-  - Return the file path
+- [ ] For each measure, task a  `selector-chain-ladder-ldf-ai-rules-based.md` subagent (located in `agents/`) to: Review the per-measure context markdown exported by `2a-chainladder-create-excel.py` at `selections/chainladder-context-<measure>.md` (NOT the files at `processed-data`, and do NOT use Excel as the primary source because formulas may be unevaluated), use this information to make actuarial LDF selections for each combination of Chain Ladder measure and interval, and return the selections as JSON. The parent agent will extract the JSON from the subagent response and write it to `selections/chainladder-ai-rules-based.json`.
 
-- [ ] **For each measure** (e.g., Paid Loss, Incurred Loss), invoke the `selector-chain-ladder-ldf-ai-open-ended.md` subagent (located in `agents/`) once per measure. Each subagent will:
-  - Review the per-measure context markdown at `selections/chainladder-context-<measure>.md`
-  - Independently make LDF selections for all intervals for that one measure using holistic actuarial judgment (no rigid rules framework)
-  - Write selections to `selections/chainladder-ai-open-ended-<measure>.json`
-  - Return the file path
+- [ ] For each measure, task a  `selector-chain-ladder-ldf-ai-open-ended.md` subagent (located in `agents/`) to: Review the per-measure context markdown exported by `2a-chainladder-create-excel.py` at `selections/chainladder-context-<measure>.md` (do NOT use Excel as the primary source because formulas may be unevaluated), independently make LDF selections for each combination of measure and interval using its own actuarial judgment (no rigid rules framework), and return the selections as JSON. The parent agent will extract the JSON from the subagent response and write it to `selections/chainladder-ai-open-ended.json`.
 
-- [ ] Run `2b-chainladder-update-selections.py` to collect all per-measure JSON files and insert the selections and reasoning into the Excel file. This script will:
-  - Load all `selections/chainladder-ai-rules-based-*.json` files and combine them
-  - Load all `selections/chainladder-ai-open-ended-*.json` files and combine them
-  - Populate the **Rules-Based AI Selection** row (from rules-based files) and **Open-Ended AI Selection** row (from open-ended files) in each sheet
+- [ ] Run `2b-chainladder-update-selections.py` to insert the selections and reasoning into the Excel file. This will populate both the **Rules-Based Selection** row (from `chainladder-ai-rules-based.json`) and the **Open-Ended AI Selection** row (from `chainladder-ai-open-ended.json`, if present) in each sheet.
 
 - [ ] Tell the user where `selections/Chain Ladder Selections - LDFs.xlsx` is located. Explain that both rules-based and open-ended AI selections (purple rows) are visible. The **Rules-Based Selection** row is what gets used for ultimates — the user can override it manually. If the Rules-Based Selection row is left blank, the Open-Ended AI Selection will be used as a fallback.
 
@@ -115,24 +108,15 @@ _(Pause for Selections only):_
 
 - [ ] Run `2d-tail-create-excel.py` to create `selections/Chain Ladder Selections - Tail.xlsx` with curve fit results and diagnostics. If prior tail selections exist (`selections/tail-factor-prior.csv`), they will be included in a "Prior Selection" row for reference.
 
+- [ ] Create JSON files to hold selections: `selections/tail-ai-rules-based.json` and `selections/tail-ai-open-ended.json` with just "[]" for now.
+
 - [ ] Compress your context to make space for the upcoming subagent responses.
 
-- [ ] **For each measure** (e.g., Paid Loss, Incurred Loss), invoke the `selector-tail-factor-ai-rules-based.md` subagent (located in `agents/`) once per measure. Each subagent will:
-  - Review the per-measure context markdown exported by `2d-tail-create-excel.py` at `selections/tail-context-<measure>.md` (NOT the files at `processed-data`, and do NOT use Excel as the primary source because formulas may be unevaluated), including prior tail factor selections if present
-  - Make actuarial tail factor selection for that one measure using the 15-point tail factor decision framework
-  - Write selection to `selections/tail-ai-rules-based-<measure>.json`
-  - Return the file path
+- [ ] For each measure, task a `selector-tail-factor-ai-rules-based.md` subagent (located in `agents/`) to: Review the per-measure context markdown exported by `2d-tail-create-excel.py` at `selections/tail-context-<measure>.md` (NOT the files at `processed-data`, and do NOT use Excel as the primary source because formulas may be unevaluated), including prior tail factor selections if present, use this information to make actuarial tail factor selections for each measure using the 15-point tail factor decision framework, and return the selections as JSON. The parent agent will extract the JSON from the subagent response and write it to `selections/tail-ai-rules-based.json`.
 
-- [ ] **For each measure** (e.g., Paid Loss, Incurred Loss), invoke the `selector-tail-factor-ai-open-ended.md` subagent (located in `agents/`) once per measure. Each subagent will:
-  - Review the per-measure context markdown at `selections/tail-context-<measure>.md`, including prior selections if present
-  - Independently make tail factor selection for that one measure using holistic actuarial judgment (no rigid rules framework)
-  - Write selection to `selections/tail-ai-open-ended-<measure>.json`
-  - Return the file path
+- [ ] For each measure, task a `selector-tail-factor-ai-open-ended.md` subagent (located in `agents/`) to: Review the per-measure context markdown exported by `2d-tail-create-excel.py` at `selections/tail-context-<measure>.md` (do NOT use Excel as the primary source because formulas may be unevaluated), including prior selections if present, independently make tail factor selections for each measure using holistic actuarial judgment (no rigid rules framework), and return the selections as JSON. The parent agent will extract the JSON from the subagent response and write it to `selections/tail-ai-open-ended.json`.
 
-- [ ] Run `2e-tail-update-selections.py` to collect all per-measure JSON files and insert the selections into the Excel file. This script will:
-  - Load all `selections/tail-ai-rules-based-*.json` files and combine them
-  - Load all `selections/tail-ai-open-ended-*.json` files and combine them
-  - Populate the **Rules-Based AI Selection** row and **Open-Ended AI Selection** row in each sheet
+- [ ] Run `2e-tail-update-selections.py` to insert the selections into the Excel file. This will populate both the **Rules-Based Selection** row (from `tail-ai-rules-based.json`) and the **Open-Ended AI Selection** row (from `tail-ai-open-ended.json`, if present) in each sheet.
 
 - [ ] Tell the user where `selections/Chain Ladder Selections - Tail.xlsx` is located. Explain that both rules-based and open-ended AI selections (purple rows) are visible. The **Rules-Based Selection** row is what gets used for ultimates — the user can override it manually. If the Rules-Based Selection row is left blank, the Open-Ended AI Selection will be used as a fallback.
 
@@ -170,24 +154,13 @@ _(Pause for Selections only):_
 
 - [ ] Copy `scripts/5a-ultimates-create-excel.py` and `scripts/5b-ultimates-update-selections.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`, don't rewrite them yourself). Ensure `scripts/modules/` is already in place (copied in Step 3).
 
-- [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export per-measure context files.
+- [ ] Create JSON files to hold selections: `selections/ultimates-ai-rules-based.json` and `selections/ultimates-ai-open-ended.json` with just "[]" for now.
 
-- [ ] **For each measure** (e.g., Paid Loss, Incurred Loss), invoke the `selector-ultimates-ai-rules-based.md` subagent (located in `agents/`) once per measure. Each subagent will:
-  - Review the per-measure context markdown exported by `5a-ultimates-create-excel.py` at `selections/ultimates-context-<measure>.md` (NOT the files at `processed-data`, and do NOT use Excel as the primary source because formulas may be unevaluated)
-  - Make actuarial ultimate selections for all periods for that one measure using the structured method weighting framework
-  - Write selections to `selections/ultimates-ai-rules-based-<measure>.json`
-  - Return the file path
+- [ ] For each measure, task a `selector-ultimates-ai-rules-based.md` subagent (located in `agents/`) to: Review the per-measure context markdown exported by `5a-ultimates-create-excel.py` at `selections/ultimates-context-<measure>.md` (NOT the files at `processed-data`, and do NOT use Excel as the primary source because formulas may be unevaluated), use this information to make actuarial ultimate selections for each combination of Chain Ladder measure and period using the structured method weighting framework, and return the selections as JSON. The parent agent will extract the JSON from the subagent response and write it to `selections/ultimates-ai-rules-based.json`.
 
-- [ ] **For each measure** (e.g., Paid Loss, Incurred Loss), invoke the `selector-ultimates-ai-open-ended.md` subagent (located in `agents/`) once per measure. Each subagent will:
-  - Review the per-measure context markdown at `selections/ultimates-context-<measure>.md`
-  - Independently make ultimate selections for all periods for that one measure using holistic actuarial judgment (no rigid rules framework)
-  - Write selections to `selections/ultimates-ai-open-ended-<measure>.json`
-  - Return the file path
+- [ ] For each measure, task a `selector-ultimates-ai-open-ended.md` subagent (located in `agents/`) to: Review the per-measure context markdown exported by `5a-ultimates-create-excel.py` at `selections/ultimates-context-<measure>.md` (do NOT use Excel as the primary source because formulas may be unevaluated), independently make ultimate selections for each combination of measure and period using holistic actuarial judgment (no rigid rules framework), and return the selections as JSON. The parent agent will extract the JSON from the subagent response and write it to `selections/ultimates-ai-open-ended.json`.
 
-- [ ] Run `5b-ultimates-update-selections.py` to collect all per-measure JSON files and insert both rules-based and open-ended selections and reasoning into `selections/Ultimates.xlsx`. This script will:
-  - Load all `selections/ultimates-ai-rules-based-*.json` files and combine them
-  - Load all `selections/ultimates-ai-open-ended-*.json` files and combine them
-  - Populate the Rules-Based AI Selection and Open-Ended AI Selection columns in each sheet
+- [ ] Run `5b-ultimates-update-selections.py` to insert both rules-based and open-ended selections and reasoning into `selections/Ultimates.xlsx`.
 
 - [ ] Tell the user where `selections/Ultimates.xlsx` is located. Explain that both rules-based and open-ended AI selections are visible. The rules-based selection is what gets used by default — the user can override it manually. The open-ended selection provides an independent cross-check.
 
