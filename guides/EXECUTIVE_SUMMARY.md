@@ -97,3 +97,13 @@ This balanced design is the key to making spec-based actuarial workflows practic
 TeamAnalyst is a proof of concept and should be presented that way. It is not intended to be a complete, error-free, or production-approved actuarial system. The CAS does not guarantee the accuracy of the output, and users should not rely on the generated material as a final actuarial work product without appropriate professional review.
 
 The current scope is intentionally narrow. The example workflow focuses on a simplified reserving analysis using triangle-based inputs and a limited set of reserving methods. That focus is a feature, not a flaw: it keeps the tool understandable, teachable, and easier to evaluate while still demonstrating the broader potential of agentic AI in actuarial practice.
+
+## Additional Resources
+
+For more detailed information on specific aspects of TeamAnalyst, refer to the following guides:
+
+- **[AI Training & Data Privacy Policies](https://github.com/cas-team-analyst/team-analyst/blob/main/guides/AI_TRAINING_POLICIES.md)** — Essential guidance on protecting sensitive actuarial data when using AI tools. Explains the critical difference between consumer and enterprise AI accounts, provider-specific policies (OpenAI, Anthropic, Google), and how to ensure your client data and proprietary methods are never used for model training.
+
+- **[Customizing Selection Logic](https://github.com/cas-team-analyst/team-analyst/blob/main/guides/MODIFY_SELECTION_GUIDELINES.md)** — Instructions for viewing and modifying the selection logic frameworks used in the workflow. Covers how to adjust thresholds, averaging windows, conservatism levels, decision hierarchies, and selection criteria for LDF selections, tail factors, and ultimates.
+
+- **[Developer Notes](https://github.com/cas-team-analyst/team-analyst/blob/main/guides/DEVELOPER_NOTES.md)** — Testing strategies and guidelines for developers working on TeamAnalyst skills. Includes git workflow recommendations, branch testing approaches, and links to helpful resources like Anthropic's guide to building skills for Claude Code.
