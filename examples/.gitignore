@@ -1,0 +1,5 @@
+actuarial-analysis/
+output/
+data/
+**__pycache__**
+canonical-data/

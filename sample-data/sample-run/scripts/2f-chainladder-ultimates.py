@@ -208,7 +208,9 @@ def build_cdfs(selections: dict, ages: list, measure: str, tail_override: float 
         if pd.notna(ldf):
             cdfs[ages[i]] = ldf * cdfs[ages[i + 1]]
         else:
-            cdfs[ages[i]] = np.nan
+            # Interval not in selections (e.g. no observable development at that maturity).
+            # Assume LDF = 1.0 so the CDF chain is not broken.
+            cdfs[ages[i]] = cdfs[ages[i + 1]]
     
     # Convert to DataFrame
     rows = []

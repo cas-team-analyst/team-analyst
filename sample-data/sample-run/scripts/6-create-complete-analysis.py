@@ -1,67 +1,58 @@
-# Reads projected ultimates, actuary selections, and triangle data to produce a
-# final Excel workbook summarizing the complete reserving analysis.
+# Reads projected ultimates, actuary selections, and triangle data to produce the
+# Complete Analysis workbooks.
+#
+# Outputs:
+#   Complete Analysis.xlsx            Source Excel files assembled with formulas intact.
+#                                     Open in Excel to evaluate any cross-sheet references.
+#   Complete Analysis - Values Only.xlsx  Same content as plain computed numbers.
+#                                         Safe to read with openpyxl/pandas without requiring
+#                                         Excel to re-evaluate formulas first (used by script 7+).
+#
+# run-note: Run from the scripts/ directory:
+#     cd scripts/
+#     python 6-create-complete-analysis.py
 
-"""
-goal: Create complete-analysis.xlsx (and three supporting workbooks) from the outputs
-of the prior numbered scripts.
-
-Outputs:
-  - selected-ultimates.xlsx     Loss + Counts sheets with selected ultimates per period
-  - post-method-series.xlsx     Ultimate Severity, Loss Rate, Frequency diagnostics
-  - post-method-triangles.xlsx  X-to-Ultimate triangles, Average IBNR, Average Unpaid
-  - complete-analysis.xlsx      Master workbook combining all prior Excel outputs + above
-
-Gracefully handles optional data:
-  - ultimate_ie (IE method, script 3): omits IE columns if not present
-  - ultimate_bf (BF method, script 4): omits BF columns if not present
-  - Exposure in triangles: omits Loss Rate and Frequency if not present
-  - ultimates-ai-rules-based.json selections: falls back to open-ended > bf > cl > ie if file is absent or a row is missing
-
-run-note: When copied to a project, run from the scripts/ directory:
-    cd scripts/
-    python 6-create-complete-analysis.py
-"""
-
-import copy
-import json
+import copy  # used by _copy_ws (local full-copy helper)
 import os
 import pathlib
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
-from modules.formulas import rewrite_formula_sheet_refs
 
 from modules import config
 from modules.xl_styles import (
-    HEADER_FILL, SUBHEADER_FILL, SECTION_FILL, SELECTION_FILL,
-    HEADER_FONT, SUBHEADER_FONT, SECTION_FONT, LABEL_FONT, DATA_FONT,
+    HEADER_FILL, SUBHEADER_FILL,
+    HEADER_FONT, SUBHEADER_FONT, LABEL_FONT, DATA_FONT,
     THIN_BORDER, style_header,
 )
+from modules.xl_selections import (
+    SKIP_ROW_LABELS as _SKIP_ROW_LABELS,
+    SELECTION_LABELS as _SELECTION_LABELS,
+    find_selected_values as _find_selected_values,
+    find_selected_reasoning as _find_selected_reasoning,
+    copy_ws_filtered as _copy_ws_filtered,
+)
 
-# ── User-configurable properties ─────────────────────────────────────────────
-# Paths from modules/config.py — override here if needed:
+# ── Config ────────────────────────────────────────────────────────────────────
 
-INPUT_ULTIMATES         = config.ULTIMATES + "projected-ultimates.parquet"
-INPUT_SELECTIONS_EXCEL  = config.SELECTIONS + "Ultimates.xlsx"
-INPUT_SELECTIONS_RB_JSON = config.SELECTIONS + "ultimates-ai-rules-based.json"
-INPUT_SELECTIONS_OE_JSON = config.SELECTIONS + "ultimates-ai-open-ended.json"
-INPUT_TRIANGLES         = config.PROCESSED_DATA + "1_triangles.parquet"
-OUTPUT_PATH             = config.OUTPUT
+INPUT_ULTIMATES        = config.ULTIMATES + "projected-ultimates.parquet"
+INPUT_TRIANGLES        = config.PROCESSED_DATA + "1_triangles.parquet"
+INPUT_SELECTIONS_EXCEL = config.SELECTIONS + "Ultimates.xlsx"
+OUTPUT_PATH            = config.OUTPUT
 
-# Excel files from prior scripts to fold into the complete analysis workbook.
-# Each entry: (path_to_file, sheet_name_prefix_or_None).
-# Files that do not exist are silently skipped.
-ANALYSIS_SOURCE_FILES = [
-    (config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx", "CL - "),
-    (config.SELECTIONS + "Chain Ladder Selections - Tail.xlsx", "Tail - "),
-    (config.SELECTIONS + "Ultimates.xlsx",               "Sel - "),
-]
+OUTPUT_COMPLETE = OUTPUT_PATH + "Complete Analysis.xlsx"
+OUTPUT_VALUES   = OUTPUT_PATH + "Complete Analysis - Values Only.xlsx"
 
-# Maps each measure to its "unpaid" proxy measure used to compute the Unpaid column.
-# Unpaid = Selected Ultimate − latest actual of the proxy measure for that period.
+INPUT_CL_EXCEL      = config.SELECTIONS  + "Chain Ladder Selections - LDFs.xlsx"
+INPUT_TAIL_EXCEL    = config.SELECTIONS  + "Chain Ladder Selections - Tail.xlsx"
+INPUT_CL_ENHANCED   = config.PROCESSED_DATA + "2_enhanced.parquet"
+INPUT_LDF_AVERAGES  = config.PROCESSED_DATA + "4_ldf_averages.parquet"
+
+# Unpaid = selected ultimate - latest actual of the proxy measure for that period.
 UNPAID_PROXY = {
     "Incurred Loss":  "Paid Loss",
     "Paid Loss":      "Paid Loss",
@@ -69,195 +60,155 @@ UNPAID_PROXY = {
     "Closed Count":   "Closed Count",
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Derived output paths — do not modify.
-OUTPUT_COMPLETE_ANALYSIS  = OUTPUT_PATH + "complete-analysis.xlsx"
+# Preferred display order for method columns — discovered dynamically from parquet.
+_METHOD_COLS = [
+    ("ultimate_cl", "Chain Ladder"),
+    ("ultimate_ie", "Initial Expected"),
+    ("ultimate_bf", "BF"),
+]
 
 _NUM_FMT = "#,##0"
 _DEC_FMT = "#,##0.000"
 
+# ── Selection loading ─────────────────────────────────────────────────────────
 
-def _style_cell(cell, level="subheader"):
-    style_header(cell, level)
+def load_selections(excel_path):
+    """
+    Load final selections from Ultimates.xlsx.
+    Priority per (measure, period): User Selection > Rules-Based AI Selection.
+    Open-Ended AI is intentionally excluded — it is not a trusted final selection source.
+    Columns are located by header name — adapts to layout changes automatically.
+    Returns dict {(measure, period): float}.  Returns {} when file is absent.
+    """
+    path = pathlib.Path(excel_path)
+    if not path.exists():
+        print(f"  Note: {excel_path} not found -- no selections loaded")
+        return {}
+
+    wb = load_workbook(excel_path, data_only=True)
+    sel_lookup = {}
+    total = 0
+
+    for sheet_name in wb.sheetnames:
+        ws = wb[sheet_name]
+        period_col = user_col = rb_col = None
+        for cell in ws[1]:
+            v = cell.value
+            if v == "Period":
+                period_col = cell.column
+            elif v == "User Selection":
+                user_col = cell.column
+            elif v == "Rules-Based AI Selection":
+                rb_col = cell.column
+
+        if period_col is None:
+            continue
+
+        measure = sheet_name
+        for row in range(2, ws.max_row + 1):
+            period_val = ws.cell(row=row, column=period_col).value
+            if period_val is None:
+                continue
+            period = str(period_val).strip()
+            key = (measure, period)
+            if key in sel_lookup:
+                continue
+            for col_idx in [user_col, rb_col]:
+                if col_idx is None:
+                    continue
+                v = ws.cell(row=row, column=col_idx).value
+                if isinstance(v, (int, float)) and not (isinstance(v, float) and v != v):
+                    sel_lookup[key] = float(v)
+                    total += 1
+                    break
+
+    wb.close()
+    print(f"  Loaded {total} selections from {excel_path}")
+    return sel_lookup
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+def load_selection_reasoning(excel_path):
+    """
+    Load reasoning text for each (measure, period) from Ultimates.xlsx.
+    Priority matches load_selections: User Selection reasoning first, then RB-AI.
+    Returns {(measure, period): str}.  Returns {} when file is absent.
+    """
+    path = pathlib.Path(excel_path)
+    if not path.exists():
+        return {}
 
-def _try_int(val):
-    """Convert value to integer where possible, else return original value."""
-    try:
-        num = float(val)
-        if num == int(num):
-            return int(num)
-        return num
-    except (ValueError, TypeError):
-        return val
+    wb = load_workbook(excel_path, data_only=True)
+    reason_lookup = {}
 
+    for sheet_name in wb.sheetnames:
+        ws = wb[sheet_name]
+        period_col = user_col = rb_col = user_r_col = rb_r_col = None
+        for cell in ws[1]:
+            v = cell.value
+            if v == "Period":                   period_col = cell.column
+            elif v == "User Selection":         user_col   = cell.column
+            elif v == "Rules-Based AI Selection": rb_col   = cell.column
+            elif v == "User Reasoning":         user_r_col = cell.column
+            elif v == "Rules-Based AI Reasoning": rb_r_col = cell.column
 
-def _col_has_data(df, col):
-    """True if column exists in df and contains at least one non-NaN value."""
-    return col in df.columns and df[col].notna().any()
+        if period_col is None:
+            continue
 
+        measure = sheet_name
+        for row in range(2, ws.max_row + 1):
+            period_val = ws.cell(row=row, column=period_col).value
+            if period_val is None:
+                continue
+            period = str(period_val).strip()
+            key = (measure, period)
+            if key in reason_lookup:
+                continue
 
-def _write_header_row(ws, headers, row=1, level="subheader", col_width=22):
-    """Write a styled header row at the given row number."""
-    for c_idx, text in enumerate(headers, start=1):
-        cell = ws.cell(row=row, column=c_idx, value=text)
-        _style_cell(cell, level)
-        ws.column_dimensions[get_column_letter(c_idx)].width = col_width
+            user_v = ws.cell(row=row, column=user_col).value if user_col else None
+            rb_v   = ws.cell(row=row, column=rb_col).value   if rb_col   else None
+            is_num = lambda v: isinstance(v, (int, float)) and not (isinstance(v, float) and v != v)
 
+            if is_num(user_v) and user_r_col:
+                reason_lookup[key] = ws.cell(row=row, column=user_r_col).value or ""
+            elif is_num(rb_v) and rb_r_col:
+                reason_lookup[key] = ws.cell(row=row, column=rb_r_col).value or ""
 
-def _write_data_cell(cell, value, num_fmt=None, is_numeric=False):
-    """Write a data cell with consistent font, border, alignment."""
-    # Ensure numeric values are stored as numbers, not text
-    if value is not None and is_numeric:
-        try:
-            cell.value = float(value) if not isinstance(value, (int, float)) else value
-        except (ValueError, TypeError):
-            cell.value = value
-    else:
-        cell.value = value
-    
-    cell.font   = DATA_FONT
-    cell.border = THIN_BORDER
-    cell.alignment = Alignment(horizontal="right" if isinstance(cell.value, (int, float)) else "left",
-                               vertical="center")
-    if num_fmt and cell.value is not None and isinstance(cell.value, (int, float)):
-        cell.number_format = num_fmt
-
-
-def _safe(val):
-    """Return None for NaN so openpyxl writes a blank cell."""
-    if val is None:
-        return None
-    try:
-        if pd.isna(val):
-            return None
-    except (TypeError, ValueError):
-        pass
-    return val
+    wb.close()
+    return reason_lookup
 
 
 # ── Data loading ──────────────────────────────────────────────────────────────
 
-def load_combined(ultimates_path, selections_excel_path, selections_rb_json_path, selections_oe_json_path):
+def load_combined(ultimates_path, sel_lookup):
     """
-    Load projected ultimates and merge in actuary selections from Excel and JSON files.
-    Priority: Excel User Selection > Excel Rules-Based AI > Excel Open-Ended AI > JSON rules-based > JSON open-ended.
-
-    Returns:
-        combined  (DataFrame): one row per (period, measure) with columns
-                               period, measure, current_age, actual,
-                               ultimate_cl, [ultimate_ie], [ultimate_bf],
-                               selected_ultimate, selected_ibnr, selected_unpaid
-        has_ie    (bool): True when ultimate_ie data is present
-        has_bf    (bool): True when ultimate_bf data is present
+    Load projected ultimates, apply final selections, compute IBNR and Unpaid.
+    Methods (CL/IE/BF) are discovered dynamically from non-empty parquet columns.
+    Raises ValueError for any non-Exposure (measure, period) missing from sel_lookup.
+    Returns (df, available_methods) where available_methods = [(col, label), ...].
     """
     df = pd.read_parquet(ultimates_path)
     df["period"]  = df["period"].astype(str)
     df["measure"] = df["measure"].astype(str)
 
-    has_ie = _col_has_data(df, "ultimate_ie")
-    has_bf = _col_has_data(df, "ultimate_bf")
+    available_methods = [
+        (col, label) for col, label in _METHOD_COLS
+        if col in df.columns and df[col].notna().any()
+    ]
 
-    # Load actuary selections from Excel and JSON files
-    # Priority: Excel User Selection (col 13) > Excel Rules-Based AI (col 9) > Excel Open-Ended AI (col 11) > JSON files
-    sel_lookup = {}
-    
-    # Try to read from Excel first
-    excel_path = pathlib.Path(selections_excel_path)
-    if excel_path.exists():
-        try:
-            from openpyxl import load_workbook
-            wb = load_workbook(excel_path, data_only=True)
-            excel_count = 0
-            
-            for sheet_name in wb.sheetnames:
-                ws = wb[sheet_name]
-                measure = sheet_name
-                
-                # Read from row 2 onwards (row 1 is header)
-                row = 2
-                while True:
-                    period_cell = ws.cell(row=row, column=1)
-                    if not period_cell.value:
-                        break
-                    
-                    period = str(period_cell.value).strip()
-                    key = (measure, period)
-                    
-                    # Check User Selection (col 13), then Rules-Based AI (col 9), then Open-Ended AI (col 11)
-                    for col_idx in [13, 9, 11]:
-                        val = ws.cell(row=row, column=col_idx).value
-                        if val is not None and str(val).strip() and key not in sel_lookup:
-                            try:
-                                sel_lookup[key] = float(val)
-                                excel_count += 1
-                                break
-                            except (ValueError, TypeError):
-                                pass
-                    
-                    row += 1
-            
-            wb.close()
-            if excel_count > 0:
-                print(f"  Loaded {excel_count} selections from Excel {selections_excel_path}")
-        except Exception as e:
-            print(f"  Note: Could not read Excel selections from {selections_excel_path}: {e}")
-    else:
-        print(f"  Note: {selections_excel_path} not found")
-    
-    # Load rules-based JSON selections (only for missing keys)
-    rb_path = pathlib.Path(selections_rb_json_path)
-    if rb_path.exists():
-        with open(rb_path, "r") as f:
-            entries = json.load(f)
-        rb_count = 0
-        for entry in entries:
-            key = (str(entry["measure"]), str(entry["period"]))
-            if key not in sel_lookup:  # Don't overwrite Excel selections
-                sel_lookup[key] = float(entry["selection"])
-                rb_count += 1
-        if rb_count > 0:
-            print(f"  Loaded {rb_count} rules-based selections from {selections_rb_json_path} (fallback)")
-    else:
-        print(f"  Note: {selections_rb_json_path} not found")
-    
-    # Load open-ended JSON selections (only for missing keys)
-    oe_path = pathlib.Path(selections_oe_json_path)
-    if oe_path.exists():
-        with open(oe_path, "r") as f:
-            entries = json.load(f)
-        oe_count = 0
-        for entry in entries:
-            key = (str(entry["measure"]), str(entry["period"]))
-            if key not in sel_lookup:  # Don't overwrite Excel or rules-based
-                sel_lookup[key] = float(entry["selection"])
-                oe_count += 1
-        if oe_count > 0:
-            print(f"  Loaded {oe_count} open-ended selections from {selections_oe_json_path} (fallback)")
-    else:
-        print(f"  Note: {selections_oe_json_path} not found")
-    
-    if not sel_lookup:
-        print("  Using method fallback for selected ultimate (no selections found in Excel or JSON).")
+    # Validate: every non-Exposure row must have a selection.
+    missing = [
+        (row["measure"], row["period"])
+        for _, row in df.iterrows()
+        if row["measure"] != "Exposure" and (row["measure"], row["period"]) not in sel_lookup
+    ]
+    if missing:
+        lines = "\n  ".join(f"{m} / {p}" for m, p in missing)
+        raise ValueError(
+            f"{len(missing)} (measure, period) pair(s) have no User Selection or "
+            f"Rules-Based AI Selection in Ultimates.xlsx:\n  {lines}\n"
+            "Populate Rules-Based AI Selection (run 5b) or add a User Selection."
+        )
 
-    # selected_ultimate: JSON entry → bf → cl → ie (first non-NaN available)
-    def _pick_selected(row):
-        key = (row["measure"], row["period"])
-        if key in sel_lookup:
-            return sel_lookup[key]
-        for col in ("ultimate_bf", "ultimate_cl", "ultimate_ie"):
-            if col in df.columns:
-                v = row.get(col, np.nan)
-                if pd.notna(v):
-                    return v
-        return np.nan
-
-    df["selected_ultimate"] = df.apply(_pick_selected, axis=1)
-    df["selected_ibnr"]     = df["selected_ultimate"] - df["actual"]
-
-    # Unpaid = selected ultimate − actual of the proxy measure for that period
     actual_lookup = df.set_index(["period", "measure"])["actual"].to_dict()
 
     def _pick_unpaid(row):
@@ -269,463 +220,689 @@ def load_combined(ultimates_path, selections_excel_path, selections_rb_json_path
             return np.nan
         return row["selected_ultimate"] - proxy_actual
 
+    df["selected_ultimate"] = df.apply(
+        lambda row: sel_lookup.get((row["measure"], row["period"]), np.nan), axis=1
+    )
+    df["selected_ibnr"]   = df["selected_ultimate"] - df["actual"]
     df["selected_unpaid"] = df.apply(_pick_unpaid, axis=1)
 
-    return df, has_ie, has_bf
+    return df, available_methods
 
 
-def get_exposure(triangles_df):
-    """
-    Extract latest exposure value per period from the triangles.
-
-    Returns dict {str(period): float} or {} when no Exposure rows exist.
-    """
-    exp = triangles_df[triangles_df["measure"].astype(str) == "Exposure"].copy()
+def get_exposure(triangles_path):
+    """Latest Exposure value per period from triangles. Returns {} if absent."""
+    if not pathlib.Path(triangles_path).exists():
+        return {}
+    tri = pd.read_parquet(triangles_path)
+    exp = tri[tri["measure"].astype(str) == "Exposure"].copy()
     if exp.empty:
         return {}
     exp["period"]  = exp["period"].astype(str)
-    exp["age_int"] = pd.to_numeric(exp["age"].astype(str), errors="coerce")
-    latest = exp.sort_values("age_int").groupby("period").last()
+    exp["age_num"] = pd.to_numeric(exp["age"].astype(str), errors="coerce")
+    latest = exp.sort_values("age_num").groupby("period").last()
     return latest["value"].to_dict()
 
 
-# ── Excel writers ─────────────────────────────────────────────────────────────
+def get_triangles(triangles_path):
+    """Load triangle data. Returns empty DataFrame when file is absent."""
+    if not pathlib.Path(triangles_path).exists():
+        return pd.DataFrame()
+    tri = pd.read_parquet(triangles_path)
+    tri["period"]  = tri["period"].astype(str)
+    tri["measure"] = tri["measure"].astype(str)
+    return tri
 
-def write_notes_sheet(ws):
+
+# ── Cell / layout helpers ─────────────────────────────────────────────────────
+
+def _safe(v):
+    """Convert NaN to None so openpyxl writes a blank cell."""
+    if v is None:
+        return None
+    if isinstance(v, float) and v != v:
+        return None
+    return v
+
+
+def _period_int(v):
+    """Display a period as int when it is a whole number, else return as-is."""
+    try:
+        f = float(v)
+        if f == int(f):
+            return int(f)
+    except (ValueError, TypeError):
+        pass
+    return v
+
+
+def _data_cell(cell, value, num_fmt=None):
+    """Write a styled data cell with border and alignment."""
+    value = _safe(value)
+    cell.value     = value
+    cell.font      = DATA_FONT
+    cell.border    = THIN_BORDER
+    cell.alignment = Alignment(
+        horizontal="right" if isinstance(value, (int, float)) else "left",
+        vertical="center",
+    )
+    if num_fmt and value is not None and isinstance(value, (int, float)):
+        cell.number_format = num_fmt
+
+
+def _write_title_and_headers(ws, title, headers, col_width=18):
     """
-    Write a Notes sheet with workbook overview and table of contents.
+    Write a title row (row 1) and a styled header row (row 2).
+    Returns 3 — the first data row.
+    This format matches script 7's read_with_title() convention.
     """
-    from datetime import datetime
-    
-    row = 1
-    
-    # Main title
-    title_cell = ws.cell(row=row, column=1, value="Reserve Analysis Workbook")
-    _style_cell(title_cell, "header")
-    ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=3)
-    ws.row_dimensions[row].height = 24
-    row += 1
-    
-    # Metadata section
-    meta_cell = ws.cell(row=row, column=1, value="Workbook Information")
-    _style_cell(meta_cell, "section")
-    ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=3)
-    row += 1
-    
-    # Creation date
-    date_label = ws.cell(row=row, column=1, value="Created:")
-    date_label.font = LABEL_FONT
-    date_label.border = THIN_BORDER
-    date_label.alignment = Alignment(horizontal="left", vertical="center")
-    
-    date_value = ws.cell(row=row, column=2, value=datetime.now().strftime("%B %d, %Y %I:%M %p"))
-    date_value.font = DATA_FONT
-    date_value.border = THIN_BORDER
-    date_value.alignment = Alignment(horizontal="left", vertical="center")
-    row += 1
-    
-    # Description
-    desc_label = ws.cell(row=row, column=1, value="Description:")
-    desc_label.font = LABEL_FONT
-    desc_label.border = THIN_BORDER
-    desc_label.alignment = Alignment(horizontal="left", vertical="center")
-    
-    desc_value = ws.cell(row=row, column=2, value="Complete actuarial reserve analysis combining selections and projections")
-    desc_value.font = DATA_FONT
-    desc_value.border = THIN_BORDER
-    desc_value.alignment = Alignment(horizontal="left", vertical="center")
-    ws.merge_cells(start_row=row, start_column=2, end_row=row, end_column=3)
-    row += 2
-    
-    # Table of contents section
-    toc_cell = ws.cell(row=row, column=1, value="Table of Contents")
-    _style_cell(toc_cell, "section")
-    ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=3)
-    row += 1
-    
-    # Headers for TOC
-    toc_name_header = ws.cell(row=row, column=1, value="Sheet Name")
-    toc_name_header.font = SUBHEADER_FONT
-    toc_name_header.fill = SUBHEADER_FILL
-    toc_name_header.border = THIN_BORDER
-    toc_name_header.alignment = Alignment(horizontal="center", vertical="center")
-    
-    toc_desc_header = ws.cell(row=row, column=2, value="Description")
-    toc_desc_header.font = SUBHEADER_FONT
-    toc_desc_header.fill = SUBHEADER_FILL
-    toc_desc_header.border = THIN_BORDER
-    toc_desc_header.alignment = Alignment(horizontal="center", vertical="center")
-    row += 1
-    
-    # Return the row number where sheet list should start
-    ws.column_dimensions["A"].width = 35
-    ws.column_dimensions["B"].width = 60
+    title_cell = ws.cell(1, 1, title)
+    style_header(title_cell, "header")
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(headers))
+    ws.row_dimensions[1].height = 20
+
+    for c, text in enumerate(headers, 1):
+        cell = ws.cell(2, c, text)
+        style_header(cell, "subheader")
+        ws.column_dimensions[get_column_letter(c)].width = col_width
+
+    ws.freeze_panes = "A3"
+    return 3
+
+
+def _write_headers(ws, headers, col_width=18):
+    """
+    Write a single styled header row (row 1), no title row.
+    Returns 2 — the first data row.
+    Matches script 7's read_no_title() convention ("Sel - " sheets).
+    """
+    for c, text in enumerate(headers, 1):
+        cell = ws.cell(1, c, text)
+        style_header(cell, "subheader")
+        ws.column_dimensions[get_column_letter(c)].width = col_width
+
+    ws.freeze_panes = "A2"
+    return 2
+
+
+# ── Generated sheet writers ───────────────────────────────────────────────────
+
+def write_selected_ultimates_sheet(ws, measure, combined, available_methods,
+                                    reason_lookup=None):
+    """
+    Write one 'Sel - {measure}' sheet.
+    Columns: Accident Period, Current Age, Actual, [method cols],
+             Selected Ultimate, IBNR, Unpaid[, Selected Reasoning].
+    Reasoning column appended when reason_lookup is provided.
+    No title row -- matches script 7's read_no_title() convention for 'Sel - ' sheets.
+    """
+    df_m = combined[combined["measure"] == measure].copy()
+    if df_m.empty:
+        return
+
+    active_methods = [
+        (col, label) for col, label in available_methods
+        if col in df_m.columns and df_m[col].notna().any()
+    ]
+
+    has_reasoning = bool(reason_lookup)
+    headers = ["Accident Period", "Current Age", "Actual"]
+    headers += [label for _, label in active_methods]
+    headers += ["Selected Ultimate", "IBNR", "Unpaid"]
+    if has_reasoning:
+        headers += ["Selected Reasoning"]
+
+    data_row = _write_headers(ws, headers)
+    reason_col = len(headers) if has_reasoning else None
+    if reason_col:
+        ws.column_dimensions[get_column_letter(reason_col)].width = 50
+
+    for r, (_, row) in enumerate(df_m.iterrows(), start=data_row):
+        _data_cell(ws.cell(r, 1), _period_int(row["period"]))
+        _data_cell(ws.cell(r, 2), _safe(row.get("current_age")))
+        _data_cell(ws.cell(r, 3), _safe(row["actual"]), _NUM_FMT)
+
+        c = 4
+        for col, _ in active_methods:
+            _data_cell(ws.cell(r, c), _safe(row.get(col)), _NUM_FMT)
+            c += 1
+
+        _data_cell(ws.cell(r, c),     _safe(row["selected_ultimate"]), _NUM_FMT)
+        _data_cell(ws.cell(r, c + 1), _safe(row["selected_ibnr"]),     _NUM_FMT)
+        _data_cell(ws.cell(r, c + 2), _safe(row["selected_unpaid"]),   _NUM_FMT)
+
+        if has_reasoning:
+            period = str(row["period"])
+            reason = (reason_lookup or {}).get((measure, period), "")
+            cell = ws.cell(r, reason_col, reason)
+            cell.font      = DATA_FONT
+            cell.border    = THIN_BORDER
+            cell.alignment = Alignment(wrap_text=True, horizontal="left", vertical="top")
+
+
+def write_diagnostics_sheet(ws, combined, exp_map):
+    """
+    Write the 'Diagnostics' sheet: Ultimate Severity, Loss Rate, Frequency.
+    Loss Rate and Frequency columns are omitted when no exposure data is present.
+    Title row + header row format matches script 7's read_with_title() convention.
+    """
+    inc = combined[combined["measure"] == "Incurred Loss"].set_index("period")
+    rep = combined[combined["measure"] == "Reported Count"].set_index("period")
+
+    if inc.empty:
+        return
+
+    has_exposure = bool(exp_map)
+    headers = ["Accident Period", "Ultimate Severity"]
+    if has_exposure:
+        headers += ["Ultimate Loss Rate", "Ultimate Frequency"]
+
+    data_row = _write_title_and_headers(ws, "Post-Method Series Diagnostics", headers)
+
+    periods = sorted(
+        inc.index,
+        key=lambda x: (int(x) if str(x).isdigit() else str(x)),
+    )
+    for r, p in enumerate(periods, start=data_row):
+        ult_loss   = inc.loc[p, "selected_ultimate"] if p in inc.index else np.nan
+        ult_counts = rep.loc[p, "selected_ultimate"] if p in rep.index else np.nan
+        exp        = exp_map.get(p, np.nan)
+
+        def _div(a, b):
+            if pd.notna(a) and pd.notna(b) and b != 0:
+                return a / b
+            return None
+
+        _data_cell(ws.cell(r, 1), _period_int(p))
+        _data_cell(ws.cell(r, 2), _div(ult_loss, ult_counts), _DEC_FMT)
+        if has_exposure:
+            _data_cell(ws.cell(r, 3), _div(ult_loss, exp),    _DEC_FMT)
+            _data_cell(ws.cell(r, 4), _div(ult_counts, exp),  _DEC_FMT)
+
+
+def build_post_method_triangle_data(triangles_df, combined):
+    """
+    Build post-method triangle DataFrames as a list of (sheet_name, index_name, df).
+    Each df has period ints as index and age ints as columns.
+    """
+    if triangles_df.empty:
+        return []
+
+    sel_lookup = combined.set_index(["period", "measure"])["selected_ultimate"].to_dict()
+
+    def _to_int_series(s):
+        try:
+            return s.apply(lambda x: int(float(str(x))))
+        except (ValueError, TypeError):
+            return s.astype(str)
+
+    def x_to_ult(measure, label):
+        sub = triangles_df[triangles_df["measure"] == measure].copy()
+        if sub.empty:
+            return None
+        sub["period_int"] = _to_int_series(sub["period"])
+        sub["age_int"]    = _to_int_series(sub["age"])
+        pivot = sub.pivot_table(
+            index="period_int", columns="age_int", values="value", aggfunc="first", observed=True
+        )
+        pivot.columns.name = None
+        result = pivot.copy().astype(float)
+        for period in result.index:
+            sel = sel_lookup.get((str(period), measure), np.nan)
+            if pd.notna(sel) and sel != 0:
+                result.loc[period] = result.loc[period] / sel
+        return label, result
+
+    sheets = []
+    for measure, label in [
+        ("Incurred Loss",  "Incurred-to-Ult"),
+        ("Paid Loss",      "Paid-to-Ult"),
+        ("Reported Count", "Reported-to-Ult"),
+        ("Closed Count",   "Closed-to-Ult"),
+    ]:
+        result = x_to_ult(measure, label)
+        if result is not None:
+            sheets.append(result)
+
+    def avg_triangle(sub_measure, sheet_name, diff_fn):
+        sub = triangles_df[triangles_df["measure"] == sub_measure].copy()
+        if sub.empty:
+            return None
+        sub["period_int"] = _to_int_series(sub["period"])
+        sub["age_int"]    = _to_int_series(sub["age"])
+        pivot = sub.pivot_table(
+            index="period_int", columns="age_int", values="value", aggfunc="first", observed=True
+        )
+        pivot.columns.name = None
+        result = pivot.copy().astype(float)
+        for period in result.index:
+            sel = sel_lookup.get((str(period), sub_measure), np.nan)
+            if pd.notna(sel):
+                result.loc[period] = diff_fn(sel, result.loc[period])
+        return sheet_name, result
+
+    inc_sub  = triangles_df[triangles_df["measure"] == "Incurred Loss"]
+    paid_sub = triangles_df[triangles_df["measure"] == "Paid Loss"]
+
+    if not inc_sub.empty:
+        r = avg_triangle("Incurred Loss", "Average IBNR", lambda sel, row: sel - row)
+        if r is not None:
+            sheets.append(r)
+
+    if not paid_sub.empty:
+        r = avg_triangle("Paid Loss", "Average Unpaid", lambda sel, row: sel - row)
+        if r is not None:
+            sheets.append(r)
+
+    return sheets
+
+
+def write_triangle_sheet(ws, sheet_name, df):
+    """
+    Write a triangle DataFrame to a worksheet.
+    Title row + header row format matches script 7's read_with_title() convention.
+    """
+    headers = ["Period"] + [str(c) for c in df.columns]
+    data_row = _write_title_and_headers(ws, sheet_name, headers, col_width=14)
+
+    for r, (idx, row) in enumerate(df.iterrows(), start=data_row):
+        _data_cell(ws.cell(r, 1), idx)
+        for c, val in enumerate(row, start=2):
+            _data_cell(ws.cell(r, c), _safe(val), _DEC_FMT)
+
+
+# ── Filtered copy of source selection workbooks ───────────────────────────────
+# _find_selected_values and _copy_ws_filtered imported from modules.xl_selections.
+
+
+def _strip_formulas(ws):
+    """Replace formula strings with None so downstream readers see blank, not a formula string."""
+    for row in ws.iter_rows():
+        for cell in row:
+            if isinstance(cell.value, str) and cell.value.startswith("="):
+                cell.value = None
+
+
+def _fill_cl_main_values(ws, measure, df2, df4):
+    """
+    Replace formula strings in a CL main-measure sheet with Python-computed values.
+    Only called for main measure sheets (e.g. Incurred Loss) -- Diag-* and CV-&-Slopes
+    sheets have no formula cells.
+
+    ATA section: each period/interval cell replaced from df2['ldf'].
+    Averages section: each display-name/interval cell replaced from df4.
+
+    Sheet structure in gen_wb after _copy_ws_filtered:
+      Loss triangle title -> header -> data rows -> blank
+      "Age-to-Age Factors" title -> "" header -> ATA data rows (formulas) -> blank
+      "Averages" title -> "Metric" header -> avg data rows (formulas) -> blank
+      "LDF Selections" title -> header -> "Selected" row
+    """
+    df_m = df2[df2['measure'].astype(str) == measure].copy()
+
+    ata_lookup = {
+        (str(r['period']), str(r['interval'])): r['ldf']
+        for _, r in df_m[df_m['ldf'].notna()].iterrows()
+    }
+
+    avg_lookup = {}
+    if df4 is not None and not df4.empty:
+        df4_m = df4[df4['measure'].astype(str) == measure].copy()
+        avg_data_cols = [c for c in df4_m.columns
+                         if c not in ('measure', 'interval')
+                         and not c.startswith('cv_')
+                         and not c.startswith('slope_')]
+        for _, r in df4_m.iterrows():
+            intv = str(r['interval'])
+            for col in avg_data_cols:
+                display = col.replace('avg_exclude_high_low', 'exclude_high_low')
+                avg_lookup[(display, intv)] = r[col]
+
+    section = None
+    col_headers = {}
+
+    for row_cells in ws.iter_rows():
+        col1 = row_cells[0].value if row_cells else None
+
+        if col1 == "Age-to-Age Factors":
+            section = "ata_pre_header"
+            continue
+        if col1 == "Averages":
+            section = "avg_pre_header"
+            continue
+        if col1 == "LDF Selections":
+            break
+
+        if section == "ata_pre_header":
+            col_headers = {c.column: str(c.value) for c in row_cells[1:] if c.value not in (None, "")}
+            section = "ata"
+            continue
+
+        if section == "avg_pre_header":
+            col_headers = {c.column: str(c.value) for c in row_cells[1:] if c.value not in (None, "")}
+            section = "avg"
+            continue
+
+        if section == "ata":
+            if col1 is None or col1 == "":
+                section = None
+                continue
+            period = str(col1)
+            for cell in row_cells[1:]:
+                if isinstance(cell.value, str) and cell.value.startswith("="):
+                    intv = col_headers.get(cell.column)
+                    cell.value = ata_lookup.get((period, intv)) if intv else None
+
+        elif section == "avg":
+            if col1 is None or col1 == "":
+                section = None
+                continue
+            display = str(col1)
+            for cell in row_cells[1:]:
+                if isinstance(cell.value, str) and cell.value.startswith("="):
+                    intv = col_headers.get(cell.column)
+                    cell.value = avg_lookup.get((display, intv)) if intv else None
+
+
+def _fill_tail_values(ws, measure, df2):
+    """
+    Replace formula strings in a Tail sheet with Python-computed values.
+    Only the "Average" and "CV" rows contain formulas; they summarise the observed
+    ATA factors in the column above.  Header row col1 = "Accident Year" identifies
+    the age columns so we can map them to df2 intervals.
+    """
+    df_m = df2[df2['measure'].astype(str) == measure].copy()
+
+    # Map "to" age string -> interval string  e.g. "23" -> "11-23"
+    to_age_map = {}
+    for intv in df_m['interval'].dropna().unique():
+        parts = str(intv).split('-')
+        if len(parts) == 2:
+            to_age_map[parts[1]] = str(intv)
+
+    def _mean(intv):
+        vals = df_m[df_m['interval'].astype(str) == intv]['ldf'].dropna()
+        return vals.mean() if not vals.empty else None
+
+    def _cv(intv):
+        vals = df_m[df_m['interval'].astype(str) == intv]['ldf'].dropna()
+        if vals.empty:
+            return None
+        m = vals.mean()
+        return (vals.std() / m) if m and m != 0 else None
+
+    col_to_intv = {}
+    header_found = False
+
+    for row_cells in ws.iter_rows():
+        col1 = row_cells[0].value if row_cells else None
+
+        if col1 == "Accident Year":
+            col_to_intv = {c.column: to_age_map.get(str(c.value))
+                           for c in row_cells[1:] if c.value is not None}
+            header_found = True
+            continue
+
+        if not header_found:
+            continue
+
+        if col1 == "Average":
+            for cell in row_cells[1:]:
+                if isinstance(cell.value, str) and cell.value.startswith("="):
+                    intv = col_to_intv.get(cell.column)
+                    cell.value = _mean(intv) if intv else None
+
+        elif col1 == "CV":
+            for cell in row_cells[1:]:
+                if isinstance(cell.value, str) and cell.value.startswith("="):
+                    intv = col_to_intv.get(cell.column)
+                    cell.value = _cv(intv) if intv else None
+
+
+# ── Notes sheet ───────────────────────────────────────────────────────────────
+
+_SHEET_DESCS = {
+    "CL - ":   "Chain Ladder LDF triangle, averages, and selected LDFs",
+    "Tail - ": "Tail factor analysis and selected tail",
+    "Sel - ":  "Final selected ultimates, IBNR, and Unpaid",
+    "Diagnostics": "Post-method diagnostics: severity, loss rate, frequency",
+    "Incurred-to-Ult":  "Incurred-to-Ultimate development ratios",
+    "Paid-to-Ult":      "Paid-to-Ultimate development ratios",
+    "Reported-to-Ult":  "Reported-to-Ultimate development ratios",
+    "Closed-to-Ult":    "Closed-to-Ultimate development ratios",
+    "Average IBNR":  "Average IBNR by development age",
+    "Average Unpaid":"Average Unpaid by development age",
+}
+
+
+def _sheet_desc(name):
+    for key, desc in _SHEET_DESCS.items():
+        if name == key or name.startswith(key):
+            return desc
+    return "Analysis results"
+
+
+def write_notes_sheet(ws, sheet_list):
+    """Write Notes sheet with metadata header and table of contents."""
+    r = 1
+
+    title_cell = ws.cell(r, 1, "Reserve Analysis - Complete Analysis")
+    style_header(title_cell, "header")
+    ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=3)
+    ws.row_dimensions[r].height = 24
+    r += 1
+
+    meta = ws.cell(r, 1, "Workbook Information")
+    style_header(meta, "section")
+    ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=3)
+    r += 1
+
+    for label, value in [
+        ("Created:",     datetime.now().strftime("%B %d, %Y %I:%M %p")),
+        ("Description:", "Complete actuarial reserve analysis combining selections, ultimates, and diagnostics"),
+    ]:
+        lbl = ws.cell(r, 1, label)
+        lbl.font = LABEL_FONT; lbl.border = THIN_BORDER
+        lbl.alignment = Alignment(horizontal="left", vertical="center")
+        val = ws.cell(r, 2, value)
+        val.font = DATA_FONT; val.border = THIN_BORDER
+        val.alignment = Alignment(horizontal="left", vertical="center")
+        ws.merge_cells(start_row=r, start_column=2, end_row=r, end_column=3)
+        r += 1
+
+    r += 1
+    toc_hdr = ws.cell(r, 1, "Table of Contents")
+    style_header(toc_hdr, "section")
+    ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=3)
+    r += 1
+
+    for col_num, text, width in [(1, "Sheet Name", 35), (2, "Description", 60)]:
+        cell = ws.cell(r, col_num, text)
+        cell.font = SUBHEADER_FONT; cell.fill = SUBHEADER_FILL
+        cell.border = THIN_BORDER
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+        ws.column_dimensions[get_column_letter(col_num)].width = width
     ws.column_dimensions["C"].width = 15
+    r += 1
+
+    for name, desc in sheet_list:
+        nc = ws.cell(r, 1, name)
+        nc.font = DATA_FONT; nc.border = THIN_BORDER
+        nc.alignment = Alignment(horizontal="left", vertical="center")
+        dc = ws.cell(r, 2, desc)
+        dc.font = DATA_FONT; dc.border = THIN_BORDER
+        dc.alignment = Alignment(horizontal="left", vertical="center")
+        r += 1
+
     ws.freeze_panes = "A8"
-    
-    return row
 
 
-def write_full_analysis(output_path, source_files, internal_files):
+# ── Workbook assembly ─────────────────────────────────────────────────────────
+
+def _copy_ws(ws_src, ws_dst):
+    """Copy all cells and styles from source to destination worksheet."""
+    for row in ws_src.iter_rows():
+        for cell in row:
+            dst = ws_dst[cell.coordinate]
+            dst.value = cell.value
+            if cell.has_style:
+                dst.font       = copy.copy(cell.font)
+                dst.border     = copy.copy(cell.border)
+                dst.fill       = copy.copy(cell.fill)
+                dst.number_format = cell.number_format
+                dst.protection = copy.copy(cell.protection)
+                dst.alignment  = copy.copy(cell.alignment)
+
+    for col in ws_src.column_dimensions:
+        ws_dst.column_dimensions[col].width = ws_src.column_dimensions[col].width
+    for row_num in ws_src.row_dimensions:
+        ws_dst.row_dimensions[row_num].height = ws_src.row_dimensions[row_num].height
+    for rng in ws_src.merged_cells.ranges:
+        ws_dst.merge_cells(str(rng))
+    if ws_src.freeze_panes:
+        ws_dst.freeze_panes = ws_src.freeze_panes
+
+
+def assemble_workbook(output_path, generated_wb):
     """
-    Combine all Excel files into a single master complete-analysis.xlsx.
-
-    source_files  : list of (file_path, sheet_prefix_or_None) from prior scripts
-    internal_files: list of file_paths generated by this script (no prefix)
+    Build master workbook from the pre-built generated sheets.
+    All content is already computed values — no formula copying needed.
     """
     master = Workbook()
     master.remove(master.active)
-    
-    # Create Notes sheet first
+    sheet_list = []
+
+    for sname in generated_wb.sheetnames:
+        ws_dst = master.create_sheet(title=sname)
+        _copy_ws(generated_wb[sname], ws_dst)
+        sheet_list.append((sname, _sheet_desc(sname)))
+
     notes_ws = master.create_sheet(title="Notes", index=0)
-    toc_start_row = write_notes_sheet(notes_ws)
-
-    all_files = list(source_files) + [(f, None) for f in internal_files]
-    
-    sheet_descriptions = []
-
-    for file_path, prefix in all_files:
-        if not os.path.exists(file_path):
-            print(f"  Skipping (not found): {file_path}")
-            continue
-        wb = load_workbook(file_path, data_only=False)
-        
-        rename_map = {}
-        for sname in wb.sheetnames:
-            new_name = (f"{prefix}{sname}" if prefix else sname)[:31]
-            rename_map[sname] = new_name
-            
-        for sname in wb.sheetnames:
-            new_name = rename_map[sname]
-            ws_src = wb[sname]
-            ws_dst = master.create_sheet(title=new_name)
-            
-            for row in ws_src.iter_rows():
-                for cell in row:
-                    dst_cell = ws_dst[cell.coordinate]
-                    # REWRITE FORMULA REFS
-                    if isinstance(cell.value, str) and cell.value.startswith('='):
-                        dst_cell.value = rewrite_formula_sheet_refs(cell.value, rename_map)
-                    else:
-                        dst_cell.value = cell.value
-                        
-                    if cell.has_style:
-                        dst_cell.font = copy.copy(cell.font)
-                        dst_cell.border = copy.copy(cell.border)
-                        dst_cell.fill = copy.copy(cell.fill)
-                        dst_cell.number_format = cell.number_format
-                        dst_cell.protection = copy.copy(cell.protection)
-                        dst_cell.alignment = copy.copy(cell.alignment)
-            
-            for col_letter in ws_src.column_dimensions:
-                if col_letter in ws_src.column_dimensions:
-                    ws_dst.column_dimensions[col_letter].width = ws_src.column_dimensions[col_letter].width
-            
-            for row_num in ws_src.row_dimensions:
-                if row_num in ws_src.row_dimensions:
-                    ws_dst.row_dimensions[row_num].height = ws_src.row_dimensions[row_num].height
-            
-            for merged_cell_range in ws_src.merged_cells.ranges:
-                ws_dst.merge_cells(str(merged_cell_range))
-            
-            if ws_src.freeze_panes:
-                ws_dst.freeze_panes = ws_src.freeze_panes
-            
-            desc = _get_sheet_description(new_name, prefix)
-            sheet_descriptions.append((new_name, desc))
-            
-        print(f"  Added sheets from {file_path}")
-    
-    for idx, (sheet_name, desc) in enumerate(sheet_descriptions, start=toc_start_row):
-        name_cell = notes_ws.cell(row=idx, column=1, value=sheet_name)
-        name_cell.font = DATA_FONT
-        name_cell.border = THIN_BORDER
-        name_cell.alignment = Alignment(horizontal="left", vertical="center")
-        
-        desc_cell = notes_ws.cell(row=idx, column=2, value=desc)
-        desc_cell.font = DATA_FONT
-        desc_cell.border = THIN_BORDER
-        desc_cell.alignment = Alignment(horizontal="left", vertical="center")
+    write_notes_sheet(notes_ws, sheet_list)
 
     os.makedirs(pathlib.Path(output_path).parent, exist_ok=True)
     master.save(output_path)
     print(f"  Saved -> {output_path}")
 
-def _get_sheet_description(sheet_name, prefix):
-    """Generate a description for a sheet based on its name."""
-    # Remove prefix for pattern matching
-    base_name = sheet_name
-    if prefix:
-        base_name = sheet_name[len(prefix):]
-    
-    # Common patterns
-    descriptions = {
-        # Chain Ladder sheets
-        "Development Age-to-Age": "Historical age-to-age development factors",
-        "Simple Averages": "Simple averages of age-to-age factors",
-        "Vol-Weighted Avgs": "Volume-weighted averages of age-to-age factors",
-        "Medians": "Median age-to-age factors",
-        "Selections": "Selected loss development factors",
-        
-        # Ultimates selection sheets
-        "Summary": "Ultimate loss selections summary",
-        
-        # Measure-specific sheets
-        "Incurred Loss": "Incurred loss projections and selections",
-        "Paid Loss": "Paid loss projections and selections",
-        "Reported Count": "Reported claim count projections",
-        "Closed Count": "Closed claim count projections",
-        
-        # Diagnostic sheets
-        "Diagnostics": "Post-method diagnostic calculations",
-        "Incurred-to-Ult": "Incurred to ultimate development ratios",
-        "Paid-to-Ult": "Paid to ultimate development ratios",
-        "Reported-to-Ult": "Reported to ultimate development ratios",
-        "Closed-to-Ult": "Closed to ultimate development ratios",
-        "Average IBNR": "Average IBNR by development age",
-        "Average Unpaid": "Average unpaid by development age",
-    }
-    
-    # Try exact match first
-    if base_name in descriptions:
-        return descriptions[base_name]
-    
-    # Try partial matches
-    for key, desc in descriptions.items():
-        if key in base_name or base_name in key:
-            return desc
-    
-    # Default
-    return "Analysis results"
-
 
 # ── Main ──────────────────────────────────────────────────────────────────────
-
-import json
-import glob
-import numpy as np
-
-def build_measure_dfs():
-    INPUT_ULTIMATES = config.ULTIMATES + "projected-ultimates.parquet"
-    if not os.path.exists(INPUT_ULTIMATES):
-        return {}
-    df = pd.read_parquet(INPUT_ULTIMATES)
-    
-    excel_path = config.SELECTIONS + "Ultimates.xlsx"
-    wb = None
-    if os.path.exists(excel_path):
-        try:
-            import openpyxl
-            wb = openpyxl.load_workbook(excel_path, data_only=True)
-        except Exception:
-            pass
-            
-    measures = df['measure'].unique()
-    measure_dfs = {}
-    for m in measures:
-        json_path = config.SELECTIONS + "ultimates-ai-rules-based.json"
-        m_df = df[df['measure'] == m].copy()
-        m_df = m_df.rename(columns={
-            "period": "Accident Period",
-            "current_age": "Current Age",
-            "actual": "Actual",
-            "ultimate_cl": "Chain Ladder",
-            "ultimate_ie": "Initial Expected",
-            "ultimate_bf": "BF"
-        })
-        
-        sel_col = pd.Series(index=m_df.index, dtype=float)
-        
-        if os.path.exists(json_path):
-            with open(json_path, 'r') as jf:
-                jdata = json.load(jf)
-                if isinstance(jdata, dict) and "measures" in jdata:
-                    m_data = next((md for md in jdata["measures"] if md["measure"] == m), None)
-                    if m_data:
-                        for row in m_data.get("selections", []):
-                            period_val = row.get("period")
-                            sel = row.get("selection")
-                            idx = m_df.index[m_df["Accident Period"] == period_val]
-                            if len(idx) > 0 and sel is not None:
-                                sel_col.loc[idx] = sel
-                                
-        if wb and f"Sel - {m}" in wb.sheetnames:
-            ws = wb[f"Sel - {m}"]
-            user_col = None
-            period_col = None
-            for cell in ws[1]:
-                if cell.value == "User Selection":
-                    user_col = cell.column
-                if cell.value == "Period":
-                    period_col = cell.column
-            if user_col and period_col:
-                for row in range(2, ws.max_row + 1):
-                    period_val = ws.cell(row=row, column=period_col).value
-                    user_val = ws.cell(row=row, column=user_col).value
-                    if user_val is not None and isinstance(user_val, (int, float)):
-                        idx = m_df.index[m_df["Accident Period"] == period_val]
-                        if len(idx) > 0:
-                            sel_col.loc[idx] = user_val
-                            
-        for idx in sel_col.index:
-            if pd.isna(sel_col.loc[idx]):
-                sel_col.loc[idx] = m_df.loc[idx, "BF"] if not pd.isna(m_df.loc[idx, "BF"]) else m_df.loc[idx, "Chain Ladder"]
-        
-        m_df["Selected Ultimate"] = sel_col
-        m_df["IBNR"] = m_df["Selected Ultimate"] - m_df["Actual"]
-        m_df["Unpaid"] = np.nan
-        measure_dfs[m] = m_df
-        
-    return measure_dfs
-
-def build_cl_dfs():
-    INPUT_TRIANGLES = config.PROCESSED_DATA + "triangles.parquet"
-    if not os.path.exists(INPUT_TRIANGLES):
-        return {}
-    tri_df = pd.read_parquet(INPUT_TRIANGLES)
-    measures = tri_df['measure'].unique()
-    cl_dfs = {}
-    
-    excel_path_ldf = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
-    wb_ldf = None
-    if os.path.exists(excel_path_ldf):
-        try:
-            import openpyxl
-            wb_ldf = openpyxl.load_workbook(excel_path_ldf, data_only=True)
-        except Exception:
-            pass
-            
-    excel_path_tail = config.SELECTIONS + "Chain Ladder Selections - Tail.xlsx"
-    wb_tail = None
-    if os.path.exists(excel_path_tail):
-        try:
-            import openpyxl
-            wb_tail = openpyxl.load_workbook(excel_path_tail, data_only=True)
-        except Exception:
-            pass
-
-    for m in measures:
-        m_tri = tri_df[tri_df['measure'] == m]
-        # We need the factors. LDFs are built from triangles.
-        # Wait, the MD context replaced the json context. We can just rebuild the triangle here!
-        # But wait! We just need the "Selected LDF" row for Tech Review! We can just put it in a dataframe.
-        df_piv = m_tri.pivot(index="period", columns="age", values="value")
-        df_piv.index = df_piv.index.astype(str)
-        # Drop current age columns, actually LDFs have intervals like '12-24'.
-        ages = sorted([int(c) for c in df_piv.columns if str(c).isdigit()])
-        intervals = [f"{ages[i]}-{ages[i+1]}" for i in range(len(ages)-1)]
-        
-        sel_ldf = pd.Series(index=[str(a) for a in ages[:-1]] + ["Tail"], dtype=float)
-        
-        rb_json_path = config.SELECTIONS + "chainladder-ai-rules-based.json"
-        if os.path.exists(rb_json_path):
-            with open(rb_json_path, 'r') as rb_f:
-                rb_data = json.load(rb_f)
-                if isinstance(rb_data, dict) and "measures" in rb_data:
-                    m_data = next((md for md in rb_data["measures"] if md["measure"] == m), None)
-                    if m_data:
-                        for interval_data in m_data.get("selections", []):
-                            age = str(interval_data.get("interval", "")).split("-")[0]
-                            sel = interval_data.get("selection")
-                            if age in sel_ldf.index and sel is not None:
-                                sel_ldf[age] = sel
-                                
-        if wb_ldf and m in wb_ldf.sheetnames:
-            ws = wb_ldf[m]
-            user_row = None
-            header_row = None
-            for row in range(1, ws.max_row + 1):
-                if ws.cell(row=row, column=1).value == "User Selection":
-                    user_row = row
-                    for hr in range(row-1, max(0, row-10), -1):
-                        if str(ws.cell(row=hr, column=2).value).endswith("24"):
-                            header_row = hr
-                            break
-                    break
-            if user_row and header_row:
-                for col in range(2, ws.max_column + 1):
-                    interval = ws.cell(row=header_row, column=col).value
-                    user_val = ws.cell(row=user_row, column=col).value
-                    if interval and isinstance(user_val, (int, float)):
-                        age = str(interval).split("-")[0]
-                        if age in sel_ldf.index:
-                            sel_ldf[age] = user_val
-                            
-        sel_ldf["Tail"] = 1.0 
-        rb_tail_path = config.SELECTIONS + "tail-ai-rules-based.json"
-        if os.path.exists(rb_tail_path):
-            with open(rb_tail_path, 'r') as t_f:
-                t_data = json.load(t_f)
-                if isinstance(t_data, dict) and "measures" in t_data:
-                    tm_data = next((md for md in t_data["measures"] if md["measure"] == m), None)
-                    if tm_data and tm_data.get("selection") is not None:
-                        sel_ldf["Tail"] = tm_data.get("selection")
-                        
-        if wb_tail and m in wb_tail.sheetnames:
-            ws_t = wb_tail[m]
-            for row in range(1, ws_t.max_row + 1):
-                if ws_t.cell(row=row, column=1).value == "User Selection":
-                    u_val = ws_t.cell(row=row, column=2).value
-                    if isinstance(u_val, (int, float)):
-                        sel_ldf["Tail"] = u_val
-                    break
-        
-        # We don't need the whole triangle for Tech Review, just the 'Selected LDF' dataframe
-        # Wait, check_cl_factors checks df.loc["Selected LDF"]!
-        cl_dfs[f"CL - {m}"] = pd.DataFrame([sel_ldf], index=["Selected LDF"])
-        
-    return cl_dfs
-
-def write_hardcoded_excel(measure_dfs, cl_dfs, filepath):
-    with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
-        for m, df in measure_dfs.items():
-            df.to_excel(writer, sheet_name=f"Sel - {m[:25]}", index=False)
-        for name, df in cl_dfs.items():
-            df.to_excel(writer, sheet_name=name[:31])
-
 
 def main():
     os.makedirs(OUTPUT_PATH, exist_ok=True)
 
-    print("Loading data...")
-    combined, has_ie, has_bf = load_combined(INPUT_ULTIMATES, INPUT_SELECTIONS_EXCEL, INPUT_SELECTIONS_RB_JSON, INPUT_SELECTIONS_OE_JSON)
-    print(f"  has_ie={has_ie}, has_bf={has_bf}, rows={len(combined)}")
+    print("Loading selections...")
+    sel_lookup    = load_selections(INPUT_SELECTIONS_EXCEL)
+    reason_lookup = load_selection_reasoning(INPUT_SELECTIONS_EXCEL)
 
-    print("\\nWriting complete analysis workbook...")
-    internal = []
-    write_full_analysis(OUTPUT_COMPLETE_ANALYSIS, ANALYSIS_SOURCE_FILES, internal)
+    print("Loading ultimates...")
+    combined, available_methods = load_combined(INPUT_ULTIMATES, sel_lookup)
+    measures = [m for m in combined["measure"].unique() if m != "Exposure"]
+    print(f"  Measures: {measures}")
+    print(f"  Methods:  {[label for _, label in available_methods]}")
 
-    # Console IBNR summary
-    print("\\n=== IBNR Summary ===")
-    pd.set_option("display.float_format", lambda x: f"{x:,.0f}")
-    for m in ["Incurred Loss", "Paid Loss", "Reported Count", "Closed Count"]:
+    print("Loading triangles...")
+    exp_map      = get_exposure(INPUT_TRIANGLES)
+    triangles_df = get_triangles(INPUT_TRIANGLES)
+    print(f"  Exposure periods: {len(exp_map)}  Triangle rows: {len(triangles_df)}")
+
+    # Build generated workbook -- all content computed from parquet and selection files.
+    # No Excel formulas written; both output files use this same content.
+    gen_wb = Workbook()
+    gen_wb.remove(gen_wb.active)
+
+    print("Copying CL LDF sheets (full triangle + selected row)...")
+    if pathlib.Path(INPUT_CL_EXCEL).exists():
+        # data_only=False preserves formula strings (averages, LDF calcs).
+        # openpyxl never caches formula results on save, so data_only=True returns None.
+        # The "Selected" row is always plain numeric values written by the update scripts.
+        wb_cl_vals = load_workbook(INPUT_CL_EXCEL, data_only=True)   # for selected-row extraction
+        wb_cl_form = load_workbook(INPUT_CL_EXCEL, data_only=False)  # for formula copy
+        for sname in wb_cl_vals.sheetnames:
+            sel_vals   = _find_selected_values(wb_cl_vals[sname])
+            sel_reason = _find_selected_reasoning(wb_cl_vals[sname])
+            ws = gen_wb.create_sheet(title=f"CL - {sname}"[:31])
+            _copy_ws_filtered(wb_cl_form[sname], ws, sel_vals, sel_reason)
+            print(f"  CL - {sname}")
+        wb_cl_vals.close()
+        wb_cl_form.close()
+    else:
+        print(f"  Note: {INPUT_CL_EXCEL} not found -- skipped")
+
+    print("Copying Tail sheets (full analysis + selected row)...")
+    if pathlib.Path(INPUT_TAIL_EXCEL).exists():
+        wb_tail_vals = load_workbook(INPUT_TAIL_EXCEL, data_only=True)
+        wb_tail_form = load_workbook(INPUT_TAIL_EXCEL, data_only=False)
+        for sname in wb_tail_vals.sheetnames:
+            sel_vals   = _find_selected_values(wb_tail_vals[sname])
+            sel_reason = _find_selected_reasoning(wb_tail_vals[sname])
+            ws = gen_wb.create_sheet(title=f"Tail - {sname}"[:31])
+            _copy_ws_filtered(wb_tail_form[sname], ws, sel_vals, sel_reason)
+            print(f"  Tail - {sname}")
+        wb_tail_vals.close()
+        wb_tail_form.close()
+    else:
+        print(f"  Note: {INPUT_TAIL_EXCEL} not found -- skipped")
+
+    print("Building selected ultimates sheets...")
+    for measure in measures:
+        ws = gen_wb.create_sheet(title=f"Sel - {measure}"[:31])
+        write_selected_ultimates_sheet(ws, measure, combined, available_methods,
+                                        reason_lookup=reason_lookup)
+        print(f"  Sel - {measure}")
+
+    print("Building diagnostics sheet...")
+    ws_diag = gen_wb.create_sheet(title="Diagnostics")
+    write_diagnostics_sheet(ws_diag, combined, exp_map)
+
+    print("Building post-method triangle sheets...")
+    for sheet_name, df in build_post_method_triangle_data(triangles_df, combined):
+        ws_t = gen_wb.create_sheet(title=sheet_name[:31])
+        write_triangle_sheet(ws_t, sheet_name, df)
+        print(f"  {sheet_name}")
+
+    print("\nAssembling Complete Analysis.xlsx...")
+    assemble_workbook(OUTPUT_COMPLETE, gen_wb)
+
+    # Values Only: replace formula strings in CL/Tail sheets with Python-computed values
+    # so downstream readers (script 7, pandas) see real numbers, not "=..." strings.
+    # Main measure sheets (Incurred Loss etc.) have ATA and average formula cells -- we
+    # fill those from df2/df4 parquet.  Diag-* and CV-&-Slopes sheets have no formulas.
+    print("Computing CL/Tail formula values for Values Only...")
+    df2_enh = pd.read_parquet(INPUT_CL_ENHANCED) if pathlib.Path(INPUT_CL_ENHANCED).exists() else pd.DataFrame()
+    df4_avg = pd.read_parquet(INPUT_LDF_AVERAGES) if pathlib.Path(INPUT_LDF_AVERAGES).exists() else None
+    measures_set = set(measures)
+    for sname in gen_wb.sheetnames:
+        if sname.startswith("CL - "):
+            measure_name = sname[5:]
+            if measure_name in measures_set and not df2_enh.empty:
+                _fill_cl_main_values(gen_wb[sname], measure_name, df2_enh, df4_avg)
+            else:
+                _strip_formulas(gen_wb[sname])
+        elif sname.startswith("Tail - "):
+            measure_name = sname[7:]
+            if measure_name in measures_set and not df2_enh.empty:
+                _fill_tail_values(gen_wb[sname], measure_name, df2_enh)
+            else:
+                _strip_formulas(gen_wb[sname])
+
+    print("Assembling Complete Analysis - Values Only.xlsx...")
+    assemble_workbook(OUTPUT_VALUES, gen_wb)
+
+    print("\n=== IBNR Summary ===")
+    for m in measures:
         sub = combined[combined["measure"] == m]
         if sub.empty or sub["selected_ultimate"].isna().all():
             continue
-        parts = [
-            f"Actual={sub['actual'].sum():,.0f}",
-            f"CL={sub['ultimate_cl'].sum():,.0f}",
-        ]
-        if has_ie:
-            parts.append(f"IE={sub['ultimate_ie'].sum():,.0f}")
-        if has_bf:
-            parts.append(f"BF={sub['ultimate_bf'].sum():,.0f}")
+        parts = [f"Actual={sub['actual'].sum():,.0f}"]
+        for col, label in available_methods:
+            if col in sub.columns and sub[col].notna().any():
+                parts.append(f"{label}={sub[col].sum():,.0f}")
         parts += [
             f"Selected={sub['selected_ultimate'].sum():,.0f}",
             f"IBNR={sub['selected_ibnr'].sum():,.0f}",
         ]
         print(f"  {m}: " + "  ".join(parts))
 
-if __name__ == "__main__":
-    print("=== Step 6: Creating complete analysis workbook ===")
-    main()
-    print("\nWriting evaluated hard-coded analysis workbook...")
-    try:
-        m_dfs = build_measure_dfs()
-        c_dfs = build_cl_dfs()
-        write_hardcoded_excel(m_dfs, c_dfs, OUTPUT_PATH + "complete-analysis-values.xlsx")
-        print(f"  Created: {OUTPUT_PATH + 'complete-analysis-values.xlsx'}")
-    except Exception as e:
-        print(f"  Warning: could not write hardcoded excel: {e}")
 
-    
+if __name__ == "__main__":
+    print("=== Step 6: Creating Complete Analysis workbooks ===")
+    main()

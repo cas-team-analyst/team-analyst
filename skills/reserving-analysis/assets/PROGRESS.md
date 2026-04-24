@@ -255,3 +255,5 @@ Be explicit and exhaustive. The user should leave this step knowing exactly what
 - [ ] After listing the files, tell the user the single most important takeaway: **REPORT.md is the primary narrative deliverable, and `output/complete-analysis.xlsx` is the primary numerical deliverable.** Everything else is supporting evidence or reproducibility material.
 
 - [ ] Ask the user if anything is unclear about any of the outputs before the workflow closes.
+
+- [ ] Ask the user if they have any questions about the analysis itself — methodology, selections, assumptions, data quality, results interpretation, or any findings in the technical review. Remind them they can also run `/peer-review` in a separate session for an independent AI review of the complete analysis.

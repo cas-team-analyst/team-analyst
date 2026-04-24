@@ -7,7 +7,7 @@ description: Peer review of completed reserve analysis. Use after reserving-anal
 
 ## Quick Reference
 
-**What this does:** Reviews completed reserve analysis workbook (`output/complete-analysis.xlsx`) and produces advisory findings in `PEER_REVIEW.md`.
+**What this does:** Reviews completed reserve analysis - workbook, tech review, REPORT.md, and REPLICATE.md - and produces advisory findings in `PEER_REVIEW.md`.
 
 **When to use:** After technical review passes and all selections are finalized. Do NOT use during initial analysis workflow (separate skill exists).
 
@@ -32,10 +32,13 @@ description: Peer review of completed reserve analysis. Use after reserving-anal
 Focus first exclusively on **orienting to the OS environment**.
 
 1. **Identify and mount the plugin skill folder** (if applicable, NOT the anthropic-skills folder)
-2. **Identify the project folder** - where the completed analysis lives
-3. **Verify required files exist:**
-   - `output/complete-analysis.xlsx` - the workbook to review
-   - Check for `REPORT.md` and `PROGRESS.md` to understand analysis context
+2. **Identify the analysis folder** - where the completed analysis lives (project root folder)
+3. **Verify required files exist in the analysis folder:**
+   - `output/Complete Analysis - Values Only.xlsx` - the values-only workbook to review (formulas pre-evaluated)
+   - `output/Tech Review.xlsx` - the technical review diagnostics to review
+   - `REPORT.md` - the actuarial report to review
+   - `REPLICATE.md` - the reproducibility log to review
+   - `PROGRESS.md` - to confirm analysis state
 4. **Confirm project is ready for review:**
    - Technical review must be complete (Step 7 in PROGRESS.md)
    - All selections finalized
@@ -45,7 +48,7 @@ Focus first exclusively on **orienting to the OS environment**.
 
 **File operations:** Use `cp` for file operations. Convert Windows paths to Unix: `C:\Users\...` → `/mnt/c/Users/...`. Mount skill folder first if accessing templates.
 
-**Output:** Write findings to `output/PEER_REVIEW.md` - this goes in the project folder alongside the complete-analysis.xlsx.
+**Output:** Write findings to `PEER_REVIEW.md` in the analysis folder root (alongside REPORT.md, REPLICATE.md, PROGRESS.md).
 
 **Other:** Cache out of date? Suggest close/reopen CoWork. Never use unicode symbols in commands.
 
@@ -53,10 +56,14 @@ Focus first exclusively on **orienting to the OS environment**.
 
 ## Workflow
 
-1. **Read the complete analysis workbook** at `output/complete-analysis.xlsx`
+1. **Read the analysis folder files:**
+   - `output/Complete Analysis - Values Only.xlsx` - selections and projections (values only, formulas pre-evaluated)
+   - `output/Tech Review.xlsx` - technical review diagnostics and checks
+   - `REPORT.md` - actuarial report documentation
+   - `REPLICATE.md` - reproducibility log
 2. **Prioritize high-materiality segments** - largest reserves, widest uncertainty
 3. **Run checks** listed in [Checks to Perform](#checks-to-perform)
-4. **Document findings** in `output/PEER_REVIEW.md` using [Output Format](#output-format)
+4. **Document findings** in `PEER_REVIEW.md` using [Output Format](#output-format)
 5. **Frame all feedback as advisory** - "you may want to consider..." not "you must change..."
 
 ---
@@ -92,18 +99,36 @@ Focus first exclusively on **orienting to the OS environment**.
 - Do selected factors align with the diagnostic exhibits (e.g., residual plots, weighted averages, volume-weighted averages)?
 - Are outlier exclusions documented and justified?
 
+### 6. Documentation Quality
+
+- **REPORT.md completeness**: Are all sections filled in (not just boilerplate)? Are assumptions, methods, and rationale documented?
+- **REPLICATE.md reproducibility**: Can another actuary reproduce the analysis from the log? Are scripts, manual edits, and data sources listed?
+- **ASOP 41 alignment**: Does documentation meet actuarial communication standards?
+
+### 7. Technical Review Diagnostics
+
+- **Review Tech Review.xlsx**: Check all automated diagnostic tests passed or were appropriately addressed
+- **Cross-check flags**: Are any issues flagged in Tech Review.xlsx properly documented in REPORT.md Section 7?
+- **Reasonableness checks**: Loss ratio progression, frequency/severity trends, actual vs expected emergence
+
 ---
 
 ## Output Format
 
-Write `output/PEER_REVIEW.md` structured as:
+Write `PEER_REVIEW.md` in the analysis folder root, structured as:
 
 ```markdown
 # Peer Review — [Line of Business / Segment]
 
-**Analysis file:** output/complete-analysis.xlsx
+**Analysis folder:** [path]
 **Review date:** [date]
 **Status:** Advisory — no selections were modified
+
+**Files reviewed:**
+- output/Complete Analysis - Values Only.xlsx
+- output/Tech Review.xlsx
+- REPORT.md
+- REPLICATE.md
 
 ## Summary
 [2-3 sentence overall assessment]
@@ -127,6 +152,12 @@ Write `output/PEER_REVIEW.md` structured as:
 
 ### Diagnostic Consistency
 [Findings]
+
+### Documentation Quality
+[Findings on REPORT.md and REPLICATE.md completeness and ASOP 41 compliance]
+
+### Technical Review Diagnostics
+[Findings from Tech Review.xlsx - any failed checks, flags requiring attention, or issues with automated diagnostics]
 
 ## Proposed Alternatives
 [Where the reviewer would select differently, show both the analyst's selection and the proposed alternative with rationale. Do NOT apply changes.]
@@ -417,7 +448,7 @@ Write `output/PEER_REVIEW.md` structured as:
 ```markdown
 # Peer Review — [Line of Business / Segment]
 
-**Analysis file:** output/complete-analysis.xlsx
+**Analysis file:** output/Complete Analysis - Values Only.xlsx
 **Review date:** [date]
 **Status:** Advisory — no selections were modified
 

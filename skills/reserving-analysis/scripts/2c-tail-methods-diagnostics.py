@@ -923,7 +923,9 @@ def main():
         df_out[col] = pd.to_numeric(df_out[col], errors='coerce').astype('Int64')
 
     df_out.to_parquet(OUTPUT_PATH, index=False)
-    print(f"\nSaved {len(df_out)} scenarios to {OUTPUT_PATH}")
+    df_out.to_csv(OUTPUT_PATH.replace('.parquet', '.csv'), index=False)
+    print(f"\nSaved {len(df_out)} scenarios to {OUTPUT_PATH.replace('.parquet', '.[parquet|csv]')}")
+    print("parquet preserves categorical types, CSV for inspection")
     print("\nSummary by measure and method:")
     print(df_out.groupby(['measure', 'method'])['tail_factor']
           .agg(['count', 'min', 'max']).to_string())

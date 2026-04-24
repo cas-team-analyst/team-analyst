@@ -25,7 +25,7 @@ import pathlib
 
 from modules import config
 from modules.xl_styles import (
-    HEADER_FILL, HEADER_FONT, SELECTION_FILL, AI_FILL, PRIOR_FILL, THIN_BORDER,
+    HEADER_FILL, HEADER_FONT, SELECTION_FILL, AI_FILL, PRIOR_FILL, USER_FILL, THIN_BORDER,
 )
 
 # Paths from modules/config.py — override here if needed:

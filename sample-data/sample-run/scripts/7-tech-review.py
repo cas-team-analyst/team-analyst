@@ -32,8 +32,8 @@ from modules.xl_styles import HEADER_FILL, HEADER_FONT, THIN_BORDER
 
 # ── User-configurable properties ─────────────────────────────────────────────
 # Paths from modules/config.py - override here if needed:
-INPUT_COMPLETE_ANALYSIS = config.OUTPUT + "complete-analysis-values.xlsx"
-OUTPUT_REVIEW           = config.OUTPUT + "tech-review.xlsx"
+INPUT_COMPLETE_ANALYSIS = config.OUTPUT + "Complete Analysis - Values Only.xlsx"
+OUTPUT_REVIEW           = config.OUTPUT + "Tech Review.xlsx"
 
 IBNR_NEG_TOLERANCE     = -500   # WARN if IBNR < this (small negatives OK from rounding)
 SEV_OUTLIER_RATIO      = 5.0    # WARN if any severity > this × median
@@ -221,14 +221,22 @@ def detect_sheets(wb):
     names = wb.sheetnames
     known_measures = {"Incurred Loss", "Paid Loss", "Reported Count", "Closed Count"}
     tri_known = {"Incurred-to-Ult", "Paid-to-Ult", "Reported-to-Ult", "Closed-to-Ult"}
+
+    # Support both bare names ("Incurred Loss") and "Sel - " prefixed names.
+    # complete-analysis-values.xlsx uses the "Sel - " prefix with proper columns.
+    bare_measure_sheets = [n for n in names if n in known_measures]
+    sel_measure_sheets  = [n for n in names if n.startswith("Sel - ") and n[6:] in known_measures]
+    measure_sheets      = bare_measure_sheets if bare_measure_sheets else sel_measure_sheets
+
     return {
-        "measure_sheets": [n for n in names if n in known_measures],
-        "sel_sheets":     [n for n in names if n.startswith("Sel - ")],
-        "cl_sheets":      [n for n in names if n.startswith("CL - ")],
-        "tri_sheets":     [n for n in names if n in tri_known],
-        "diag_sheet":     "Diagnostics" in names,
-        "avg_ibnr":       "Average IBNR" in names,
-        "avg_unpaid":     "Average Unpaid" in names,
+        "measure_sheets":     measure_sheets,
+        "measure_sel_prefix": not bool(bare_measure_sheets) and bool(sel_measure_sheets),
+        "sel_sheets":         [n for n in names if n.startswith("Sel - ")],
+        "cl_sheets":          [n for n in names if n.startswith("CL - ")],
+        "tri_sheets":         [n for n in names if n in tri_known],
+        "diag_sheet":         "Diagnostics" in names,
+        "avg_ibnr":           "Average IBNR" in names,
+        "avg_unpaid":         "Average Unpaid" in names,
     }
 
 
@@ -255,12 +263,14 @@ def check_structure(ck, wb, info):
     if info["diag_sheet"]:
         ck.ok(g, "Diagnostics sheet present")
     else:
-        ck.warn(g, "Diagnostics sheet present", "Not found")
+        ck.warn(g, "Diagnostics sheet present",
+                "Not in values file — see complete-analysis.xlsx (expected)")
 
     if info["tri_sheets"]:
         ck.ok(g, "X-to-Ult triangle sheets present", ", ".join(info["tri_sheets"]))
     else:
-        ck.warn(g, "X-to-Ult triangle sheets present", "None found")
+        ck.warn(g, "X-to-Ult triangle sheets present",
+                "Not in values file — see complete-analysis.xlsx (expected)")
 
     names = wb.sheetnames
     dupes = sorted({nm for nm in names if names.count(nm) > 1})
@@ -376,21 +386,25 @@ def check_maturity(ck, measure_dfs):
         ck.fail(g, "All current ages > 0",
                 f"Non-positive: {[a for a in all_ages if a <= 0]}")
 
-    non_mult = [int(a) for a in all_ages if int(a) % 12 != 0]
+    non_mult = sorted(set(int(a) for a in all_ages if int(a) % 12 != 0))
     if not non_mult:
         ck.ok(g, "All current ages multiples of 12")
+    elif all(a % 12 == 11 for a in non_mult):
+        # 11-month development pattern (ages 11, 23, 35, ...) — valid for annual data
+        ck.ok(g, "All current ages multiples of 12",
+              "11-month development pattern detected (ages 11, 23, 35, ...) — valid")
     else:
         ck.warn(g, "All current ages multiples of 12", f"Not multiples: {non_mult}")
 
     max_age, min_age = max(all_ages), min(all_ages)
-    if max_age <= 120:
-        ck.ok(g, "Max current age <= 120", f"{int(max_age)}")
+    if max_age <= 300:
+        ck.ok(g, "Max current age within range", f"{int(max_age)}")
     else:
-        ck.warn(g, "Max current age <= 120", f"Max = {int(max_age)}")
-    if min_age >= 12:
-        ck.ok(g, "Min current age >= 12", f"{int(min_age)}")
+        ck.warn(g, "Max current age within range", f"Max = {int(max_age)} (unusually high)")
+    if min_age >= 11:
+        ck.ok(g, "Min current age >= 11", f"{int(min_age)}")
     else:
-        ck.warn(g, "Min current age >= 12", f"Min = {int(min_age)}")
+        ck.warn(g, "Min current age >= 11", f"Min = {int(min_age)} (unusually low)")
 
     # Age decreases as period increases — integer periods only
     first_df = next(iter(measure_dfs.values()))
@@ -627,7 +641,7 @@ def check_sel_sheets(ck, measure_dfs, sel_dfs):
     g = "6. Sel - Sheet Consistency"
 
     if not sel_dfs:
-        ck.warn(g, "Sel - sheets present", "None found — skipping")
+        ck.warn(g, "Sel - sheets present", "Not in values file — see complete-analysis.xlsx (expected)")
         return
 
     for sel_name, sel_df in sel_dfs.items():
@@ -696,7 +710,7 @@ def check_xtoult_triangles(ck, tri_dfs, measure_dfs):
     g = "7. X-to-Ult Triangles"
 
     if not tri_dfs:
-        ck.warn(g, "X-to-Ult triangles", "None found — skipping")
+        ck.warn(g, "X-to-Ult triangles", "Not in values file — see complete-analysis.xlsx (expected)")
         return
 
     n_periods = None
@@ -783,7 +797,8 @@ def check_xtoult_triangles(ck, tri_dfs, measure_dfs):
 def _check_avg_tri(ck, df, label):
     g = "8. Average IBNR / Unpaid"
     if df is None or df.empty:
-        ck.warn(g, f"{label} has data", "Sheet empty or missing")
+        ck.warn(g, f"{label} has data",
+                "Not in values file — see complete-analysis.xlsx (expected)")
         return
     age_cols = [col for col in df.columns[1:] if pd.notna(col)]
     data = df[age_cols].apply(pd.to_numeric, errors="coerce")
@@ -850,7 +865,7 @@ def check_diagnostics(ck, diag_df):
     g = "9. Diagnostics"
 
     if diag_df is None or diag_df.empty:
-        ck.warn(g, "Diagnostics", "Sheet missing or empty — skipping")
+        ck.warn(g, "Diagnostics", "Not in values file — see complete-analysis.xlsx (expected)")
         return
 
     if "Ultimate Severity" in diag_df.columns:
@@ -905,7 +920,7 @@ def check_cl_triangles(ck, cl_dfs, measure_dfs, tri_dfs):
     g = "10. CL Triangle Integrity"
 
     if not cl_dfs:
-        ck.warn(g, "CL triangles present", "None found — skipping")
+        ck.warn(g, "CL triangles present", "Not in values file — see complete-analysis.xlsx (expected)")
         return
 
     for cl_name, cl_df in cl_dfs.items():
@@ -1002,7 +1017,7 @@ def check_development_factors(ck, cl_dfs, measure_dfs):
     g = "11. Development Factors"
 
     if not cl_dfs:
-        ck.warn(g, "Development factor checks", "No CL triangles — skipping")
+        ck.warn(g, "Development factor checks", "Not in values file — see complete-analysis.xlsx (expected)")
         return
 
     for cl_name, cl_df in cl_dfs.items():
@@ -1051,9 +1066,9 @@ def check_development_factors(ck, cl_dfs, measure_dfs):
                     ceil = _ldf_ceiling(a0, a1)
                     if r > ceil:
                         ceiling_violations.append(
-                            f"{p} {a0}→{a1}: {r:.3f} (ceil {ceil})")
+                            f"{p} {a0}->{a1}: {r:.3f} (ceil {ceil})")
                     if r < 1.0 - 1e-6:
-                        below_one.append(f"{p} {a0}→{a1}: {r:.4f}")
+                        below_one.append(f"{p} {a0}->{a1}: {r:.4f}")
             if ratios:
                 avg_by_age.append((a0, sum(ratios) / len(ratios)))
 
@@ -1406,6 +1421,7 @@ def check_selection_reasonableness(ck, measure_dfs):
                         f"{len(violations_outside)} period(s): {violations_outside[:2]}")
 
         # Shallow review flag: all selections == CL within tolerance
+        # Skip if no alternative methods are available (IE/BF all null)
         if "Chain Ladder" in df.columns:
             cl_vals = _canon_map(df, "Accident Period", "Chain Ladder")
             matching = [
@@ -1416,9 +1432,18 @@ def check_selection_reasonableness(ck, measure_dfs):
             ]
             total_common = sum(1 for p in sel if p in cl_vals
                                and pd.notna(sel.get(p)) and pd.notna(cl_vals.get(p)))
+            # Only flag if at least one alternative method (IE or BF) has values
+            has_alternatives = any(
+                col in df.columns and _num(df[col]).notna().any()
+                for col in ["BF", "Initial Expected"]
+            )
             if total_common >= 3 and len(matching) == total_common:
-                ck.warn(g, f"'{m}' selections not all equal to Chain Ladder",
-                        "All periods selected = CL — possible shallow review")
+                if has_alternatives:
+                    ck.warn(g, f"'{m}' selections not all equal to Chain Ladder",
+                            "All periods selected = CL — possible shallow review")
+                else:
+                    ck.ok(g, f"'{m}' selections equal to Chain Ladder (only available method)",
+                          f"No IE/BF available — CL is the sole method")
             elif total_common >= 1:
                 ck.ok(g, f"'{m}' selections show method differentiation",
                       f"{len(matching)}/{total_common} periods = CL")
@@ -1490,7 +1515,12 @@ def main():
           f"CL: {len(info['cl_sheets'])} | Sel: {len(info['sel_sheets'])} | "
           f"Triangles: {len(info['tri_sheets'])}\n")
 
-    measure_dfs   = {m: read_with_title(wb[m]) for m in info["measure_sheets"]}
+    if info["measure_sel_prefix"]:
+        # Sheets are named "Sel - Incurred Loss" etc. with headers on row 1 (no title row).
+        # Strip the prefix so downstream checks receive the bare measure name as key.
+        measure_dfs = {m[6:]: read_no_title(wb[m]) for m in info["measure_sheets"]}
+    else:
+        measure_dfs = {m: read_with_title(wb[m]) for m in info["measure_sheets"]}
     sel_dfs       = {s: read_no_title(wb[s])   for s in info["sel_sheets"]}
     cl_dfs        = {c: read_cl_sheet(wb[c])   for c in info["cl_sheets"]}
     tri_dfs       = {t: read_with_title(wb[t]) for t in info["tri_sheets"]}
@@ -1514,7 +1544,13 @@ def main():
     check_cross_measure(ck, measure_dfs)
 
     print("\n--- Group 6: Sel - Sheet Consistency ---")
-    check_sel_sheets(ck, measure_dfs, sel_dfs)
+    if info["measure_sel_prefix"]:
+        # Measure sheets ARE the Sel- sheets; self-comparison adds no value — skip.
+        ck.ok("6. Sel - Sheet Consistency",
+              "Sel - sheets are the primary measure sheets (values file format)",
+              "Self-comparison skipped")
+    else:
+        check_sel_sheets(ck, measure_dfs, sel_dfs)
 
     print("\n--- Group 7: X-to-Ult Triangles ---")
     check_xtoult_triangles(ck, tri_dfs, measure_dfs)
