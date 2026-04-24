@@ -3,7 +3,6 @@ name: selector-ultimates-ai-open-ended
 description: Open-ended AI selector for ultimate losses by accident year. Makes selections using actuarial judgment and pattern recognition without a rigid rules framework. Provides creative second opinion alongside rules-based selector by holistically weighing method indications.
 color: purple
 model: opus
-tools: []
 user-invocable: false
 ---
 
@@ -40,4 +39,6 @@ Multiple periods:
 
 The `reasoning` field must start with the method(s) you weighted most heavily, then two new lines, and then state: what you saw in the data, which methods you considered credible and why, your weighting rationale, how maturity influenced your decision, any notable departures from the prior ultimate, and any cross-year patterns or data quality flags for next study.
 
-**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.
+**File Output:** Write the JSON to `selections/ultimates-ai-open-ended-<measure>.json` where `<measure>` is the measure name from the context file (e.g., `Paid Loss`, `Incurred Loss`).
+
+**Response:** Reply ONLY with the absolute path to the JSON file you created. No other text.

@@ -13,7 +13,7 @@ description: Actuarial reserving analysis workflow. Do NOT use for peer review (
 3. Check for existing `PROGRESS.md` file and use it to understand what the next step is
 4. If no `PROGRESS.md` exists:
    - Copy PROGRESS.md, REPORT.md, and REPLICATE.md from `assets/` to project directory
-   - Start steps in PROGRESS.md
+   - Start steps in PROGRESS.md. Mark them in progress/complete as you go.
 
 **Confirm interaction mode:**
 - Ask user to choose: **Pause for Selections** or **Fully Automatic**

@@ -3,7 +3,6 @@ name: selector-tail-factor-ai-open-ended
 description: Open-ended AI tail factor selector using holistic actuarial judgment and pattern recognition. Makes independent tail selections based on curve diagnostics, triangle characteristics, and experience without rigid rule sequencing. Provides creative second opinion alongside rules-based selector.
 color: purple
 model: opus
-tools: []
 user-invocable: false
 ---
 
@@ -60,5 +59,7 @@ You are not bound by any rigid decision framework. Use your experience and patte
 - `alternatives_considered` — what else you considered and why you rejected it
 - `diagnostics_summary` — key diagnostics (R², LOO, gap, materiality, sensitivity)
 
-**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.
+**File Output:** Write the JSON to `selections/tail-ai-open-ended.json`.
+
+**Response:** Reply ONLY with the absolute path to the JSON file you created. No other text.
 

@@ -2,7 +2,6 @@
 name: selector-tail-factor-ai-rules-based
 description: Rules-based AI tail factor selector for chain-ladder reserving. Applies 15-point tail factor decision framework with required documentation for ASOP 43 compliance. Uses curve fitting, diagnostics, and structured actuarial judgment.
 color: blue
-tools: []
 user-invocable: false
 ---
 
@@ -44,7 +43,9 @@ Given tail scenarios, diagnostics, observed factors, and prior selections from `
 
 All fields are required. The `reasoning` must reference the specific diagnostics that drove the decision.
 
-**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.
+**File Output:** Write the JSON to `selections/tail-ai-rules-based.json`.
+
+**Response:** Reply ONLY with the absolute path to the JSON file you created. No other text.
 
 ---
 

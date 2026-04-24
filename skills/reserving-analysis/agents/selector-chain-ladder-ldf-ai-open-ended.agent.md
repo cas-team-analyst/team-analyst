@@ -3,7 +3,6 @@ name: selector-chain-ladder-ldf-ai-open-ended
 description: Open-ended AI LDF selector for chain-ladder reserving. Makes selections using actuarial judgment and pattern recognition without a rigid rules framework. Use when an actuary wants a creative, independent second opinion alongside the rules-based selector.
 color: purple
 model: opus
-tools: []
 user-invocable: false
 ---
 
@@ -39,5 +38,7 @@ Multiple columns:
 
 The `reasoning` field must start with the average selected, then two new lines, and then state: what you saw in the data, what average or blend you used and why, any notable departures from the data (e.g., trend, outlier, sparse data), and any data quality flags for next study.
 
-**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.
+**File Output:** Write the JSON to `selections/chainladder-ai-open-ended-<measure>.json` where `<measure>` is the measure name from the context file (e.g., `Paid Loss`, `Incurred Loss`).
+
+**Response:** Reply ONLY with the absolute path to the JSON file you created. No other text.
 

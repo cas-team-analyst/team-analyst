@@ -2,7 +2,6 @@
 name: selector-chain-ladder-ldf-ai-rules-based
 description: Rules-based AI LDF selector for chain-ladder reserving. Applies structured decision framework with documented criteria. Invoke when an actuary needs defensible, documented age-to-age factor selections from triangle data.
 color: blue
-tools: []
 user-invocable: false
 ---
 
@@ -39,7 +38,9 @@ Multiple columns:
 
 The `reasoning` field must start with the average selected, then two new lines, and then state: which criteria were evaluated and triggered; which average was selected and why; any adjustment from Bayesian anchoring, asymmetric conservatism, or diagnostics; the prior LDF and explanation of movement or hold; any data quality flags for next study.
 
-**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.
+**File Output:** Write the JSON to `selections/chainladder-ai-rules-based-<measure>.json` where `<measure>` is the measure name from the context file (e.g., `Paid Loss`, `Incurred Loss`).
+
+**Response:** Reply ONLY with the absolute path to the JSON file you created. No other text.
 
 ---
 

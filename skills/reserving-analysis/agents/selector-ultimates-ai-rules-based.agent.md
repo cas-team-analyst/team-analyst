@@ -2,7 +2,6 @@
 name: selector-ultimates-ai-rules-based
 description: Rules-based AI selector for ultimate losses by accident year from multiple reserving method indications. Applies structured framework to weight Chain Ladder, BF, Cape Cod, Berquist-Sherman, Frequency-Severity, Benktander, and related methods based on maturity, diagnostics, and data conditions.
 color: blue
-tools: []
 user-invocable: false
 ---
 
@@ -43,7 +42,9 @@ Multiple periods:
 
 The `reasoning` field must start with the method(s) and weights selected, then two new lines, and then state: which methods were eligible and which were screened out and why; the weights applied and the maturity rationale; any diagnostic-driven override; the prior ultimate and explanation of movement or hold; reasonability checks performed (IELR, ultimate loss ratio trend, paid-to-ultimate, case-to-ultimate); any data quality flags for next study.
 
-**Response:** Reply with the JSON only — no file writes, no summary text. Your entire response must be the raw JSON.
+**File Output:** Write the JSON to `selections/ultimates-ai-rules-based-<measure>.json` where `<measure>` is the measure name from the context file (e.g., `Paid Loss`, `Incurred Loss`).
+
+**Response:** Reply ONLY with the absolute path to the JSON file you created. No other text.
 
 ---
 
