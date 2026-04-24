@@ -1,94 +1,115 @@
 ---
 name: reserving-analysis
-description: Main skill. Use when asked to work on a reserving analysis project. Do NOT use for peer review, there is a separate skill for that.
+description: Actuarial reserving analysis workflow. Do NOT use for peer review (separate skill exists).
 ---
 
-# Reserving Analysis
+# Reserving Analysis Workflow
 
-## CRITICAL NOTES
+## Initial Setup
 
-- Do not EVER create files when you are told to use a copy operation.  Find a way to get copy to work. If you are working in a sandbox or the skill source isn't accessible from bash, mount the skill folder. If you fail, try a different approach. If your cache is out of date, STOP and ask the user to close and reopen Cowork. Do NOT create files from scratch that should be copied from the skill's assets or scripts folders. This is a critical guardrail to prevent bugs and ensure consistency with the skill's tested scripts.
+**Identify working directory:**
+1. Identify and mount the plugin folder (if applicable) 
+2. Identify and mount (if applicable) the project folder
+3. Check for existing `PROGRESS.md` file and use it to understand what the next step is
+4. If no `PROGRESS.md` exists:
+   - Copy PROGRESS.md, REPORT.md, and REPLICATE.md from `assets/` to project directory
+   - Start steps in PROGRESS.md
+
+**Confirm interaction mode:**
+- Ask user to choose: **Pause for Selections** or **Fully Automatic**
+- Use exact option names from PROGRESS.md
+- Track chosen mode for subsequent user interaction points
+
+**Overview:** PROGRESS.md contains the detailed step-by-step workflow. Follow that file for execution. This skill provides supporting context and principles.
+
+## CoWork Agent Guidelines
+
+**File operations:** Copy files with `cp {BASE_DIRECTORY}/{skill_path} {PROJECT_FOLDER}/{target_path}`. Mount skill folder first. DO NOT use `create_file` for templates. Convert Windows paths to Unix: `C:\Users\...` → `/mnt/c/Users/...`
+
+**Template guardrails:** If copy fails, STOP and debug. Fix bugs with targeted edits AFTER copying - never rewrite entire files (loses tested logic).
+
+**Other:** Cache out of date? Suggest close/reopen CoWork. Never use unicode symbols in commands.
 
 ## Quick Reference
 
-**Workflow steps:** 1. Project Setup, 2. Exploratory Data Analysis, 3. Data Intake, 4. Chain Ladder Selections, 5. Run Methods, 6. Ultimate Selections
-
-**Methods:** Chain Ladder (always), Initial Expected (requires ELRs + exposures), BF (requires both CL + IE)  
-**Documents:** REPORT.md (deliverable), PROGRESS.md (progress tracking), REPLICATE.md (reproducibility)  
-**Modes:** Pause for Selections, Fully Automatic  
-
-→ [Welcome message](#welcome) | [Main operation flow](#main-operation-flow) | [Other guidelines](#other-guidelines)
+**Sections in this skill:**
+- [Workflow Structure](#workflow-structure)
+- [Supporting Files](#supporting-files)
+- [Key Principles](#key-principles)
+- [Progress Tracking](#progress-tracking)
+- [User Communication](#user-communication)
 
 ---
 
-# WELCOME
+## Workflow Structure
 
-When the user first triggers this skill, present the following message:
+High-level phases (detailed steps in PROGRESS.md):
+1. Initial Setup → Project folder setup and interaction mode selection
+2. Progress Tracking → PROGRESS.md, REPORT.md, and REPLICATE.md management
+3. Data Preparation → Load, validate, and prepare triangle data
+4. Chain Ladder Development → LDF calculation and selection
+5. Tail Factor Selection → Tail analysis and selection
+6. Alternative Methods → IE and BF calculations
+7. Ultimate Selection → Final ultimate selections
+8. Finalization → Consolidation and technical review
 
-```
-Reserving Analysis — TeamAnalyst Plugin
+## Supporting Files
 
-This workflow walks you through a full actuarial reserving analysis:
+**Skill folder structure:**
+- `assets/` - Templates (PROGRESS.md, REPORT.md, REPLICATE.md, welcome message) and selection framework guide
+- `scripts/` - Numbered Python workflow scripts (1a-7) and modules/ subdirectory with shared utilities
+- `agents/` - Selector subagents for LDF, tail factor, and ultimate selections (rules-based and open-ended variants)
 
-1. Project Setup — set up folders, install dependencies, choose interaction mode
-2. Exploratory Data Analysis — review and summarize your data files
-3. Data Intake — prepare triangles, calculate LDF averages and diagnostics
-4. Chain Ladder Selections — AI-assisted LDF selections with actuarial judgment
-5. Run Methods — project ultimates using Chain Ladder, Initial Expected, and BF
-6. Ultimate Selections — select final ultimates across methods
+## Key Principles
 
-Note: The Initial Expected method requires an Expected Loss Rate input file
-(period, expected loss rate, expected frequency) and exposure data. The
-Bornhuetter-Ferguson method builds on both Chain Ladder and Initial Expected
-results — if IE can't run, BF will be skipped automatically. Chain Ladder
-always runs. You'll be asked about your available data during data intake.
+**File handling:**
+- Copy template files from `assets/` using command line - never create from scratch
+- Copy Python scripts from `scripts/` to project folder before running
+- Fix bugs with targeted edits AFTER copying - never rewrite entire files
 
-Interaction modes:
-- Pause for Selections: pauses after LDF selections and after ultimate selections for your review
-- Fully Automatic: runs start to finish with no pauses (except to confirm data format)
+**Documentation:**
+- Follow PROGRESS.md to track workflow state (mark In Progress → Complete)
+- Update REPORT.md at each step with findings, selections, and rationale
+- Maintain REPLICATE.md for reproducibility (files, scripts, manual edits)
 
-Three standard documents will be created in your project folder and filled in
-as the analysis progresses:
-- REPORT.md — the primary deliverable: a structured actuarial report
-  (purpose, scope, data, methodology, assumptions, results, diagnostics,
-  uncertainty, ASOP self-check). This is what you share with reviewers.
-- PROGRESS.md — a running checklist of the workflow: which steps are done,
-  in progress, and what scripts were produced along the way.
-- REPLICATE.md — a reproducibility log so someone without AI assistance
-  can follow the steps and arrive at the same results.
+**Script execution:**
+- PROGRESS.md specifies which scripts to run at each step
+- Run numbered scripts in sequence as directed by PROGRESS.md
+- Invoke selector subagents (from `agents/` folder) when PROGRESS.md indicates
+- Update Excel workbooks with AI selections via update scripts
 
-Throughout the workflow, keep the user you'll be kept informed of what is happening and why.
-```
+**User communication:**
+- Keep user informed with data samples and summaries after running scripts
+- Report what you're doing and why before each action
+- Announce files created with locations
 
-Then ask the user to identify the folder where they'd like to conduct this analysis. This should be an existing folder that contains (or will contain) their triangle data. Do not create a new folder in an arbitrary location. Once the user has confirmed the folder, proceed with the main operation flow below.
+## Progress Tracking
 
-# MAIN OPERATION FLOW
+**When starting or completing a PROGRESS.md step:**
+1. Mark status as "In Progress" or "Complete"
+2. Note the date
 
-Always follow these steps when working on this project:
+**Update REPORT.md:**
+- Fill in appropriate section at each step
+- Include findings, selections, and rationale
+- REPORT.md starts as boilerplate template; you populate it
 
-If a file named PROGRESS.md does not already exist in the project directory: copy this skill's `PROGRESS.md` file to a new file in the project directory.
+**Update REPLICATE.md:**
+- Document files added (with size and last modified date)
+- List scripts to run in sequence
+- Note any manual edits to auto-generated files (with reasoning)
+- Should enable reproduction without AI assistance
 
-Continue with the next step until all steps are complete.
+## User Communication
 
-When a PROGRESS.md step is started: 
-1. Mark it as "In Progress" 
-2. Note the date. 
+**Keep user informed:**
+- Report what you're doing and why before each action
+- Show data samples and summaries after running Python scripts
+- Announce files created with locations
+- Applies in all interaction modes
 
-When a step is complete: 
-1. Mark it as "Complete" 
-2. Note any applicable scripts that were created by listing them to the right of the progress step, on the same line.
+**User input by mode:**
+- **Pause for Selections:** Pauses after LDF selections and after ultimate selections for user review
+- **Fully Automatic:** Only data format confirmation (Step 3 in PROGRESS.md)
 
-As you go:
-- Keep the user informed at every step: report what you are doing and why, show samples and summaries of data output when you run Python scripts, tell the user what files were created and where. This applies in all modes.
-- Only ask for user input at steps marked for the chosen interaction mode. In Fully Automatic mode, the only required user input is the data format confirmation in Step 3. If you aren't sure what interaction mode has been chosen, ask again.
-- Update REPORT.md in the appropriate section at every step. This is the primary document we'll use to communicate our analysis. It starts as boilerplate and you will fill it out as the project goes.
-- Track steps to replicate results in a file REPLICATE.md: files to add (w/ size and last modified date to verify correct file), scripts to run, any manual edits made to automatically generated files (with reasoning), etc. A user without AI support should be able to follow the steps in REPLICATE.md to get the same results.
-- Create python scripts as necessary to ensure the steps are repeatable.
-
-# OTHER GUIDELINES
-
-- Never include checkmarks or other unicode symbols in PowerShell commands - only use standard ASCII text and operators.
-- Use the AskUserQuestion tools as applicable.
-- If you are having folder access or file copy issues, it may mean the user hasn't accepted your request to access that folder. IMPORTANT: STOP WHAT YOU ARE DOING and wait for the user to approve any open requests. 
-- CRITICAL: USE POWERSHELL `cp` COMMAND TO COPY FILES. DO NOT use the create_file tool to write new files from scratch. Template files exist in `.claude\skills\reserving-analysis\assets\` and scripts exist in `.claude\skills\reserving-analysis\scripts\` — use PowerShell `cp` to copy these to the project directory. If the copy operation fails STOP AND WORK WITH THE USER TO DEBUG IT. Real bugs (wrong path variable, wrong column name, missing customization for the user's data format) should be fixed with a targeted Edit after copying, not a full rewrite. Rewriting loses tested logic and introduces divergence from the skill's canonical scripts.
-- If you are CoWork and finding your file cache is out of date, STOP and suggest the user close and reopen CoWork.
+**Ask for interaction mode preference** using exact option names from PROGRESS.md during project setup

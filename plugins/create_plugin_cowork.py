@@ -29,7 +29,7 @@ def collect_files():
         else:
             print(f"WARNING: {name} not found, skipping")
 
-    # Add skills directory
+    # Add skills directory (includes agents in skills/reserving-analysis/agents/)
     skills_dir = PROJECT_ROOT / "skills"
     if skills_dir.exists():
         for child in sorted(skills_dir.rglob("*")):
