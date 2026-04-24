@@ -1,0 +1,15 @@
+[
+  {
+    "measure": "Paid Loss",
+    "cutoff_age": 143,
+    "tail_factor": 1.0181,
+    "method": "exp_dev_product",
+    "reasoning": "Selected exp_dev_product at age 143 as the balanced choice reflecting mature triangle development. This triangle shows high maturity with observed factors clustering near 1.00-1.05 at age 143+. Bondy (1.0039) is overly conservative for the data profile; exp_dev_quick_exact_last (1.0459) overfits to tail noise via exact last constraint; double_exp at age 203 exhibits numerical instability (inf in LOO max). The exp_dev_product parameterization yields a smooth exponential decay curve with R²=0.23 and LOO std dev=0.0020, acceptable for a mature tail. The 0.28% of CDF is immaterial. Small gap warning (0.008) reflects natural undersmoothing near cutoff in high-maturity data, not a deficiency. This selection respects the triangle's mature development pattern and avoids overfitting to sparse tail cells.",
+    "pct_of_cdf": 0.2814,
+    "prior_selection": null,
+    "prior_delta": null,
+    "prior_delta_driver": "No prior selection provided; AI independent actuarial judgment based on triangle diagnostics and mature development profile",
+    "alternatives_considered": "Bondy (1.0039) too conservative; exp_dev_quick_exact_last (1.0459) overfits; double_exp (age 203) numerically unstable; skurnick (1.3291) extreme for sample size; mcclenahan (1.0000) assumes premature closure.",
+    "diagnostics_summary": "R²=0.23, LOO std dev=0.0020, gap_to_last_observed=0.0082 (gap_flag=True but minimal), monotonicity issues in tail ages typical of sparse high-maturity data, materiality well within bounds (0.28% of CDF), sensitivity reserves stable within ±15% band across +/-10% and +/-20% parameter shocks"
+  }
+]

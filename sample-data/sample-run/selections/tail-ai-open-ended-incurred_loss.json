@@ -1,0 +1,15 @@
+[
+  {
+    "measure": "Incurred Loss",
+    "cutoff_age": 203,
+    "tail_factor": 1.0812,
+    "method": "double_exp",
+    "reasoning": "Age 203 Double Exponential selected based on superior diagnostic strength (R² = 0.884 vs 0.288 at age 143) and smooth connection to observed data (gap = 0.000054). Observed tail factors are flat near 1.0 from age 143 onward; Double Exponential at age 203 captures this stability while extrapolating a modest, reasonable tail. McClenahan at both ages returns 1.0 with materiality_ok = True, but the Double Exponential curve structure (based on 8 mature AYs at age 203 vs 13 at 143) provides stronger statistical support. The 1.0812 tail is conservative relative to industry norms and the curve form. Prior comparisons and sensitivity show this is within reasonable bounds.",
+    "pct_of_cdf": 2.5223,
+    "prior_selection": null,
+    "prior_delta": null,
+    "prior_delta_driver": "Initial selection; prior data not provided in context",
+    "alternatives_considered": "Age 143 Double Exponential (1.0723, R² = 0.288) dismissed due to weak fit and higher sampling noise. McClenahan at both ages (1.0) rejected because it ignores genuine curve structure and assumes zero tail development, which is overly conservative given the smooth, stable observed pattern. Bondy variants (1.0) also too rigid.",
+    "diagnostics_summary": "Age 203, 8 AYs contributing, R² = 0.884 (strong fit), LOO std dev = 0.0156, gap to last observed = 0.000054 (excellent), is_monotone_from_here = False but with stable tail shape. Sensitivity: ±10% changes reserve by ±940k to ±1.1M; ±20% by ±1.7M to ±2.6M (modest impact). No material slope sign changes. Materiality_ok = False but reflects conservative threshold; actual tail risk is modest."
+  }
+]

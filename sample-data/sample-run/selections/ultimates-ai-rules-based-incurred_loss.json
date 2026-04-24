@@ -1,0 +1,146 @@
+[
+  {
+    "measure": "Incurred Loss",
+    "period": 2001,
+    "selection": 3163773.70,
+    "reasoning": "Method Fitness Screen: CL eligible (100% developed, fully mature at 287 months). Maturity-Based Weighting: Tail-exposed period (84+ months); primary weight to Paid/Incurred CL. Selection: 100% Chain-Ladder ultimate.\n\nEligible methods: Incurred CL (100% developed, CDF = 1.0). Screened methods: None. Diagnostic-Driven Override: None applicable (fully developed). Convergence Check: Single method; no convergence analysis needed. Bayesian Anchoring: No prior provided; CL indication is fully credible. Asymmetric Conservatism: Not applicable (no prior movement). Reasonability Envelope: Period is fully mature and fully developed; no reasonability flags.\n\nData quality: No IBNR component (0.0); development is complete. Final selection holds 100% at CL indication."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2002,
+    "selection": 2904344.26,
+    "reasoning": "Method Fitness Screen: CL unavailable (NaN). Incurred Expected (IE) available. BF unavailable (NaN). Only method available is Incurred Expected. Maturity-Based Weighting: Late maturity (275 months). At late maturity, CL would be primary (60–100%); IE would be secondary (0–40%). Given CL unavailability, IE becomes sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (not calculated/unavailable), Incurred BF (not available). Diagnostic-Driven Override: None provided (no case adequacy, closure rate, or diagnostics available). Convergence Check: Single method; convergence check not applicable. Bayesian Anchoring: No prior provided. Asymmetric Conservatism: Not applicable (sole method). Reasonability Envelope: Cannot compute IELR without earned premium. IBNR = 576,610.50 (positive, consistent with development expectation at 275 months).\n\nData quality: Single method reliance; recommend CL and BF indications for next study to cross-validate IE."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2003,
+    "selection": 2633272.13,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Late maturity (263 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 855,180.55 (positive, reasonable for late maturity).\n\nData quality: Single method reliance; CL and BF indications needed for validation."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2004,
+    "selection": 1678710.98,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Late maturity (251 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 556,096.25 (positive).\n\nData quality: Single method reliance; CL and BF validation needed."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2005,
+    "selection": 1712285.20,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Late maturity (239 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = −529,863.93 (negative). RED FLAG: Negative IBNR indicates favorable development or estimation error. Actual incurred (2,242,149) > ultimate (1,712,285), implying adverse reversal. This suggests either case reserve decrease or estimate deterioration. Recommend diagnostic review of case adequacy and reserve study timing for this period.\n\nData quality: Single method reliance; negative IBNR flags data quality concern. CL and BF indications critical for validation."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2006,
+    "selection": 1746530.90,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Late maturity (227 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 228,894.11 (positive).\n\nData quality: Single method reliance; CL and BF validation needed."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2007,
+    "selection": 2850338.44,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Late maturity (215 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = −1,960,436.18 (large negative). RED FLAG: Very large negative IBNR (actual 4,810,775 >> ultimate 2,850,338). Adverse case development or severe estimation error. This period likely had reserve strengthening after the IE estimate or case reactivations. Recommend diagnostic investigation before finalizing selection.\n\nData quality: Single method reliance; large negative IBNR is a material data quality flag. CL and BF indications essential for validation."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2008,
+    "selection": 2543927.05,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Late maturity (203 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 1,165,499.11 (positive).\n\nData quality: Single method reliance; CL and BF validation needed."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2009,
+    "selection": 2594805.59,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Late maturity (191 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 1,425,224.51 (positive).\n\nData quality: Single method reliance; CL and BF validation needed."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2010,
+    "selection": 1134300.73,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Late-to-mid maturity (179 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = −143,371.34 (negative). Actual (1,277,672) > ultimate (1,134,301), indicating adverse development post-estimate. Flag for diagnostic review.\n\nData quality: Single method reliance; negative IBNR flags data quality concern. CL and BF indications critical."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2011,
+    "selection": 1542648.99,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Late-to-mid maturity (167 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = −373,432.59 (negative). Actual (1,916,082) > ultimate (1,542,649). Adverse development signal. Recommend diagnostic investigation.\n\nData quality: Single method reliance; negative IBNR flags data quality. CL and BF validation essential."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2012,
+    "selection": 1573501.97,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Mid maturity (155 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 209,748.59 (positive).\n\nData quality: Single method reliance; CL and BF validation needed."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2013,
+    "selection": 1203729.01,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Mid maturity (143 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 495,199.02 (positive).\n\nData quality: Single method reliance; CL and BF validation needed."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2014,
+    "selection": 1227803.59,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Mid maturity (131 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = −161,800.09 (negative). Actual (1,389,604) > ultimate (1,227,804). Adverse post-estimate development. Flag for review.\n\nData quality: Single method reliance; negative IBNR flags data quality. CL and BF validation critical."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2015,
+    "selection": 1669812.88,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Early-to-mid maturity (119 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = −1,713,150.37 (very large negative). RED FLAG: Actual (3,382,963) >> ultimate (1,669,813). Massive adverse development post-estimate. This indicates either: (1) severe IE underestimate, (2) case reserve reactivation, or (3) reopen activity. This period requires immediate diagnostic investigation before finalization. Potential implications for loss control or underwriting.\n\nData quality: Single method reliance; very large negative IBNR is a critical data quality flag. CL and BF indications ESSENTIAL. Do not finalize without peer review."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2016,
+    "selection": 2554813.71,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Early-to-mid maturity (107 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 48,490.07 (positive, small).\n\nData quality: Single method reliance; CL and BF validation needed."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2017,
+    "selection": 2605909.99,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Early maturity (95 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 1,400,098.16 (positive).\n\nData quality: Single method reliance; CL and BF validation needed."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2018,
+    "selection": 2215023.49,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Early maturity (83 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = −180,424.94 (negative). Actual (2,395,448) > ultimate (2,215,023). Adverse development. Flag for review.\n\nData quality: Single method reliance; negative IBNR flags data quality. CL validation important."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2019,
+    "selection": 2259323.96,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Early maturity (71 months). IE is sole eligible method. Selection: 100% Incurred Expected.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = −340,558.92 (negative). Actual (2,599,883) > ultimate (2,259,324). Adverse post-estimate development. Flag for review.\n\nData quality: Single method reliance; negative IBNR flags data quality. CL validation critical."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2020,
+    "selection": 1843608.35,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Green maturity (59 months). At this maturity, CL is weak (1–20%) and BF is primary (50–70%). Given unavailability, IE is sole method. Selection: 100% Incurred Expected with high uncertainty.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 864,708.84 (positive, represents 47% of ultimate; reasonable for 59-month maturity but signals high remaining exposure). CL and BF indications critical for green period validation.\n\nData quality: Single method reliance at early maturity; CL and BF indications CRITICAL. Recommend re-running analysis with BF a priori and CL development."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2021,
+    "selection": 1410360.39,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Green maturity (47 months). At this maturity, BF is primary (70–100%); CL is weak (0–20%). Given unavailability, IE is sole method. Selection: 100% Incurred Expected with high uncertainty.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 399,047.11 (positive, represents 28% of ultimate; reasonable for 47-month maturity). BF a priori and CL development needed.\n\nData quality: Single method reliance at very green period; CL and BF validation ESSENTIAL. Re-run with a priori loss ratio and full triangles."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2022,
+    "selection": 959045.06,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Very green maturity (35 months). At this maturity, a priori and BF are primary (70–100%); CL is not credible (0–10%). Given unavailability, IE is sole method. Selection: 100% Incurred Expected with very high uncertainty.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 131,628.96 (positive, represents 14% of ultimate; reasonable for 35-month maturity). BF a priori CRITICAL for this green period.\n\nData quality: Single method reliance at very green period; CL and BF data missing. BF a priori and full triangles MANDATORY for next study."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2023,
+    "selection": 978225.96,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Very green maturity (23 months). At this maturity, a priori and BF dominate (80–100%); CL is not credible (0–5%). Given unavailability, IE is sole method. Selection: 100% Incurred Expected with extreme uncertainty.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = −673,530.71 (NEGATIVE). RED FLAG: Actual (1,651,757) >> ultimate (978,226). This negative IBNR at a very green maturity is highly suspicious and suggests either: (1) IE estimate is severely conservative, (2) anticipated case reopening post-estimate, or (3) claim surge not reflected in IE. This period REQUIRES diagnostic investigation before finalization.\n\nData quality: Critical data quality flag; single method reliance at very green period. CL and BF a priori MANDATORY. Do not finalize without peer review and diagnostic investigation."
+  },
+  {
+    "measure": "Incurred Loss",
+    "period": 2024,
+    "selection": 997790.48,
+    "reasoning": "Method Fitness Screen: CL unavailable. IE available. BF unavailable. Only method available is Incurred Expected. Maturity-Based Weighting: Immature (11 months). At this maturity, a priori and BF are essentially the entire method portfolio (90–100%); CL is non-credible (0–2%). Given unavailability, IE is sole method. Selection: 100% Incurred Expected with maximum uncertainty.\n\nEligible methods: Incurred Expected. Screened methods: Incurred CL (unavailable), Incurred BF (unavailable). Diagnostic-Driven Override: None provided. Convergence Check: Single method. Bayesian Anchoring: No prior. Asymmetric Conservatism: Not applicable. Reasonability Envelope: IBNR = 107,635.26 (positive, represents 11% of ultimate; within expectation for 11-month immature period). CL and BF a priori critical for validation.\n\nData quality: Single method reliance at immature period; CL and BF data missing. BF a priori and full claim triangles ESSENTIAL. This period will undergo substantial revision as claims develop."
+  }
+]

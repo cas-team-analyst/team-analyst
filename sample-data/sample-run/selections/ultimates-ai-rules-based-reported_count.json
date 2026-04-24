@@ -1,0 +1,146 @@
+[
+  {
+    "measure": "Reported Count",
+    "period": 2001,
+    "selection": 701,
+    "reasoning": "Chain Ladder method, sole indicator. Period 287 months old, 100% developed (CDF=1.0), zero IBNR. Tail maturity; CL ultimate deterministic at actual=700.7076. Selection: 701 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2002,
+    "selection": 652,
+    "reasoning": "Chain Ladder method, sole indicator. Period 275 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=651.8824. Selection: 652 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2003,
+    "selection": 552,
+    "reasoning": "Chain Ladder method, sole indicator. Period 263 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=551.5928. Selection: 552 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2004,
+    "selection": 643,
+    "reasoning": "Chain Ladder method, sole indicator. Period 251 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=642.6452. Selection: 643 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2005,
+    "selection": 641,
+    "reasoning": "Chain Ladder method, sole indicator. Period 239 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=641.3256. Selection: 641 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2006,
+    "selection": 497,
+    "reasoning": "Chain Ladder method, sole indicator. Period 227 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=497.4892. Selection: 497 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2007,
+    "selection": 476,
+    "reasoning": "Chain Ladder method, sole indicator. Period 215 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=476.3756. Selection: 476 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2008,
+    "selection": 329,
+    "reasoning": "Chain Ladder method, sole indicator. Period 203 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=328.5804. Selection: 329 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2009,
+    "selection": 322,
+    "reasoning": "Chain Ladder method, sole indicator. Period 191 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=321.9824. Selection: 322 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2010,
+    "selection": 272,
+    "reasoning": "Chain Ladder method, sole indicator. Period 179 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=271.8376. Selection: 272 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2011,
+    "selection": 346,
+    "reasoning": "Chain Ladder method, sole indicator. Period 167 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=345.7352. Selection: 346 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2012,
+    "selection": 261,
+    "reasoning": "Chain Ladder method, sole indicator. Period 155 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=261.2808. Selection: 261 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2013,
+    "selection": 292,
+    "reasoning": "Chain Ladder method, sole indicator. Period 143 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=291.6316. Selection: 292 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2014,
+    "selection": 455,
+    "reasoning": "Chain Ladder method, sole indicator. Period 131 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=455.262. Selection: 455 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2015,
+    "selection": 334,
+    "reasoning": "Chain Ladder method, sole indicator. Period 119 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=333.8588. Selection: 334 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2016,
+    "selection": 391,
+    "reasoning": "Chain Ladder method, sole indicator. Period 107 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=390.6016. Selection: 391 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2017,
+    "selection": 310,
+    "reasoning": "Chain Ladder method, sole indicator. Period 95 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=310.106. Selection: 310 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2018,
+    "selection": 326,
+    "reasoning": "Chain Ladder method, sole indicator. Period 83 months old, 100% developed, zero IBNR. Tail maturity; CL ultimate deterministic at actual=325.9412. Selection: 326 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2019,
+    "selection": 358,
+    "reasoning": "Chain Ladder method, sole indicator. Period 71 months old, 100% developed, zero IBNR. Late maturity; CL ultimate deterministic at actual=357.6116. Selection: 358 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2020,
+    "selection": 371,
+    "reasoning": "Chain Ladder method, sole indicator. Period 59 months old, 100% developed, zero IBNR. Mid maturity; CL ultimate deterministic at actual=370.8076. Selection: 371 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2021,
+    "selection": 330,
+    "reasoning": "Chain Ladder method, sole indicator. Period 47 months old, 100% developed, zero IBNR. Early-to-mid maturity; CL ultimate deterministic at actual=329.9. Selection: 330 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2022,
+    "selection": 298,
+    "reasoning": "Chain Ladder method, sole indicator. Period 35 months old, 100% developed, zero IBNR. Early maturity; CL ultimate deterministic at actual=298.2296. Selection: 298 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2023,
+    "selection": 305,
+    "reasoning": "Chain Ladder method, sole indicator. Period 23 months old, 100% developed, zero IBNR. Green maturity; CL ultimate deterministic at actual=304.8276. Selection: 305 (rounded)."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2024,
+    "selection": 286,
+    "reasoning": "Chain Ladder method, sole indicator. Period 11 months old (very green), 89.45% developed (CDF=1.118). CL ultimate=286.2107 with IBNR=30.2083. No alternate methods (a priori, Benktander) provided. CL extrapolation via CDF is standard for counts at green maturity when development is measurable. Selection: 286 (rounded)."
+  }
+]

@@ -1,0 +1,140 @@
+[
+  {
+    "measure": "Paid Loss",
+    "interval": "11-23",
+    "selection": 2.4500,
+    "reasoning": "Simple all-years average (2.4979) with modest downward adjustment. Despite high CV (25%), the data is voluminous and well-distributed across 24 accident years. The slope shows directional noise (0.63 to 0.11 across time horizons) but no consistent trend, suggesting the average adequately captures underlying pattern. Weighted average (2.4566) and exclude-high-low (2.4952) cluster tightly around the simple average. Selection of 2.45 reflects confidence in the central estimate while acknowledging the inherent volatility in early reporting periods."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "23-35",
+    "selection": 1.3400,
+    "reasoning": "Weighted all (1.3437) with rounding. Very low CV (24.7%), and strong consistency across three-year (1.2671), five-year (1.4224), and ten-year (1.3913) horizons. Slope near zero (−0.0604 to −0.0932) indicates no directional trend; mature payment pattern stabilizing. Data richness (22 observations) supports average selection. 1.34 is defensible without need for more caution."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "35-47",
+    "selection": 1.1650,
+    "reasoning": "Weighted all (1.1803) discounted to 1.1650 due to negative slope pattern (−0.0563 to −0.01). The slight downward drift across time horizons suggests recent cohorts may develop a touch more conservatively than older years. Low CV (5%) provides confidence. Mid-tail development is maturing steadily. Three-year (1.1327) vs. ten-year (1.2249) divergence noted but attributed to base-effects in sparse recent years; weighted average accounts for this appropriately."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "47-59",
+    "selection": 1.1010,
+    "reasoning": "Simple all (1.1009) and weighted all (1.1038) are nearly identical. Low CV (10.6%), flat slope across horizons (−0.0235 to 0.0014), and robust data distribution across 20 accident years. No correction indicated. Pattern is stable and consistent."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "59-71",
+    "selection": 1.0800,
+    "reasoning": "Weighted all (1.0774) rounded to 1.0800. Moderate CV (7.2%), very low slope variability. Ten-year (1.0861) slightly higher than weighted all, three-year (1.1286) elevated likely due to base-weighted effects in 2021-2023 cohorts which are still developing. Weighted average (all years) provides best balance. No trend signal overrides average reliance."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "71-83",
+    "selection": 1.0620,
+    "reasoning": "Weighted all (1.0591) rounded to 1.0620. Moderate CV (10.1%), consistent across horizons (1.0846 ten-year, 1.1070 five-year, 1.1298 three-year). Slope shows slight negative pattern (−0.04 to 0.0287) but very small in magnitude. Weighted average reflects mix of older stable cohorts and newer volatile ones. Selection slightly above weighted to buffer uncertainty in recent years."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "83-95",
+    "selection": 1.0240,
+    "reasoning": "Simple all (1.0233) and weighted all (1.0260) nearly identical. Very low CV (4.0%), no slope signal, tight cluster across time horizons (1.0256 ten-year, 1.0328 five-year, 1.0426 three-year). Tail development is extremely mature and stable. 1.0240 reflects confidence in average without adjustment."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "95-107",
+    "selection": 1.0180,
+    "reasoning": "Weighted all (1.0208) rounded to 1.0180. Negligible CV (0.4%), slope flat (−0.0045 to 0.0024). Simple all (1.0181) and weighted all cluster tightly. Development is tail-like—minimal incremental payment after 95 months. Conservative selection reflects low expected variability going forward."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "107-119",
+    "selection": 1.0340,
+    "reasoning": "Weighted all (1.0394) with modest discount to 1.0340. CV elevated at 6.5%, and three-year (1.0982) exceeds five-year (1.0645) and ten-year (1.0547), suggesting recent years 2019-2024 may develop faster than longer historical trends. Slope is positive (0.0689) in three-year. Weighted all acknowledges data volume and recent cohort weight. Selection sits between weighted all and longer-horizon estimates."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "119-131",
+    "selection": 1.0220,
+    "reasoning": "Simple all (1.0221). Very low CV (1.5%), slope essentially flat across all horizons (−0.0111 to 0.0009). Robust clustering across three-, five-, and ten-year (all near 1.010-1.035). Tail development is mature and predictable. Average selection appropriate."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "131-143",
+    "selection": 1.0190,
+    "reasoning": "Simple all (1.0190). Low CV (2.9%), flat slope (−0.0051 to −0.0001). Consistent across time horizons. Deep tail, minimal uncertainty. Average selection reflects stability."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "143-155",
+    "selection": 1.0180,
+    "reasoning": "Simple all (1.0187). Low CV (2.3%), positive slope (0.021) but very small magnitude. Tight clustering across horizons. Deep tail development. Average selection captures pattern."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "155-167",
+    "selection": 1.0110,
+    "reasoning": "Simple all (1.0113). Minimal CV (0.2%), slope near zero (0.0016). Very tight factor. Extreme tail maturity. Average selection."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "167-179",
+    "selection": 1.0110,
+    "reasoning": "Simple all (1.0114). Minimal CV (0.3%), slope near zero (0.0027). Consistent with neighboring intervals. Extreme tail. Average selection."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "179-191",
+    "selection": 1.0120,
+    "reasoning": "Simple all (1.0120). Low CV (1.6%), slight negative slope (−0.0145 to −0.0019). Tail is essentially flat. Average selection. Slope magnitude too small to warrant departure."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "191-203",
+    "selection": 1.0160,
+    "reasoning": "Simple all (1.0158). Low CV (1.0%), flat slope (−0.0013 to 0.0075). Tail development. Average selection stable and appropriate."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "203-215",
+    "selection": 1.0080,
+    "reasoning": "Simple all (1.0084). Minimal CV (0.3%), slope near zero (0.0002 to 0.0012). Far tail. Average selection reflects quietness."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "215-227",
+    "selection": 1.0100,
+    "reasoning": "Simple all (1.0099). Very low CV (3.2%), slight positive slope (0.0028) but negligible magnitude. Tail factor. Average selection appropriate."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "227-239",
+    "selection": 1.0020,
+    "reasoning": "Simple all (1.0024). Zero CV in three-year, minimal in longer horizons (0.5%). Slope essentially zero. Data shows development has ceased for most cohorts at this age. Far tail. Conservative selection slightly below average reflects expectation of minimal further development."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "239-251",
+    "selection": 1.0050,
+    "reasoning": "Simple all (1.0044). Very low CV (0.6%), flat slope (−0.0051 to −0.0032). Consistent across time horizons. Extreme tail. Average selection."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "251-263",
+    "selection": 1.0060,
+    "reasoning": "Simple all (1.0057). Very low CV (5.0%), flat slope (−0.0037). Consistent across horizons. Extreme tail with very sparse recent-year data; older cohorts dominate. Average reflects stable historical pattern."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "263-275",
+    "selection": 1.0080,
+    "reasoning": "Simple all (1.0076). Minimal CV (1.9%), flat slope (0.0027). Data limited to older accident years (pre-2010 mostly) as newer cohorts have not reached this age. Historical pattern stable. Average selection."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "275-287",
+    "selection": 1.0039,
+    "reasoning": "Simple all (1.0039). Only 2001-2003 cohorts reach this development age; data extremely sparse for recent years. No CV calculation provided (all prior intervals computed). Slope data unavailable. Historical pattern for mature 24-year-old cohorts shows minimal movement. Conservative selection uses the average computed, reflecting very low expected development beyond this point. Tail assumption."
+  }
+]

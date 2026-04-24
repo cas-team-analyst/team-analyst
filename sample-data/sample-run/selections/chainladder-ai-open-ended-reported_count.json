@@ -1,0 +1,140 @@
+[
+  {
+    "measure": "Reported Count",
+    "interval": "11-23",
+    "selection": 1.1100,
+    "reasoning": "Average: weighted_all 1.0617, 3yr 1.133, 5yr 1.118, 10yr 1.0962.\n\nThis is the primary development interval. Reported counts show clear growth from initial report to 23 months. The 3-year and 5-year averages (1.133, 1.118) are significantly higher than the long-period average (1.0617), indicating recent experience is stronger. Low CV (0.013) suggests stable, reliable data. Recent cohorts (2015-2024) consistently show development in this range. Selected 1.110 as a balanced blend between the robust 3yr average and slightly more conservative 5yr, reflecting strong recent experience while avoiding overreliance on the most volatile recent years."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "23-35",
+    "selection": 1.0000,
+    "reasoning": "Average: simple_all 1.0037, weighted_all 1.0033, all other averages 1.0.\n\nReported count is essentially mature by age 23. All calculations show development at or below 1.004, indicating negligible change from month 23 to 35. CV is 0.0, showing perfect consistency across time periods. Data from 2001-2024 cohorts uniformly show flat development. Selected 1.0 with high confidence."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "35-47",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0005 or lower.\n\nNo material development. CV is 0.0. All period data show values at 1.0 exactly or imperceptibly above. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "47-59",
+    "selection": 1.0000,
+    "reasoning": "Average: simple_all 0.9999, weighted_all 0.9998, all other averages 1.0.\n\nNo material development. CV is 0.0024, indicating slight variability but trending flat. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "59-71",
+    "selection": 1.0000,
+    "reasoning": "Average: weighted_all 1.0019, simple_all 1.0012, 10yr 0.9996, 5yr 0.9992, 3yr 0.9987.\n\nVery slight trend toward flat or imperceptible decline. CV is 0.0021. Long-period average (1.0019) is pulled up by older data; more recent periods show 0.9992-0.9996. Conservative selection of 1.0 avoids the slight downward signals in recent data."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "71-83",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "83-95",
+    "selection": 1.0000,
+    "reasoning": "Average: weighted_all 0.9998, simple_all 0.9998, 10yr 0.9996, 5yr 0.9993, 3yr 0.9987.\n\nAll averages extremely close to 1.0; slight negative trend in recent periods. CV is 0.0024. Conservative selection of 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "95-107",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "107-119",
+    "selection": 1.0000,
+    "reasoning": "Average: weighted_all 0.9994, simple_all 0.9992, 10yr 0.9988, 5yr 0.9977, 3yr 0.9961.\n\nAll recent averages slightly below 1.0, with slight negative trend in 3yr (0.9961). CV is 0.0068, highest of the tail intervals. However, the deviation from 1.0 is marginal (< 0.1%). Conservative selection of 1.0 reflects near-perfect stability."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "119-131",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "131-143",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "143-155",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "155-167",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "167-179",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "179-191",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "191-203",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "203-215",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "215-227",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "227-239",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "239-251",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "251-263",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "263-275",
+    "selection": 1.0000,
+    "reasoning": "Average: all averages 1.0. CV is 0.0.\n\nPerfect stability. Selected 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "275-287",
+    "selection": 1.0000,
+    "reasoning": "Average: simple_all 1.0, weighted_all 1.0, all lookback periods 1.0. CV is NaN (no historical variance).\n\nTail interval with minimal data but consistent with all prior tail behavior. Selected 1.0."
+  }
+]

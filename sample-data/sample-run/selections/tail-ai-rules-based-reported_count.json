@@ -1,0 +1,15 @@
+[
+  {
+    "measure": "Reported Count",
+    "cutoff_age": 143,
+    "tail_factor": 1.0000,
+    "method": "bondy",
+    "reasoning": "Reported count triangle — expect shortest tail of all measures. Selected starting age 143: is_monotone_from_here=True, cv=0.0, slope_sign_changes=0, n_factors_in_fit=12, n_ay_contributing=13. All LDFs from age 143 onward equal 1.0 across all contributing accident years (2001–2013), confirming losses are substantively complete. Bondy method anchors to last observed factor (1.0), which is appropriate when tail is immaterial. No curve fitting needed when closure is definitive. Gap_flag=False confirms smooth transition. Closure anchor strongly applies: all factors at and beyond age 143 are exactly 1.0, indicating 100% development and zero tail risk.",
+    "pct_of_cdf": 0.0,
+    "prior_selection": null,
+    "prior_delta": null,
+    "prior_delta_driver": "Baseline selection — no prior year comparison available.",
+    "alternatives_considered": "Age 143 selected over age 203 (fewer AYs contributing, only 7 factors vs 12). Modified Bondy Double Dev and Modified Bondy Square Ratio both produce identical 1.0 tail at age 143; Bondy preferred for simplicity when tail is immaterial and no curve fitting applies. Curve methods (exp_dev, mcclenahan, etc.) not provided in scenarios but would be unnecessary given definitive 1.0 factor pattern.",
+    "diagnostics_summary": "No curve fit diagnostics required (Bondy non-parametric). Observed pattern: all LDFs from age 143 onward = 1.0. Closure anchor: 100% development at age 143 (last 12 factors all 1.0). Materiality: tail contributes 0% to CDF (tail factor = 1.0 means zero tail adjustment). Sensitivity: N/A (zero tail reserve impact). Count tail (1.000) is shortest among all measures as expected."
+  }
+]

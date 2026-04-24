@@ -1,0 +1,140 @@
+[
+  {
+    "measure": "Reported Count",
+    "interval": "11-23",
+    "selection": 1.1180,
+    "reasoning": "Average selected: weighted_5yr = 1.1180.  Convergence Override applies. All averages within ±2% of midpoint ~1.113 (convergence band). Simple 3yr = 1.133, weighted 3yr = 1.133, simple 5yr = 1.1204, weighted 5yr = 1.118, weighted all = 1.0617. Modest upward trend in 3-year (1.133 vs 5-year 1.118, +1.3% divergence) but below significance threshold. Selected weighted 5-year as most credible: longer credibility window, stable reported-count pattern typical of mature commercial lines. Early maturity (11-23mo); convergence override trumps all secondary criteria. No prior LDF provided; establishes new baseline. No diagnostic concerns (reported_claims ~313-637 over period, severity moves independently). Data quality: excellent, 24 AY points available."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "23-35",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000 exactly.  Convergence Override applies. Perfect convergence across all averaging methods: simple_3yr = 1.0, weighted_3yr = 1.0, simple_5yr = 1.0, weighted_5yr = 1.0, weighted_all = 1.0033, simple_all = 1.0037, avg_exclude_high_low_all = 1.0018. CV = 0.00 (3yr, 5yr, 10yr). Negligible slope (-0.0015 at 10yr). Reported counts stabilize after initial development. Select 1.000 per convergence rule (§8). No material trend, no diagnostics deviation. Early-mid maturity (23-35mo); claim reporting nearly complete. Data quality: excellent, 23 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "35-47",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages ≈ 1.000.  Convergence Override applies. Weighted_5yr = 1.0008, simple 5yr = 1.0008, weighted_3yr = 1.0, simple_3yr = 1.0, weighted_all = 1.0004, simple_all = 1.0005. CV = 0.00 across all windows. Slope near zero (-0.0008 at 5yr, -0.0002 at 10yr). Mature phase; no incremental reporting. Select 1.000 per convergence. Mid maturity (35-47mo); claim reporting effectively complete. Data quality: excellent, 22 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "47-59",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000 or near.  Convergence Override applies. Weighted_5yr = 1.0, simple_5yr = 1.0, weighted_3yr = 1.0013, simple_3yr = 1.0014, weighted_all = 0.9998, simple_all = 0.9999. CV ≤ 0.0029 (5yr). Slope near zero. No development expected. Select 1.000. Mid maturity (47-59mo); claim reporting closed. Data quality: excellent, 21 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "59-71",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000 or near.  Convergence Override applies. Weighted_5yr = 0.9992, simple_5yr = 0.9993, weighted_3yr = 0.9987, simple_3yr = 0.9988, weighted_all = 1.0019, simple_all = 1.0012. CV ≤ 0.0021 (3yr). Slope near zero (-0.0007 at 5yr). Post-reporting phase; hold 1.000. Mid maturity (59-71mo). Data quality: excellent, 20 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "71-83",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. Weighted_3yr = 1.0, simple_3yr = 1.0, weighted_5yr = 1.0, simple_5yr = 1.0, weighted_all = 1.0024, simple_all = 1.0015. CV = 0.00 (3yr, 5yr, 10yr). Slope = 0. Full convergence at 1.000. Mid maturity (71-83mo). Data quality: excellent, 19 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "83-95",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000 or near.  Convergence Override applies. Weighted_3yr = 0.9987, simple_3yr = 0.9986, weighted_5yr = 0.9993, simple_5yr = 0.9992, weighted_all = 0.9998, simple_all = 0.9998. CV ≤ 0.0024 (3yr). Slope near zero (-0.0021 at 3yr). Select 1.000 by convergence. Mid maturity (83-95mo). Data quality: excellent, 18 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "95-107",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. Weighted_3yr = 1.0, simple_3yr = 1.0, weighted_5yr = 1.0, simple_5yr = 1.0, weighted_all = 1.0, simple_all = 1.0. CV = 0.00 across all windows. Slope = 0. Perfect convergence. Mid maturity (95-107mo). Data quality: excellent, 17 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "107-119",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000 or near.  Convergence Override applies. Weighted_3yr = 0.9964, simple_3yr = 0.9961, weighted_5yr = 0.9977, simple_5yr = 0.9977, weighted_all = 0.9994, simple_all = 0.9992. CV ≤ 0.0068 (3yr). Slope near zero (-0.0058 at 3yr). Select 1.000 by convergence. Mid maturity (107-119mo). Data quality: excellent, 16 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "119-131",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All weighted/simple averages 3yr/5yr/10yr/all = 1.0. CV = 0.00 across all windows. Slope = 0. Perfect convergence. Mid-late maturity (119-131mo). Data quality: excellent, 15 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "131-143",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0 across all windows. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (131-143mo). Data quality: excellent, 14 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "143-155",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (143-155mo). Data quality: excellent, 13 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "155-167",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (155-167mo). Data quality: excellent, 12 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "167-179",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (167-179mo). Data quality: excellent, 11 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "179-191",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (179-191mo). Data quality: excellent, 10 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "191-203",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (191-203mo). Data quality: excellent, 9 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "203-215",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope near zero (-0.0). Perfect convergence. Late maturity (203-215mo). Data quality: excellent, 8 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "215-227",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (215-227mo). Data quality: excellent, 7 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "227-239",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope near zero (-0.0). Perfect convergence. Late maturity (227-239mo). Data quality: excellent, 6 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "239-251",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope near zero (-0.0). Perfect convergence. Late maturity (239-251mo). Data quality: excellent, 5 AY points."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "251-263",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (251-263mo). Data quality: acceptable, 4 AY points (approaching sparse data threshold of <5 LDFs)."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "263-275",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope near zero (-0.0). Perfect convergence. Tail maturity (263-275mo). Data quality: sparse, 3 AY points available (2022, 2023, 2024); triggers Sparse Data Caution (§7) — only 3 diagonals at this point. Nonetheless, all available points = 1.000; select 1.000 with confidence reinforced by perfect convergence across the entire range."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "275-287",
+    "selection": 1.0000,
+    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. Tail interval; weighted_all = 1.0, simple_all = 1.0, all time-window averages = 1.0. CV = nan (insufficient diagonals for CV calculation). Only 1 complete AY diagonal (2024 at age 287 months shows 700.7076 constant across all cohorts, indicating no development). Tail LDF: claim reporting long-closed; expect 1.000. Sparse Data Caution (§7) active — <5 diagonals — but all evidence points to 1.000. Select 1.000. Tail tail-adequacy check: incremental_incurred_severity and reported_claims both stable; no reopened-claim signals in late data. Data quality: extremely sparse, only 1 AY point; flagged for next study if tail extends."
+  }
+]

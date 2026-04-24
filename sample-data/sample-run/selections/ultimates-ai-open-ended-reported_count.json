@@ -1,0 +1,146 @@
+[
+  {
+    "measure": "Reported Count",
+    "period": 2001,
+    "selection": 700.7076,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate. No development expected."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2002,
+    "selection": 651.8824,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2003,
+    "selection": 551.5928,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2004,
+    "selection": 642.6452,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2005,
+    "selection": 641.3256,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2006,
+    "selection": 497.4892,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2007,
+    "selection": 476.3756,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2008,
+    "selection": 328.5804,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2009,
+    "selection": 321.9824,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2010,
+    "selection": 271.8376,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2011,
+    "selection": 345.7352,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2012,
+    "selection": 261.2808,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2013,
+    "selection": 291.6316,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2014,
+    "selection": 455.262,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2015,
+    "selection": 333.8588,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2016,
+    "selection": 390.6016,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2017,
+    "selection": 310.106,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2018,
+    "selection": 325.9412,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2019,
+    "selection": 357.6116,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2020,
+    "selection": 370.8076,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2021,
+    "selection": 329.9,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2022,
+    "selection": 298.2296,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2023,
+    "selection": 304.8276,
+    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+  },
+  {
+    "measure": "Reported Count",
+    "period": 2024,
+    "selection": 286.2107,
+    "reasoning": "Chain Ladder only method available; immature year at 11 months (age 0.92 years). CDF = 1.118 indicates 12% additional development expected. pct_developed = 0.894 confirms incompleteness. IBNR = 30.21. Other methods (IE, BF) unavailable. Chain Ladder ultimate of 286.21 is sole credible indication for early-year frequency. No prior available for comparison. Data volatility across historical years argues for reliance on development factors rather than trend adjustment."
+  }
+]
