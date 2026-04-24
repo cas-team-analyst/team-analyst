@@ -54,14 +54,16 @@ Before selecting, identify the triangle type and state expected tail behavior:
 
 | Triangle Type | Expected Tail Length | Relative to Other Measures |
 |---|---|---|
-| **Paid Loss** | Longest | Materially longer than Incurred Loss |
-| **Incurred Loss** | Medium-Long | Shorter than Paid Loss |
-| **Reported Count** | Medium | Shorter than dollar measures |
-| **Closed Count** | Shortest | Materially shorter than Reported Count |
+| **Reported Count** | Shortest | Materially shorter than all other measures |
+| **Incurred Loss** | Medium | Longer than Reported Count, shorter than Paid Loss |
+| **Paid Loss** | Longest (dollar measures) | Materially longer than Incurred Loss |
+| **Closed Count** | Longest (similar to Paid) | Longer than Reported Count, similar to Paid Loss, typically slightly shorter than Paid Loss |
 
-**Critical Rule: Select each triangle's tail independently.** Never copy one measure's tail to another. Paid tails run materially longer than incurred; count tails behave differently from dollar triangles.
+**Typical tail length order (shortest to longest):** Reported Count → Incurred Loss → Paid Loss / Closed Count
 
-State in your reasoning: "Paid loss triangle — expect materially longer tail than incurred" or "Closed count triangle — expect shortest tail relative to other measures."
+**Critical Rule: Select each triangle's tail independently.** Never copy one measure's tail to another. Paid and Closed Count tails run materially longer than Incurred; Reported Count has the shortest tail.
+
+State in your reasoning: "Paid loss triangle — expect materially longer tail than incurred" or "Closed count triangle — expect tail similar to paid loss, longer than reported count."
 
 ---
 
@@ -340,9 +342,9 @@ When multiple methods have comparable diagnostics at the same starting age, pref
 - If paid tail < incurred tail, investigate and document reason
 
 **Count vs Dollar:**
-- Count tails typically shorter than dollar tails
-- Closed count tail < reported count tail
-- If count tail > dollar tail, investigate case mix or severity trends
+- Reported count tails typically shorter than dollar tails
+- Closed count tail > reported count tail (similar to paid loss tail, typically slightly shorter)
+- If reported count tail > dollar tail, investigate case mix or severity trends
 
 **Prior Year:**
 - If delta > 0.010, explain what changed (new diagonal, refit, environmental)
@@ -420,7 +422,7 @@ When multiple methods have comparable diagnostics at the same starting age, pref
     "cutoff_age": 60,
     "tail_factor": 1.0050,
     "method": "bondy",
-    "reasoning": "Closed count triangle — expect shortest tail relative to other measures. Selected starting age 60: monotone, cv=0.04, no slope breaks. Closure substantially complete by age 60 (98% closed, open counts <2%). Tail <0.1% of CDF (0.08%) confirms materiality anchor applies. Simple Bondy sufficient given immaterial tail and stable last observed factor (1.001 at age 60). No curve fitting needed when materiality anchor applies.",
+    "reasoning": "Closed count triangle — expect tail similar to paid loss, longer than reported count. Selected starting age 60: monotone, cv=0.04, no slope breaks. Closure substantially complete by age 60 (98% closed, open counts <2%). Tail <0.1% of CDF (0.08%) confirms materiality anchor applies. Simple Bondy sufficient given immaterial tail and stable last observed factor (1.001 at age 60). No curve fitting needed when materiality anchor applies.",
     "pct_of_cdf": 0.08,
     "prior_selection": 1.0050,
     "prior_delta": 0.0000,
