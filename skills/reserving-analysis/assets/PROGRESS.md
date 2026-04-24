@@ -64,7 +64,7 @@
   - Note the output files created in `processed-data/`
   - Record the data validation confirmation date
 
-# Step 4: Actuarial Selections: Chain Ladder LDFs
+# Step 4: Chain Ladder LDF Selections
 
 - [ ] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. This framework includes 14 selection criteria and 10 diagnostic adjustment rules. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
 
@@ -100,14 +100,14 @@ _(Pause for Selections only):_
   - Fill in **Section 5.1** Development Patterns: note the selection basis (volume-weighted averages, which average windows were considered).
   - Add to **Section 11** Open Questions any selections flagged as low-confidence or where the rule-based and AI selections diverged materially.
 
-- [ ] **Update REPLICATE.md Step 3:**
+- [ ] **Update REPLICATE.md Step 4:**
   - Document that `2a-chainladder-create-excel.py` was run to create the selection workbook
   - Note that AI selectors made rules-based and open-ended selections (JSON files created)
   - Document that `2b-chainladder-update-selections.py` populated the Excel file with AI selections
   - **Critical:** If user made manual overrides in the "User Selection" row, list each one with measure, interval, selected LDF, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection row."
   - Add instruction: "To replicate: Extract final selections from User Selection row if present, otherwise use Rules-Based AI Selection row. Do not re-run AI selector."
 
-# Step 4.5: Actuarial Selections: Chain Ladder Tail Factors
+# Step 5: Chain Ladder Tail Factor Selections
 
 - [ ] Tell the user: "I'm about to apply the tail factor selection framework. This uses curve fitting diagnostics (Bondy, Exponential Decay, McClenahan, Skurnick, etc.), leave-one-out testing, and a 15-point decision framework to select tail factors. Tail selections are separate from LDF selections and are used in the Chain Ladder ultimates calculation."
 
@@ -145,7 +145,7 @@ _(Pause for Selections only):_
   - Update **Section 5.1** Development Patterns: add tail factor source (curve fit method selected, R² values, leave-one-out diagnostics).
   - Add to **Section 11** Open Questions any tail selections flagged as low-confidence or where curve fit diagnostics were poor or rule-based and AI selections diverged materially.
 
-- [ ] **Update REPLICATE.md Step 4:**
+- [ ] **Update REPLICATE.md Step 5:**
   - Document that `2c-tail-methods-diagnostics.py` was run to fit curves and create diagnostics
   - Document that `2d-tail-create-excel.py` created the tail selection workbook
   - Note that AI selectors made rules-based and open-ended tail selections (JSON files created)
@@ -153,7 +153,7 @@ _(Pause for Selections only):_
   - **Critical:** If user made manual overrides in the "User Selection" row, list each one with measure, cutoff age, tail factor, method, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection row."
   - Add instruction: "To replicate: Extract final tail factors from User Selection row if present, otherwise use Rules-Based AI Selection row. Do not re-run AI selector."
 
-# Step 5: Run Methods That Don't Require Selections
+# Step 6: Calculate Method Projections
 
 - [ ] Run `2f-chainladder-ultimates.py`, `3-ie-ultimates.py`, and `4-bf-ultimates.py`. Debug any errors that occur. It is normal for IE and BF to get skipped if the user didn't provide the necessary data (exposure, initial expected). Note: `2f-chainladder-ultimates.py` will use tail factors from `selections/Chain Ladder Selections - Tail.xlsx` (priority 1 — user's final selection), falling back to `selections/tail-ai-rules-based.json` (priority 2), then `selections/tail-ai-open-ended.json` (priority 3) if Excel is empty.
 
@@ -162,13 +162,13 @@ _(Pause for Selections only):_
   - Update **Section 5.2** Expected Loss Ratios: if IE/BF ran, fill in the ELR table from the input file.
   - Update **Section 4.3** LAE Treatment: fill in how DCC/ALAE and A&O/ULAE are handled, if applicable.
 
-- [ ] **Update REPLICATE.md Step 5:**
+- [ ] **Update REPLICATE.md Step 6:**
   - Document that `2f-chainladder-ultimates.py` was run (note which Excel file it read LDFs and tail factors from)
   - Document whether `3-ie-ultimates.py` ran or was skipped (and why)
   - Document whether `4-bf-ultimates.py` ran or was skipped (and why)
   - Note the output file: `ultimates/projected-ultimates.parquet` with columns added by each method
 
-# Step 6: Actuarial Selections: Ultimates
+# Step 7: Ultimate Selections
 
 - [ ] Copy `scripts/5a-ultimates-create-excel.py` and `scripts/5b-ultimates-update-selections.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`, don't rewrite them yourself). Ensure `scripts/modules/` is already in place (copied in Step 3).
 
@@ -204,42 +204,49 @@ _(Pause for Selections only):_
   - Fill in **Section 5.2** Expected Loss Ratios: if IE/BF ran, populate from the ELR input file.
   - Add to **Section 11** Open Questions any AYs where method indications diverged materially or selections required significant judgment.
 
-- [ ] **Update REPLICATE.md Step 6:**
+- [ ] **Update REPLICATE.md Step 7:**
   - Document that `5a-ultimates-create-excel.py` was run to create the ultimates workbook
   - Note that AI selectors made rules-based and open-ended ultimate selections (JSON files created)
   - Document that `5b-ultimates-update-selections.py` populated the Excel file with AI selections
   - **Critical:** If user made manual overrides in the "User Selection" column, list each one with measure, period, selected ultimate, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection columns."
   - Add instruction: "To replicate: Extract final ultimates from User Selection column if present, otherwise use Rules-Based AI Selection column. Do not re-run AI selector."
 
-# Step 7: Build Complete Analysis Output
+# Step 8: Build Complete Analysis
 
-- [ ] Copy `scripts/6-create-complete-analysis.py` and `scripts/7-tech-review.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`). Ensure `scripts/modules/` is already in place.
+- [ ] Copy `scripts/6-create-complete-analysis.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`). Ensure `scripts/modules/` is already in place.
 
-- [ ] Run `scripts/6-create-complete-analysis.py` and alert the user of the location and description of the final output files. 
+- [ ] Run `scripts/6-create-complete-analysis.py` and alert the user of the location and description of the final output files.
+
+- [ ] **Update REPORT.md:**
+  - Fill in **Section 2** Summary of Indications table: verify the totals match the final output from `6-create-complete-analysis.py`.
+  - Fill in **Section 0** Reviewer Quick-Start: summarize what the analysis covers (1–2 sentences), what key judgment calls were made, and where reviewer scrutiny is most needed.
+  - Update **Section 14** Version History: add a row for the current version with today's date and a summary of changes since v0.1.
+  - Fill any other sections to complete the first draft of the report.
+
+- [ ] **Update REPLICATE.md Step 8:**
+  - Document that `6-create-complete-analysis.py` was run
+  - Note which files it read (projected-ultimates.parquet, Ultimates.xlsx)
+  - List the output files created (selected-ultimates.xlsx, post-method-series.xlsx, post-method-triangles.xlsx, complete-analysis.xlsx)
+  - Fill in the "Key Outputs" section listing primary deliverables
+
+# Step 9: Technical Review & Peer Review
+
+- [ ] Copy `scripts/7-tech-review.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`). Ensure `scripts/modules/` is already in place.
 
 - [ ] Run `scripts/7-tech-review.py` and alert the user of the results and where the output is saved to.
 
 - [ ] **Update REPORT.md:**
   - Fill in **Section 7** Diagnostics and Reasonableness Checks: check off each item and note results (e.g., loss ratio progression, frequency/severity trends, actual vs. expected emergence). Populate "Anomalies to investigate" with any flags from `7-tech-review.py`.
-  - Fill in **Section 0** Reviewer Quick-Start: summarize what the analysis covers (1–2 sentences), what key judgment calls were made, and where reviewer scrutiny is most needed.
   - Fill in **Section 8.2** Sources of Uncertainty: note key risk factors — process risk (thin data), parameter risk (trend/tail uncertainty), model risk (method selection), any systemic risks flagged.
-  - Update **Section 14** Version History: add a row for the current version with today's date and a summary of changes since v0.1.
-  - Fill any other sections to complete the first draft of the report.
 
-- [ ] **Update REPLICATE.md Step 7:**
-  - Document that `6-create-complete-analysis.py` was run
-  - Note which files it read (projected-ultimates.parquet, Ultimates.xlsx)
-  - List the output files created (selected-ultimates.xlsx, post-method-series.xlsx, post-method-triangles.xlsx, complete-analysis.xlsx)
+- [ ] **Update REPLICATE.md Step 9:**
   - Document that `7-tech-review.py` was run
   - List any issues flagged, or note "None - all checks passed"
-  - Fill in the "Key Outputs" section listing primary deliverables
   - Add any final notes about special considerations or known issues
 
-# Step 8: Suggest Peer Review
+- [ ] Suggest to the user that they get a Peer Review of the results. If they would like TeamAnalyst to do this, they should close the current workflow (this will clear context to get an independent review) and use the /peer-review skill to get an AI Peer Review.
 
-- [ ] Suggest to the user that they get a Peer Review of the results. If they would like TeamAnalyst to do this, they should close the current workflow (this will clear context to get an independent review) and use the /peer-review skill to get a AI Peer Review.
-
-# Step 9: Summarize Final Outputs for the User
+# Step 10: Summarize Final Outputs
 
 Be explicit and exhaustive. The user should leave this step knowing exactly what was produced, where it lives, and what each file is for. Present the list below (adapted to what actually ran in this analysis — skip items that did not run, e.g., BF if it was skipped).
 
