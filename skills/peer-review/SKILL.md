@@ -1,18 +1,145 @@
 ---
 name: peer-review
-description: Actuarial peer review of reserve analysis. Use when the user asks to peer review, review selections, check reserve work, or validate actuarial analysis. Reads output/complete-analysis.xlsx and produces PEER_REVIEW.md. Should only run after tech review checks have passed and after final methods/diagnostics are complete.
+description: Peer review of completed reserve analysis. Use after reserving-analysis workflow finishes. Do NOT use during initial analysis (separate skill exists).
 ---
 
 # Actuarial Peer Review
 
-Review the reserve analysis at `output/complete-analysis.xlsx`. Produce `output/PEER_REVIEW.md` with findings.
-
 ## Quick Reference
 
-1. Read the complete analysis workbook
-2. Prioritize high-materiality and low-confidence areas
-3. Run checks below → document findings in `output/PEER_REVIEW.md`
-4. Frame all feedback as advisory: "you may want to consider…"
+**What this does:** Reviews completed reserve analysis workbook (`output/complete-analysis.xlsx`) and produces advisory findings in `PEER_REVIEW.md`.
+
+**When to use:** After technical review passes and all selections are finalized. Do NOT use during initial analysis workflow (separate skill exists).
+
+**Key principles:**
+- **Advisory only** - propose alternatives, never override analyst selections
+- **Materiality-first** - focus on largest reserves and widest method spreads
+- **ASOP-grounded** - check against ASOP 23, 25, 36, 41, 43 standards
+- **Clear feedback** - findings actionable by both AI and human users
+
+**Navigation:**
+- [Initial Setup](#initial-setup)
+- [Workflow](#workflow)
+- [Checks to Perform](#checks-to-perform)
+- [Output Format](#output-format)
+- [Key Principles](#key-principles)
+- [ASOP Reference Standards](#asop-reference-standards)
+
+---
+
+## Initial Setup
+
+Focus first exclusively on **orienting to the OS environment**.
+
+1. **Identify and mount the plugin skill folder** (if applicable, NOT the anthropic-skills folder)
+2. **Identify the project folder** - where the completed analysis lives
+3. **Verify required files exist:**
+   - `output/complete-analysis.xlsx` - the workbook to review
+   - Check for `REPORT.md` and `PROGRESS.md` to understand analysis context
+4. **Confirm project is ready for review:**
+   - Technical review must be complete (Step 7 in PROGRESS.md)
+   - All selections finalized
+   - If analysis is incomplete, stop and advise user to finish reserving-analysis first
+
+**CoWork Agent Guidelines:**
+
+**File operations:** Use `cp` for file operations. Convert Windows paths to Unix: `C:\Users\...` → `/mnt/c/Users/...`. Mount skill folder first if accessing templates.
+
+**Output:** Write findings to `output/PEER_REVIEW.md` - this goes in the project folder alongside the complete-analysis.xlsx.
+
+**Other:** Cache out of date? Suggest close/reopen CoWork. Never use unicode symbols in commands.
+
+---
+
+## Workflow
+
+1. **Read the complete analysis workbook** at `output/complete-analysis.xlsx`
+2. **Prioritize high-materiality segments** - largest reserves, widest uncertainty
+3. **Run checks** listed in [Checks to Perform](#checks-to-perform)
+4. **Document findings** in `output/PEER_REVIEW.md` using [Output Format](#output-format)
+5. **Frame all feedback as advisory** - "you may want to consider..." not "you must change..."
+
+---
+
+## Checks to Perform
+
+### 1. Cross-Method Consistency
+
+- **Paid vs Incurred development**: Paid development factors should generally exceed incurred. Flag if violated consistently across accident periods.
+- **Method bias detection**: If one method is consistently higher or lower than another across all periods, the tail or selections may need adjustment. If methods alternate (paid higher one year, incurred the next), no systematic bias exists.
+- **BF vs development methods**: If BF is consistently higher/lower than development methods, the expected loss ratio seed may be mis-calibrated.
+
+### 2. Paid vs Incurred Ultimate Reasonability
+
+- If paid ultimate < incurred losses, the paid method likely shouldn't be averaged in—unless the incurred triangle shows significant negative development, in which case a lower paid ultimate may be appropriate.
+- Flag these situations and note the incurred development pattern.
+
+### 3. Recent Year Loss Ratio / Loss Rate Stability
+
+- Compare the implied loss ratio (or loss rate) from the most recent 2 accident years against more mature years.
+- If recent years produce ratios materially higher or lower, flag it. This often indicates LDFs are too highly leveraged and BF methods should be preferred for those years.
+
+### 4. Selection Quality per ASOPs
+
+- Are data sources and adjustments documented? (ASOP 23, 41)
+- Are trending procedures appropriate? (ASOP 13)
+- Is credibility weighting applied where warranted? (ASOP 25)
+- Are selections consistent with the diagnostics shown? (ASOP 43)
+- Would selections support an actuarial opinion? (ASOP 36)
+
+### 5. Diagnostic Consistency
+
+- Do selected factors align with the diagnostic exhibits (e.g., residual plots, weighted averages, volume-weighted averages)?
+- Are outlier exclusions documented and justified?
+
+---
+
+## Output Format
+
+Write `output/PEER_REVIEW.md` structured as:
+
+```markdown
+# Peer Review — [Line of Business / Segment]
+
+**Analysis file:** output/complete-analysis.xlsx
+**Review date:** [date]
+**Status:** Advisory — no selections were modified
+
+## Summary
+[2-3 sentence overall assessment]
+
+## High-Priority Findings
+[Material issues requiring analyst attention, each with section reference]
+
+## Detailed Findings
+
+### Cross-Method Consistency
+[Findings and advisory suggestions]
+
+### Paid vs Incurred Reasonability
+[Findings]
+
+### Recent Year Stability
+[Findings]
+
+### ASOP Compliance
+[Findings by standard]
+
+### Diagnostic Consistency
+[Findings]
+
+## Proposed Alternatives
+[Where the reviewer would select differently, show both the analyst's selection and the proposed alternative with rationale. Do NOT apply changes.]
+```
+
+---
+
+## Key Principles
+
+- **Advisory only**: Propose, never override. Use language like "consider whether…" and "this may warrant…"
+- **Materiality-first**: Spend most effort on segments with largest reserves or widest method spreads.
+- **Show your work**: When proposing alternatives, include the numeric comparison.
+- **Tight feedback loop**: Write findings clearly enough that both the analyst agent and human user can act on them immediately.
 
 ---
 
