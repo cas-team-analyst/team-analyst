@@ -103,25 +103,25 @@ Bryce Chamberlain, Esther Becker, Ken Zesso, Jack Tarantino, and Chris McKenna
 
 ## Appendix A: Lessons Learned
 
-Building TeamAnalyst required considerable trial and error. Two key lessons emerged from that research process.
+Building TeamAnalyst required considerable trial and error. Three key lessons emerged from that research process.
 
-**Lesson 1: Specifications beat applications and frameworks**
+**Lesson 1: Avoid the urge to build an app**
 
-When approaching actuarial reserving with AI, the instinct is to build an app or adopt an agentic framework. Both approaches seem professional and concrete. TeamAnalyst initially explored both paths.
+For a long time now, the primary way to support knowledge workers with automation tools was by building applications, usually on the web. The research team initially explored this path but found that it required manual handling of many edge cases and ended with a rigid design - exactly the type of restrictions that AI is built to remove. We had to shift our thinking to taking advantage of the newest tools being built by leading AI companies, namely the agent skills framework, which use natural language to build out structured specifications for automation workflows.
 
-Traditional applications become rigid precisely where actuarial work needs flexibility. Varying data formats, client-specific methods, unique business rules, and one-off adjustments create endless edge cases. The more you accommodate, the more complex and brittle the codebase becomes.
+**Lesson 2: Don't use agentic Python packages**
 
-Agentic frameworks like LangChain lag behind the tools built by major AI companies. They still require writing code rather than natural language specifications, and they offer weaker security and compliance controls than enterprise platforms—a significant concern for actuarial work.
+The research also explored using agentic Python frameworks such as DeepAgents by LangChain. These approaches seemed promising because they are purpose-built for AI workflows and offer abstractions designed for agent orchestration. However, they introduced problems of their own. First, these frameworks lag behind the tools built by major AI companies. Features, performance improvements, and model updates appear in platforms like Claude CoWork, GitHub Copilot, and Gemini CLI months before third-party frameworks catch up. Second, these frameworks still require writing code rather than natural language specifications, which defeats one of the key goals: making the workflow accessible to actuaries who are not professional developers. Third, enterprise platforms built by major AI companies offer stronger security features, audit trails, and compliance controls than open-source frameworks typically provide—a significant concern for actuarial work.
 
-The spec-based alternative solves both problems. TeamAnalyst defines a specification—structured instructions, scripts, and decision frameworks that an AI agent interprets and executes. Anyone who can write clear natural language can modify the workflow. No need to understand Python internals or UI frameworks. As agent capabilities improve, the same specifications can be reused with minimal rework. The workflow stays portable and future-compatible.
+**The spec-based alternative that solves both problems**
 
-**Lesson 2: Balance deterministic scripts with AI assistance**
+Instead of building an application or adopting an agentic framework, TeamAnalyst defines a specification—structured instructions, scripts, and decision frameworks that an AI agent interprets and executes. Anyone who can write clear natural language can modify the workflow. The agent itself can modify the scripts as needed. No need to understand Python internals or UI frameworks. As agent capabilities improve, the same specifications can be reused with minimal rework. The workflow stays portable and future-compatible.
 
-Early experiments with purely conversational AI workflows proved inefficient and unreliable. Generating everything on the fly consumed excessive tokens, produced inconsistent results, and made reproduction difficult.
+**Lesson 3: Balance deterministic scripts with AI assistance**
 
-The solution is discipline. Use predefined scripts wherever deterministic behavior matters: data preparation, standard calculations, technical checks, file generation. Reserve AI assistance for tasks that genuinely benefit from interpretation and judgment: understanding varied input formats, making selections, performing reviews.
+Early experiments with purely conversational AI workflows, while still impressive, proved inefficient. Generating everything on the fly consumed excessive tokens, took longer, produced inconsistent results, and made reproduction difficult. Better results were obtained by using pre-written Python scripts as much as possible. This keeps results well-defined, repeatable, trustworthy, and doesn't require the agent to write code from scratch every time it needs to run the workflow for data preparation, standard calculations, technical checks, file generation, etc. We reserve AI assistance for tasks that genuinely benefit from interpretation and judgment and therefore make it worth the cost of tokens: understanding varied input formats, making baseline suggested selections, and performing reviews.
 
-This balanced design preserves the flexibility and accessibility of natural language instructions while maintaining the efficiency, repeatability, and transparency that professional work requires. The lesson for future projects is clear: resist the urge to build a restrictive app when a well-structured specification can do more with less, adapt more easily, and remain viable as the underlying technology evolves.
+This balanced design preserves the flexibility and accessibility of natural language instructions while maintaining the efficiency, repeatability, and transparency that professional work requires.
 
 ## Appendix B: Additional Resources
 
