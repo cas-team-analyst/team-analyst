@@ -7,11 +7,11 @@
 - [The Solution](#the-solution)
 - [Why It Matters](#why-it-matters)
 - [How the Tool Can Be Used](#how-the-tool-can-be-used)
+- [Limitations and Future Research](#limitations-and-future-research)
 - [Closing Note](#closing-note)
 - [Appendix A: Lessons Learned](#appendix-a-lessons-learned)
-- [Appendix B: Important Limitations](#appendix-b-important-limitations)
-- [Appendix C: Additional Resources](#appendix-c-additional-resources)
-- [Appendix D: Exploring the Project in Detail](#appendix-d-exploring-the-project-in-detail)
+- [Appendix B: Additional Resources](#appendix-b-additional-resources)
+- [Appendix C: Exploring the Project in Detail](#appendix-c-exploring-the-project-in-detail)
 
 ## Overview
 
@@ -78,6 +78,18 @@ For more instructions on getting started, see https://github.com/cas-team-analys
 
 In practical terms, this means TeamAnalyst can be used in several ways: as a learning aid for actuaries who want to understand agentic workflows, as a demonstration of AI-assisted reserving, as a reusable template for internal experimentation, or as a base that technical users can adapt to their own methods and preferences.
 
+## Limitations and Future Research
+
+**Limitations**
+
+TeamAnalyst is a proof of concept and should be presented that way. It is not intended to be a complete, error-free, or production-approved actuarial system. The CAS does not guarantee the accuracy of the output, and users should not rely on the generated material as a final actuarial work product without appropriate professional review.
+
+The current scope is intentionally narrow. The example workflow focuses on a simplified reserving analysis using triangle-based inputs and a limited set of reserving methods. That focus is a feature, not a flaw: it keeps the tool understandable, teachable, and easier to evaluate while still demonstrating the broader potential of agentic AI in actuarial practice.
+
+**Future Research**
+
+TODO
+
 ## Closing Note
 
 The TeamAnalyst Research Team hopes this tool serves you well in your exploration of AI-assisted actuarial workflows. We welcome your feedback, suggestions, and contributions. If you encounter issues, have ideas for improvements, or would like to contribute to the project, please visit our GitHub repository at https://github.com/cas-team-analyst/team-analyst. Issues and pull requests are always welcome.
@@ -91,25 +103,27 @@ Bryce Chamberlain, Esther Becker, Ken Zesso, Jack Tarantino, and Chris McKenna
 
 ## Appendix A: Lessons Learned
 
-Building TeamAnalyst required considerable trial and error. Many approaches that seemed promising initially proved ineffective in practice. This section documents the key lessons from that research process so others can avoid the same mistakes.
+Building TeamAnalyst required considerable trial and error. Two key lessons emerged from that research process.
 
-**The application-building trap.** When most technical professionals approach a problem like actuarial reserving analysis, the instinct is to build an app—a fixed user interface, hardcoded logic, and predetermined workflows. That approach has intuitive appeal: applications feel concrete, controllable, and professional. The TeamAnalyst project initially explored this path as well. But in practice, actuarial applications must handle countless edge cases: varying data formats, different triangle structures, client-specific methods, unique business rules, evolving standards, and one-off adjustments. The more cases you accommodate, the more complex the codebase becomes, and the harder it is to modify. Eventually, the system becomes rigid precisely where users need flexibility. Attempts to build a traditional application framework for this workflow consistently ran into these limitations.
+**Lesson 1: Specifications beat applications and frameworks**
 
-**The agentic framework detour.** The research also explored using agentic Python frameworks such as LangChain's DeepAgents and retrieval-augmented generation (RAG) systems. These approaches seemed promising because they are purpose-built for AI workflows and offer abstractions designed for agent orchestration. However, they introduced problems of their own. First, these frameworks lag behind the tools built by major AI companies. Features, performance improvements, and model updates appear in platforms like Claude CoWork, GitHub Copilot, and Gemini CLI months before third-party frameworks catch up. Second, these frameworks still require writing code rather than natural language specifications, which defeats one of the key goals: making the workflow accessible to actuaries who are not professional developers. Third, enterprise platforms built by major AI companies offer stronger security features, audit trails, and compliance controls than open-source frameworks typically provide. For actuarial work, where data sensitivity and professional accountability matter, this difference is significant.
+When approaching actuarial reserving with AI, the instinct is to build an app or adopt an agentic framework. Both approaches seem professional and concrete. TeamAnalyst initially explored both paths.
 
-**The spec-based alternative.** Instead of building an application or adopting an agentic framework, TeamAnalyst defines a specification—a set of structured instructions, scripts, and decision frameworks that an AI agent interprets and executes. This spec-based approach has several fundamental advantages. First, it can be modified by anyone who can write clear natural language. An actuary does not need to understand Python internals or UI frameworks to adjust the workflow. They can edit a markdown file, refine a prompt, or change a decision rule, and the agent adapts accordingly. This dramatically lowers the barrier to customization and makes the tool far more flexible than any fixed application could be. Second, specification-driven design stays compatible with future AI systems. As agent capabilities improve or new agent platforms emerge, the same specifications can be reused or adapted with minimal rework. The workflow is not locked to a specific tool version or proprietary framework.
+Traditional applications become rigid precisely where actuarial work needs flexibility. Varying data formats, client-specific methods, unique business rules, and one-off adjustments create endless edge cases. The more you accommodate, the more complex and brittle the codebase becomes.
 
-**The need for balance.** However, this flexibility must be balanced with discipline. Early experiments with purely conversational AI workflows, where everything was generated on the fly, proved inefficient and unreliable. They consumed excessive tokens, produced inconsistent results, and were difficult to reproduce or review. The solution is to use predefined scripts wherever deterministic behavior is required—data preparation, standard calculations, technical checks, file generation—and reserve AI assistance for tasks that genuinely benefit from interpretation and judgment, such as understanding varied input formats, making selections, and performing reviews.
+Agentic frameworks like LangChain lag behind the tools built by major AI companies. They still require writing code rather than natural language specifications, and they offer weaker security and compliance controls than enterprise platforms—a significant concern for actuarial work.
 
-This balanced design is the key to making spec-based actuarial workflows practical. It preserves the flexibility and accessibility of natural language instructions while maintaining the efficiency, repeatability, and transparency that professional work requires. The lesson for future projects is clear: resist the urge to build a restrictive app when a well-structured specification can do more with less, adapt more easily, and remain viable as the underlying technology evolves.
+The spec-based alternative solves both problems. TeamAnalyst defines a specification—structured instructions, scripts, and decision frameworks that an AI agent interprets and executes. Anyone who can write clear natural language can modify the workflow. No need to understand Python internals or UI frameworks. As agent capabilities improve, the same specifications can be reused with minimal rework. The workflow stays portable and future-compatible.
 
-## Appendix B: Important Limitations
+**Lesson 2: Balance deterministic scripts with AI assistance**
 
-TeamAnalyst is a proof of concept and should be presented that way. It is not intended to be a complete, error-free, or production-approved actuarial system. The CAS does not guarantee the accuracy of the output, and users should not rely on the generated material as a final actuarial work product without appropriate professional review.
+Early experiments with purely conversational AI workflows proved inefficient and unreliable. Generating everything on the fly consumed excessive tokens, produced inconsistent results, and made reproduction difficult.
 
-The current scope is intentionally narrow. The example workflow focuses on a simplified reserving analysis using triangle-based inputs and a limited set of reserving methods. That focus is a feature, not a flaw: it keeps the tool understandable, teachable, and easier to evaluate while still demonstrating the broader potential of agentic AI in actuarial practice.
+The solution is discipline. Use predefined scripts wherever deterministic behavior matters: data preparation, standard calculations, technical checks, file generation. Reserve AI assistance for tasks that genuinely benefit from interpretation and judgment: understanding varied input formats, making selections, performing reviews.
 
-## Appendix C: Additional Resources
+This balanced design preserves the flexibility and accessibility of natural language instructions while maintaining the efficiency, repeatability, and transparency that professional work requires. The lesson for future projects is clear: resist the urge to build a restrictive app when a well-structured specification can do more with less, adapt more easily, and remain viable as the underlying technology evolves.
+
+## Appendix B: Additional Resources
 
 For more detailed information on specific aspects of TeamAnalyst, refer to the following guides:
 
@@ -119,7 +133,7 @@ For more detailed information on specific aspects of TeamAnalyst, refer to the f
 
 - **[Developer Notes](https://github.com/cas-team-analyst/team-analyst/blob/main/guides/DEVELOPER_NOTES.md)** — Testing strategies and guidelines for developers working on TeamAnalyst skills. Includes git workflow recommendations, branch testing approaches, and links to helpful resources like Anthropic's guide to building skills for Claude Code.
 
-## Appendix D: Exploring the Project in Detail
+## Appendix C: Exploring the Project in Detail
 
 For readers who want to understand how TeamAnalyst works under the hood, the following files and folders offer the most insight into the workflow design, decision logic, and practical implementation:
 
