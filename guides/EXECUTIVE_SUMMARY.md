@@ -139,33 +139,31 @@ For readers who want to understand how TeamAnalyst works under the hood, the fol
 
 **Core Workflow Specifications**
 
-- [Reserving Analysis Skill](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/reserving-analysis/SKILL.md) — Guardrails and context for getting the agent started on a reserving analysis. Establishes file handling principles, script execution rules, and communication standards. The actual step-by-step workflow is defined in PROGRESS.md.
+- [Reserving Analysis Agent Skill](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/reserving-analysis/SKILL.md) — Guardrails and context for getting the agent started on a reserving analysis. Establishes file handling principles, script execution rules, and communication standards. The actual step-by-step workflow is defined in PROGRESS.md.
 
-- [Peer Review Skill](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/peer-review/SKILL.md) — Guardrails and context for conducting peer reviews. Defines advisory-only principles, ASOP grounding, and materiality-first review approach. The actual review output is captured in PEER_REVIEW.md.
+- [Progress Tracker](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/reserving-analysis/assets/PROGRESS.md) — The detailed step-by-step workflow process that defines what happens at each stage of the analysis. This is the actual executable workflow specification that the agent follows, tracking decisions, data characteristics, and interim findings throughout the analysis.
 
-**Selection Logic Examples**
+- [Python Scripts](https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data/sample-run/scripts) — Complete set of Python scripts generated during a workflow run. Shows how the workflow combines reusable script templates with dynamically generated analysis code. Includes data preparation, method calculations, Excel workbook generation, and technical review scripts.
 
-The rules-based selection files show how actuarial judgment is encoded into structured decision frameworks that the AI interprets. These are actual outputs from a completed workflow run:
+- [Peer Review Agent Skill](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/peer-review/SKILL.md) — Guardrails and context for conducting peer reviews. Defines advisory-only principles, ASOP grounding, and materiality-first review approach. The actual review output is captured in PEER_REVIEW.md.
 
-- [Chain Ladder Rules-Based Selections - Incurred Loss](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/selections/chainladder-ai-rules-based-incurred_loss.json) — Example of how development factor selections are documented with supporting rationale, pattern analysis, and decision hierarchy.
+**Selection Logic Frameworks**
 
-- [Chain Ladder Rules-Based Selections - Paid Loss](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/selections/chainladder-ai-rules-based-paid_loss.json) — Shows selection logic for paid loss development patterns.
+The rules-based selector agent specifications show how actuarial judgment is encoded into structured decision frameworks that the AI interprets:
 
-- [Chain Ladder Rules-Based Selections - Reported Count](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/selections/chainladder-ai-rules-based-reported_count.json) — Demonstrates selection framework applied to claim count development.
+- [LDF Rules-Based Selector](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/reserving-analysis/agents/selector-chain-ladder-ldf-ai-rules-based.agent.md) — Decision framework for development factor selections, including 14 selection criteria and 10 diagnostic adjustment rules.
 
-**Python Implementation**
+- [Tail Factor Rules-Based Selector](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/reserving-analysis/agents/selector-tail-factor-ai-rules-based.agent.md) — Framework for tail factor selections based on curve fitting, industry benchmarks, and maturity analysis.
 
-- [Python Scripts Folder](https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data/sample-run/scripts) — Complete set of Python scripts generated during a workflow run. Shows how the workflow combines reusable script templates with dynamically generated analysis code. Includes data preparation, method calculations, Excel workbook generation, and technical review scripts.
+- [Ultimates Rules-Based Selector](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/reserving-analysis/agents/selector-ultimates-ai-rules-based.agent.md) — Logic for blending Chain Ladder, Initial Expected, and Bornhuetter-Ferguson method results based on data maturity and credibility.
 
 **Sample Workflow Run**
 
 The sample-run folder contains a complete example of what TeamAnalyst produces from start to finish:
 
-- [Progress Document](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/PROGRESS.md) — The detailed step-by-step workflow process that defines what happens at each stage of the analysis. This is the actual executable workflow specification that the agent follows, tracking decisions, data characteristics, and interim findings throughout the analysis.
+- [Draft Report](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/REPORT.md) — The draft analysis report generated by the workflow, demonstrating the documentation structure and narrative that TeamAnalyst produces.
 
 - [Replication Instructions](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/REPLICATE.md) — Complete reproducibility log documenting all input files, scripts run, customizations made, and manual selections applied. Enables a reviewer to reproduce the analysis results without AI assistance by following the documented steps exactly.
-
-- [Final Report](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/REPORT.md) — The draft analysis report generated by the workflow, demonstrating the documentation structure and narrative that TeamAnalyst produces.
 
 - [Peer Review Output](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/PEER_REVIEW.md) — The structured peer review evaluation of the completed analysis, showing how the tool identifies strengths, weaknesses, and areas requiring additional attention.
 
