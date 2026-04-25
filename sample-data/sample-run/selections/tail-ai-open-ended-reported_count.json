@@ -1,15 +1,15 @@
 [
   {
     "measure": "Reported Count",
-    "cutoff_age": 203,
+    "cutoff_age": 143,
     "tail_factor": 1.0,
     "method": "bondy",
-    "reasoning": "Reported count triangle exhibits minimal tail development beyond age 35; all observed factors at age 143+ are 1.0. The triangle pattern reflects rapid early reporting (age 23 shows 6–14% development) followed by near-complete stability. Deep tail curve fitting yields no signal (R² and LOO metrics are NaN due to insufficient variability). A tail factor of 1.0 is actuarially sound and reflects observed business reality: reported counts close before age 143. Starting age 203 maximizes available observed data while acknowledging that reported count development is complete in the tail. Bondy method provides smooth mathematical framework, though all scenarios (Bondy, modified Bondy variants) converge to 1.0 tail regardless of method.",
+    "reasoning": "This count triangle exhibits complete development plateau from age 47 onward, with all observed factors equal to 1.0. The business process shows claims reach final reported count within approximately 4-5 years, with zero subsequent development. Early age volatility (age 23: 1.06-1.14 across recent years) reflects reporting lags and timing variation, but tail development is null. Both Bondy scenarios at ages 143 and 203 converge to 1.0, consistent with the observed data showing no development beyond age 47. The NaN diagnostic values (R², LOO) reflect the statistical absence of variation in the tail, not model failure—this is appropriate for a mature, closed triangle. A tail factor of 1.0 is the only defensible choice given the data exhibits zero tail development.",
     "pct_of_cdf": 0.0,
     "prior_selection": null,
     "prior_delta": null,
-    "prior_delta_driver": "Initial selection; no prior year available for comparison.",
-    "alternatives_considered": "Age 143 (slightly fewer observed factors but same tail outcome). All curve fitting methods (Bondy, modified_bondy_double_dev, modified_bondy_square_ratio) yield 1.0 tail at both cutoff ages. No alternative methods (Exponential Decay, Double Exponential, McClenahan, Skurnick) are available in scenario set. Exponential decay or other tail curves would yield tail > 1.0, but lack empirical support in a triangle showing 1.0 factors in deep tail.",
-    "diagnostics_summary": "Observed factors at age 143+ are 1.0 across all calendar years. No meaningful fit diagnostics (R²=NaN, LOO=NaN) due to zero variability in deep tail. Monotonicity: True (all factors >= 1.0 from starting age forward). Gap to last observed: 0 (tail_factor = 1.0 matches observed). Materiality: OK (0% of CDF in tail). Sensitivity: Tail_factor = 1.0 is insensitive to curve selection — all methods converge here."
+    "prior_delta_driver": "Baseline selection; no prior year comparison available.",
+    "alternatives_considered": "Age 203 with tail 1.0 (slightly more conservative due to fewer anchor factors, but data quality equivalent); exponential or double exponential curves (inappropriate given zero observed tail development—would force artificial curve fitting to flat data); higher tail factors (1.01, 1.005) would contradict observed plateau.",
+    "diagnostics_summary": "Observed factors flat at 1.0 from age 47+; early age volatility at 23 (range 1.06-1.14) reflects reporting lags; R² and LOO = NaN due to zero tail variation (appropriate); gap_flag = False; monotonicity confirmed from cutoff forward; 12 factors in fit, 13 AYs contributing; zero sensitivity to tail selection given materiality of reported counts."
   }
 ]

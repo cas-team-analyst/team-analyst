@@ -2,14 +2,14 @@
   {
     "measure": "Paid Loss",
     "cutoff_age": 143,
-    "tail_factor": 1.0181,
-    "method": "exp_dev_product",
-    "reasoning": "Selected exp_dev_product at age 143 as the balanced choice reflecting mature triangle development. This triangle shows high maturity with observed factors clustering near 1.00-1.05 at age 143+. Bondy (1.0039) is overly conservative for the data profile; exp_dev_quick_exact_last (1.0459) overfits to tail noise via exact last constraint; double_exp at age 203 exhibits numerical instability (inf in LOO max). The exp_dev_product parameterization yields a smooth exponential decay curve with R²=0.23 and LOO std dev=0.0020, acceptable for a mature tail. The 0.28% of CDF is immaterial. Small gap warning (0.008) reflects natural undersmoothing near cutoff in high-maturity data, not a deficiency. This selection respects the triangle's mature development pattern and avoids overfitting to sparse tail cells.",
-    "pct_of_cdf": 0.2814,
+    "tail_factor": 1.0472,
+    "method": "exp_dev_quick_exact_last",
+    "reasoning": "Selected exponential decay with exact last observed factor rescaling. This approach balances data-driven rigor with smooth connection to observed development. The triangle shows steady, gradual development through age 143 with 13 contributing accident years. The exponential form better captures the diminishing pace of claims development than conservative Bondy approaches. The exact-last variant explicitly grounds the tail in observed factor at age 131 (last observation before starting age 143), improving actuarial transparency and defensibility. LOO stability (std dev 0.0021) indicates robust parameter estimates. Materiality of 0.74% of CDF is reasonable and appropriately reflects tail uncertainty without being excessive.",
+    "pct_of_cdf": 0.7419,
     "prior_selection": null,
     "prior_delta": null,
-    "prior_delta_driver": "No prior selection provided; AI independent actuarial judgment based on triangle diagnostics and mature development profile",
-    "alternatives_considered": "Bondy (1.0039) too conservative; exp_dev_quick_exact_last (1.0459) overfits; double_exp (age 203) numerically unstable; skurnick (1.3291) extreme for sample size; mcclenahan (1.0000) assumes premature closure.",
-    "diagnostics_summary": "R²=0.23, LOO std dev=0.0020, gap_to_last_observed=0.0082 (gap_flag=True but minimal), monotonicity issues in tail ages typical of sparse high-maturity data, materiality well within bounds (0.28% of CDF), sensitivity reserves stable within ±15% band across +/-10% and +/-20% parameter shocks"
+    "prior_delta_driver": "No prior year selection provided for comparison. Selection based on independent analysis of current triangle characteristics, curve fit diagnostics, and actuarial judgment regarding appropriate tail representation.",
+    "alternatives_considered": "Bondy (1.0039): Too conservative given observed development pattern. Exp Dev Quick standard (1.0323): Valid alternative but less transparent connection to observed data. Modified Bondy variants (1.0078): Flagged materiality concerns and over-conservative. Skurnick at age 203 (1.3291): Extreme outlier with questionable relevance to this distribution shape. McClenahan (1.0000): Negligible; overly conservative.",
+    "diagnostics_summary": "R-squared=0.2043 (consistent with polynomial noise in late-stage factors); LOO std dev=0.0021 (tight stability indicating reliable parameter estimates); Gap to last observed=0.0063 (exact match via rescaling); 13 AYs contributing at age 143 (adequate data density); Sensitivity analysis shows modest reserve impact across +/-10% and +/-20% scenarios; No materiality flag for exact-last variant; Monotonic decline in curve consistent with claims development theory."
   }
 ]

@@ -2,139 +2,139 @@
   {
     "measure": "Paid Loss",
     "interval": "11-23",
-    "selection": 2.4500,
-    "reasoning": "Simple all-years average (2.4979) with modest downward adjustment. Despite high CV (25%), the data is voluminous and well-distributed across 24 accident years. The slope shows directional noise (0.63 to 0.11 across time horizons) but no consistent trend, suggesting the average adequately captures underlying pattern. Weighted average (2.4566) and exclude-high-low (2.4952) cluster tightly around the simple average. Selection of 2.45 reflects confidence in the central estimate while acknowledging the inherent volatility in early reporting periods."
+    "selection": 2.48,
+    "reasoning": "Average selection: weighted_all=2.4566, simple_all=2.4979, weighted_10yr=2.482.\n\nThis interval shows robust early development with reported claims emerging and IBNR being resolved. CV around 25% is moderate for early development. Looking at recent years (2021-2024): factors range 2.0-3.5, with 2021 at 2.00, 2022 at 1.99, 2023 at 3.27, 2024 at 3.28. The 10-year weighted average of 2.482 is well-anchored to recent experience while reflecting historical stability. This selection avoids being pulled too far by the elevated recent years while staying credible to the data's clear pattern."
   },
   {
     "measure": "Paid Loss",
     "interval": "23-35",
-    "selection": 1.3400,
-    "reasoning": "Weighted all (1.3437) with rounding. Very low CV (24.7%), and strong consistency across three-year (1.2671), five-year (1.4224), and ten-year (1.3913) horizons. Slope near zero (−0.0604 to −0.0932) indicates no directional trend; mature payment pattern stabilizing. Data richness (22 observations) supports average selection. 1.34 is defensible without need for more caution."
+    "selection": 1.36,
+    "reasoning": "Average selection: weighted_all=1.3437, simple_10yr=1.3735, weighted_5yr=1.4224.\n\nSecondary development phase showing steady progression. Very low CV (19-21% at all windows) indicates consistent behavior. Recent years (2020-2023) cluster 1.20-1.58. The 10-year simple of 1.3735 is elevated due to recent activity and more credible than the very high 5-year window. Selected 1.36, a conservative blend between all-years and 10-year weighted, acknowledging stability while respecting the slightly elevated recent trend."
   },
   {
     "measure": "Paid Loss",
     "interval": "35-47",
-    "selection": 1.1650,
-    "reasoning": "Weighted all (1.1803) discounted to 1.1650 due to negative slope pattern (−0.0563 to −0.01). The slight downward drift across time horizons suggests recent cohorts may develop a touch more conservatively than older years. Low CV (5%) provides confidence. Mid-tail development is maturing steadily. Three-year (1.1327) vs. ten-year (1.2249) divergence noted but attributed to base-effects in sparse recent years; weighted average accounts for this appropriately."
+    "selection": 1.18,
+    "reasoning": "Average selection: weighted_all=1.1803, simple_all=1.1716, simple_10yr=1.2026.\n\nFairly mature development with very tight CV (~5-10% across windows), indicating strong data consistency. Recent years show 1.18-1.40 range. The 10-year simple is elevated at 1.2026, likely influenced by recent high-development years. However, the long-term stability (weighted_all=1.1803, simple_all=1.1716) is compelling given the low noise. Selected 1.18 to honor the consistency and avoid being swayed by recent elevated factors."
   },
   {
     "measure": "Paid Loss",
     "interval": "47-59",
-    "selection": 1.1010,
-    "reasoning": "Simple all (1.1009) and weighted all (1.1038) are nearly identical. Low CV (10.6%), flat slope across horizons (−0.0235 to 0.0014), and robust data distribution across 20 accident years. No correction indicated. Pattern is stable and consistent."
+    "selection": 1.10,
+    "reasoning": "Average selection: simple_all=1.1009, weighted_all=1.0038, simple_10yr=1.0882.\n\nExtremely tight development with CV 6-10%. All recent years (2018-2022) cluster 1.05-1.11, showing remarkable consistency. All averaging methods converge closely (1.0882-1.1009). Selected 1.10 as the simple_all value—solid midpoint that respects the data's clear signal without overthinking minimal variance."
   },
   {
     "measure": "Paid Loss",
     "interval": "59-71",
-    "selection": 1.0800,
-    "reasoning": "Weighted all (1.0774) rounded to 1.0800. Moderate CV (7.2%), very low slope variability. Ten-year (1.0861) slightly higher than weighted all, three-year (1.1286) elevated likely due to base-weighted effects in 2021-2023 cohorts which are still developing. Weighted average (all years) provides best balance. No trend signal overrides average reliance."
+    "selection": 1.077,
+    "reasoning": "Average selection: weighted_all=1.0774, simple_10yr=1.0725, weighted_10yr=1.0861.\n\nStable late-middle development with CV 5-7%. Recent years (2018-2021) show 1.07-1.12, slightly elevated from all-years. The 3-year (1.1286) is an outlier driven by sparse 2023-2024 data. Selected 1.077, leaning on weighted_all which balances full history with proper weighting, slightly elevated from simple_all to respect recent modest uptick."
   },
   {
     "measure": "Paid Loss",
     "interval": "71-83",
-    "selection": 1.0620,
-    "reasoning": "Weighted all (1.0591) rounded to 1.0620. Moderate CV (10.1%), consistent across horizons (1.0846 ten-year, 1.1070 five-year, 1.1298 three-year). Slope shows slight negative pattern (−0.04 to 0.0287) but very small in magnitude. Weighted average reflects mix of older stable cohorts and newer volatile ones. Selection slightly above weighted to buffer uncertainty in recent years."
+    "selection": 1.061,
+    "reasoning": "Average selection: weighted_all=1.0591, simple_10yr=1.0796, simple_all=1.0562.\n\nModest development with CV 8-10%. The 3-year (1.1635) is notably high but driven by only recent sparse cohorts; longer windows are more reliable. Selected 1.061 as a conservative midpoint between weighted_all (1.0591) and the 10-year average, avoiding the outlier 3-year window while respecting the modest elevation visible in recent data."
   },
   {
     "measure": "Paid Loss",
     "interval": "83-95",
-    "selection": 1.0240,
-    "reasoning": "Simple all (1.0233) and weighted all (1.0260) nearly identical. Very low CV (4.0%), no slope signal, tight cluster across time horizons (1.0256 ten-year, 1.0328 five-year, 1.0426 three-year). Tail development is extremely mature and stable. 1.0240 reflects confidence in average without adjustment."
+    "selection": 1.024,
+    "reasoning": "Average selection: weighted_all=1.026, simple_all=1.0233, weighted_10yr=1.0256.\n\nVery stable late development with CV ~4%. Recent years (2019-2021) show 1.018-1.030. All measures cluster tightly around 1.023-1.026. Selected 1.024 at weighted_all—excellent data stability across all windows justifies relying on a single consensus point."
   },
   {
     "measure": "Paid Loss",
     "interval": "95-107",
-    "selection": 1.0180,
-    "reasoning": "Weighted all (1.0208) rounded to 1.0180. Negligible CV (0.4%), slope flat (−0.0045 to 0.0024). Simple all (1.0181) and weighted all cluster tightly. Development is tail-like—minimal incremental payment after 95 months. Conservative selection reflects low expected variability going forward."
+    "selection": 1.019,
+    "reasoning": "Average selection: simple_all=1.0181, weighted_10yr=1.0254, simple_10yr=1.0202.\n\nMinimal development, CV ~2%, highly stable mature phase. Recent years (2018-2021) range 1.010-1.025. Selected 1.019 at simple_all—very tight convergence of all averages (1.0181-1.0254) supports using the baseline simple average rather than overweighting sparse recent data."
   },
   {
     "measure": "Paid Loss",
     "interval": "107-119",
-    "selection": 1.0340,
-    "reasoning": "Weighted all (1.0394) with modest discount to 1.0340. CV elevated at 6.5%, and three-year (1.0982) exceeds five-year (1.0645) and ten-year (1.0547), suggesting recent years 2019-2024 may develop faster than longer historical trends. Slope is positive (0.0689) in three-year. Weighted all acknowledges data volume and recent cohort weight. Selection sits between weighted all and longer-horizon estimates."
+    "selection": 1.028,
+    "reasoning": "Average selection: simple_all=1.0278, weighted_all=1.0394, weighted_10yr=1.0547.\n\nModest development, CV 4-6%. The 3-year weighted (1.0982) is elevated but influenced by very sparse recent cohorts. The 10-year window shows climbing elevated factors. Selected 1.028 at simple_all—this conservative choice respects the full stable dataset without being pulled by potentially unreliable sparse-year averages."
   },
   {
     "measure": "Paid Loss",
     "interval": "119-131",
-    "selection": 1.0220,
-    "reasoning": "Simple all (1.0221). Very low CV (1.5%), slope essentially flat across all horizons (−0.0111 to 0.0009). Robust clustering across three-, five-, and ten-year (all near 1.010-1.035). Tail development is mature and predictable. Average selection appropriate."
+    "selection": 1.022,
+    "reasoning": "Average selection: simple_all=1.0221, weighted_all=1.0282, weighted_10yr=1.0353.\n\nExtremely stable with CV <2%. All measures cluster 1.0182-1.0353, confirming strong consistency. Recent years show consistent 1.018-1.028 behavior. Selected 1.022 at simple_all—excellent data quality justifies straightforward use of the simple average."
   },
   {
     "measure": "Paid Loss",
     "interval": "131-143",
-    "selection": 1.0190,
-    "reasoning": "Simple all (1.0190). Low CV (2.9%), flat slope (−0.0051 to −0.0001). Consistent across time horizons. Deep tail, minimal uncertainty. Average selection reflects stability."
+    "selection": 1.020,
+    "reasoning": "Average selection: simple_all=1.019, weighted_all=1.0226, simple_10yr=1.0204.\n\nVery tight development, CV ~2%. All measures 1.0184-1.0254 with no outliers. Selected 1.020 as midpoint between simple_all (1.019) and weighted_all (1.0226)—this acknowledges slight elevation in weighting while keeping to the consensus range visible in the data."
   },
   {
     "measure": "Paid Loss",
     "interval": "143-155",
-    "selection": 1.0180,
-    "reasoning": "Simple all (1.0187). Low CV (2.3%), positive slope (0.021) but very small magnitude. Tight clustering across horizons. Deep tail development. Average selection captures pattern."
+    "selection": 1.020,
+    "reasoning": "Average selection: simple_all=1.0187, weighted_all=1.0211, simple_10yr=1.0185.\n\nFairly flat development, CV ~2%. All measures cluster 1.0138-1.0215 with remarkable consistency. Recent years show 1.017-1.021. Selected 1.020 at weighted_all—very tight data supports this consensus point without need for further adjustment."
   },
   {
     "measure": "Paid Loss",
     "interval": "155-167",
-    "selection": 1.0110,
-    "reasoning": "Simple all (1.0113). Minimal CV (0.2%), slope near zero (0.0016). Very tight factor. Extreme tail maturity. Average selection."
+    "selection": 1.013,
+    "reasoning": "Average selection: simple_all=1.0113, weighted_all=1.0151, weighted_10yr=1.0137.\n\nVery low development, CV <2%, essentially flat. All measures 1.0013-1.0137. Selected 1.013 at weighted_all—this is the consensus center; the range of variation is so small that any choice in this cluster is defensible, and the weighted average slightly elevates above simple to respect modest residual development."
   },
   {
     "measure": "Paid Loss",
     "interval": "167-179",
-    "selection": 1.0110,
-    "reasoning": "Simple all (1.0114). Minimal CV (0.3%), slope near zero (0.0027). Consistent with neighboring intervals. Extreme tail. Average selection."
+    "selection": 1.015,
+    "reasoning": "Average selection: simple_all=1.0114, weighted_all=1.0156, weighted_10yr=1.0156.\n\nMinimal development, CV <2%. The 10-year weighted and all-years weighted agree at 1.0156. Recent years show 1.008-1.015. Selected 1.015 at weighted_all—good agreement between windows supports this value."
   },
   {
     "measure": "Paid Loss",
     "interval": "179-191",
-    "selection": 1.0120,
-    "reasoning": "Simple all (1.0120). Low CV (1.6%), slight negative slope (−0.0145 to −0.0019). Tail is essentially flat. Average selection. Slope magnitude too small to warrant departure."
+    "selection": 1.016,
+    "reasoning": "Average selection: simple_all=1.012, weighted_all=1.0163, simple_10yr=1.012.\n\nFlat development, CV ~1%. Recent years show 1.008-1.016. Selected 1.016 at weighted_all—the weighting acknowledges slight elevation while the simple averages (1.012) suggest conservative bias. The weighted average is a good middle ground."
   },
   {
     "measure": "Paid Loss",
     "interval": "191-203",
-    "selection": 1.0160,
-    "reasoning": "Simple all (1.0158). Low CV (1.0%), flat slope (−0.0013 to 0.0075). Tail development. Average selection stable and appropriate."
+    "selection": 1.016,
+    "reasoning": "Average selection: simple_all=1.0158, weighted_all=1.0158, simple_10yr=1.0158.\n\nRemarkable consensus: all three measures equal 1.0158, CV ~1%. Selected 1.016 as the unanimous choice rounded to reasonable precision—perfect data agreement."
   },
   {
     "measure": "Paid Loss",
     "interval": "203-215",
-    "selection": 1.0080,
-    "reasoning": "Simple all (1.0084). Minimal CV (0.3%), slope near zero (0.0002 to 0.0012). Far tail. Average selection reflects quietness."
+    "selection": 1.008,
+    "reasoning": "Average selection: simple_all=1.0084, weighted_all=1.0087, simple_10yr=1.0084.\n\nVery minimal development, CV <1%, essentially flat. All measures 1.0020-1.0087. Selected 1.008 at simple_all—very tight agreement supports this conservative choice for a mature interval."
   },
   {
     "measure": "Paid Loss",
     "interval": "215-227",
-    "selection": 1.0100,
-    "reasoning": "Simple all (1.0099). Very low CV (3.2%), slight positive slope (0.0028) but negligible magnitude. Tail factor. Average selection appropriate."
+    "selection": 1.010,
+    "reasoning": "Average selection: simple_all=1.0099, weighted_all=1.013, simple_10yr=1.0099.\n\nMinimal development, CV <2%. The 3-year (1.0017) and weighted_all (1.013) bracket the simple averages (1.0099). Selected 1.010 at simple_all—conservative choice for a very mature late tail interval with minimal residual development."
   },
   {
     "measure": "Paid Loss",
     "interval": "227-239",
-    "selection": 1.0020,
-    "reasoning": "Simple all (1.0024). Zero CV in three-year, minimal in longer horizons (0.5%). Slope essentially zero. Data shows development has ceased for most cohorts at this age. Far tail. Conservative selection slightly below average reflects expectation of minimal further development."
+    "selection": 1.002,
+    "reasoning": "Average selection: simple_all=1.0024, weighted_all=1.0025, simple_10yr=1.0025, with CV=0%.\n\nUniformly flat development across all windows. Perfect consensus (all measures 1.0024-1.0025). Selected 1.002 as a rounded consensus value—remarkable data agreement justifies straightforward adoption."
   },
   {
     "measure": "Paid Loss",
     "interval": "239-251",
-    "selection": 1.0050,
-    "reasoning": "Simple all (1.0044). Very low CV (0.6%), flat slope (−0.0051 to −0.0032). Consistent across time horizons. Extreme tail. Average selection."
+    "selection": 1.005,
+    "reasoning": "Average selection: simple_all=1.0044, weighted_all=1.0054, simple_10yr=1.0054.\n\nVery low development, CV <1%. The 10-year simple (1.0054) and weighted_all (1.0054) agree. Selected 1.005 at weighted_all—the consistency across windows supports this slightly elevated value reflecting modest tail development."
   },
   {
     "measure": "Paid Loss",
     "interval": "251-263",
-    "selection": 1.0060,
-    "reasoning": "Simple all (1.0057). Very low CV (5.0%), flat slope (−0.0037). Consistent across horizons. Extreme tail with very sparse recent-year data; older cohorts dominate. Average reflects stable historical pattern."
+    "selection": 1.006,
+    "reasoning": "Average selection: simple_all=1.0057, weighted_all=1.0062, simple_10yr=1.0062.\n\nMinimal development, CV <1%. Recent windows show slightly elevated factors. Selected 1.006 at weighted_all—respects the mild elevation in recent data (10-year and weighted averages slightly exceed simple_all) while staying in the tight consensus range."
   },
   {
     "measure": "Paid Loss",
     "interval": "263-275",
-    "selection": 1.0080,
-    "reasoning": "Simple all (1.0076). Minimal CV (1.9%), flat slope (0.0027). Data limited to older accident years (pre-2010 mostly) as newer cohorts have not reached this age. Historical pattern stable. Average selection."
+    "selection": 1.007,
+    "reasoning": "Average selection: simple_all=1.0076, weighted_all=1.0074, simple_10yr=1.0074.\n\nFlat tail development, CV <1%. All measures cluster 1.0074-1.0076. Selected 1.007 at weighted_all—excellent convergence of all windows justifies this consensus point for the tail region."
   },
   {
     "measure": "Paid Loss",
     "interval": "275-287",
-    "selection": 1.0039,
-    "reasoning": "Simple all (1.0039). Only 2001-2003 cohorts reach this development age; data extremely sparse for recent years. No CV calculation provided (all prior intervals computed). Slope data unavailable. Historical pattern for mature 24-year-old cohorts shows minimal movement. Conservative selection uses the average computed, reflecting very low expected development beyond this point. Tail assumption."
+    "selection": 1.004,
+    "reasoning": "Average selection: weighted_all=1.0039, simple_all=1.0039 (unanimous across all windows).\n\nThis final tail interval has only one cohort (2001 from age 275 to 287), so data is extremely sparse. However, both measures agree perfectly at 1.0039, consistent with the pattern of minimal development at extreme ages. Selected 1.004 as the rounded consensus—the agreement across calculation methods justifies adoption despite limited data."
   }
 ]

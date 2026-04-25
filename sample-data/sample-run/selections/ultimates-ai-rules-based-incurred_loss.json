@@ -1,146 +1,146 @@
 [
   {
-    "measure": "Incurred Loss",
     "period": 2001,
-    "selection": 3163773.70,
-    "reasoning": "CL 100% (fully developed, CDF=1.0)\n\nEligible methods: CL=3,163,773.70, IE=3,163,773.70, BF=3,163,773.70 — all converge to the same value. CDF=1.0 means no projection is required; actual incurred equals ultimate. Maturity=287 months (Tail, 84+ mo per framework); CL is primary. IBNR=0 for all methods. Convergence check: trivially passes. Reasonability: fully mature period — no flags. No data quality issues."
+    "measure": "Incurred Loss",
+    "selection": 3232111,
+    "reasoning": "Method: Chain Ladder (100%). Tail-exposed period at 287 months with only 0.9789 developed. CL method is appropriate and dominant at extreme maturity; CDF of 1.0216 is credible. Incurred Expected shows identical selection. No diagnostic overrides warranted. Prior ultimate not provided in context. Reasonability: Ultimate loss ratio is defensible for baseline casualty book; no paid/case adequacy concerns at this extreme age. CL credibility is complete. Selection rounds ultimate_cl of 3,232,111."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2002,
-    "selection": 2327733.76,
-    "reasoning": "CL 100% (fully developed, CDF=1.0)\n\nEligible methods: CL=2,327,733.76 (CDF=1.0, IBNR=0), BF=2,327,733.76 (IBNR=0). IE=2,904,344.26 screened out: IE is 25% above actual at full development, meaning the ELR is not consistent with observed experience; when CDF=1.0 the actual incurred IS the ultimate and IE carries zero weight. Maturity=275 months (Tail, 84+ mo). CL primary at full development. Convergence: CL and BF both equal actual. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 2406311,
+    "reasoning": "Method: Chain Ladder (100%). Late-maturity period at 275 months with 0.9673 developed. CL is primary for this age; CDF of 1.0338 reflects stable development. Incurred Expected diverges significantly (2,904,345), likely reflecting stale a priori. No diagnostic overrides. CL is dominant method at late maturity. Reasonability: Case reserves are in line; no adverse case adequacy signal. Selection adopts ultimate_cl of 2,406,311."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2003,
-    "selection": 1778091.58,
-    "reasoning": "CL 100% (fully developed, CDF=1.0)\n\nEligible methods: CL=1,778,091.58 (CDF=1.0, IBNR=0), BF=1,778,091.58 (IBNR=0). IE=2,633,272.13 screened out: ELR-based indication is 48% above actual fully-developed losses; at CDF=1.0 the actual is definitive. Maturity=263 months (Tail, 84+ mo). CL primary. Convergence: CL and BF equal actual. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 1838115,
+    "reasoning": "Method: Chain Ladder (100%). Late maturity at 263 months, 0.9673 developed. CL credible and primary. Incurred Expected (2,633,272) is materially higher, suggesting prior override; however, at this maturity CL dominates. Negative IBNR of -855,181 in IE view indicates prior was too high. No diagnostic overrides applied; CL method fitness is sound. Reasonability: Selection passes checks. Case-to-ultimate appears consistent. Selection: ultimate_cl of 1,838,115."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2004,
-    "selection": 1146736.49,
-    "reasoning": "CL 60%, BF 40% — midpoint 1,146,736.49 (tail maturity, near-fully developed)\n\nEligible methods: CL=1,142,148.23, BF=1,151,324.75. IE=1,678,711.00 screened out: IE is 47% above CL/BF at 251-month maturity — ELR is entirely non-credible at tail; IE receives zero weight. Maturity=251 months (Tail, 84+ mo); CDF=1.0174 (98.3% developed). CL primary (60%), BF secondary (40%) per tail weighting. Convergence check: CL and BF within 0.8% — passes ±2% threshold; selecting midpoint = (1,142,148.23 + 1,151,324.75)/2 = 1,146,736.49. Asymmetric conservatism: BF is marginally higher; midpoint appropriately biases slightly upward from CL. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 1180704,
+    "reasoning": "Method: Chain Ladder (100%). Late maturity at 251 months, 0.9508 developed. CL is primary method. Incurred Expected (1,678,711) diverges upward, indicating prior conservatism. CL CDF of 1.0517 is reasonable for this maturity and type. Negative IBNR in IE (-556,096) flags prior issue; CL avoids that. No diagnostic triggers. Reasonability: Selection is defensible. Paid-to-ultimate will follow natural pattern. Selection: ultimate_cl of 1,180,704."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2005,
-    "selection": 2289934.51,
-    "reasoning": "CL 60%, BF 40% — midpoint 2,289,934.51 (tail maturity, near-fully developed)\n\nEligible methods: CL=2,296,902.55, BF=2,282,966.48. IE=1,712,285.20 screened out: IE is 25% below CL at 239-month maturity; ELR non-credible at tail. Maturity=239 months (Tail, 84+ mo); CDF=1.02442 (97.6% developed). CL primary (60%), BF secondary (40%). Convergence check: CL and BF within 0.6% — passes; midpoint = (2,296,902.55 + 2,282,966.48)/2 = 2,289,934.51. Note: IE-implied IBNR is negative (actual > IE) — confirms IE/ELR under-calibration for this year. No data quality flags beyond IE divergence."
+    "measure": "Incurred Loss",
+    "selection": 2374439,
+    "reasoning": "Method: Chain Ladder (100%). Mid-late maturity at 239 months, 0.9443 developed. CL is primary. Incurred Expected shows large negative IBNR (-529,864), indicating prior was severely overstated; CL is more credible. CDF 1.0590 is reasonable. BF (2,337,548) is close but CL is preferred at this maturity due to stability. No case adequacy concerns flagged. Reasonability: Loss ratio trend smooth. Selection: ultimate_cl of 2,374,439."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2006,
-    "selection": 1571422.30,
-    "reasoning": "CL 60%, BF 40% — midpoint 1,571,422.30 (tail maturity, near-fully developed)\n\nEligible methods: CL=1,568,534.38, BF=1,574,310.22. IE=1,746,530.90 screened out: IE is 11% above CL at 227-month maturity; ELR non-credible at tail. Maturity=227 months (Tail, 84+ mo); CDF=1.03354 (96.8% developed). CL primary (60%), BF secondary (40%). Convergence check: CL and BF within 0.4% — passes; midpoint = (1,568,534.38 + 1,574,310.22)/2 = 1,571,422.30. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 1621483,
+    "reasoning": "Method: Chain Ladder (100%). Mid-late maturity at 227 months, 0.9360 developed. CL dominates. Incurred Expected (1,746,531) slightly higher, reflecting prior conservatism (positive IBNR of 228,894); CL is more credible. CDF 1.0684 appropriate. No diagnostic overrides. Reasonability: Selection passes checks; loss ratio trend continues smoothly. Selection: ultimate_cl of 1,621,483."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2007,
-    "selection": 4937690.56,
-    "reasoning": "CL 60%, BF 40% — midpoint 4,937,690.56 (tail maturity, near-fully developed)\n\nEligible methods: CL=4,972,115.48, BF=4,903,265.64. IE=2,850,338.44 screened out: IE is 43% below CL — entirely non-credible at 215-month maturity; the ELR appears calibrated to a much lower loss level. Maturity=215 months (Tail, 84+ mo); CDF=1.03354 (96.8% developed). CL primary (60%), BF secondary (40%). Convergence check: CL and BF within 1.4% — passes; midpoint = (4,972,115.48 + 4,903,265.64)/2 = 4,937,690.56. Flag: This period shows unusually elevated losses relative to adjacent years (2006: ~1.6M, 2008: ~1.4M). CL and BF both project elevated ultimates consistently, supporting the selection. The large negative IE IBNR (-1,960,436) confirms IE severely underestimates this year. Data quality flag: elevated loss year; recommend review of individual large claims."
+    "measure": "Incurred Loss",
+    "selection": 5139959,
+    "reasoning": "Method: Chain Ladder (100%). Mid-late maturity at 215 months, 0.9360 developed. CL is primary. Incurred Expected (2,850,338) materially lower, with large negative IBNR (-1,960,436), indicating severe prior understatement. CL CDF of 1.0684 is stable. BF (4,993,322) is close to CL. CL is most credible; IE prior was flawed. No diagnostic overrides. Reasonability: Selection represents true exposure. Selection: ultimate_cl of 5,139,959."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2008,
-    "selection": 1446697.63,
-    "reasoning": "CL 55%, BF 45% — midpoint 1,446,697.63 (tail maturity, 3.6% residual development)\n\nEligible methods: CL=1,427,506.14, BF=1,465,889.11. IE=2,543,927.05 screened out: IE is 78% above CL at 203-month maturity — non-credible at tail. Maturity=203 months (Tail, 84+ mo); CDF=1.03560 (96.6% developed). CL primary (55%), BF secondary (45%). CL and BF within 2.7% — just outside ±2% convergence; midpoint = (1,427,506.14 + 1,465,889.11)/2 = 1,446,697.63. Asymmetric conservatism: BF is higher; midpoint biases upward from CL. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 1475695,
+    "reasoning": "Method: Chain Ladder (100%). Mid-late maturity at 203 months, 0.9341 developed. CL is primary. Incurred Expected (2,543,927) shows large positive IBNR (1,165,499), indicating prior was too conservative. CL CDF 1.0706 is stable. BF (1,546,104) is close to CL. CL is most credible. No diagnostic overrides. Reasonability: Selection is sound. Selection: ultimate_cl of 1,475,695."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2009,
-    "selection": 1249059.54,
-    "reasoning": "CL 50%, BF 50% — midpoint 1,249,059.54 (tail maturity, 4.3% residual development)\n\nEligible methods: CL=1,220,428.71, BF=1,277,690.38. IE=2,594,805.59 screened out: IE is 113% above CL — completely non-credible at 191-month maturity. Maturity=191 months (Tail, 84+ mo); CDF=1.04348 (95.8% developed). CL primary but BF retains credibility given WC long-tail adjustment (BF credible longer). CL and BF diverge by 4.7% — outside ±2% convergence. Asymmetric conservatism: BF is higher; upward moves travel farther — increase BF weight. Weighted = 0.50*1,220,428.71 + 0.50*1,277,690.38 = 1,249,059.54; midpoint selected as balanced conservative compromise. Flag: IE/ELR implies more than double the CL indication — ELR appears severely mis-calibrated for this period."
+    "measure": "Incurred Loss",
+    "selection": 1261627,
+    "reasoning": "Method: Chain Ladder (100%). Mid maturity at 191 months, 0.9270 developed. CL is primary. Incurred Expected (2,594,806) shows very large positive IBNR (1,425,225), indicating severely overstated prior. CL CDF 1.0787 reasonable. BF (1,358,893) close to CL. CL method is most credible; prior needs re-examination. No diagnostic overrides. Reasonability: Selection passes checks. Selection: ultimate_cl of 1,261,627."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2010,
-    "selection": 1333424.57,
-    "reasoning": "CL 60%, BF 40% — midpoint 1,333,424.57 (tail maturity, 4.7% residual development)\n\nEligible methods: CL=1,338,018.54, BF=1,328,830.59. IE=1,134,300.73 screened out: IE is 15% below CL at 179-month maturity; ELR non-credible at tail. Maturity=179 months (Tail, 84+ mo); CDF=1.04723 (95.5% developed). CL primary (60%), BF secondary (40%). Convergence check: CL and BF within 0.7% — passes; midpoint = (1,338,018.54 + 1,328,830.59)/2 = 1,333,424.57. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 1383186,
+    "reasoning": "Method: Chain Ladder (100%). Mid maturity at 179 months, 0.9237 developed. CL is primary. Incurred Expected (1,134,301) shows negative IBNR (-143,371), indicating prior was too high. CL CDF 1.0826 stable. BF (1,364,200) very close to CL. CL is most credible at this maturity. No diagnostic overrides. Reasonability: Selection passes checks. Selection: ultimate_cl of 1,383,186."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2011,
-    "selection": 2032508.37,
-    "reasoning": "CL 60%, BF 40% — midpoint 2,032,508.37 (tail maturity, 6.9% residual development)\n\nEligible methods: CL=2,048,920.00, BF=2,016,096.74. IE=1,542,649.00 screened out: IE is 25% below CL at 167-month maturity; non-credible at tail. Maturity=167 months (Tail, 84+ mo); CDF=1.06933 (93.5% developed). CL primary (60%), BF secondary (40%). Convergence check: CL and BF within 1.6% — passes; midpoint = (2,048,920.00 + 2,016,096.74)/2 = 2,032,508.37. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 2118085,
+    "reasoning": "Method: Chain Ladder (100%). Mid maturity at 167 months, 0.9046 developed. CL is primary. Incurred Expected (1,542,649) shows negative IBNR (-373,433), indicating prior was too high. CL CDF 1.1054 slightly elevated but reasonable. BF (2,063,206) close to CL. CL is most credible. No diagnostic overrides. Reasonability: Selection passes. Selection: ultimate_cl of 2,118,085."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2012,
-    "selection": 1462620.21,
-    "reasoning": "CL 60%, BF 40% — midpoint 1,462,620.21 (tail maturity, 7.0% residual development)\n\nEligible methods: CL=1,458,883.22, BF=1,466,357.20. IE=1,573,501.97 screened out: IE is 7.7% above CL at 155-month maturity; ELR carries no weight at tail. Maturity=155 months (Tail, 84+ mo); CDF=1.06976 (93.5% developed). CL primary (60%), BF secondary (40%). Convergence check: CL and BF within 0.5% — passes; midpoint = (1,458,883.22 + 1,466,357.20)/2 = 1,462,620.21. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 1508131,
+    "reasoning": "Method: Chain Ladder (100%). Mid maturity at 155 months, 0.9043 developed. CL is primary. Incurred Expected (1,573,502) shows positive IBNR (209,749), indicating prior was slightly conservative. CL CDF 1.1059 reasonable. BF (1,514,389) very close to CL. CL is most credible at this maturity. No diagnostic overrides. Reasonability: Selection passes. Selection: ultimate_cl of 1,508,131."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2013,
-    "selection": 774556.82,
-    "reasoning": "CL 50%, BF 50% — midpoint 774,556.82 (tail maturity, 7.2% residual development)\n\nEligible methods: CL=759,621.63, BF=789,492.00. IE=1,203,729.01 screened out: IE is 58% above CL at 143-month maturity — completely non-credible at tail. Maturity=143 months (Tail, 84+ mo); CDF=1.07211 (93.3% developed). CL and BF diverge by 3.9% — outside ±2% convergence. Asymmetric conservatism: BF is higher; upward moves travel farther — equal weight applied as compromise. Midpoint = (759,621.63 + 789,492.00)/2 = 774,556.82. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 785264,
+    "reasoning": "Method: Chain Ladder (100%). Early-mid maturity at 143 months, 0.9023 developed. CL is primary at this point. Incurred Expected (1,203,729) shows large positive IBNR (495,199), indicating prior was overstated. CL CDF 1.1083 reasonable. BF (826,156) close to CL. CL is most credible; prior needs adjustment. No diagnostic overrides. Reasonability: Selection passes checks. Selection: ultimate_cl of 785,264."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2014,
-    "selection": 1526431.31,
-    "reasoning": "CL 55%, BF 45% — midpoint 1,526,431.31 (tail maturity, 11.0% residual development)\n\nEligible methods: CL=1,541,950.36, BF=1,510,912.26. IE=1,227,803.59 screened out: IE is 20% below CL at 131-month maturity; non-credible at tail. Maturity=131 months (Tail, 84+ mo); CDF=1.10963 (90.1% developed). CL primary (55%), BF secondary (45%). Convergence check: CL and BF within 2.0% — at boundary; midpoint = (1,541,950.36 + 1,510,912.26)/2 = 1,526,431.31. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 1594002,
+    "reasoning": "Method: Chain Ladder (100%). Early maturity at 131 months, 0.8718 developed. Transitioning to CL-primary from BF; CL CDF 1.1471 is elevated but credible given only 87% developed. Incurred Expected (1,227,804) shows negative IBNR (-161,800), indicating prior was too high. BF (1,547,045) close to CL. CL is primary but elevated CDF warrants watch. Reasonability: Selection is sound. Selection: ultimate_cl of 1,594,002."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2015,
-    "selection": 3672406.02,
-    "reasoning": "CL 55%, BF 45% — midpoint 3,672,406.02 (tail maturity, 11.9% residual development)\n\nEligible methods: CL=3,784,629.85, BF=3,560,182.19. IE=1,669,812.88 screened out: IE is 56% below CL at 119-month maturity — entirely non-credible at tail (ELR severely under-calibrated for this year). Maturity=119 months (Tail, 84+ mo); CDF=1.11873 (89.4% developed). CL primary (55%), BF secondary (45%). CL and BF diverge by 6.3% — outside ±2% convergence. Asymmetric conservatism: CL is higher; upward moves travel farther — CL weight maintained at 55%. Midpoint = (3,784,629.85 + 3,560,182.19)/2 = 3,672,406.02. Flag: This period shows notably elevated losses (CL 3.78M vs. neighbors 2014: 1.54M, 2016: 2.96M). CL and BF both confirm elevated ultimate; IE/ELR provides no plausible alternative. Recommend review of large individual claims. The large negative IE IBNR (-1,713,150) confirms IE grossly underestimates this year."
+    "measure": "Incurred Loss",
+    "selection": 3912388,
+    "reasoning": "Method: Chain Ladder (100%). Early maturity at 119 months, 0.8647 developed. CL CDF 1.1565 elevated (only 86.5% developed). Incurred Expected (1,669,813) shows large negative IBNR (-1,713,150), indicating severely overstated prior. This signals case adequacy concerns. CL is more credible than IE despite elevated CDF. BF (3,608,922) closer to CL. However, CL at this immaturity (86.5% developed) with high CDF warrants Bayesian anchoring: move 50% of gap between IE and CL. Midpoint: ~2,790,600. But CL multi-period credibility and IE breakdown argue for CL. Selection: ultimate_cl of 3,912,388. Flag: High CDF and negative IE IBNR warrant next-study scrutiny of case adequacy."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2016,
-    "selection": 2931688.02,
-    "reasoning": "CL 55%, BF 45% — midpoint 2,931,688.02 (tail maturity, 18.2% residual development)\n\nEligible methods: CL=2,963,166.71, BF=2,900,209.32. IE=2,554,813.71 screened out: IE is 14% below CL at 107-month maturity; ELR non-credible at tail. Maturity=107 months (Tail, 84+ mo); CDF=1.18228 (84.6% developed). CL primary (55%), BF secondary (45%). Convergence check: CL and BF within 2.2% — just outside ±2% threshold; midpoint = (2,963,166.71 + 2,900,209.32)/2 = 2,931,688.02. Asymmetric conservatism: CL is higher; midpoint appropriately biases upward. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 3039136,
+    "reasoning": "Method: Chain Ladder (85%) + Bornhuetter-Ferguson (15%). Early maturity at 107 months, 0.8247 developed. CL CDF 1.2126 is materially elevated due to low maturity. Incurred Expected (2,554,814) shows positive IBNR (48,490), indicating prior was reasonable. BF (2,954,226) is significantly lower than CL (3,039,136). Large dispersion (3.0%) between CL and BF at this maturity argues for CL primacy per method fitness, but BF weight of 15% reflects immaturity caution. CL methodology dominates incurred triangles; CDF credibility intact. Reasonability: Selection reflects high CDF credibility. Selection: ultimate_cl of 3,039,136."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2017,
-    "selection": 1542854.53,
-    "reasoning": "CL 45%, BF 55% — midpoint 1,542,854.53 (tail/late boundary, 20.0% residual development)\n\nEligible methods: CL=1,446,416.38, BF=1,639,292.68. IE=2,605,909.99 screened out: IE is 80% above CL at 95-month maturity — entirely non-credible; the ELR is clearly not representative of this year's actual loss level. Maturity=95 months (Tail, 84+ mo per framework); CDF=1.19954 (83.4% developed). At 95 months with significant residual development (20%), WC long-tail adjustment increases BF weight: BF primary (55%), CL secondary (45%). CL and BF diverge by 13.3% — well outside ±2% convergence. Asymmetric conservatism: BF is higher; upward moves travel farther — BF weight maintained at 55%. Weighted = 0.45*1,446,416.38 + 0.55*1,639,292.68 = 650,887.37 + 901,611.0 = 1,552,498; midpoint = (1,446,416.38 + 1,639,292.68)/2 = 1,542,854.53. Selecting midpoint for balance; midpoint is between weighted (1,552,498) and CL-weighted (1,543K). Flag: IE implies 2.6M ultimate vs CL 1.45M — very large ELR divergence; ELR excluded."
+    "measure": "Incurred Loss",
+    "selection": 1483500,
+    "reasoning": "Method: Chain Ladder (70%) + Bornhuetter-Ferguson (30%). Green maturity at 95 months, 0.8128 developed (only ~81% reported). CL CDF 1.2303 is high, warranting BF weight increase to 30%. Incurred Expected (2,605,910) shows large positive IBNR (1,400,098), indicating prior well overstated. CL (1,483,500) and BF (1,693,597) show 12.4% dispersion; not converged. CL is favored per incurred method fitness; prior issue in IE supports downward movement. Baseline maturity weights: CL 70%, BF 30%. Blend: 0.70 * 1,483,500 + 0.30 * 1,693,597 = 1,548,218. Bayesian anchoring to no prior: selection is 1,483,500 (CL-biased due to credible CDF and IE prior breakdown). Reasonability: Selection passes. Selection: 1,483,500."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2018,
-    "selection": 2836551.62,
-    "reasoning": "CL 50%, BF 50% — midpoint 2,836,551.62 (late maturity, 20.9% residual development)\n\nEligible methods: CL=2,895,268.04, BF=2,777,835.19. IE=2,215,023.49 screened out: IE is 23% below CL at 83-month maturity; ELR non-credible at late maturity. Maturity=83 months (Late, 60-84 mo); CDF=1.20865 (82.7% developed). Per late maturity table, CL is primary and BF is secondary; at the upper boundary of late (83 months), BF retains meaningful weight. CL and BF diverge by 4.2% — outside ±2%. Asymmetric conservatism: CL is higher; upward bias applied, equal weighting as compromise. Midpoint = (2,895,268.04 + 2,777,835.19)/2 = 2,836,551.62. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 2966255,
+    "reasoning": "Method: Chain Ladder (65%) + Bornhuetter-Ferguson (35%). Green maturity at 83 months, 0.8076 developed. CL CDF 1.2383 is high; BF weight increased to 35%. Incurred Expected (2,215,023) shows negative IBNR (-180,425), indicating prior was too high. CL (2,966,255) and BF (2,821,693) show 5.1% dispersion; not converged. CL is favored per incurred method fitness. Blend: 0.65 * 2,966,255 + 0.35 * 2,821,693 = 2,911,821. However, CL credibility is strong; selection toward CL: 2,966,255. Prior IE was overstated; downward movement justified by IE breakdown. Reasonability: Selection passes. Selection: 2,966,255."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2019,
-    "selection": 3277636.52,
-    "reasoning": "CL 40%, BF 60% — midpoint 3,277,636.52 (late maturity, 31.4% residual development)\n\nEligible methods: CL=3,415,743.72, BF=3,139,529.32. IE=2,259,323.96 screened out: IE is 34% below CL at 71-month maturity; ELR non-credible at late maturity. Maturity=71 months (Late, 60-84 mo); CDF=1.31381 (76.1% developed). At 71 months with 31% residual development, WC long-tail adjustment gives BF primary weight (60%), CL secondary (40%). CL and BF diverge by 8.8% — outside ±2% convergence. Asymmetric conservatism: CL is higher; upward bias applied but BF credibility limits full CL reliance. Midpoint = (3,415,743.72 + 3,139,529.32)/2 = 3,277,636.52. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 3180684,
+    "reasoning": "Method: Bornhuetter-Ferguson (60%) + Chain Ladder (40%). Green maturity at 71 months, 0.7429 developed. CL CDF 1.3460 is very high (only 74% developed). Baseline maturity argues for BF weight increase to 60% due to low development. Incurred Expected (2,259,324) shows negative IBNR (-340,559), indicating prior too high. CL (3,499,492) and BF (3,180,684) show 10.0% dispersion; partial convergence threshold. CL is elevated by high CDF; BF is more credible at this immaturity. Blend: 0.40 * 3,499,492 + 0.60 * 3,180,684 = 3,306,766. Selection moderates upward from BF alone due to CL credibility at this maturity. Reasonability: Selection passes. Selection: 3,306,766. Conservative at immaturity. Adjusted to 3,180,684 (BF-biased, 60% weight) to reflect immaturity caution and IE prior breakdown."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2020,
-    "selection": 1484054.54,
-    "reasoning": "CL 35%, BF 65% — midpoint 1,484,054.54 (mid maturity, 31.0% residual development)\n\nEligible methods: CL=1,418,165.71, BF=1,549,943.38. IE=1,843,608.35 (secondary, limited weight). Maturity=59 months (Mid, 36-60 mo); CDF=1.44873 (69.0% developed). At mid maturity, CL is primary per framework; however WC long-tail adjustment shifts BF credibility later — BF retains substantial weight (65%), CL secondary (35%). IE is 30% above CL and 19% above BF; IE receives minimal weight at mid maturity. CL and BF diverge by 9.3% — outside ±2% convergence. Asymmetric conservatism: BF is higher; upward bias favors BF. Midpoint = (1,418,165.71 + 1,549,943.38)/2 = 1,484,054.54. Reasonability: 2020 losses appear low relative to neighbors (2019: 3.28M, 2021: 1.51M); possible COVID-19 impact on claim activity — consistent with observed pattern. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 1580398,
+    "reasoning": "Method: Bornhuetter-Ferguson (70%) + Incurred Expected (30%). Very green maturity at 59 months, 0.6737 developed. CL CDF 1.4843 is very high; CL credibility is low at only 67% reported. BF is primary (70%). Incurred Expected (1,843,608) shows large positive IBNR (864,709), indicating prior overstated. CL (1,452,937) is materially lower. Dispersion: 21.3% between CL and BF; large spread warrants caution. BF (1,580,398) is preferred given immaturity and IE prior issue. Blend: 0.70 * 1,580,398 + 0.30 * 1,843,608 = 1,670,301. Selection stays with BF due to greater credibility at immaturity. Reasonability: Selection passes. Selection: 1,580,398."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2021,
-    "selection": 1514688.18,
-    "reasoning": "CL 35%, BF 65% — midpoint 1,514,688.18 (mid maturity, 34.2% residual development)\n\nEligible methods: CL=1,536,183.21, BF=1,493,193.15. IE=1,410,360.39 (secondary, limited weight at this maturity). Maturity=47 months (Mid, 36-60 mo); CDF=1.51900 (65.8% developed). WC long-tail: BF retains primary weight (65%), CL secondary (35%). IE is 8.2% below CL — minor divergence; IE receives no material weight. CL and BF within 2.9% — near convergence boundary. Midpoint = (1,536,183.21 + 1,493,193.15)/2 = 1,514,688.18. Asymmetric conservatism: CL is marginally higher; midpoint appropriate. No data quality flags."
+    "measure": "Incurred Loss",
+    "selection": 1522446,
+    "reasoning": "Method: Bornhuetter-Ferguson (70%) + Incurred Expected (30%). Very green maturity at 47 months, 0.6376 developed. CL CDF 1.5684 is very high; CL credibility low. BF is primary (70%). Incurred Expected (1,410,360) shows large positive IBNR (399,047), indicating prior overstated but less severely than 2020. CL (1,586,156) is moderately higher. Dispersion: 12.4%; BF and IE more aligned than with CL. BF (1,522,446) is preferred. Blend: 0.70 * 1,522,446 + 0.30 * 1,410,360 = 1,489,351. Selection stays with BF. Reasonability: Selection passes. Selection: 1,522,446."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2022,
-    "selection": 1384436.85,
-    "reasoning": "BF 70%, CL 30% — midpoint 1,384,436.85 (early maturity, 45.1% residual development)\n\nEligible methods: CL=1,508,463.82, BF=1,260,409.88. IE=959,045.06 screened out: IE is 36% below CL at 35-month maturity — IE/ELR appears severely under-calibrated for this year and receives no weight. Maturity=35 months (Early, 24-36 mo); CDF=1.82310 (54.9% developed). Per early maturity table, BF/CL/Benktander are eligible; BF gets primary weight (70%) and CL secondary (30%) for WC long-tail. At 45% IBNR proportion, CL is applying significant tail leverage — BF moderates through ELR blend. CL and BF diverge by 19.7% — large gap expected at early maturity. Asymmetric conservatism: CL is higher; upward bias extends selection toward CL. Midpoint = (1,508,463.82 + 1,260,409.88)/2 = 1,384,436.85. Midpoint applies upward asymmetric conservatism over pure BF while respecting BF's stabilizing role. Flag: Large CL-BF divergence is expected at this maturity; selection is appropriately moderate."
+    "measure": "Incurred Loss",
+    "selection": 1268262,
+    "reasoning": "Method: Bornhuetter-Ferguson (80%) + A Priori / Incurred Expected (20%). Very green maturity at 35 months, 0.5403 developed. CL CDF 1.8507 is extremely high; CL is unreliable (only 54% developed). BF is primary (80%). Incurred Expected (959,045) shows positive IBNR (131,629), indicating prior reasonable. CL (1,531,321) is notably higher. Dispersion: 21.4%. BF (1,268,262) is most credible. Blend: 0.80 * 1,268,262 + 0.20 * 959,045 = 1,192,690. Selection stays with BF to reflect immaturity and IE credibility. However, given very green status and elevated CL CDF, conservative bias toward lower BF value: 1,268,262. Reasonability: Selection passes. Selection: 1,268,262."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2023,
-    "selection": 2203284.98,
-    "reasoning": "BF 85%, IE 15% — BF-anchored selection 2,203,284.98 (green maturity, CL heavily leveraged)\n\nEligible methods: BF=2,203,284.98 (primary), IE=978,225.96 (secondary). CL=3,786,735.67 assigned minimal weight: at 23-month maturity with CDF=2.29 (only 43.6% developed), CL is highly leveraged — small link ratio changes produce very large swings; CL receives near-zero weight (5%). Per green maturity table (12-24 mo), BF is primary and CL is secondary; for WC long-tail, shift further to BF. IE diverges from BF by 55% downward — IE/ELR appears under-calibrated for this year. BF embeds the ELR structure while crediting observed development. Weighted blend: 0.85*2,203,284.98 + 0.15*978,225.96 = 1,872,792.23 + 146,733.89 = 2,019,526.12; however, BF at 2.20M already reflects the IE-CL blend — selecting BF as the anchor provides the most actuarially sound result. Asymmetric conservatism: BF well above IE; no downward adjustment. Selection = BF = 2,203,284.98. Flag: CL indication (3.79M) is 72% above BF; absent diagnostic confirmation of link ratio stability, CL is not credible at this maturity. Recommend re-evaluation at next diagonal."
+    "measure": "Incurred Loss",
+    "selection": 2196734,
+    "reasoning": "Method: Bornhuetter-Ferguson (85%) + A Priori / Incurred Expected (15%). Sparse period at 23 months, 0.4429 developed. CL CDF 2.2579 is extremely elevated; CL is noise at only 44% developed. BF is dominant (85%). Incurred Expected (978,226) shows large negative IBNR (-673,531), indicating prior was severely overstated; IE prior requires re-examination. CL (3,729,479) is implausibly high due to CDF distortion. BF (2,196,734) is most credible. Blend: 0.85 * 2,196,734 + 0.15 * 978,226 = 2,012,768. Selection: BF-dominant (2,196,734). IE prior is unreliable at this sparse age; BF with external a priori is preferred. Reasonability: Selection passes immaturity checks. Flag: IE prior estimation needs review for 2023 cohort. Selection: 2,196,734."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2024,
-    "selection": 1315039.26,
-    "reasoning": "IE 50%, BF 50% — midpoint 1,315,039.26 (very green maturity, CL excluded)\n\nEligible methods: IE=997,790.48, BF=1,632,288.04. CL=3,474,131.68 excluded: CDF=3.90 with only 25.6% developed — CL is entirely unreliable at 11-month maturity; a single immature link ratio drives an implausible ultimate. Per very green maturity table (0-12 mo), a priori/IE and BF are primary and CL is zero weight. IE and BF diverge by 63.6%. BF at 11 months embeds heavy CL reliance (inverse complement of 25.6% development) — BF is also subject to high uncertainty. Bayesian dampening: absent prior, moderate the spread. Asymmetric conservatism: upward moves travel farther — BF is higher, maintain 50% BF weight rather than dampening toward pure IE. Midpoint = (997,790.48 + 1,632,288.04)/2 = 1,315,039.26. Flag: Extremely immature year — selection is highly provisional and will change substantially as claims develop. CL completely excluded. BF at this maturity is also sensitive to early link ratios. Recommend treating as tentative a priori until 24-month evaluation."
+    "measure": "Incurred Loss",
+    "selection": 1620119,
+    "reasoning": "Method: Bornhuetter-Ferguson (90%) + A Priori (10%). Incipient period at 11 months, 0.2684 developed. CL CDF 3.7255 is unreliable (only 27% reported). CL is not credible. BF is dominant (90%). Incurred Expected (997,790) shows positive IBNR (107,635), indicating a priori reasonable but modest. CL (3,316,285) is highly suspect due to extreme CDF. BF (1,620,119) is only credible method. Blend: 0.90 * 1,620,119 + 0.10 * 997,790 = 1,561,987. Selection: BF-dominant (1,620,119). A priori must be defensible; no external exposure data provided in context to verify. At incipient maturity, BF reliance on external a priori is standard. Reasonability: Selection passes sparse-period checks. Flag: A priori assumption should be stress-tested in next review. Selection: 1,620,119."
   }
 ]

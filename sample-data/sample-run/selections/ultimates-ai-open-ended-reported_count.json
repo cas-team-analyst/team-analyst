@@ -1,146 +1,146 @@
 [
   {
-    "measure": "Reported Count",
     "period": 2001,
-    "selection": 700.7076,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate. No development expected."
+    "measure": "Reported Count",
+    "selection": 700.71,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2001 is fully developed (age 287 months, CDF = 1.0, pct_developed 100%). The reported count has completed all development with zero IBNR. The Chain Ladder indication equals the actual value (700.71), which is the ultimate. No other methods available. Since the triangle is mature with no remaining development, the selection equals the current reported count."
   },
   {
-    "measure": "Reported Count",
     "period": 2002,
-    "selection": 651.8824,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 651.88,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2002 is fully developed (age 275 months, CDF = 1.0, pct_developed 100%). No remaining development or IBNR. The actual reported count (651.88) is the ultimate by Chain Ladder. Selection holds at mature actual."
   },
   {
-    "measure": "Reported Count",
     "period": 2003,
-    "selection": 551.5928,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 551.59,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2003 is fully developed (age 263 months, CDF = 1.0, pct_developed 100%). No IBNR. The reported count is ultimate."
   },
   {
-    "measure": "Reported Count",
     "period": 2004,
-    "selection": 642.6452,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 642.65,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2004 is fully developed (age 251 months, CDF = 1.0, pct_developed 100%). No remaining development."
   },
   {
-    "measure": "Reported Count",
     "period": 2005,
-    "selection": 641.3256,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 641.33,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2005 is fully developed (age 239 months, CDF = 1.0, pct_developed 100%). No IBNR."
   },
   {
-    "measure": "Reported Count",
     "period": 2006,
-    "selection": 497.4892,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 497.49,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2006 is fully developed (age 227 months, CDF = 1.0, pct_developed 100%). Selection at actual."
   },
   {
-    "measure": "Reported Count",
     "period": 2007,
-    "selection": 476.3756,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 476.38,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2007 is fully developed (age 215 months, CDF = 1.0, pct_developed 100%). No IBNR."
   },
   {
-    "measure": "Reported Count",
     "period": 2008,
-    "selection": 328.5804,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 328.58,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2008 is fully developed (age 203 months, CDF = 1.0, pct_developed 100%). No remaining development expected."
   },
   {
-    "measure": "Reported Count",
     "period": 2009,
-    "selection": 321.9824,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 321.98,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2009 is fully developed (age 191 months, CDF = 1.0, pct_developed 100%). Selection at actual."
   },
   {
-    "measure": "Reported Count",
     "period": 2010,
-    "selection": 271.8376,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 271.84,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2010 is fully developed (age 179 months, CDF = 1.0, pct_developed 100%). No IBNR."
   },
   {
-    "measure": "Reported Count",
     "period": 2011,
-    "selection": 345.7352,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 345.74,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2011 is fully developed (age 167 months, CDF = 1.0, pct_developed 100%). No remaining development."
   },
   {
-    "measure": "Reported Count",
     "period": 2012,
-    "selection": 261.2808,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 261.28,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2012 is fully developed (age 155 months, CDF = 1.0, pct_developed 100%). Selection at actual."
   },
   {
-    "measure": "Reported Count",
     "period": 2013,
-    "selection": 291.6316,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 291.63,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2013 is fully developed (age 143 months, CDF = 1.0, pct_developed 100%). No IBNR."
   },
   {
-    "measure": "Reported Count",
     "period": 2014,
-    "selection": 455.262,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 455.26,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2014 is fully developed (age 131 months, CDF = 1.0, pct_developed 100%). No remaining development."
   },
   {
-    "measure": "Reported Count",
     "period": 2015,
-    "selection": 333.8588,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 333.86,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2015 is fully developed (age 119 months, CDF = 1.0, pct_developed 100%). Selection at actual."
   },
   {
-    "measure": "Reported Count",
     "period": 2016,
-    "selection": 390.6016,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 390.60,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2016 is fully developed (age 107 months, CDF = 1.0, pct_developed 100%). No IBNR."
   },
   {
-    "measure": "Reported Count",
     "period": 2017,
-    "selection": 310.106,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 310.11,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2017 is fully developed (age 95 months, CDF = 1.0, pct_developed 100%). No remaining development."
   },
   {
-    "measure": "Reported Count",
     "period": 2018,
-    "selection": 325.9412,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 325.94,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2018 is fully developed (age 83 months, CDF = 1.0, pct_developed 100%). Selection at actual."
   },
   {
-    "measure": "Reported Count",
     "period": 2019,
-    "selection": 357.6116,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 357.61,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2019 is fully developed (age 71 months, CDF = 1.0, pct_developed 100%). No IBNR."
   },
   {
-    "measure": "Reported Count",
     "period": 2020,
-    "selection": 370.8076,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 370.81,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2020 is fully developed (age 59 months, CDF = 1.0, pct_developed 100%). No remaining development."
   },
   {
-    "measure": "Reported Count",
     "period": 2021,
-    "selection": 329.9,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 329.90,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2021 is fully developed (age 47 months, CDF = 1.0, pct_developed 100%). Selection at actual."
   },
   {
-    "measure": "Reported Count",
     "period": 2022,
-    "selection": 298.2296,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 298.23,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2022 is fully developed (age 35 months, CDF = 1.0, pct_developed 100%). No IBNR."
   },
   {
-    "measure": "Reported Count",
     "period": 2023,
-    "selection": 304.8276,
-    "reasoning": "Chain Ladder only method available, CDF = 1.0, pct_developed = 1.0. Fully mature year with zero IBNR; actual count equals ultimate."
+    "measure": "Reported Count",
+    "selection": 304.83,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2023 is fully developed (age 23 months, CDF = 1.0, pct_developed 100%). No remaining development expected."
   },
   {
-    "measure": "Reported Count",
     "period": 2024,
-    "selection": 286.2107,
-    "reasoning": "Chain Ladder only method available; immature year at 11 months (age 0.92 years). CDF = 1.118 indicates 12% additional development expected. pct_developed = 0.894 confirms incompleteness. IBNR = 30.21. Other methods (IE, BF) unavailable. Chain Ladder ultimate of 286.21 is sole credible indication for early-year frequency. No prior available for comparison. Data volatility across historical years argues for reliance on development factors rather than trend adjustment."
+    "measure": "Reported Count",
+    "selection": 286.83,
+    "reasoning": "Chain Ladder (only available method)\n\nYear 2024 is immature (age 11 months, pct_developed 89.25%, CDF 1.1204). Only Chain Ladder available; Incurred Estimate and Bornhuetter-Ferguson not computed. Chain Ladder projects ultimate of 286.83 from current actual of 256.00. Expected IBNR of 30.82 claims over remaining development. Selection at CL projection; no alternative methods to cross-check, but CL is appropriate for developing count data."
   }
 ]

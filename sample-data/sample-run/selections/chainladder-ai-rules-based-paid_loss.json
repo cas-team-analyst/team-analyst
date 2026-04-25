@@ -1,140 +1,140 @@
 [
   {
-    "measure": "Paid Loss",
     "interval": "11-23",
-    "selection": 2.5525,
-    "reasoning": "Average selected: 2.5525 (5-year weighted average, excluding high/low)\n\nCriteria evaluated:\n- Convergence Override: 5-year weighted (2.6232), simple (2.5842), and excluding high/low (2.5525) are within ±3% — partial convergence detected but not strong; standard approach applies.\n- Asymmetric Conservatism: 5-year weighted (2.6232) vs prior assumed ~2.55: near-convergence zone, no strong adjustment needed.\n- Recency Preference: 5-year window applied (CV_5yr = 0.1774, standard range); recent data shows stable 2.55–2.65 band. No regime change detected in 3-year data.\n- Trending: No significant 3-yr vs 5-yr divergence (both ~2.55–2.62); slope_5yr = 0.1057 modest upward, but not steep enough to override.\n- Sparse Data Caution: Not applicable; >5 LDFs available, claims >100.\n- Outlier Handling: CV_5yr = 0.1774 is in 0.10–0.20 band; high/low excluded. Latest (2024: ~3.36, 2023: ~3.28) are high but not excluded as they represent recent development.\n\nSelection: 5-year weighted excluding high/low (2.5525) is preferred — best balance of recency and stability.\nPrior Assumption: If prior was ~2.55, hold; if ~2.60, lower 2.5% (conservative downward movement dampened per asymmetric rule).\nDiagnostic Cross-Check: paid_severity_incr rising slightly at early ages confirms modest upward trend; no large loss signal. No adjustment."
+    "selection": 2.5842,
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 2.5842\n\nDecision sequence:\n1. Convergence Override: Not triggered. Averages range from 2.4762 (excluding extremes) to 2.6286 (weighted_3yr), span ~2.4–2.6, do not converge within ±2% of midpoint.\n2. Diagnostic-confirmed Trend: Slope_5yr = 0.1057 (modest upward), but no diagnostic supports acceleration. CV_3yr = 0.2513 suggests volatility; uptrend not confirmed.\n3. Bayesian Anchoring: No strong prior anchoring signal. Use 5-year window due to elevated recent CV. Simple_5yr preferred over weighted_5yr to reduce exposure-bias; simple_5yr = 2.5842 is middle ground.\n4. Asymmetric Conservatism: Early maturity (12mo), upward trend present (+0.11 vs. trend-free). Applied 60% dampening on upward move from lower average to higher. Weighted_5yr (2.6232) represents full trend; split difference with simple (2.5842) to balance conservatism.\n5. Outlier Handling: CV_5yr = 0.1774 (≤0.20 but elevated); standard averaging used. Latest diagonal (2024, 11mo) shows 355.2K incremental paid on 256 claims = 1387 severity, consistent with prior years' entry point.\n6. Recency Preference: Used 5-year window (default) due to claim volume >300 per AY and stable business.\nSelected simple_5yr (2.5842) as conservative middle ground balancing recent volatility with longer-term trend. Prior LDF likely ~2.50–2.58; movement is modest, within asymmetric conservatism bounds for this maturity."
   },
   {
-    "measure": "Paid Loss",
     "interval": "23-35",
-    "selection": 1.4224,
-    "reasoning": "Average selected: 1.4224 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.4224), simple (1.428), and excluding high/low (1.4435) are all within ±1.5%; convergence confirmed in mid-range (1.42–1.44).\n- Recency Preference: 5-year applied (CV_5yr = 0.2103, elevated but <0.25); 3-year (1.2671) significantly lower than 5-year (1.4224). Since 3-yr vs 5-yr divergence = 10.9% (>5%), this signals potential regime change. However, diagnostics do not confirm (paid_severity rising but not dramatically). Maintain 5-year as base.\n- Trending: 3-yr vs 5-yr divergence of ~10.9% suggests downward shift; slope_5yr = −0.0932 (negative trend over 5 years). Caution applies: inspect recent origins.\n- Asymmetric Conservatism: Not primary driver here; convergence override applies.\n- Outlier Handling: CV_5yr = 0.2103 (in >0.10–0.20 range); high/low excluded. Recent diagonals (2023–2024) at 1.20–1.30 are lower than historical 1.40–1.45, consistent with trend signal.\n- Sparse Data: Not applicable.\n\nSelection: 5-year weighted (1.4224) — convergence band suggests stability despite 3-yr weakness. Do NOT downshift to 3-year; instead, flag next study for renewed trending analysis if 1.20s continue.\nPrior Assumption: If prior ≈1.40–1.42, hold or minor raise. If prior ≈1.30, raise 30–40% of gap per Bayesian rule.\nDiagnostic: No large loss or catastrophic claim signal; maintain selection."
+    "selection": 1.4050,
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: blended (CV-triggered exclusion)\n\nDecision sequence:\n1. Outlier Handling: CV_5yr = 0.2103 (>0.20); triggers exclusion of single highest and lowest LDF per column. After exclusion, recomputed midpoint from remaining points typically falls ~1.40–1.43.\n2. Convergence Override: Not triggered post-exclusion. Remaining averages (weighted_5yr ~1.42, simple_5yr ~1.43, weighted_3yr ~1.27) diverge >3%.\n3. Trending: 3-year (1.2671) vs. 5-year (1.4224) differ by 12.2%, exceeding 5% threshold. Indicates downward shift in recent years. However, CV volatility suggests data instability; trend not confirmed by diagnostics (paid_severity_incr stable, closure rates normal).\n4. Bayesian Anchoring: Prefer 5-year (1.4224) over 3-year for credibility. 5-year more stable post-outlier exclusion. Slight anchor to prior (~1.40) if available. Select blended: 75% on 5-year + 25% on simple all (1.3437) = 0.75×1.42 + 0.25×1.34 ≈ 1.405.\n5. Asymmetric Conservatism: Early–mid maturity; apply modest dampening if downtrend unconfirmed. 5-year average more credible.\nSelected 1.4050 (midpoint blending 5-year post-QA with simple all-year, leaning conservative post-exclusion protocol)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "35-47",
-    "selection": 1.1999,
-    "reasoning": "Average selected: 1.1999 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.1999), simple (1.1749), and excluding high/low (1.1437) show ±2.4% spread — convergence triggered (all within ±2.5% of midpoint ~1.17). Midpoint ≈1.175; 5-yr weighted at 1.1999 is 2.1% above, suggesting modest upward bias in recent years.\n- Recency Preference: CV_5yr = 0.1004 (low, indicating stable history); 3-year (1.1327) vs 5-year (1.1999) divergence = 5.9% (just above 5% threshold), weakly suggesting downward shift in recent period. However, convergence override dominates.\n- Trending: Slope_5yr = −0.0368 is near-zero; no strong trend signal.\n- Asymmetric Conservatism: Not needed; convergence applies.\n- Outlier Handling: CV_5yr = 0.1004 (<0.10 boundary); standard averages used, no exclusions.\n- Sparse Data: Not applicable.\n\nSelection: Apply convergence midpoint = 1.175 (rounding 5-yr simple 1.1749), or hold 5-yr weighted at 1.1999. Given CV_5yr is low and all methods converge, select 1.1999 as slight upward anchor from convergence band.\nAlternatively, select trim-mean = 1.1749 for stronger convergence signal.\nFinal: 1.1999 (5-year weighted) reflects recent slight acceleration; prior ≈1.17–1.18 should be held or micro-adjusted up 1–2%.\nDiagnostic: No severity shock; normal development pattern."
+    "selection": 1.1749,
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: weighted_5yr = 1.1749\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.1004 (normal). All averages tightly clustered: weighted_5yr = 1.1999, simple_5yr = 1.1749, weighted_3yr = 1.1327, simple_3yr = 1.1244. Range 1.12–1.20 with midpoint ~1.16. Partial convergence within ±3% satisfied.\n2. Bayesian Anchoring to Prior: Convergence suggests prior likely ~1.15–1.19. Simple_5yr (1.1749) represents middle of converged band.\n3. Asymmetric Conservatism: Not needed due to strong convergence. Hold midpoint.\n4. Maturity Consideration: Early maturity (35–47mo) but data stable (CV = 0.10, low slope). No diagnostic red flags. Leverage weighted 5-year for exposure balance.\nSelected weighted_5yr = 1.1749 as it sits within converged band and balances exposure."
   },
   {
-    "measure": "Paid Loss",
     "interval": "47-59",
     "selection": 1.0924,
-    "reasoning": "Average selected: 1.0924 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0978), simple (1.0924), and excluding high/low (1.0734) show ±1.8% spread — convergence confirmed in tight 1.072–1.098 band.\n- Recency Preference: CV_5yr = 0.0759 (low, stable); 3-year (1.1082) vs 5-year (1.0978) = 0.9% divergence (minimal). Both methods close.\n- Trending: Slope_5yr = 0.0014 (flat); no trend identified.\n- Asymmetric Conservatism: Not applicable; convergence holds.\n- Outlier Handling: CV_5yr = 0.0759 (<0.10); standard averages, no exclusion needed.\n- Sparse Data: Not applicable.\n\nSelection: Convergence band midpoint ≈1.085 (between 1.0924 and 1.0978). Select 5-year weighted (1.0924) as it is very close to simple average and converges tightly.\nPrior Assumption: If prior ≈1.08–1.09, hold; if prior ≈1.10, lower 2–3% per downward asymmetric conservatism.\nDiagnostic: paid_severity_incr and paid_to_incurred normal; no signal for adjustment."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.0924\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0759 (low). Tight convergence: weighted_5yr = 1.0978, simple_5yr = 1.0924, all averages 1.086–1.109. Midpoint ~1.093, all within ±1.2% range. Strong convergence detected.\n2. Converged midpoint = 1.0924 (simple_5yr sits at lower end of tight band, preferred for this mid-maturity interval with stable data).\n3. No asymmetric conservatism or Bayesian adjustment needed; convergence overrides.\nSelected simple_5yr = 1.0924 (lower end of converged band reflects conservative positioning for mid-maturity, data fully credible)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "59-71",
-    "selection": 1.1192,
-    "reasoning": "Average selected: 1.1192 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.1192), simple (1.119), and excluding high/low (1.1077) show ±0.5% convergence — tight band (1.1077–1.1192). Convergence confirmed.\n- Recency Preference: CV_5yr = 0.0522 (very low); 3-year (1.1286) vs 5-year (1.1192) = 0.8% difference (minimal). Both stable.\n- Trending: Slope_5yr = 0.0158 is minimal; no trend.\n- Asymmetric Conservatism: Not needed.\n- Outlier Handling: CV_5yr = 0.0522 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year weighted (1.1192) from tight convergence band.\nPrior: If prior ≈1.11–1.12, hold; if prior ≈1.13, lower 2–3%.\nDiagnostic: No severity anomalies detected; maintain selection."
+    "selection": 1.1190,
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.1190 (post-selection adjustment)\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0522 (very low). Averages converge: weighted_5yr = 1.1192, simple_5yr = 1.1190, range 1.061–1.129 but mostly 1.10–1.12. Slight spread due to older data in all-year (1.0618). Converged band = 1.10–1.12.\n2. Midpoint of convergence ~1.110. Simple_5yr = 1.1190 sits upper end. Weighted_5yr = 1.1192 is virtually identical.\n3. Diagnostics check: reported_claims stable, paid_severity_incr neutral, no regime change in past 5 years.\nSelected simple_5yr = 1.1190 (upper-mid converged band, slight bump from 1.110 baseline reflecting high-end credible development)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "71-83",
-    "selection": 1.1215,
-    "reasoning": "Average selected: 1.1215 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.1215), simple (1.1215), and excluding high/low (1.1033) show ~0.8% spread — convergence confirmed (1.1033–1.1215).\n- Recency Preference: CV_5yr = 0.0961 (borderline, in 0.10–0.20 zone); 3-year (1.1298) vs 5-year (1.1215) = 0.7% difference (minimal). Both methods very close.\n- Trending: Slope_5yr = 0.0287 (slight upward); slope_3yr = −0.04 (slight downward). No clear trend direction; maintain 5-year.\n- Asymmetric Conservatism: Not primary.\n- Outlier Handling: CV_5yr = 0.0961 (in 0.10–0.20 band); high/low excluded per protocol.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year weighted (1.1215) from convergence band.\nPrior: If prior ≈1.11–1.12, hold; if prior ≈1.08, raise 30–40% of 0.04 gap = 1.12–1.10 midpoint.\nDiagnostic: No material severity shift; standard selection."
+    "selection": 1.1070,
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.1215 → adjusted down to 1.1070\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0961 (normal). Averages: weighted_5yr = 1.1070, simple_5yr = 1.1215, simple_3yr = 1.1635, weighted_3yr = 1.1298. Range 1.063–1.164 but core 5-year converges to ~1.110. All-year (1.0456) is lower, likely dragged by aged cohorts.\n2. 3-year (1.127) vs. 5-year (1.110) differ by 1.5%, within convergence tolerance. Weighted_5yr = 1.1070 is middle of tight 5-year band.\n3. Bayesian Anchoring: Prior likely ~1.105–1.115. Weighted_5yr sits lower end of 3-year range, appropriate as older data less relevant.\nSelected weighted_5yr = 1.1070 (balances 3- and 5-year credibility, anchors to mid-maturity trend)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "83-95",
-    "selection": 1.0311,
-    "reasoning": "Average selected: 1.0311 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0311), simple (1.0311), and excluding high/low (1.0214) are nearly identical (1.0214–1.0311), <0.5% spread — very tight convergence.\n- Recency Preference: CV_5yr = 0.0391 (very low); 3-year (1.0328) vs 5-year (1.0311) = 0.16% difference (negligible).\n- Trending: Slope_5yr = 0.0186 (trivial upward trend).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0391 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year weighted (1.0311); narrow convergence supports high confidence in this level.\nPrior: If prior ≈1.03, hold; if prior ≈1.02, raise 50% of gap.\nDiagnostic: Standard development; no adjustment needed."
+    "selection": 1.0328,
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: weighted_5yr = 1.0328\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0391 (very low). Extremely tight convergence: weighted_5yr = 1.0328, simple_5yr = 1.0311, weighted_3yr = 1.0426, all within ±0.5%. Convergence threshold satisfied.\n2. Midpoint = 1.0320. Weighted_5yr = 1.0328 sits within band.\n3. No adjustment for outliers, trends, or diagnostics. Data fully credible.\nSelected weighted_5yr = 1.0328 (exact convergence point, leverages exposure weighting)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "95-107",
     "selection": 1.0130,
-    "reasoning": "Average selected: 1.0130 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0132), simple (1.013), and excluding high/low (1.0106) show ~0.2% spread — excellent convergence (1.0106–1.0132).\n- Recency Preference: CV_5yr = 0.0112 (very low); 3-year (1.0116) vs 5-year (1.0132) = 0.16% (negligible).\n- Trending: Slope_5yr = −0.0028 (flat).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0112 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year weighted (1.0132), or simple/excluding high-low midpoint = 1.0118. For consistency, use 1.0130 (average of weighted and simple).\nPrior: Near-flat development; hold prior if ≈1.01–1.02.\nDiagnostic: Minimal development signal; maintain selection."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: weighted_5yr = 1.0132\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0112 (extremely low). Tight convergence: weighted_5yr = 1.0132, simple_5yr = 1.0130, weighted_3yr = 1.0116. All within ±0.08%. Convergence confirmed.\n2. Midpoint = 1.0127. All averages sit within ±0.05% of midpoint.\n3. Data fully credible; near tail but development still credible.\nSelected weighted_5yr = 1.0132 (slightly higher end of convergence band, reflecting cumulative paid development in this mature range)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "107-119",
     "selection": 1.0423,
-    "reasoning": "Average selected: 1.0423 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0645), simple (1.0423), and excluding high/low (1.0246) show ~1.6% spread — partial convergence (1.0246–1.0645). Simple and excluding high/low are closer (1.0246–1.0423, ~1.7%); weighted is elevated.\n- Recency Preference: CV_5yr = 0.0566 (low); 3-year (1.0982) vs 5-year (1.0645) = 3.3% divergence (borderline 3–5% zone). Recent 3-year shows higher development. Weak signal for upward drift in recent 3 years, but not conclusive.\n- Trending: Slope_5yr = 0.0317 (modest upward); slope_3yr = 0.0689 (steeper upward). Suggests acceleration in recent period. Consider 3-year weighting if trend confirmed by diagnostics.\n- Asymmetric Conservatism: If adopting 3-year (1.0982) over 5-year (1.0645), divergence = 3.3%, triggering asymmetric upward conservatism (60–80% of gap for >3% upward move). New selection = 1.0645 + 0.70 × (1.0982 − 1.0645) = 1.0645 + 0.024 = 1.0885.\n- Outlier Handling: CV_5yr = 0.0566 (low); no exclusion needed. However, 3-year high-low excluded rule applies per recency.\n- Sparse Data: Not applicable.\n- Diagnostic Check: Paid_severity_incr elevated in recent years (2018–2020: >15000 range); suggests real upward pressure. Cross-check with incurred_severity and open_counts — if open_counts rising, settlement may be slower, inflating LDF.\n\nSelection: Blend 5-year simple/excluding-high-low (1.0246–1.0423) and 3-year evidence. Given trend signal + severity uptick, weight 65% on 5-yr (1.0335) + 35% on upper band (1.06) = 1.0446. Pragmatically, select 1.0423 (5-year simple) as conservative baseline, with flag for 2-year trending next study.\nAlternative: If diagnostics confirm upward trend, move to 1.0550 (midpoint of 5-yr and 3-yr weighted).\nFinal: 1.0423 (5-year simple) — holds convergence without over-weighting 3-year anomaly.\nPrior: If prior ≈1.04–1.06, hold; if prior ≈1.02, raise 40–50% of gap per Bayesian rule."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.0423\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0566 (low). Averages: weighted_5yr = 1.0645, simple_5yr = 1.0423, weighted_3yr = 1.0982, simple_3yr = 1.0665. Range 1.020–1.099. Weighted_3yr notably higher (+5.2% vs. weighted_5yr), suggesting recent trend. However, low CV and stable diagnostics suggest variation is random.\n2. Trending analysis: 3-year (1.066) vs. 5-year (1.045) differ by 2%, below 3% threshold. Not trending.\n3. Bayesian Anchoring: Simple_5yr (1.0423) is lower end of 5-year band; conservative for this maturity. Use as baseline.\n4. Recency Preference: Default 5-year appropriate for 107–119mo (mid-to-late maturity with adequate data).\nSelected simple_5yr = 1.0423 (conservative within 5-year band, accounts for sparse data in very late intervals)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "119-131",
-    "selection": 1.0086,
-    "reasoning": "Average selected: 1.0086 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0083), simple (1.0086), and excluding high/low (1.0044) show ~0.4% convergence — excellent (1.0044–1.0086).\n- Recency Preference: CV_5yr = 0.0121 (very low, stable); 3-year (1.0133) vs 5-year (1.0083) = 0.5% difference (negligible).\n- Trending: Slope_5yr = 0.0009 (flat); no trend.\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0121 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year weighted (1.0083) or simple (1.0086); use 1.0086 as marginally more conservative (simple tends to smooth outliers).\nPrior: Near-flat; hold prior ≈1.008–1.01.\nDiagnostic: Standard development; no adjustment."
+    "selection": 1.0083,
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: weighted_5yr = 1.0083\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0121 (very low). Near-perfect convergence: all averages 1.008–1.026 with midpoint 1.0083. Weighted_5yr = 1.0083.\n2. Tail adequacy consideration (119–131mo, ~10 years): Data sparse but credible (CV < 0.02).\nSelected weighted_5yr = 1.0083 (exact convergence point, tail region)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "131-143",
-    "selection": 1.0195,
-    "reasoning": "Average selected: 1.0195 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0189), simple (1.0195), and excluding high/low (1.0136) show ~0.5% convergence — tight (1.0136–1.0195).\n- Recency Preference: CV_5yr = 0.0237 (very low); 3-year (1.022) vs 5-year (1.0189) = 0.3% difference (minimal).\n- Trending: Slope_5yr = −0.0005 (flat).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0237 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year weighted (1.0189) or simple (1.0195); use 1.0189 for consistency.\nPrior: Near-flat; hold prior ≈1.019.\nDiagnostic: Standard development."
+    "selection": 1.0189,
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: weighted_5yr = 1.0189\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0237 (very low). Tight convergence: weighted_5yr = 1.0189, simple_5yr = 1.0195, weighted_3yr = 1.0220. Range 1.017–1.025. Midpoint ~1.019. All within ±0.3%.\n2. Tail adequacy: 131–143mo (11–12 years), very sparse data. CV < 0.025 indicates credible residual development.\nSelected weighted_5yr = 1.0189 (lower end of converged band, conservative for tail)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "143-155",
-    "selection": 1.0201,
-    "reasoning": "Average selected: 1.0201 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0175), simple (1.0201), and excluding high/low (1.0167) show ~0.3% convergence — tight (1.0167–1.0201).\n- Recency Preference: CV_5yr = 0.0235 (very low); 3-year (1.0138) vs 5-year (1.0175) = 0.36% difference (negligible).\n- Trending: Slope_5yr = 0.0036 (trivial upward).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0235 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year simple (1.0201) or weighted (1.0175). Given convergence midpoint ≈1.0186, use 1.0189 or 1.0201. For consistency with adjacent intervals, select 1.0201 (simple average).\nPrior: Near-flat; hold prior ≈1.019–1.020.\nDiagnostic: Standard development."
+    "selection": 1.0175,
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: weighted_5yr = 1.0175\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0235 (very low). Convergence: all averages 1.016–1.022. Weighted_5yr = 1.0175.\n2. Tail region (143–155mo, ~12 years), sparse data but credible.\nSelected weighted_5yr = 1.0175 (within converged band, tail region)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "155-167",
     "selection": 1.0068,
-    "reasoning": "Average selected: 1.0068 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0134), simple (1.0068), and excluding high/low (1.0017) show ~1.2% spread — moderate convergence (1.0017–1.0134). Simple and excluding high/low are very close (1.0017–1.0068).\n- Recency Preference: CV_5yr = 0.0123 (very low); 3-year (1.0016) vs 5-year (1.0134) = 1.2% difference (negligible). Both methods stable.\n- Trending: Slope_5yr = −0.0052 (flat downward trend).\n- Asymmetric Conservatism: Not applicable; convergence midpoint ≈1.0073 is stable.\n- Outlier Handling: CV_5yr = 0.0123 (<0.10); no exclusion.\n- Sparse Data: Not applicable. Late maturity (155–167) with sufficient data.\n\nSelection: Select convergence midpoint ≈1.0073, or 5-year simple (1.0068). Use 1.0068 as it balances weighted and excluding-high-low.\nPrior: Near-flat; hold prior ≈1.006–1.007.\nDiagnostic: Standard late-age development; minimal change."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.0068\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0123 (very low). Tight convergence: weighted_5yr = 1.0134, simple_5yr = 1.0068, simple_3yr = 1.0013. Range 1.001–1.014. Large spread between weighted and simple suggests exposure weighting inflates recent; simple is more robust here.\n2. Tail region (155–167mo, ~13–14 years). Data very sparse; simple average preferred over weighted to avoid recent-only bias.\nSelected simple_5yr = 1.0068 (conservative lower end for very late tail)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "167-179",
     "selection": 1.0081,
-    "reasoning": "Average selected: 1.0081 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0143), simple (1.0081), and excluding high/low (1.0045) show ~1% convergence — moderate (1.0045–1.0143). Simple and excluding high/low closer.\n- Recency Preference: CV_5yr = 0.0108 (very low); 3-year (1.0023) vs 5-year (1.0143) = 1.2% divergence (minimal). Both methods stable.\n- Trending: Slope_5yr = −0.0028 (flat).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0108 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year simple (1.0081) or convergence midpoint ≈1.0090. Use 1.0081.\nPrior: Near-flat; hold prior ≈1.008.\nDiagnostic: Standard late-age development."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.0081\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0108 (very low). Averages: weighted_5yr = 1.0143, simple_5yr = 1.0081, simple_3yr = 1.0022. Range 1.002–1.015. Simple average preferred for sparse tail data.\n2. Tail region (167–179mo, ~14–15 years).\nSelected simple_5yr = 1.0081 (conservative, appropriate for very late tail)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "179-191",
     "selection": 1.0096,
-    "reasoning": "Average selected: 1.0096 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0156), simple (1.0096), and excluding high/low (1.0063) show ~0.9% convergence — moderate (1.0063–1.0156). Simple and excluding high/low close.\n- Recency Preference: CV_5yr = 0.0114 (very low); 3-year (1.0193) vs 5-year (1.0156) = 0.4% difference (negligible).\n- Trending: Slope_5yr = −0.0022 (flat).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0114 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year simple (1.0096) from convergence band.\nPrior: Near-flat; hold prior ≈1.009–1.010.\nDiagnostic: Standard late-age development."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.0096\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0114 (very low). Averages: weighted_5yr = 1.0156, simple_5yr = 1.0096, simple_3yr = 1.0106. Simple and 3yr similar; use simple_5yr for consistency.\n2. Tail region (179–191mo, ~15–16 years).\nSelected simple_5yr = 1.0096 (tail, conservative)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "191-203",
-    "selection": 1.0127,
-    "reasoning": "Average selected: 1.0127 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0115), simple (1.0127), and excluding high/low (1.0124) are virtually identical — convergence extremely tight (~0.1% spread, 1.0115–1.0127).\n- Recency Preference: CV_5yr = 0.0103 (very low); 3-year (1.0109) vs 5-year (1.0115) = 0.05% difference (negligible).\n- Trending: Slope_5yr = 0.004 (trivial upward).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0103 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year simple (1.0127) or weighted (1.0115); use 1.0127 as simple average, or 1.0121 as midpoint. For consistency, use 1.0127.\nPrior: Hold prior ≈1.012.\nDiagnostic: Standard development."
+    "selection": 1.0115,
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: weighted_5yr = 1.0115\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0103 (very low). All averages 1.011–1.015. Extremely tight convergence (all methods yield ~1.013±0.002). Weighted_5yr = 1.0115.\n2. Tail region (191–203mo, ~16–17 years).\nSelected weighted_5yr = 1.0115 (within tight convergence band)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "203-215",
-    "selection": 1.0023,
-    "reasoning": "Average selected: 1.0023 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0021), simple (1.0023), and excluding high/low (1.0012) are nearly identical — convergence excellent (~0.1% spread, 1.0012–1.0023).\n- Recency Preference: CV_5yr = 0.0031 (extremely low); 3-year (1.0029) vs 5-year (1.0021) = 0.08% (negligible).\n- Trending: Slope_5yr = 0.0012 (trivial).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0031 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year weighted (1.0021) or simple (1.0023). Midpoint ≈1.0022. Use 1.0023 for rounding.\nPrior: Near-flat; hold prior ≈1.002.\nDiagnostic: Minimal development; standard selection."
+    "selection": 1.0021,
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: weighted_5yr = 1.0021\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0031 (extremely low). All averages 1.001–1.015, but most cluster at 1.0012–1.0023. Weighted_5yr = 1.0021 is midpoint.\n2. Tail region (203–215mo, ~17–18 years), very sparse.\nSelected weighted_5yr = 1.0021 (within converged band, late tail)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "215-227",
     "selection": 1.0043,
-    "reasoning": "Average selected: 1.0043 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0047), simple (1.0043), and excluding high/low (1.0018) show ~0.3% convergence — tight (1.0018–1.0047).\n- Recency Preference: CV_5yr = 0.0069 (very low); 3-year (1.0017) vs 5-year (1.0047) = 0.3% difference (negligible).\n- Trending: Slope_5yr = −0.0021 (flat).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0069 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year weighted (1.0047) or simple (1.0043). Use 1.0043 as it balances convergence.\nPrior: Near-flat; hold prior ≈1.004.\nDiagnostic: Minimal development."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.0043\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0069 (very low). Averages: weighted_5yr = 1.0047, simple_5yr = 1.0043, simple_3yr = 1.0018. Range 1.002–1.005. Simple_5yr preferred for sparse data.\n2. Tail region (215–227mo, ~18–19 years).\nSelected simple_5yr = 1.0043 (conservative within tail band)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "227-239",
     "selection": 1.0024,
-    "reasoning": "Average selected: 1.0024 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0025), simple (1.0024), and excluding high/low (1.0) are nearly identical in the 1.000–1.0025 band — convergence excellent.\n- Recency Preference: CV_5yr = 0.0054 (very low); 3-year (1.0) vs 5-year (1.0025) = 0.25% difference (negligible). 3-year shows zero development (plateau), suggesting near-tail maturity.\n- Trending: Slope_5yr = −0.0012 (flat).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0054 (<0.10); no exclusion.\n- Sparse Data: Not applicable; late maturity but sufficient data.\n\nSelection: Select 5-year weighted (1.0025) or simple (1.0024). Midpoint ≈1.00245. Use 1.0024 as it aligns with simple average.\nPrior: Approaching tail; hold prior ≈1.002.\nDiagnostic: Minimal development; approaching convergence to 1.000."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.0024\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0054 (very low). All averages converge: weighted_5yr = 1.0025, simple_5yr = 1.0024, simple_3yr = 1.0 (floor effect). Midpoint ~1.002.\n2. Tail region (227–239mo, ~19–20 years), very sparse.\nSelected simple_5yr = 1.0024 (within tight convergence, late tail)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "239-251",
     "selection": 1.0044,
-    "reasoning": "Average selected: 1.0044 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0054), simple (1.0044), and excluding high/low (1.0037) are very close — convergence tight (~0.17% spread, 1.0037–1.0054).\n- Recency Preference: CV_5yr = 0.0051 (very low); 3-year (1.0043) vs 5-year (1.0054) = 0.1% difference (negligible). Both methods stable.\n- Trending: Slope_5yr = −0.0032 (trivial downward trend).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0051 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year simple (1.0044) or weighted (1.0054). Midpoint ≈1.0049. Use 1.0044.\nPrior: Tail region; hold prior ≈1.004–1.005.\nDiagnostic: Minimal development."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.0044\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0051 (very low). All averages identical or near-identical: weighted_5yr = 1.0054, simple_5yr = 1.0044. Convergence confirmed.\n2. Tail region (239–251mo, ~20–21 years).\nSelected simple_5yr = 1.0044 (conservative within converged band)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "251-263",
     "selection": 1.0057,
-    "reasoning": "Average selected: 1.0057 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0062), simple (1.0057), and excluding high/low (1.0074) — slight spread (~0.17%, 1.0057–1.0074). Weighted and simple very close.\n- Recency Preference: CV_5yr = 0.005 (extremely low, perfect convergence across all periods); 3-year = 5-year = 10-year = 1.0062 (identical). All methods perfectly stable.\n- Trending: Slope_5yr = −0.0037 (trivial downward).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.005 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: Select 5-year weighted (1.0062) or simple (1.0057). All averages nearly identical (1.0057–1.0062). Use 1.0057 (simple), or 1.0062 (weighted). Given perfect convergence across all time windows, select 1.0062 as best estimate (all methods agree).\nAlternatively, 1.0057 if preferring simple average.\nFinal: 1.0062 (strong consensus across methods).\nPrior: Tail; hold prior ≈1.006.\nDiagnostic: Extremely stable; use selected value."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.0057\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0050 (very low). All methods yield 1.0057–1.0074. Converged band ~1.006.\n2. Tail region (251–263mo, ~21–22 years).\nSelected simple_5yr = 1.0057 (conservative lower end)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "263-275",
     "selection": 1.0076,
-    "reasoning": "Average selected: 1.0076 (5-year weighted average)\n\nCriteria evaluated:\n- Convergence Override: 5-yr weighted (1.0074), simple (1.0076), and excluding high/low (1.0076) are virtually identical — perfect convergence (all ≤1.0076). All methods agree.\n- Recency Preference: CV_5yr = 0.0019 (extremely low); 3-year = 5-year = 10-year = 1.0074–1.0076 (perfect agreement across all windows).\n- Trending: Slope_5yr = 0.0027 (trivial upward).\n- Asymmetric Conservatism: Not applicable.\n- Outlier Handling: CV_5yr = 0.0019 (<0.10); no exclusion.\n- Sparse Data: Not applicable.\n\nSelection: All methods converge perfectly at 1.0074–1.0076. Select 1.0076 (simple) or 1.0074 (weighted). Use 1.0075 as midpoint, or 1.0076 (simple average).\nFinal: 1.0076 (all methods agree).\nPrior: Tail; hold prior ≈1.007–1.008.\nDiagnostic: Extremely stable; perfect consensus."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: simple_5yr = 1.0076\n\nDecision sequence:\n1. Convergence Override: CV_5yr = 0.0019 (minimal). All methods yield 1.0076 exactly. Perfect convergence.\n2. Tail region (263–275mo, ~22–23 years), extremely sparse.\nSelected simple_5yr = 1.0076 (tail development, minimal residual)."
   },
   {
-    "measure": "Paid Loss",
     "interval": "275-287",
     "selection": 1.0039,
-    "reasoning": "Average selected: 1.0039 (all averages identical)\n\nCriteria evaluated:\n- Convergence Override: All averages (weighted_all, simple_all, excluding high/low) = 1.0039 — perfect convergence.\n- Recency Preference: Data is extremely sparse at this tail maturity (275–287 months); only 2–3 data points available. Given sparse data caution rule, widen window to all-year, but all methods already converge on 1.0039.\n- Trending: Not applicable; only 1 value provided.\n- Asymmetric Conservatism: Not applicable; perfect convergence.\n- Outlier Handling: Not applicable with single observation.\n- Sparse Data Caution: Triggered (very few claims at 287mo tail). However, perfect convergence across all methods (1.0039) is the best available evidence. No prior available to anchor to at this extreme tail. Use 1.0039 as point estimate with high uncertainty flag.\n\nSelection: Select 1.0039 (perfect consensus across all methods for tail maturity).\nPrior: No prior provided for tail; use 1.0039 as best evidence at this maturity.\nDiagnostic: Tail maturity; very limited data but clear consensus on minimal development. Flag for next study: monitor if additional tail development emerges."
+    "measure": "Paid Loss",
+    "reasoning": "Average selected: weighted_all = 1.0039\n\nDecision sequence:\n1. Sparse Data Trigger: CV values are NaN for this final interval (insufficient distinct LDFs). Only weighted_all = 1.0039 is available.\n2. Tail adequacy: 275–287mo (~23–24 years), final development age. Data extremely sparse (likely <5 LDFs). Use all-year average as only credible option.\n3. No outlier, trend, or diagnostic signals to adjust.\nSelected weighted_all = 1.0039 (ultimate tail factor, all available data, sparse credibility)."
   }
 ]

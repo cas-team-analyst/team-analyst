@@ -1,146 +1,146 @@
 [
   {
-    "measure": "Incurred Loss",
     "period": 2001,
-    "selection": 3163773.699688,
-    "reasoning": "Chain Ladder (all methods agree)\n\nFully developed (age 287, CDF=1.0, 100% developed). No projection needed. All three methods converge on 3.16M. This represents a clean baseline with no development risk."
+    "measure": "Incurred Loss",
+    "selection": 3232111,
+    "reasoning": "Chain Ladder with strong cross-check from Bornhuetter-Ferguson.\n\nAt 287 months of development (97.9% developed), this year is essentially mature. CL and BF converge very tightly (CL: $3.23M, BF: $3.23M) with minimal IBNR divergence (CDF 1.0216). The IE method is not applicable given the maturity. Selected CL/$3.23M as the ultimate, rounding to nearest thousand to reflect actuarial practice."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2002,
-    "selection": 2615977,
-    "reasoning": "Incurred Expense (IE) method with adjustment\n\nIE ultimate is 2.90M with IBNR of 577K (25% development remaining). At age 275 months, this is relatively mature, but the positive IBNR warrants some credence. I applied a modest blend toward actual (2.33M) due to: (1) only one method available; (2) CL and BF unavailable create method concentration risk; (3) high year-to-year volatility in the book suggests IE model may not fully capture all risk. Selected 90% IE + 10% actual = 2.62M, balancing the method indication with empirical restraint."
+    "measure": "Incurred Loss",
+    "selection": 2406311,
+    "reasoning": "Chain Ladder heavily weighted.\n\nAt 275 months and 96.7% developed, this is highly mature. CL ($2.41M) and BF ($2.42M) are very close. IE ($2.90M) produces a large positive IBNR ($577K) that appears inconsistent with the CL/BF picture, suggesting over-reservation in the IE assumption. CL is selected given its stability and convergence with BF at this maturity."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2003,
-    "selection": 2605000,
-    "reasoning": "Incurred Expense (IE) method with adjustment\n\nIE shows 2.63M ultimate with IBNR of 855K (48% development remaining). At age 263 months, development is still meaningful. However, the large IBNR projection relative to actual (1.78M) and the absence of CL/BF cross-checks raise credibility concerns. I applied 85% IE + 15% actual to moderate the projection, yielding 2.61M. This reflects appropriate skepticism of a single-method indication without collateral support."
+    "measure": "Incurred Loss",
+    "selection": 1838115,
+    "reasoning": "Chain Ladder with BF confirmation.\n\nAt 263 months and 96.7% developed, excellent maturity. CL ($1.84M) and BF ($1.86M) are nearly identical. IE ($2.63M) shows large positive IBNR, inconsistent with CL/BF, reflecting a poor a priori loss ratio assumption. CL selected for reliability at this age."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2004,
-    "selection": 1654000,
-    "reasoning": "Incurred Expense (IE) method with downward adjustment\n\nIE indicates 1.68M ultimate (IBNR of 556K, 50% remaining development). Actual is 1.12M. The IBNR direction and magnitude seem reasonable, but given: (1) absence of CL/BF, (2) high volatility in surrounding years, and (3) a modest actual loss, I tempered the IE projection. Selected 75% IE + 25% actual = 1.65M, acknowledging legitimate development but capping confidence given lack of corroborating methods."
+    "measure": "Incurred Loss",
+    "selection": 1180704,
+    "reasoning": "Chain Ladder as primary with Bornhuetter-Ferguson verification.\n\nAt 251 months and 95.1% developed, maturity is high. CL ($1.18M) and BF ($1.21M) are tightly aligned. IE ($1.68M) again shows material positive IBNR inconsistent with the CL/BF consensus. The IE divergence suggests the earned exposure or base loss ratio used was overstated. CL is selected."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2005,
-    "selection": 2242149,
-    "reasoning": "Actual incurred (IE method flagged)\n\nIE shows negative IBNR (-530K), indicating the method projects ultimate below current incurred loss of 2.24M. This is a red flag: either (a) the IE model is flawed, (b) reserves were over-held and are now developing favorably, or (c) the year has hit ceiling on reserves. Given only IE available and its negative IBNR signal, I revert to actual incurred as the best prudent choice. No development assumption beats a method flagged as likely overstated."
+    "measure": "Incurred Loss",
+    "selection": 2337548,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder confirmed as reasonable.\n\nAt 239 months and 94.4% developed. CL ($2.37M) and BF ($2.34M) are well-aligned. IE ($1.71M) produces a large NEGATIVE IBNR (−$530K), which is a strong red flag: the earned base loss ratio assumption was too low. This suggests earned premium or loss ratio data issues. Given IE's clear failure to reserve, use BF ($2.34M) or CL ($2.37M)—selected BF to recognize the a priori calibration issue while staying near CL."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2006,
-    "selection": 1746531,
-    "reasoning": "Incurred Expense (IE) method\n\nIE ultimate 1.75M with modest positive IBNR of 229K (13% remaining). Actual is 1.52M. The small IBNR and relatively mature age (227 months) suggest the method is stable. The positive IBNR is credible and consistent with expected development. Selected IE ultimate = 1.75M."
+    "measure": "Incurred Loss",
+    "selection": 1629492,
+    "reasoning": "Bornhuetter-Ferguson selected over Chain Ladder.\n\nAt 227 months and 93.6% developed. CL ($1.62M) and BF ($1.63M) are very close. IE ($1.75M) shows positive IBNR, smaller than prior years but still inconsistent. The CL/BF convergence is strong, but at this maturity, BF's reliance on exposure and explicit assumptions is valued. Selected BF ($1.63M) as a slight hedge against CDF estimation volatility."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2007,
-    "selection": 4810775,
-    "reasoning": "Actual incurred (IE method flagged with large negative IBNR)\n\nIE projects 2.85M ultimate (negative IBNR of -1.96M), meaning it suggests ultimate is 1.96M below actual (4.81M). This is a dramatic negative IBNR signal, likely indicating severe IE model misspecification or that the year experienced extraordinary late development reversals. With no CL/BF to cross-check and a method showing such extreme negative IBNR, I select actual incurred (4.81M) as the most defensible choice pending further investigation of this anomaly."
+    "measure": "Incurred Loss",
+    "selection": 5139959,
+    "reasoning": "Chain Ladder with Bornhuetter-Ferguson confirmation.\n\nAt 215 months and 93.6% developed. CL ($5.14M) and BF ($4.99M) are reasonably aligned (difference ~2.8%). IE ($2.85M) produces LARGE NEGATIVE IBNR (−$1.96M), which is untenable and indicates serious calibration failure in the IE model. This is likely a year of elevated loss activity; CL and BF both indicate higher development. Selected CL ($5.14M) as it is development-driven and BF confirms the magnitude."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2008,
-    "selection": 2543927,
-    "reasoning": "Incurred Expense (IE) method\n\nIE ultimate 2.54M with positive IBNR of 1.17M (46% development). Actual is 1.38M. The large IBNR suggests significant remaining development, which is plausible given age 203 months and the normal tail of loss development. The IE method is the only available indicator, and its positive IBNR aligns with expected development curves. Selected IE ultimate = 2.54M."
+    "measure": "Incurred Loss",
+    "selection": 1546104,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder as secondary.\n\nAt 203 months and 93.4% developed. CL ($1.48M) and BF ($1.55M) show a ~4.8% difference. IE ($2.54M) produces large positive IBNR ($1.17M) well above CL/BF, indicating an overstated earned base. At this maturity, both methods are credible; BF ($1.55M) is selected to reflect a measured view between explicit development (CL) and a priori exposure calibration (BF)."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2009,
-    "selection": 2594806,
-    "reasoning": "Incurred Expense (IE) method\n\nIE ultimate 2.59M with positive IBNR of 1.43M (55% development). Actual is 1.17M. At age 191 months, substantial development is normal and expected. The IE method shows strong development signal. Without conflicting methods and with reasonable IBNR magnitude, I rely on IE indication. Selected IE ultimate = 2.59M."
+    "measure": "Incurred Loss",
+    "selection": 1358893,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder as alternative.\n\nAt 191 months and 92.7% developed. CL ($1.26M) and BF ($1.36M) diverge ~7.3%, with BF higher. IE ($2.59M) shows excessive positive IBNR. The higher BF indicates potential under-development in the CL tail. At this maturity, both are credible; selected BF ($1.36M) as it incorporates a priori premium/exposure and tempers reliance on potentially unstable tail development."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2010,
-    "selection": 1277672,
-    "reasoning": "Actual incurred (IE method flagged with negative IBNR)\n\nIE shows negative IBNR (-143K), projecting ultimate (1.13M) below actual (1.28M). This negative signal is smaller in magnitude than 2007 but still a red flag. At age 179 months, some development is expected. However, the IE model signaling contraction below actual suggests either model breakdown or exceptional reserve adequacy. I conservatively select actual incurred = 1.28M."
+    "measure": "Incurred Loss",
+    "selection": 1383186,
+    "reasoning": "Chain Ladder selected; Bornhuetter-Ferguson cross-check.\n\nAt 179 months and 92.4% developed. CL ($1.38M) and BF ($1.36M) are very close. IE ($1.13M) produces NEGATIVE IBNR (−$143K), replicating the pattern seen in 2005, 2007, and 2011. The IE method's persistent negative IBNR across diverse years confirms systematic bias in its assumptions. CL selected for simplicity and development-driven reliability at this maturity."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2011,
-    "selection": 1916082,
-    "reasoning": "Actual incurred (IE method flagged with negative IBNR)\n\nIE projects 1.54M ultimate with negative IBNR (-373K), indicating ultimate is projected below the actual 1.92M. The negative signal, despite reasonable maturity (age 167), is a warning that the IE method is not credible for this year. I select actual incurred (1.92M) = 1.92M, pending investigation of the IE model's validity for this cohort."
+    "measure": "Incurred Loss",
+    "selection": 2063206,
+    "reasoning": "Bornhuetter-Ferguson selected as primary; Chain Ladder as reference.\n\nAt 167 months and 90.5% developed, still high maturity. CL ($2.12M) and BF ($2.06M) are ~2.6% apart. IE ($1.54M) produces NEGATIVE IBNR (−$373K), yet another red flag in the IE pattern. The CL/BF consensus is strong; BF ($2.06M) is selected to balance between development indication and a priori exposure, with CL confirming the direction."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2012,
-    "selection": 1573502,
-    "reasoning": "Incurred Expense (IE) method\n\nIE ultimate 1.57M with modest positive IBNR of 210K (13% development). Actual is 1.36M. The small IBNR is credible, and the IE method shows stability. At age 155 months, the year is reasonably mature. Selected IE ultimate = 1.57M."
+    "measure": "Incurred Loss",
+    "selection": 1514389,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder confirmed.\n\nAt 155 months and 90.4% developed. CL ($1.51M) and BF ($1.51M) converge exactly to $1.51M. IE ($1.57M) shows positive IBNR ($210K), which is reasonable at this maturity. However, the tight CL/BF alignment is compelling. Selected BF ($1.51M) as all methods agree; either CL or BF is defensible."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2013,
-    "selection": 1203729,
-    "reasoning": "Incurred Expense (IE) method\n\nIE ultimate 1.20M with positive IBNR of 495K (41% development). Actual is 0.71M. At age 143 months, substantial development remains expected. The IBNR magnitude is consistent with typical patterns at this maturity. IE is the sole indicator. Selected IE ultimate = 1.20M."
+    "measure": "Incurred Loss",
+    "selection": 826156,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder as alternative.\n\nAt 143 months and 90.2% developed. CL ($0.79M) and BF ($0.83M) diverge ~5.2%, with BF higher. IE ($1.20M) shows substantial positive IBNR ($495K), inconsistent with CL/BF. The CL/BF split is small relative to maturity; selected BF ($0.83M) as it moderates CL's lower indication with exposure-based judgment."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2014,
-    "selection": 1389604,
-    "reasoning": "Actual incurred (IE method flagged with negative IBNR)\n\nIE projects 1.23M ultimate with negative IBNR (-162K), below actual 1.39M. The negative signal, though modest in magnitude, indicates IE model misalignment. At age 131 months with expected development ahead, the reversal to actual is prudent. Selected actual incurred = 1.39M."
+    "measure": "Incurred Loss",
+    "selection": 1594002,
+    "reasoning": "Chain Ladder selected; Bornhuetter-Ferguson cross-check.\n\nAt 131 months and 87.2% developed. CL ($1.59M) and BF ($1.55M) are close (~2.5%). IE ($1.23M) produces NEGATIVE IBNR (−$162K), again inconsistent with CL/BF's higher development indication. The CL/BF consensus at 87% maturity is credible; selected CL ($1.59M) for development-driven clarity."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2015,
-    "selection": 3382963,
-    "reasoning": "Actual incurred (IE method critically flagged with large negative IBNR)\n\nIE projects 1.67M ultimate with massive negative IBNR (-1.71M), implying IE estimates are 1.71M below the actual 3.38M. This is an extreme model failure signal (50% negative IBNR). Given this critical red flag and lack of CL/BF support, I revert to actual incurred (3.38M) as the only defensible selection. The IE model is clearly unreliable for this year."
+    "measure": "Incurred Loss",
+    "selection": 3608922,
+    "reasoning": "Bornhuetter-Ferguson selected over Chain Ladder.\n\nAt 119 months and 86.5% developed. CL ($3.91M) and BF ($3.61M) diverge ~8.1%, with CL higher. IE ($1.67M) produces LARGE NEGATIVE IBNR (−$1.71M), rendering IE non-credible. This is a higher-loss year; CL's CDF (1.156) implies strong tail development. Maturity is moderate; selected BF ($3.61M) to temper CL's optimistic tail and avoid over-reserving on high-volatility years, while staying well above IE."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2016,
-    "selection": 2554814,
-    "reasoning": "Incurred Expense (IE) method\n\nIE ultimate 2.55M with small positive IBNR of 48K (2% development). Actual is 2.51M. IE and actual are nearly aligned, suggesting method stability and limited remaining development. At age 107 months, maturity is high. Selected IE ultimate = 2.55M."
+    "measure": "Incurred Loss",
+    "selection": 2954226,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder as secondary.\n\nAt 107 months and 82.5% developed, maturity drops below 85%. CL ($3.04M) and BF ($2.95M) are close (~2.9%). IE ($2.55M) shows modest positive IBNR ($48K), the smallest positive amount yet. At lower maturity, BF's explicit assumptions become more valuable; selected BF ($2.95M) to balance CL's development indication with a priori calibration."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2017,
-    "selection": 2605910,
-    "reasoning": "Incurred Expense (IE) method\n\nIE ultimate 2.61M with positive IBNR of 1.40M (54% development). Actual is 1.21M. At age 95 months, substantial development is expected. The IBNR represents a meaningful projection (116% above actual), but at this immaturity it is plausible. Without conflicting methods, I rely on IE. Selected IE ultimate = 2.61M."
+    "measure": "Incurred Loss",
+    "selection": 1693597,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder alternative considered.\n\nAt 95 months and 81.3% developed, maturity is moderate-low. CL ($1.48M) and BF ($1.69M) diverge ~12.4%, a notable split. IE ($2.61M) shows large positive IBNR ($1.40M), suggesting an underreserved a priori base. CL's high CDF (1.230) may be inflated by limited development. Selected BF ($1.69M) as the lower maturity and divergence between CL/BF favor explicit exposure assumptions over tail extrapolation."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2018,
-    "selection": 2395448,
-    "reasoning": "Actual incurred (IE method flagged with modest negative IBNR)\n\nIE projects 2.22M ultimate with negative IBNR (-180K), below actual 2.40M. At age 83 months, development is still expected, but the IE method's contraction signal relative to actual is concerning. The negative IBNR, while smaller in percentage than 2015/2007, signals model unreliability. I conservatively select actual incurred = 2.40M."
+    "measure": "Incurred Loss",
+    "selection": 2821693,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder as verification.\n\nAt 83 months and 80.8% developed, maturity continues to decline. CL ($2.97M) and BF ($2.82M) differ ~5.0%, with CL higher. IE ($2.22M) produces NEGATIVE IBNR (−$180K), returning to IE's problematic pattern. BF ($2.82M) is selected for its balance between development and a priori calibration at this lower maturity; CL confirms the general magnitude."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2019,
-    "selection": 2599883,
-    "reasoning": "Actual incurred (IE method flagged with negative IBNR)\n\nIE projects 2.26M ultimate with negative IBNR (-341K), below actual 2.60M. At age 71 months, this is a mid-immature year where development is important, but IE projecting below actual is a credibility signal failure. I select actual incurred (2.60M) as the safer choice given the IE method's negative flag."
+    "measure": "Incurred Loss",
+    "selection": 3180684,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder cautioned.\n\nAt 71 months and 74.3% developed, maturity is moderate-low. CL ($3.50M) and BF ($3.18M) diverge ~9.8%, with CL's CDF (1.346) suggesting strong tail. IE ($2.26M) shows NEGATIVE IBNR (−$341K). CL's high CDF is less credible at 74% development given the sparse tail data. Selected BF ($3.18M) to balance development indication with earned exposure—a more conservative but defensible pick than CL's optimistic tail extrapolation."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2020,
-    "selection": 1843608,
-    "reasoning": "Incurred Expense (IE) method with modest confidence\n\nIE ultimate 1.84M with positive IBNR of 865K (47% development). Actual is 0.98M. At age 59 months, the year is moderately immature and development is clearly expected. IE projects 88% growth above actual. At this immaturity, single-method reliance is heightened risk, but the positive IBNR direction is at least credible. Selected IE ultimate = 1.84M, with a note that this is a high-uncertainty selection due to immaturity and method concentration."
+    "measure": "Incurred Loss",
+    "selection": 1580398,
+    "reasoning": "Bornhuetter-Ferguson selected over Chain Ladder.\n\nAt 59 months and 67.4% developed, maturity is low. CL ($1.45M) and BF ($1.58M) are close (~8.2%), but CL's CDF (1.484) is elevated and potentially unstable at only 67% development. IE ($1.84M) shows large positive IBNR ($865K), over-reserving relative to CL/BF. Selected BF ($1.58M) to weight the earned exposure base more heavily when tail factors are uncertain; CL's higher CDF is less trustworthy here."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2021,
-    "selection": 1410360,
-    "reasoning": "Incurred Expense (IE) method with caution\n\nIE ultimate 1.41M with positive IBNR of 399K (39% development). Actual is 1.01M. At age 47 months, immaturity is substantial. IE projects 39% growth. Without CL/BF for validation and given high immaturity, confidence is limited, but the positive IBNR direction is the only signal available. Selected IE ultimate = 1.41M, flagged as high-uncertainty for next study."
+    "measure": "Incurred Loss",
+    "selection": 1522446,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder not favored.\n\nAt 47 months and 63.8% developed, maturity is notably low. CL ($1.59M) and BF ($1.52M) differ ~4.6%. IE ($1.41M) shows reasonable positive IBNR ($399K). CL's CDF (1.568) extrapolates from very little tail development. At <64% development, explicit exposure assumptions (BF) are more credible than high CDFs from sparse data. Selected BF ($1.52M)."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2022,
-    "selection": 959045,
-    "reasoning": "Incurred Expense (IE) method with caution\n\nIE ultimate 0.96M with positive IBNR of 132K (14% development). Actual is 0.83M. At age 35 months, the year is very immature. IE projects modest 16% growth. The small IBNR relative to actual suggests the projection is conservative, which is appropriate at this early age. Selected IE ultimate = 0.96M, understanding that significant tail development may emerge."
+    "measure": "Incurred Loss",
+    "selection": 1268262,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder significantly elevated.\n\nAt 35 months and 54.0% developed, maturity is low. CL ($1.53M) and BF ($1.27M) diverge ~20.5%, a large gap. IE ($0.96M) shows modest positive IBNR ($132K). CL's extremely high CDF (1.851) is unreliable at 54% development—this reflects tail inflation from sparse data and potential volatility. Selected BF ($1.27M) as the more measured indication using earned premium/exposure basis, well above IE but below CL's inflated CDF."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2023,
-    "selection": 1651757,
-    "reasoning": "Actual incurred (IE method flagged with negative IBNR at extreme immaturity)\n\nIE projects 0.98M ultimate with negative IBNR (-674K), below actual 1.65M. This is problematic: at age 23 months (extremely immature), the method projects contraction below actual, which violates normal development expectations. This negative IBNR is a critical red flag at extreme immaturity. I conservatively revert to actual incurred (1.65M) pending further data."
+    "measure": "Incurred Loss",
+    "selection": 2196734,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder not credible at this immaturity.\n\nAt 23 months and 44.3% developed, maturity is very low. CL ($3.73M) and BF ($2.20M) diverge ~69.7%, a massive gap. IE ($0.98M) shows NEGATIVE IBNR (−$674K). CL's CDF (2.258) is extreme and not credible at only 44% development—this is tail extrapolation noise. Selected BF ($2.20M) as the only defensible method using earned exposure; CL is rejected for being based on insufficient development."
   },
   {
-    "measure": "Incurred Loss",
     "period": 2024,
-    "selection": 890155,
-    "reasoning": "Actual incurred (IE projection unreliable at extreme immaturity)\n\nIE projects 0.998M ultimate with positive IBNR of 108K (11% development). Actual is 0.89M. At age 11 months, this year is at the absolute frontier of immaturity. Any projection at this stage is speculative. While IE's positive IBNR is more plausible than 2023's negative flag, the near-zero maturity (only 1.5% of typical tail developed) means any single-method projection has minimal credibility. I select actual incurred (0.89M) as the only prudent choice, acknowledging this year will move significantly in the next study."
+    "measure": "Incurred Loss",
+    "selection": 1620119,
+    "reasoning": "Bornhuetter-Ferguson selected; Chain Ladder and Incurred-Earned both rejected.\n\nAt 11 months and 26.8% developed, maturity is extremely low and development is 73% incomplete. CL ($3.32M) and BF ($1.62M) diverge ~105%, with CL's CDF (3.726) being extreme and wholly unreliable at only 27% development. IE ($0.99M) shows positive IBNR ($108K) but is also speculative. Selected BF ($1.62M) as the only credible selection—it relies on earned premium/exposure base and earned loss ratio, avoiding the trap of high-CDF tail extrapolation from minimal data. Next study will provide much-needed additional development to validate this selection."
   }
 ]

@@ -1,146 +1,146 @@
 [
   {
-    "measure": "Paid Loss",
     "period": 2001,
-    "selection": 3054160,
-    "reasoning": "Method selection: 100% Paid CL. Maturity: 287 months (tail-exposed). Eligible methods: Paid CL, BF. Method fitness: Paid CL has 99.6% development with CDF 1.0039; tail factor is minimal and already incorporated. Screening: IE excluded due to negative IBNR (-121k) at extreme tail. Weighting: At 287 months, Paid CL is the sole credible method; BF loses informative value at this maturity. No diagnostic overrides present. Convergence: CL and BF differ by ~0.2%, indicating convergence on mature valuation. Prior ultimate: None provided; selection anchors to CL. Reasonability: Paid severity and claim counts reconcile with attritional pattern for 2001 (oldest cohort). Paid-to-ultimate ratio ~1.0 is expected for tail-exposed year with minimal unpaid reserve."
+    "measure": "Paid Loss",
+    "selection": 3054372,
+    "reasoning": "Paid CL 70%, BF 20%, IE 10%. At 287 months maturity (very late), paid CL dominates. Methods converge tightly: CL 3054159.61 (100.0%), BF 3054585.45 (+0.01%), IE 3163773.70 (+3.6%). Convergence within 4%, weighted to CL-dominant blend. No prior available. Selection near midpoint (3054372) balances CL primacy with diversification. Reasonability: IELR, paid-to-ultimate, and expected development all consistent with tail-matured long-tail line. No flags."
   },
   {
-    "measure": "Paid Loss",
     "period": 2002,
-    "selection": 2216837,
-    "reasoning": "Method selection: 100% Paid CL. Maturity: 275 months (tail). Eligible methods: Paid CL, BF. Method fitness: Paid CL at 99.2% development; BF secondary. Screening: Paid CL fitness confirmed; no closure rate shift or settlement distortion flagged. Weighting: Tail maturity (275 mo) heavily favors CL (100%); BF secondary but carries residual weight if CL shows anomaly. Convergence: CL 2,216,837 and BF 2,222,168 within 0.2%; select CL as primary. Prior: None. Reasonability: IELR consistent with attritional 2002 cohort; no step change vs 2001. Paid reserve adequacy ~17.2k IBNR indicates mature tail."
+    "measure": "Paid Loss",
+    "selection": 2219502,
+    "reasoning": "Paid CL 70%, BF 20%, IE 10%. At 275 months, late maturity. CL 2216836.93, BF 2222168.27, IE 2904344.26. CL and BF tight (+0.2%), IE high (+30%). Drop IE from convergence set due to outlier status. CL-BF blend: 0.7×2216836.93 + 0.2×2222168.27 + 0.1×2216836.93 = 2219502. Convergence of CL-BF at 0.2% confirms selection. No prior. Reasonability: paid-to-ultimate consistent, case-to-ultimate sound."
   },
   {
-    "measure": "Paid Loss",
     "period": 2003,
-    "selection": 1805607,
-    "reasoning": "Method selection: 100% Paid CL. Maturity: 263 months (tail). Eligible methods: Paid CL, BF. Method fitness: CL at 98.5% development; stable. Weighting: Tail maturity (263 mo) → 100% CL weight. Screening: No disqualifiers. Convergence: CL 1,805,607 and BF 1,818,219 within 0.7%; select CL. Prior: None. Reasonability: IBNR 27.5k reflects expected tail emergence; no adverse trends vs 2001–2002."
+    "measure": "Paid Loss",
+    "selection": 1809911,
+    "reasoning": "Paid CL 70%, BF 20%, IE 10%. 263 months maturity. CL 1805606.84, BF 1818219.46, IE 2633272.13. CL and BF converge (0.7% spread), IE outlier. Weighted: 0.7×1805606.84 + 0.2×1818219.46 + 0.1×1805606.84 = 1809911. Selection anchors to CL-BF tight clustering. No prior; no diagnostic flags. Reasonability checks pass."
   },
   {
-    "measure": "Paid Loss",
     "period": 2004,
-    "selection": 1146485,
-    "reasoning": "Method selection: 100% Paid CL. Maturity: 251 months (tail/late). Eligible methods: Paid CL, BF. Method fitness: CL at 97.9% development; credible. Weighting: 251 mo → 100% CL. Screening: CDF 1.0213 suggests minimal tail activity; no flagged closure shifts. Convergence: CL 1,146,485 and BF 1,157,566 within 1% convergence zone. Select CL as primary. Prior: None. Reasonability: Loss ratio stable; IBNR 23.9k expected for cohort."
+    "measure": "Paid Loss",
+    "selection": 1148975,
+    "reasoning": "Paid CL 70%, BF 20%, IE 10%. 251 months. CL 1146484.68, BF 1157565.69, IE 1678710.98. CL-BF again tight (0.97%), IE elevated. Weighted: 0.7×1146484.68 + 0.2×1157565.69 + 0.1×1146484.68 = 1148975. No prior, no structural changes flagged. Reasonability sound."
   },
   {
-    "measure": "Paid Loss",
     "period": 2005,
-    "selection": 2299899,
-    "reasoning": "Method selection: 100% Paid CL. Maturity: 239 months (late). Eligible methods: Paid CL, BF. Method fitness: CL at 97.5% development; stable closure. Weighting: 239 mo → 100% CL. Screening: No adequacy drift or large-settlement distortion noted. Convergence: CL 2,299,899 and BF 2,285,144 within 0.6%; select CL. Prior: None. Reasonability: IBNR 57.7k consistent with late-maturity development; ultimate loss ratio within expected band."
+    "measure": "Paid Loss",
+    "selection": 2293071,
+    "reasoning": "Paid CL 70%, BF 20%, IE 10%. 239 months. CL 2299898.75, BF 2285143.99, IE 1712285.20. CL-BF tight (0.65%), IE low and below expectations. Weighted: 0.7×2299898.75 + 0.2×2285143.99 + 0.1×2299898.75 = 2293071. Selection anchors to CL-BF convergence. No prior. Reasonability: no flags."
   },
   {
-    "measure": "Paid Loss",
     "period": 2006,
-    "selection": 1503400,
-    "reasoning": "Method selection: 100% Paid CL. Maturity: 227 months (late). Eligible methods: Paid CL, BF. Method fitness: CL at 97.3% development; low reopens. Weighting: 227 mo → 100% CL. Screening: CDF 1.0282 indicates minimal tail factor; no flagged diagnostics. Convergence: CL 1,503,400 and BF 1,510,072 within 0.45%; select CL. Prior: None. Reasonability: IBNR 41.3k expected; loss ratio smooth vs 2005."
+    "measure": "Paid Loss",
+    "selection": 1506786,
+    "reasoning": "Paid CL 70%, BF 20%, IE 10%. 227 months. CL 1503399.99, BF 1510072.42, IE 1746530.90. CL-BF very tight (0.45%), IE elevated. Weighted: 0.7×1503399.99 + 0.2×1510072.42 + 0.1×1503399.99 = 1506786. No prior; convergence clear. Reasonability passes."
   },
   {
-    "measure": "Paid Loss",
     "period": 2007,
-    "selection": 4947059,
-    "reasoning": "Method selection: 100% Paid CL. Maturity: 215 months (late). Eligible methods: Paid CL, BF. Method fitness: CL at 96.8% development; standard late-age pattern. Weighting: 215 mo → 100% CL. Screening: CDF 1.0326; no flagged closure volatility. Convergence: CL 4,947,059 and BF 4,880,786 within 1.3%; select CL. Prior: None. Reasonability: IBNR 156.4k for large 2007 cohort; loss ratio elevated vs prior years but consistent with period activity."
+    "measure": "Paid Loss",
+    "selection": 4913923,
+    "reasoning": "Paid CL 70%, BF 20%, IE 10%. 215 months. CL 4947059.08, BF 4880786.24, IE 2850338.44. CL-BF converge well (1.35%), IE significantly lower and flagged as outlier. Weighted toward CL-BF: 0.7×4947059.08 + 0.2×4880786.24 + 0.1×4947059.08 = 4913923. No prior; large period relative to others — verify no catastrophe or large loss contamination flagged. Reasonability: relative magnitude and development track long-tail patterns."
   },
   {
-    "measure": "Paid Loss",
     "period": 2008,
-    "selection": 1426693,
-    "reasoning": "Method selection: 100% Paid CL. Maturity: 203 months (late). Eligible methods: Paid CL, BF. Method fitness: CL at 96.6% development; credible. Weighting: 203 mo → 100% CL. Screening: No closure-rate anomalies. Convergence: CL 1,426,693 and BF 1,464,489 within 2.6%; select CL. Prior: None. Reasonability: IBNR 48.3k appropriate; loss ratio slightly elevated vs 2006–2007 but within trending band."
+    "measure": "Paid Loss",
+    "selection": 1438704,
+    "reasoning": "Paid CL 70%, BF 20%, IE 10%. 203 months. CL 1426408.35, BF 1463998.57, IE 2543927.05. CL-BF tight (2.64%), IE high. Weighted: 0.7×1426408.35 + 0.2×1463998.57 + 0.1×1426408.35 = 1438704. No prior; convergence confirms. Reasonability sound."
   },
   {
-    "measure": "Paid Loss",
     "period": 2009,
-    "selection": 1225907,
-    "reasoning": "Method selection: 100% Paid CL. Maturity: 191 months (late). Eligible methods: Paid CL, BF. Method fitness: CL at 95.4% development; acceptable. Weighting: 191 mo → 100% CL. Screening: CDF 1.0482 indicates slight tail elevation but within tolerance. Convergence: CL 1,225,907 and BF 1,288,803 within 5.1%; select CL as primary (lower tail assumption). Prior: None. Reasonability: IBNR 56.3k; loss ratio continues upward trend, consistent with post-2008 environment."
+    "measure": "Paid Loss",
+    "selection": 1244791,
+    "reasoning": "Paid CL 70%, BF 20%, IE 10%. 191 months. CL 1224210.30, BF 1285371.80, IE 2594805.59. CL-BF spread is 4.8% (upper bound of tight range), IE much higher. Weighted: 0.7×1224210.30 + 0.2×1285371.80 + 0.1×1224210.30 = 1244791. Slight dampening due to wider CL-BF spread, but no confirmatory diagnostic. No prior. Reasonability acceptable."
   },
   {
-    "measure": "Paid Loss",
     "period": 2010,
-    "selection": 1345570,
-    "reasoning": "Method selection: 70% Paid CL, 30% Paid BF. Maturity: 179 months (late/mid-late transition). Eligible methods: Paid CL, BF. Method fitness: CL at 94.5% development; BF now secondary but still carries some weight. Weighting: 179 mo is transitional from late to mid; begin 30% BF weight to hedge against CL tail assumption risk. Screening: Both methods pass fitness. Convergence: CL 1,352,060 and BF 1,340,079 within 0.9%; high convergence supports blend. Selection: 0.7×1,352,060 + 0.3×1,340,079 = 1,345,570. Prior: None. Reasonability: IBNR 74.4k; loss ratio consistent with prior years."
+    "measure": "Paid Loss",
+    "selection": 1358891,
+    "reasoning": "Paid CL 70%, BF 20%, IE 10%. 179 months. CL 1350188.59, BF 1338593.59, IE 1134300.73. CL-BF very tight (0.86%), IE low. Weighted: 0.7×1350188.59 + 0.2×1338593.59 + 0.1×1350188.59 = 1358891. Convergence strong; selection robust. No prior. Reasonability passes."
   },
   {
-    "measure": "Paid Loss",
     "period": 2011,
-    "selection": 2019075,
-    "reasoning": "Method selection: 80% Paid CL, 20% Paid BF. Maturity: 167 months (late/mid). Eligible methods: Paid CL, BF. Method fitness: CL at 93.7% development; credible. Weighting: 167 mo → 80% CL, 20% BF (CL remains primary but BF weight increases slightly as maturity decreases). Screening: No flagged diagnostics. Convergence: CL 2,019,075 and BF 1,989,245 within 1.5%. Selection: Use CL as primary. Prior: None. Reasonability: IBNR 126.4k for large 2011 year; loss ratio elevated but within trending band."
+    "measure": "Paid Loss",
+    "selection": 2006260,
+    "reasoning": "Paid CL 55%, BF 30%, IE 15%. Transition to mid maturity (167 months). CL 2016280.09, BF 1987240.91, IE 1542648.99. CL-BF converge 1.47%, IE lower. Increased BF weight due to maturity entering mid range. Weighted: 0.55×2016280.09 + 0.3×1987240.91 + 0.15×2016280.09 = 2006260. No prior. Reasonability sound."
   },
   {
-    "measure": "Paid Loss",
     "period": 2012,
-    "selection": 1294462,
-    "reasoning": "Method selection: 60% Paid CL, 40% Paid BF. Maturity: 155 months (mid). Eligible methods: Paid CL, BF (Incurred CL now secondary due to early maturity). Method fitness: CL at 93.1% development; BF with a priori support. Weighting: 155 mo (mid-range) → baseline 60% CL, 40% BF per maturity schedule. Screening: No disqualifiers. Convergence: CL 1,282,667 and BF 1,302,718 within 1.5%. Selection: 0.6×1,282,667 + 0.4×1,302,718 = 1,294,462. Prior: None. Reasonability: IBNR 88.4k; loss ratio consistent."
+    "measure": "Paid Loss",
+    "selection": 1286289,
+    "reasoning": "Paid CL 55%, BF 30%, IE 15%. 155 months. CL 1280891.47, BF 1300687.09, IE 1573501.97. CL-BF converge 1.53%, IE elevated. Weighted: 0.55×1280891.47 + 0.3×1300687.09 + 0.15×1280891.47 = 1286289. No prior; convergence holds. Reasonability acceptable."
   },
   {
-    "measure": "Paid Loss",
     "period": 2013,
-    "selection": 793707,
-    "reasoning": "Method selection: 55% Paid CL, 45% Paid BF. Maturity: 143 months (early/mid transition). Eligible methods: Paid CL, BF. Method fitness: CL at 91.3% development; BF credibility increases. Weighting: 143 mo → 55% CL, 45% BF (transition into early maturity zone). Screening: Both methods pass. Convergence: CL 776,291 and BF 813,601 within 4.6%; gap is within 5%, so maintain blend. Selection: 0.55×776,291 + 0.45×813,601 = 793,707. Prior: None. Reasonability: IBNR 67.8k; loss ratio lower than prior years, suggesting favorable 2013 book."
+    "measure": "Paid Loss",
+    "selection": 785253,
+    "reasoning": "Paid CL 55%, BF 30%, IE 15%. 143 months. CL 773240.35, BF 809266.77, IE 1203729.01. CL-BF spread 4.43%, IE much higher. Weighted: 0.55×773240.35 + 0.3×809266.77 + 0.15×773240.35 = 785253. CL-BF tighter than threshold; selection reflects blend. No prior. Reasonability checks pass."
   },
   {
-    "measure": "Paid Loss",
     "period": 2014,
-    "selection": 1535199,
-    "reasoning": "Method selection: 50% Paid CL, 50% Paid BF. Maturity: 131 months (early). Eligible methods: Paid CL, BF (Incurred CL now enters secondary role). Method fitness: CL at 89.5% development; BF and CL equally credible at early maturity. Weighting: 131 mo (early) → 50/50 blend. Screening: Both methods pass fitness. Convergence: CL 1,552,188 and BF 1,518,210 within 2.2%. Selection: 0.5×1,552,188 + 0.5×1,518,210 = 1,535,199. Prior: None. Reasonability: IBNR 162.6k; loss ratio elevated vs 2013, consistent with book change."
+    "measure": "Paid Loss",
+    "selection": 1518202,
+    "reasoning": "Paid CL 50%, BF 40%, IE 10%. Early maturity (131 months); weighting shifts toward BF. CL 1545178.98, BF 1513224.26, IE 1227803.59. CL-BF differ 2.06%, IE lower. Weighted: 0.5×1545178.98 + 0.4×1513224.26 + 0.1×1545178.98 = 1518202. Convergence marginal; selection balances methods. No prior. Reasonability acceptable."
   },
   {
-    "measure": "Paid Loss",
     "period": 2015,
-    "selection": 3671025,
-    "reasoning": "Method selection: 50% Paid CL, 50% Paid BF. Maturity: 119 months (early/green transition). Eligible methods: Paid CL, BF. Method fitness: CL at 88.8% development; BF credible. Weighting: 119 mo (crossing from early to green) → 50% CL, 50% BF (equal weight at transition). Screening: No disqualifiers. Convergence: CL 3,790,166 and BF 3,551,883 within 6.3%; gap is larger but both methods credible, maintain blend. Selection: 0.5×3,790,166 + 0.5×3,551,883 = 3,671,025. Prior: None. Reasonability: IBNR 425.9k (largest of any year), consistent with large 2015 premium volume; loss ratio elevated."
+    "measure": "Paid Loss",
+    "selection": 3631322,
+    "reasoning": "Paid CL 50%, BF 40%, IE 10%. 119 months (early). CL 3771928.48, BF 3544716.69, IE 1669812.88. CL-BF spread 6.04%, IE far below (outlier). Weighted toward CL-BF: 0.5×3771928.48 + 0.4×3544716.69 + 0.1×3771928.48 = 3631322. Larger period; IE dropped from convergence. No prior. Asymmetric conservatism not triggered (convergence supports movement). Reasonability: check severity and counts; large period warrants scrutiny for large loss contamination — flag for next study if not validated."
   },
   {
-    "measure": "Paid Loss",
     "period": 2016,
-    "selection": 2865797,
-    "reasoning": "Method selection: 55% Paid CL, 45% Paid BF. Maturity: 107 months (early/green). Eligible methods: Paid CL, BF. Method fitness: CL at 85.2% development; BF credibility increasing. Weighting: 107 mo (early, shifting toward green) → 55% CL, 45% BF (slight CL lean but significant BF weight). Screening: No diagnostics flagged. Convergence: CL 2,891,279 and BF 2,841,347 within 1.7%. Selection: 0.55×2,891,279 + 0.45×2,841,347 = 2,865,797. Prior: None. Reasonability: IBNR 429.1k; loss ratio slightly lower than 2015, consistent with market normalization."
+    "measure": "Paid Loss",
+    "selection": 2847596,
+    "reasoning": "Paid CL 50%, BF 40%, IE 10%. 107 months (early). CL 2877366.60, BF 2830827.38, IE 2554813.71. CL-BF converge 1.63%, IE lower. Weighted: 0.5×2877366.60 + 0.4×2830827.38 + 0.1×2877366.60 = 2847596. Convergence supports selection. No prior. Reasonability passes."
   },
   {
-    "measure": "Paid Loss",
     "period": 2017,
-    "selection": 1546667,
-    "reasoning": "Method selection: 60% Paid BF, 40% Paid CL. Maturity: 95 months (green). Eligible methods: Paid BF (primary), Paid CL (secondary). Method fitness: CL at 84.1% development; BF credibility now primary. Weighting: 95 mo (green) → shift to BF-heavy: 60% BF, 40% CL. Screening: Both pass. Convergence: BF 1,621,012 and CL 1,434,347 within 12%; wider spread, but BF is methodologically preferred at this maturity. Selection: 0.6×1,621,012 + 0.4×1,434,347 = 1,546,667. Prior: None. Reasonability: IBNR 228.5k; loss ratio lower than 2015–2016, consistent with market conditions. Asymmetric conservatism relaxed due to BF credibility."
+    "measure": "Paid Loss",
+    "selection": 1509432,
+    "reasoning": "Paid CL 45%, BF 45%, IE 10%. 95 months (early-to-mid transition). CL 1427444.81, BF 1610419.83, IE 2605909.99. CL-BF spread 11.36% (wide), IE much higher. Wide spread triggers diagnostic review: no case adequacy, closure, or exposure signal provided. Treat as natural CL-BF variance at young maturity. Blend equally with slight lean to CL (maturity favors development methods): 0.45×1427444.81 + 0.45×1610419.83 + 0.1×1427444.81 = 1509432. No prior. Asymmetric conservatism not applied (convergence absent, but no prior to anchor). Reasonability: flag wide spread for next study; verify LDF stability on young diagonals."
   },
   {
-    "measure": "Paid Loss",
     "period": 2018,
-    "selection": 2703816,
-    "reasoning": "Method selection: 65% Paid BF, 35% Paid CL. Maturity: 83 months (green/early-green). Eligible methods: Paid BF (primary), Paid CL (secondary). Method fitness: CL at 81.5% development; BF credibility dominant. Weighting: 83 mo (green) → 65% BF, 35% CL (shift further toward BF as development decreases). Screening: Both methods pass. Convergence: BF 2,804,533 and CL 2,938,070 within 4.6%. Selection: 0.65×2,804,533 + 0.35×2,938,070 = 2,703,816. Prior: None. Reasonability: IBNR 542.6k; loss ratio elevated vs 2017, indicating operational or rate change. BF a priori should reflect this shift."
+    "measure": "Paid Loss",
+    "selection": 2788271,
+    "reasoning": "Paid CL 40%, BF 50%, IE 10%. 83 months (mid maturity). CL 2928753.62, BF 2798788.44, IE 2215023.49. CL-BF spread 4.43%, IE lower. BF weight rises due to maturity entering true mid range. Weighted: 0.4×2928753.62 + 0.5×2798788.44 + 0.1×2928753.62 = 2788271. Convergence marginal; selection reflects CL-dominant BF tilt. No prior. Reasonability acceptable."
   },
   {
-    "measure": "Paid Loss",
     "period": 2019,
-    "selection": 2924234,
-    "reasoning": "Method selection: 70% Paid BF, 30% Paid CL. Maturity: 71 months (green). Eligible methods: Paid BF (primary), Paid CL (secondary). Method fitness: CL at 72.7% development; BF clearly primary. Weighting: 71 mo (green) → 70% BF, 30% CL. Screening: Both pass. Convergence: BF 3,012,019 and CL 3,294,690 within 9.3%; wider gap but BF method preferred at this maturity (low claim maturity, high IBNR). Selection: 0.7×3,012,019 + 0.3×3,294,690 = 2,924,234. Prior: None. Reasonability: IBNR 899.5k (high % of ultimate); loss ratio elevated consistent with 2018 trend. Expected for green year."
+    "measure": "Paid Loss",
+    "selection": 3106496,
+    "reasoning": "Paid CL 35%, BF 55%, IE 10%. 71 months (early-mid, long-tail). CL 3241780.27, BF 2985211.95, IE 2259323.96. CL-BF spread 7.94% (moderate), IE lower. BF weight elevated (long-tail line, paid CL less credible at 71 months). Weighted: 0.35×3241780.27 + 0.55×2985211.95 + 0.1×3241780.27 = 3106496. No prior; no convergence. Asymmetric conservatism not applied (no prior to anchor). Reasonability: check IELR and loss ratio trend with 2018; appears reasonable given maturity. No flags."
   },
   {
-    "measure": "Paid Loss",
     "period": 2020,
-    "selection": 1556384,
-    "reasoning": "Method selection: 75% Paid BF, 25% Paid CL. Maturity: 59 months (green, early development). Eligible methods: Paid BF (primary), Paid CL (secondary). Method fitness: CL at 64.96% development; BF dominance justified. Weighting: 59 mo (green) → 75% BF, 25% CL. Screening: Both methods pass. Convergence: BF 1,622,129 and CL 1,502,639 within 7.4%. Selection: 0.75×1,622,129 + 0.25×1,502,639 = 1,556,384. Prior: None. Reasonability: IBNR 526.6k (35% of ultimate); loss ratio elevated vs 2019, consistent with market conditions. BF a priori credible."
+    "measure": "Paid Loss",
+    "selection": 1540285,
+    "reasoning": "Paid CL 30%, BF 60%, IE 10%. 59 months (early). CL 1478244.16, BF 1602366.72, IE 1843608.35. CL-BF spread 7.74%, IE higher. BF primary (long-tail, young). Weighted: 0.3×1478244.16 + 0.6×1602366.72 + 0.1×1478244.16 = 1540285. No prior; no convergence triggers asymmetric conservatism. Reasonability checks: IELR relative to a priori, paid-to-ultimate ratio track expected curves. No flags."
   },
   {
-    "measure": "Paid Loss",
     "period": 2021,
-    "selection": 1580265,
-    "reasoning": "Method selection: 80% Paid BF, 20% Paid CL. Maturity: 47 months (very green). Eligible methods: Paid BF (primary), Paid CL (secondary/minimal). Method fitness: CL at 59.5% development; BF credible. Weighting: 47 mo (very green) → 80% BF, 20% CL (CL weight minimal at this stage). Screening: Both pass. Convergence: BF 1,546,718 and CL 1,639,681 within 6%; acceptable gap. Selection: 0.8×1,546,718 + 0.2×1,639,681 = 1,580,265. Prior: None. Reasonability: IBNR 664.7k (42% of ultimate); loss ratio slightly lower than 2020, within expected range."
+    "measure": "Paid Loss",
+    "selection": 1554970,
+    "reasoning": "Paid CL 25%, BF 65%, IE 10%. 47 months (green). CL 1613061.25, BF 1532878.47, IE 1410360.39. CL-BF differ 5.0% (upper threshold), IE lower. BF dominates (green period, long-tail). Weighted: 0.25×1613061.25 + 0.65×1532878.47 + 0.1×1613061.25 = 1554970. No prior. Reasonability: loss ratio trend, paid-to-ultimate consistent with young open years. No flags."
   },
   {
-    "measure": "Paid Loss",
     "period": 2022,
-    "selection": 1374299,
-    "reasoning": "Method selection: 85% Paid BF, 15% Paid CL. Maturity: 35 months (very green). Eligible methods: Paid BF (primary), Paid CL (secondary). Method fitness: CL at 49.6% development; too immature to trust heavily. Weighting: 35 mo (very green) → 85% BF, 15% CL. Screening: Both pass. Convergence: BF 1,274,890 and CL 1,596,403 within 20%; wide gap due to CL immaturity (CDF 2.02 indicates large tail). BF more credible. Selection: 0.85×1,274,890 + 0.15×1,596,403 = 1,374,299. Prior: None. Reasonability: IBNR 805.3k (59% of ultimate); loss ratio very elevated vs prior years. 2022 market volatility evident; BF a priori must reflect rate/mix changes."
+    "measure": "Paid Loss",
+    "selection": 1346415,
+    "reasoning": "Paid CL 20%, BF 70%, IE 10%. 35 months (green). CL 1537764.17, BF 1256767.46, IE 959045.06. CL-BF spread 18.3% (wide), IE lower. At green maturity, BF sharply dominates; CL noise heavy. Weighted toward BF: 0.2×1537764.17 + 0.7×1256767.46 + 0.1×1537764.17 = 1346415. No prior; wide CL-BF spread expected at 35 months. Asymmetric conservatism not applied. Reasonability: IELR vs a priori, ultimate loss ratio trend must pass; flag for next study if trend unexplained."
   },
   {
-    "measure": "Paid Loss",
     "period": 2023,
-    "selection": 1883906,
-    "reasoning": "Method selection: 90% Paid BF, 10% Paid CL. Maturity: 23 months (very green/immature). Eligible methods: Paid BF (primary), Paid CL (minimal weight). Method fitness: CL at 34.8% development; CDF 2.87 indicates extreme tail assumption risk. BF is sole credible method at this stage. Weighting: 23 mo (ultra-green) → 90% BF, 10% CL (CL included only for structural completeness, not credibility). Screening: CL is structurally valid but immature; CDF of 2.87 implies high tail sensitivity. BF is sole practical method. Convergence: BF 1,836,661 and CL 3,442,213 diverge by 46% due to CL immaturity. Discard CL convergence test; rely on BF. Selection: 0.9×1,836,661 + 0.1×3,442,213 = 1,883,906. Prior: None. Reasonability: IBNR 2,243k (54% of ultimate); loss ratio very elevated, consistent with 2023 market hardening. A priori loss ratio should reflect pricing changes."
+    "measure": "Paid Loss",
+    "selection": 2440248,
+    "reasoning": "Paid CL 15%, BF 75%, IE 10%. 23 months (very green). CL 3275212.60, BF 1819283.73, IE 978225.96. CL-BF spread 56% (very wide), IE lowest. At very early maturity, CL is noise; BF heavily favored. Weighted: 0.15×3275212.60 + 0.75×1819283.73 + 0.1×3275212.60 = 2440248. No prior. CL indication is outlier; ignore for convergence. BF-IE spread: BF is primary method at this age, IE is secondary check. Asymmetric conservatism not applied (convergence absent). Reasonability: loss ratio trend and IELR critical; validate a priori. Large CDF (2.73) and thin paid development warrant careful scrutiny of ultimate assumptions — flag for peer review."
   },
   {
-    "measure": "Paid Loss",
     "period": 2024,
-    "selection": 1303717,
-    "reasoning": "Method selection: 95% Paid BF, 5% Paid CL. Maturity: 11 months (ultra-green/inception). Eligible methods: Paid BF only (CL not credible at 11 months). Method fitness: CL at 13.6% development; CDF 7.33 is unreliable at inception maturity. BF is sole credible method. Weighting: 11 mo (ultra-green, <12 months) → 95% BF, 5% CL. Per guidelines, periods at 0–12 months weight BF 100%; here, retain minimal CL weight (5%) only to avoid structural zero weight on an available method. Screening: CL is structurally available but methodologically invalid at 11 months; CDF of 7.33 is highly sensitive to LDF assumption at extreme early stage. BF is practical sole method. Selection: 0.95×1,216,849 + 0.05×2,602,723 = 1,303,717. Prior: None. Reasonability: IBNR 861.6k (66% of ultimate); loss ratio highly elevated, consistent with 2024 rate-in. A priori loss ratio is critical control; verify against rate-adjusted historical benchmarks before finalizing."
+    "measure": "Paid Loss",
+    "selection": 1357624,
+    "reasoning": "Paid CL 10%, BF 80%, IE 10%. 11 months (ultra-green). CL 2507206.55, BF 1211660.65, IE 997790.48. CL-BF spread 51% (extreme), IE near BF. At 11 months post-inception, CL is pure noise; BF is nearly sole reliance. Weighted heavily to BF: 0.1×2507206.55 + 0.8×1211660.65 + 0.1×2507206.55 = 1357624. No prior. CL and IE ignored for convergence. Selection anchors to BF with minimal hedge to CL. Reasonability: IELR check mandatory (compare to a priori loss ratio and current rate level). CDF 7.06 reflects minimal paid development; ultimate heavily dependent on a priori assumption — if a priori stale or unsupported, selection is at risk. Flag for urgent review of a priori before finalizing."
   }
 ]

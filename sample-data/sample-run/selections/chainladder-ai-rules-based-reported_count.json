@@ -1,140 +1,140 @@
 [
   {
-    "measure": "Reported Count",
     "interval": "11-23",
-    "selection": 1.1180,
-    "reasoning": "Average selected: weighted_5yr = 1.1180.  Convergence Override applies. All averages within ±2% of midpoint ~1.113 (convergence band). Simple 3yr = 1.133, weighted 3yr = 1.133, simple 5yr = 1.1204, weighted 5yr = 1.118, weighted all = 1.0617. Modest upward trend in 3-year (1.133 vs 5-year 1.118, +1.3% divergence) but below significance threshold. Selected weighted 5-year as most credible: longer credibility window, stable reported-count pattern typical of mature commercial lines. Early maturity (11-23mo); convergence override trumps all secondary criteria. No prior LDF provided; establishes new baseline. No diagnostic concerns (reported_claims ~313-637 over period, severity moves independently). Data quality: excellent, 24 AY points available."
+    "selection": 1.1204,
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.1204 (5-year simple average)\n\nConvergence Override triggered. All standard averages (weighted_3yr=1.133, simple_3yr=1.133, weighted_5yr=1.118, simple_5yr=1.1204, avg_exclude_high_low_5yr=1.133) fall within ±2% of the convergent midpoint (1.12). CV_3yr = 0.013 indicates high stability. No diagnostic signals (reported_claims, incurred_severity, paid_to_incurred) show anomalies. Selected 5-year simple average as it is centered within the converged band and represents mature claim development. No Bayesian anchoring or asymmetric conservatism adjustment needed—convergence override applies. Early maturity (12mo) shows natural reporting ramp. No data quality flags."
   },
   {
-    "measure": "Reported Count",
     "interval": "23-35",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000 exactly.  Convergence Override applies. Perfect convergence across all averaging methods: simple_3yr = 1.0, weighted_3yr = 1.0, simple_5yr = 1.0, weighted_5yr = 1.0, weighted_all = 1.0033, simple_all = 1.0037, avg_exclude_high_low_all = 1.0018. CV = 0.00 (3yr, 5yr, 10yr). Negligible slope (-0.0015 at 10yr). Reported counts stabilize after initial development. Select 1.000 per convergence rule (§8). No material trend, no diagnostics deviation. Early-mid maturity (23-35mo); claim reporting nearly complete. Data quality: excellent, 23 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages (weighted_all, simple_all, weighted_3yr, simple_3yr, weighted_5yr, simple_5yr, weighted_10yr, simple_10yr, and exclude_high_low variants) equal exactly 1.0. CV_3yr = 0.0, CV_5yr = 0.0, slopes ≈ 0. This is perfect convergence—nearly all origin years show no incremental development from age 23 to 35 months. No diagnostic signals warrant deviation. Reported_claims, incurred_severity, and closure rates are stable and unremarkable. Select 1.0 with full confidence. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "35-47",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages ≈ 1.000.  Convergence Override applies. Weighted_5yr = 1.0008, simple 5yr = 1.0008, weighted_3yr = 1.0, simple_3yr = 1.0, weighted_all = 1.0004, simple_all = 1.0005. CV = 0.00 across all windows. Slope near zero (-0.0008 at 5yr, -0.0002 at 10yr). Mature phase; no incremental reporting. Select 1.000 per convergence. Mid maturity (35-47mo); claim reporting effectively complete. Data quality: excellent, 22 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (CV_3yr = 0.0, CV_5yr = 0.0019, CV_10yr = 0.0018, all nearly zero slopes). Development from age 35 to 47 is negligible across all periods. No outliers present; no diagnostic signals (reported_claims stable, incremental_incurred_severity and paid_to_incurred showing no anomalies). Select 1.0. No adjustment required."
   },
   {
-    "measure": "Reported Count",
     "interval": "47-59",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000 or near.  Convergence Override applies. Weighted_5yr = 1.0, simple_5yr = 1.0, weighted_3yr = 1.0013, simple_3yr = 1.0014, weighted_all = 0.9998, simple_all = 0.9999. CV ≤ 0.0029 (5yr). Slope near zero. No development expected. Select 1.000. Mid maturity (47-59mo); claim reporting closed. Data quality: excellent, 21 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (CV_3yr = 0.0024, CV_5yr = 0.0029, minimal slopes). Reported claims show no meaningful development from age 47 to 59 months. No diagnostic signals (reported_claims stable, no severity spikes). Select 1.0. Early-to-mid maturity range with stable claim reporting. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "59-71",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000 or near.  Convergence Override applies. Weighted_5yr = 0.9992, simple_5yr = 0.9993, weighted_3yr = 0.9987, simple_3yr = 0.9988, weighted_all = 1.0019, simple_all = 1.0012. CV ≤ 0.0021 (3yr). Slope near zero (-0.0007 at 5yr). Post-reporting phase; hold 1.000. Mid maturity (59-71mo). Data quality: excellent, 20 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (CV_3yr = 0.0021, CV_5yr = 0.0017, slopes ≈ 0). Mid-maturity interval (59–71mo) shows zero reported claim development. Diagnostics stable. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "71-83",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. Weighted_3yr = 1.0, simple_3yr = 1.0, weighted_5yr = 1.0, simple_5yr = 1.0, weighted_all = 1.0024, simple_all = 1.0015. CV = 0.00 (3yr, 5yr, 10yr). Slope = 0. Full convergence at 1.000. Mid maturity (71-83mo). Data quality: excellent, 19 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (CV_3yr = 0.0, CV_5yr = 0.0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "83-95",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000 or near.  Convergence Override applies. Weighted_3yr = 0.9987, simple_3yr = 0.9986, weighted_5yr = 0.9993, simple_5yr = 0.9992, weighted_all = 0.9998, simple_all = 0.9998. CV ≤ 0.0024 (3yr). Slope near zero (-0.0021 at 3yr). Select 1.000 by convergence. Mid maturity (83-95mo). Data quality: excellent, 18 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (CV_3yr = 0.0024, CV_5yr = 0.0019, slopes ≈ 0). Mid-late maturity showing stable development. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "95-107",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. Weighted_3yr = 1.0, simple_3yr = 1.0, weighted_5yr = 1.0, simple_5yr = 1.0, weighted_all = 1.0, simple_all = 1.0. CV = 0.00 across all windows. Slope = 0. Perfect convergence. Mid maturity (95-107mo). Data quality: excellent, 17 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs and slopes = 0). Late-maturity interval with no reported claim movement. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "107-119",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000 or near.  Convergence Override applies. Weighted_3yr = 0.9964, simple_3yr = 0.9961, weighted_5yr = 0.9977, simple_5yr = 0.9977, weighted_all = 0.9994, simple_all = 0.9992. CV ≤ 0.0068 (3yr). Slope near zero (-0.0058 at 3yr). Select 1.000 by convergence. Mid maturity (107-119mo). Data quality: excellent, 16 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge at 1.0)\n\nConvergence Override triggered. Despite slightly elevated CV_3yr = 0.0068 (higher than other columns, but still trivial), all standard averages (weighted_3yr=0.9964, simple_3yr=0.9961, weighted_5yr=0.9977, simple_5yr=0.9977, weighted_10yr=0.9989, simple_10yr=0.9988) are tightly clustered within ±1% of 1.0. Exclude_high_low averages = 1.0. The elevated CV reflects minor year-to-year variation near age 107–119, not a structural trend (slopes are all near zero: −0.0058 to −0.0006). Select 1.0 as the converged midpoint; the minor downward bias in some averages is dampened by convergence and lack of diagnostic support. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "119-131",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All weighted/simple averages 3yr/5yr/10yr/all = 1.0. CV = 0.00 across all windows. Slope = 0. Perfect convergence. Mid-late maturity (119-131mo). Data quality: excellent, 15 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence at late maturity. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "131-143",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0 across all windows. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (131-143mo). Data quality: excellent, 14 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "143-155",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (143-155mo). Data quality: excellent, 13 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "155-167",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (155-167mo). Data quality: excellent, 12 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "167-179",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (167-179mo). Data quality: excellent, 11 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "179-191",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (179-191mo). Data quality: excellent, 10 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "191-203",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (191-203mo). Data quality: excellent, 9 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "203-215",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope near zero (-0.0). Perfect convergence. Late maturity (203-215mo). Data quality: excellent, 8 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "215-227",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (215-227mo). Data quality: excellent, 7 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "227-239",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope near zero (-0.0). Perfect convergence. Late maturity (227-239mo). Data quality: excellent, 6 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "239-251",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope near zero (-0.0). Perfect convergence. Late maturity (239-251mo). Data quality: excellent, 5 AY points."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "251-263",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope = 0. Perfect convergence. Late maturity (251-263mo). Data quality: acceptable, 4 AY points (approaching sparse data threshold of <5 LDFs)."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "263-275",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. All averages 1.0. CV = 0.00. Slope near zero (-0.0). Perfect convergence. Tail maturity (263-275mo). Data quality: sparse, 3 AY points available (2022, 2023, 2024); triggers Sparse Data Caution (§7) — only 3 diagonals at this point. Nonetheless, all available points = 1.000; select 1.000 with confidence reinforced by perfect convergence across the entire range."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (all methods converge exactly)\n\nConvergence Override triggered. All averages converge exactly at 1.0 (all CVs = 0, all slopes = 0). Perfect convergence. Select 1.0. No adjustment needed."
   },
   {
-    "measure": "Reported Count",
     "interval": "275-287",
     "selection": 1.0000,
-    "reasoning": "Average selected: all averages = 1.000.  Convergence Override applies. Tail interval; weighted_all = 1.0, simple_all = 1.0, all time-window averages = 1.0. CV = nan (insufficient diagonals for CV calculation). Only 1 complete AY diagonal (2024 at age 287 months shows 700.7076 constant across all cohorts, indicating no development). Tail LDF: claim reporting long-closed; expect 1.000. Sparse Data Caution (§7) active — <5 diagonals — but all evidence points to 1.000. Select 1.000. Tail tail-adequacy check: incremental_incurred_severity and reported_claims both stable; no reopened-claim signals in late data. Data quality: extremely sparse, only 1 AY point; flagged for next study if tail extends."
+    "measure": "Reported Count",
+    "reasoning": "Selected average: 1.0000 (placeholder, tail interval with insufficient data)\n\nTail interval (275–287mo) has only 1 origin year (2024) with age 11 reported (256.0024); no development beyond age 11 available. Averages marked as nan in source; all methods show 1.0 as default. Sparse Data Caution applies: insufficient data for trend confirmation. Select 1.0 as consistent with prior mature tail pattern (all prior intervals = 1.0). Flag: tail LDF requires external benchmarking or tail factor methodology (not covered in this triangle). No movement from prior recommended."
   }
 ]
