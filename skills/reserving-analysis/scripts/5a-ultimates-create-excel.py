@@ -18,6 +18,7 @@ run-note: When copied to a project, run from the scripts/ directory:
     python 5a-ultimates-create-excel.py
 """
 
+import json
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Alignment
@@ -203,7 +204,18 @@ def main():
     except Exception as e:
         print(f"Error loading ultimates: {e}")
         exit(1)
-        
+
+    # Guard: warn if CL ultimates are missing for any loss measure — selector will fall
+    # back to IE for every AY if this context is used before 2f has run successfully.
+    for _m in ['Incurred Loss', 'Paid Loss']:
+        if _m not in df_ult['measure'].values:
+            continue
+        _df_m = df_ult[df_ult['measure'] == _m]
+        if 'ultimate_cl' not in _df_m.columns or _df_m['ultimate_cl'].isna().all():
+            print(f"\nWARNING: ultimate_cl is all NaN for '{_m}'. "
+                  f"Run 2f-chainladder-ultimates.py before this script — "
+                  f"otherwise the ultimates selector will treat CL as unavailable for every AY.\n")
+
     df_prior = None
     # Try loading prior selections - prioritize rules-based, fall back to open-ended
     prior_loaded = False
