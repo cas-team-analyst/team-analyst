@@ -1,11 +1,10 @@
-# Executive Summary
+# TeamAnalyst: Executive Summary
 
 ## Table of Contents
 
 - [Overview](#overview)
 - [The Need](#the-need)
 - [The Solution](#the-solution)
-- [What TeamAnalyst Can Do](#what-teamanalyst-can-do)
 - [Why It Matters](#why-it-matters)
 - [How the Tool Can Be Used](#how-the-tool-can-be-used)
 - [Closing Note](#closing-note)
@@ -79,13 +78,16 @@ For more instructions on getting started, see https://github.com/cas-team-analys
 
 In practical terms, this means TeamAnalyst can be used in several ways: as a learning aid for actuaries who want to understand agentic workflows, as a demonstration of AI-assisted reserving, as a reusable template for internal experimentation, or as a base that technical users can adapt to their own methods and preferences.
 
-# Closing Note
+## Closing Note
 
-The TeamAnalyst development team hopes this tool serves you well in your exploration of AI-assisted actuarial workflows. We welcome your feedback, suggestions, and contributions. If you encounter issues, have ideas for improvements, or would like to contribute to the project, please visit our GitHub repository at https://github.com/cas-team-analyst/team-analyst. Issues and pull requests are always welcome.
+The TeamAnalyst Research Team hopes this tool serves you well in your exploration of AI-assisted actuarial workflows. We welcome your feedback, suggestions, and contributions. If you encounter issues, have ideas for improvements, or would like to contribute to the project, please visit our GitHub repository at https://github.com/cas-team-analyst/team-analyst. Issues and pull requests are always welcome.
 
 We wish you success in your actuarial work and in discovering new ways to integrate AI assistance into your professional practice,
 
-- The TeamAnalyst Research Team: Bryce Chamberlain, Esther Becker, Ken Zesso, Jack Tarantino, and Chris McKenna
+Sincerely,
+
+The TeamAnalyst Research Team  
+Bryce Chamberlain, Esther Becker, Ken Zesso, Jack Tarantino, and Chris McKenna
 
 ## Appendix A: Lessons Learned
 
@@ -121,36 +123,36 @@ For more detailed information on specific aspects of TeamAnalyst, refer to the f
 
 For readers who want to understand how TeamAnalyst works under the hood, the following files and folders offer the most insight into the workflow design, decision logic, and practical implementation:
 
-### Core Workflow Specifications
+**Core Workflow Specifications**
 
-- **[Reserving Analysis Skill](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/reserving-analysis/SKILL.md)** — Guardrails and context for getting the agent started on a reserving analysis. Establishes file handling principles, script execution rules, and communication standards. The actual step-by-step workflow is defined in PROGRESS.md.
+- [Reserving Analysis Skill](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/reserving-analysis/SKILL.md) — Guardrails and context for getting the agent started on a reserving analysis. Establishes file handling principles, script execution rules, and communication standards. The actual step-by-step workflow is defined in PROGRESS.md.
 
-- **[Peer Review Skill](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/peer-review/SKILL.md)** — Guardrails and context for conducting peer reviews. Defines advisory-only principles, ASOP grounding, and materiality-first review approach. The actual review output is captured in PEER_REVIEW.md.
+- [Peer Review Skill](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/peer-review/SKILL.md) — Guardrails and context for conducting peer reviews. Defines advisory-only principles, ASOP grounding, and materiality-first review approach. The actual review output is captured in PEER_REVIEW.md.
 
-### Selection Logic Examples
+**Selection Logic Examples**
 
 The rules-based selection files show how actuarial judgment is encoded into structured decision frameworks that the AI interprets. These are actual outputs from a completed workflow run:
 
-- **[Chain Ladder Rules-Based Selections - Incurred Loss](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/selections/chainladder-ai-rules-based-incurred_loss.json)** — Example of how development factor selections are documented with supporting rationale, pattern analysis, and decision hierarchy.
+- [Chain Ladder Rules-Based Selections - Incurred Loss](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/selections/chainladder-ai-rules-based-incurred_loss.json) — Example of how development factor selections are documented with supporting rationale, pattern analysis, and decision hierarchy.
 
-- **[Chain Ladder Rules-Based Selections - Paid Loss](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/selections/chainladder-ai-rules-based-paid_loss.json)** — Shows selection logic for paid loss development patterns.
+- [Chain Ladder Rules-Based Selections - Paid Loss](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/selections/chainladder-ai-rules-based-paid_loss.json) — Shows selection logic for paid loss development patterns.
 
-- **[Chain Ladder Rules-Based Selections - Reported Count](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/selections/chainladder-ai-rules-based-reported_count.json)** — Demonstrates selection framework applied to claim count development.
+- [Chain Ladder Rules-Based Selections - Reported Count](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/selections/chainladder-ai-rules-based-reported_count.json) — Demonstrates selection framework applied to claim count development.
 
-### Python Implementation
+**Python Implementation**
 
-- **[Python Scripts Folder](https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data/sample-run/scripts)** — Complete set of Python scripts generated during a workflow run. Shows how the workflow combines reusable script templates with dynamically generated analysis code. Includes data preparation, method calculations, Excel workbook generation, and technical review scripts.
+- [Python Scripts Folder](https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data/sample-run/scripts) — Complete set of Python scripts generated during a workflow run. Shows how the workflow combines reusable script templates with dynamically generated analysis code. Includes data preparation, method calculations, Excel workbook generation, and technical review scripts.
 
-### Sample Workflow Run
+**Sample Workflow Run**
 
 The sample-run folder contains a complete example of what TeamAnalyst produces from start to finish:
 
-- **[Progress Document](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/PROGRESS.md)** — The detailed step-by-step workflow process that defines what happens at each stage of the analysis. This is the actual executable workflow specification that the agent follows, tracking decisions, data characteristics, and interim findings throughout the analysis.
+- [Progress Document](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/PROGRESS.md) — The detailed step-by-step workflow process that defines what happens at each stage of the analysis. This is the actual executable workflow specification that the agent follows, tracking decisions, data characteristics, and interim findings throughout the analysis.
 
-- **[Replication Instructions](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/REPLICATE.md)** — Complete reproducibility log documenting all input files, scripts run, customizations made, and manual selections applied. Enables a reviewer to reproduce the analysis results without AI assistance by following the documented steps exactly.
+- [Replication Instructions](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/REPLICATE.md) — Complete reproducibility log documenting all input files, scripts run, customizations made, and manual selections applied. Enables a reviewer to reproduce the analysis results without AI assistance by following the documented steps exactly.
 
-- **[Final Report](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/REPORT.md)** — The draft analysis report generated by the workflow, demonstrating the documentation structure and narrative that TeamAnalyst produces.
+- [Final Report](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/REPORT.md) — The draft analysis report generated by the workflow, demonstrating the documentation structure and narrative that TeamAnalyst produces.
 
-- **[Peer Review Output](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/PEER_REVIEW.md)** — The structured peer review evaluation of the completed analysis, showing how the tool identifies strengths, weaknesses, and areas requiring additional attention.
+- [Peer Review Output](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/PEER_REVIEW.md) — The structured peer review evaluation of the completed analysis, showing how the tool identifies strengths, weaknesses, and areas requiring additional attention.
 
 These files provide the clearest view into how TeamAnalyst works in practice and how the balance between deterministic processing and AI assistance is achieved.
