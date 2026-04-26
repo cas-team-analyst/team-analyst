@@ -70,19 +70,19 @@
 
 - [ ] Compress your context to make space for the upcoming subagent responses.
 
-- [ ] **Invoke the rules-based selector multiple times** — once per measure. If you have three measures (Paid Loss, Incurred Loss, Reported Count), you will invoke `selector-chain-ladder-ldf-ai-rules-based.md` (located in `agents/`) **three separate times**:
-  - First invocation: Tell the subagent the measure is "Paid Loss" and the context file is `selections/chainladder-context-paid_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/chainladder-ai-rules-based-paid_loss.json`.
-  - Second invocation: Tell the subagent the measure is "Incurred Loss" and the context file is `selections/chainladder-context-incurred_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/chainladder-ai-rules-based-incurred_loss.json`.
-  - Third invocation: Tell the subagent the measure is "Reported Count" and the context file is `selections/chainladder-context-reported_count.md`. The subagent will read the context file itself. Verify it wrote `selections/chainladder-ai-rules-based-reported_count.json`.
+- [ ] **Invoke the rules-based selector once** for all measures. Tell the `selector-chain-ladder-ldf-ai-rules-based.md` subagent (located in `agents/`) which measures are in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). The subagent will:
+  - Read each measure's context file from `selections/chainladder-context-<measure>.md`
+  - Apply the rules-based selection framework to each measure independently
+  - Write one JSON file per measure: `selections/chainladder-ai-rules-based-<measure>.json`
   
-  **Each subagent invocation handles ONE measure only**. Do NOT try to pass all measures to one subagent. **Do NOT read the context files yourself** — the subagents will read them. **Do NOT read the JSON responses** — only verify the files were created.
+  Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
-- [ ] **Invoke the open-ended selector multiple times** — once per measure. If you have three measures (Paid Loss, Incurred Loss, Reported Count), you will invoke `selector-chain-ladder-ldf-ai-open-ended.md` (located in `agents/`) **three separate times**:
-  - First invocation: Tell the subagent the measure is "Paid Loss" and the context file is `selections/chainladder-context-paid_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/chainladder-ai-open-ended-paid_loss.json`.
-  - Second invocation: Tell the subagent the measure is "Incurred Loss" and the context file is `selections/chainladder-context-incurred_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/chainladder-ai-open-ended-incurred_loss.json`.
-  - Third invocation: Tell the subagent the measure is "Reported Count" and the context file is `selections/chainladder-context-reported_count.md`. The subagent will read the context file itself. Verify it wrote `selections/chainladder-ai-open-ended-reported_count.json`.
+- [ ] **Invoke the open-ended selector once** for all measures. Tell the `selector-chain-ladder-ldf-ai-open-ended.md` subagent (located in `agents/`) which measures are in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). The subagent will:
+  - Read each measure's context file from `selections/chainladder-context-<measure>.md`
+  - Apply holistic actuarial judgment (no rigid rules framework) to each measure independently
+  - Write one JSON file per measure: `selections/chainladder-ai-open-ended-<measure>.json`
   
-  **Each subagent invocation handles ONE measure only** and uses holistic actuarial judgment (no rigid rules framework). **Do NOT read the context files yourself** — the subagents will read them. **Do NOT read the JSON responses** — only verify the files were created.
+  Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
 - [ ] Run `2b-chainladder-update-selections.py` to collect all per-measure JSON files and insert the selections and reasoning into the Excel file. This script will:
   - Load all `selections/chainladder-ai-rules-based-*.json` files and combine them
@@ -117,19 +117,19 @@ _(Pause for Selections only):_
 
 - [ ] Compress your context to make space for the upcoming subagent responses.
 
-- [ ] **Invoke the rules-based tail selector multiple times** — once per measure. If you have three measures (Paid Loss, Incurred Loss, Reported Count), you will invoke `selector-tail-factor-ai-rules-based.md` (located in `agents/`) **three separate times**:
-  - First invocation: Tell the subagent the measure is "Paid Loss" and the context file is `selections/tail-context-paid_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/tail-ai-rules-based-paid_loss.json`.
-  - Second invocation: Tell the subagent the measure is "Incurred Loss" and the context file is `selections/tail-context-incurred_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/tail-ai-rules-based-incurred_loss.json`.
-  - Third invocation: Tell the subagent the measure is "Reported Count" and the context file is `selections/tail-context-reported_count.md`. The subagent will read the context file itself. Verify it wrote `selections/tail-ai-rules-based-reported_count.json`.
+- [ ] **Invoke the rules-based tail selector once** for all measures. Tell the `selector-tail-factor-ai-rules-based.md` subagent (located in `agents/`) which measures are in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). The subagent will:
+  - Read each measure's context file from `selections/tail-context-<measure>.md`
+  - Apply the 15-point tail factor decision framework to each measure independently
+  - Write one JSON file per measure: `selections/tail-ai-rules-based-<measure>.json`
   
-  **Each subagent invocation handles ONE measure only** and uses the 15-point tail factor decision framework. **Do NOT read the context files yourself** — the subagents will read them. **Do NOT read the JSON responses** — only verify the files were created.
+  Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
-- [ ] **Invoke the open-ended tail selector multiple times** — once per measure. If you have three measures (Paid Loss, Incurred Loss, Reported Count), you will invoke `selector-tail-factor-ai-open-ended.md` (located in `agents/`) **three separate times**:
-  - First invocation: Tell the subagent the measure is "Paid Loss" and the context file is `selections/tail-context-paid_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/tail-ai-open-ended-paid_loss.json`.
-  - Second invocation: Tell the subagent the measure is "Incurred Loss" and the context file is `selections/tail-context-incurred_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/tail-ai-open-ended-incurred_loss.json`.
-  - Third invocation: Tell the subagent the measure is "Reported Count" and the context file is `selections/tail-context-reported_count.md`. The subagent will read the context file itself. Verify it wrote `selections/tail-ai-open-ended-reported_count.json`.
+- [ ] **Invoke the open-ended tail selector once** for all measures. Tell the `selector-tail-factor-ai-open-ended.md` subagent (located in `agents/`) which measures are in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). The subagent will:
+  - Read each measure's context file from `selections/tail-context-<measure>.md`
+  - Apply holistic actuarial judgment (no rigid rules framework) to each measure independently
+  - Write one JSON file per measure: `selections/tail-ai-open-ended-<measure>.json`
   
-  **Each subagent invocation handles ONE measure only** and uses holistic actuarial judgment (no rigid rules framework). **Do NOT read the context files yourself** — the subagents will read them. **Do NOT read the JSON responses** — only verify the files were created.
+  Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
 - [ ] Run `2e-tail-update-selections.py` to collect all per-measure JSON files and insert the selections into the Excel file. This script will:
   - Load all `selections/tail-ai-rules-based-*.json` files and combine them
@@ -174,19 +174,19 @@ _(Pause for Selections only):_
 
 - [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export per-measure context files.
 
-- [ ] **Invoke the rules-based ultimates selector multiple times** — once per measure. If you have three measures (Paid Loss, Incurred Loss, Reported Count), you will invoke `selector-ultimates-ai-rules-based.md` (located in `agents/`) **three separate times**:
-  - First invocation: Tell the subagent the measure is "Paid Loss" and the context file is `selections/ultimates-context-paid_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/ultimates-ai-rules-based-paid_loss.json`.
-  - Second invocation: Tell the subagent the measure is "Incurred Loss" and the context file is `selections/ultimates-context-incurred_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/ultimates-ai-rules-based-incurred_loss.json`.
-  - Third invocation: Tell the subagent the measure is "Reported Count" and the context file is `selections/ultimates-context-reported_count.md`. The subagent will read the context file itself. Verify it wrote `selections/ultimates-ai-rules-based-reported_count.json`.
+- [ ] **Invoke the rules-based ultimates selector once** for all measures. Tell the `selector-ultimates-ai-rules-based.md` subagent (located in `agents/`) which measures are in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). The subagent will:
+  - Read each measure's context file from `selections/ultimates-context-<measure>.md`
+  - Apply the structured method weighting framework to each measure independently
+  - Write one JSON file per measure: `selections/ultimates-ai-rules-based-<measure>.json`
   
-  **Each subagent invocation handles ONE measure only** and uses the structured method weighting framework. **Do NOT read the context files yourself** — the subagents will read them. **Do NOT read the JSON responses** — only verify the files were created.
+  Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
-- [ ] **Invoke the open-ended ultimates selector multiple times** — once per measure. If you have three measures (Paid Loss, Incurred Loss, Reported Count), you will invoke `selector-ultimates-ai-open-ended.md` (located in `agents/`) **three separate times**:
-  - First invocation: Tell the subagent the measure is "Paid Loss" and the context file is `selections/ultimates-context-paid_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/ultimates-ai-open-ended-paid_loss.json`.
-  - Second invocation: Tell the subagent the measure is "Incurred Loss" and the context file is `selections/ultimates-context-incurred_loss.md`. The subagent will read the context file itself. Verify it wrote `selections/ultimates-ai-open-ended-incurred_loss.json`.
-  - Third invocation: Tell the subagent the measure is "Reported Count" and the context file is `selections/ultimates-context-reported_count.md`. The subagent will read the context file itself. Verify it wrote `selections/ultimates-ai-open-ended-reported_count.json`.
+- [ ] **Invoke the open-ended ultimates selector once** for all measures. Tell the `selector-ultimates-ai-open-ended.md` subagent (located in `agents/`) which measures are in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). The subagent will:
+  - Read each measure's context file from `selections/ultimates-context-<measure>.md`
+  - Apply holistic actuarial judgment (no rigid rules framework) to each measure independently
+  - Write one JSON file per measure: `selections/ultimates-ai-open-ended-<measure>.json`
   
-  **Each subagent invocation handles ONE measure only** and uses holistic actuarial judgment (no rigid rules framework). **Do NOT read the context files yourself** — the subagents will read them. **Do NOT read the JSON responses** — only verify the files were created.
+  Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
 - [ ] Run `5b-ultimates-update-selections.py` to collect all per-measure JSON files and insert both rules-based and open-ended selections and reasoning into `selections/Ultimates.xlsx`. This script will:
   - Load all `selections/ultimates-ai-rules-based-*.json` files and combine them
