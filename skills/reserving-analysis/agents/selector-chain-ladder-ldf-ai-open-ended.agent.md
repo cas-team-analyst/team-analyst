@@ -38,11 +38,11 @@ Multiple columns:
 ]
 ```
 
-The `reasoning` field must start with the average selected, then two new lines, and then state: what you saw in the data, what average or blend you used and why, any notable departures from the data (e.g., trend, outlier, sparse data), and any data quality flags for next study.
+**Reasoning format:** Start with the selected LDF value. Then concisely explain: why this value is appropriate based on the data; key patterns observed (trend, stability, outliers); the average or blend used; any notable adjustments; data quality notes if relevant. Do not include the measure name (already captured in the `measure` field). Focus on the result and supporting rationale, not the process of arriving there. Keep it readable and focused.
 
-**Important:** Include the `measure` field in each selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
+**Required fields:** Include the `measure` field in each selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
 
-**File Output:** Write your JSON selections to `selections/chainladder-ai-open-ended-<measure>.json` where `<measure>` is normalized (e.g., `paid_loss`).
+**File output:** Write your JSON selections to `selections/chainladder-ai-open-ended-<measure>.json` where `<measure>` is normalized (e.g., `paid_loss`).
 
 **Response:** Return ONLY the file path where you wrote the selections. Do not return the JSON content itself.
 

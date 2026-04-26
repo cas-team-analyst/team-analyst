@@ -38,7 +38,7 @@ Multiple columns:
 ]
 ```
 
-The `reasoning` field must start with the average selected, then two new lines, and then state: which criteria were evaluated and triggered; which average was selected and why; any adjustment from Bayesian anchoring, asymmetric conservatism, or diagnostics; the prior LDF and explanation of movement or hold; any data quality flags for next study.
+The `reasoning` field format: **Start with the selected LDF value.** Then concisely explain: key criteria that support this choice; notable data patterns (trend, outliers, variance); any adjustments applied (Bayesian anchoring, asymmetric conservatism); comparison to prior (if applicable); data quality notes if relevant. **Do not include the measure name** (already captured in the `measure` field). Focus on the result and supporting rationale, not the process of arriving there. Keep it readable and focused.
 
 **Important:** Include the `measure` field in each selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
 

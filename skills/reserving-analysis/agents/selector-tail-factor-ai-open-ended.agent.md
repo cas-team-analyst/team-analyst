@@ -37,29 +37,12 @@ You are not bound by any rigid decision framework. Use your experience and patte
     "cutoff_age": 96,
     "tail_factor": 1.0210,
     "method": "exp_dev_quick_exact_last",
-    "reasoning": "Alternative perspective using Boor improvement for exact last factor match. Slightly lower than rules-based but within sensitivity range. Prefer smooth connection to observed data.",
-    "pct_of_cdf": 2.1,
-    "prior_selection": 1.0180,
-    "prior_delta": 0.0030,
-    "prior_delta_driver": "AI independent analysis with exact last factor constraint",
-    "alternatives_considered": "Standard exp dev quick (1.023), double exp (1.024), preferred exact last match for smooth transition",
-    "diagnostics_summary": "R²=0.91, exact last match via Boor rescale, LOO std dev=0.0007"
+    "reasoning": "..."
   }
 ]
 ```
 
-**All fields are required** (same schema as rules-based selector):
-- `measure` — triangle type
-- `cutoff_age` — starting age for curve
-- `tail_factor` — selected tail
-- `method` — method name
-- `reasoning` — your judgment and why (what you saw in the data, which scenarios you considered, key diagnostics that support your choice, any notable departures from rules-based selector)
-- `pct_of_cdf` — tail as % of CDF
-- `prior_selection` — prior year's tail
-- `prior_delta` — current − prior
-- `prior_delta_driver` — explanation of change
-- `alternatives_considered` — what else you considered and why you rejected it
-- `diagnostics_summary` — key diagnostics (R², LOO, gap, materiality, sensitivity)
+The `reasoning` field format: **Start with the selected tail factor.** Then concisely explain: why this is appropriate; key diagnostics supporting the choice; comparison to alternative approaches; any notable departures from rules-based selector if relevant. **Do not include the measure name** (already in `measure` field). Focus on result and rationale, not process.
 
 **Important:** Include the `measure` field in the selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
 

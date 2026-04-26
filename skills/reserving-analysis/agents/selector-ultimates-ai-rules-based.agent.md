@@ -42,7 +42,7 @@ Multiple periods:
 ]
 ```
 
-The `reasoning` field must start with the method(s) and weights selected, then two new lines, and then state: which methods were eligible and which were screened out and why; the weights applied and the maturity rationale; any diagnostic-driven override; the prior ultimate and explanation of movement or hold; reasonability checks performed (IELR, ultimate loss ratio trend, paid-to-ultimate, case-to-ultimate); any data quality flags for next study.
+The `reasoning` field format: **Start with the selected ultimate value and method weighting.** Then concisely explain: why these weights are appropriate; key patterns in the method indications; maturity considerations; comparison to prior ultimate (if material change); relevant diagnostics (IELR, loss ratio trends); data quality notes if relevant. **Do not include the measure name** (already captured in the `measure` field). Focus on the result and supporting rationale, not the process of arriving there. Keep it readable and focused.
 
 **Important:** Include the `measure` field in each selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
 

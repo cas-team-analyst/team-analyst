@@ -34,18 +34,12 @@ Make a tail factor selection for ONE measure based on tail scenarios, diagnostic
     "cutoff_age": 84,
     "tail_factor": 1.0230,
     "method": "exp_dev_quick",
-    "reasoning": "Exponential decay fit provides excellent R² of 0.92 on late-age data. Monotonic pattern from age 84 onward with low CV (0.08). Gap_flag=False confirms smooth transition to curve.",
-    "pct_of_cdf": 2.3,
-    "prior_selection": 1.0180,
-    "prior_delta": 0.0050,
-    "prior_delta_driver": "Updated curve fit with 2 additional years of data shows slower decay than prior assumption",
-    "alternatives_considered": "Bondy (1.025 - rejected due to no diagnostics), Modified Bondy Double Dev (1.028 - too conservative), McClenahan (1.021 - good fit but lower R²). Starting age 72 rejected due to slope_sign_changes=2.",
-    "diagnostics_summary": "R²=0.92, LOO std dev=0.0008, gap_to_last_observed=0.0002, materiality=0.1% of CDF (materiality anchor applies)"
+    "reasoning": "..."
   }
 ]
 ```
 
-All fields are required. The `reasoning` must reference the specific diagnostics that drove the decision.
+The `reasoning` field format: **Start with the selected tail factor and cutoff age.** Then concisely explain: which curve method was used and why; key diagnostics (R², LOO stability, gap to observed); comparison to alternative methods; any notable considerations. **Do not include the measure name** (already captured in the `measure` field). Focus on the result and supporting diagnostics, not the process. Keep it readable and focused.
 
 **Important:** Include the `measure` field in the selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
 
@@ -390,52 +384,13 @@ When multiple methods have comparable diagnostics at the same starting age, pref
     "cutoff_age": 84,
     "tail_factor": 1.0230,
     "method": "exp_dev_quick",
-    "reasoning": "Incurred loss triangle — expect shorter tail than paid. Selected starting age 84: is_monotone_from_here=True, cv=0.08, slope_sign_changes=0, n_factors=5. Exponential quick form provides excellent WLS fit on log(factor−1). Gap_flag=False confirms smooth transition to curve. Materiality anchor applies (tail 2.3% of CDF, but <0.1% would require closure >97%). Paid tail (1.045) materially longer than incurred (1.023) as expected.",
+    "reasoning": "Selected 1.0230 from age 84. Exponential decay provides excellent fit (R²=0.92). Starting age 84 is monotone with low CV (0.08). Gap_flag=False. Paid tail (1.045) materially longer as expected for incurred.",
     "pct_of_cdf": 2.3,
     "prior_selection": 1.0180,
     "prior_delta": 0.0050,
-    "prior_delta_driver": "Updated curve fit with 2 additional years of data shows slower decay than prior assumption. New diagonal at age 96 shows factor 1.008 vs prior expectation of 1.005.",
-    "alternatives_considered": "Bondy (1.025 - rejected due to no diagnostics and materiality >0.1%), Modified Bondy Double Dev (1.028 - too conservative, no diagnostics), McClenahan (1.021 - good fit R²=0.87 but lower than exp_dev R²=0.92), exp_dev_product (1.024 - similar but quick form preferred for simplicity). Starting age 72 rejected due to slope_sign_changes=2 (structural break). Starting age 96 valid but only 3 factors, less stable.",
-    "diagnostics_summary": "R²=0.92 (excellent), LOO std dev=0.0008 (stable across AYs), gap_to_last_observed=0.0002 (smooth), materiality check: 2.3% of CDF. Sensitivity: +10% tail → +$48k reserve (+1.3%), −10% → −$45k (−1.2%). Closure data: 88% closed at age 84, open counts 12%, insufficient for closure anchor."
-  },
-  {
-    "measure": "Paid Loss",
-    "cutoff_age": 96,
-    "tail_factor": 1.0450,
-    "method": "exp_dev_product",
-    "reasoning": "Paid loss triangle — expect materially longer tail than incurred. Selected starting age 96: monotone, cv=0.09, no slope breaks, n_factors=4. Product form captures the long decay pattern better than quick form. Gap_flag=False. Materiality anchor does not apply (tail 4.5% of CDF is material). Closure anchor: only 82% closed at age 96, insufficient. Anchor: industry benchmarks (RAA auto casualty paid tails 1.040–1.055 for similar maturity).",
-    "pct_of_cdf": 4.5,
-    "prior_selection": 1.0400,
-    "prior_delta": 0.0050,
-    "prior_delta_driver": "Observed slower settlement pattern in latest diagonal year. Age 108 LDF 1.012 vs prior expectation 1.008.",
-    "alternatives_considered": "Exp Dev Quick (1.042 - underestimates by comparison to product form, R²=0.88), Bondy (1.048 - no diagnostics, materiality >0.1%), Skurnick (1.046 - good fit R²=0.87 but higher LOO variability 0.0015 vs product 0.0012). Starting age 84 rejected: not monotone. Starting age 108 valid but only 2 factors (insufficient).",
-    "diagnostics_summary": "R²=0.89 (good), LOO std dev=0.0012 (acceptable), gap_flag=False, tail 4.5% of CDF (material). Sensitivity: +10% → +$112k (+2.8%), −10% → −$105k (−2.6%). Paid tail (1.045) > incurred tail (1.023) as required."
-  },
-  {
-    "measure": "Reported Count",
-    "cutoff_age": 72,
-    "tail_factor": 1.0120,
-    "method": "mcclenahan",
-    "reasoning": "Reported count triangle — expect shorter tail than dollar measures. Selected starting age 72: monotone, cv=0.06, no slope breaks, n_factors=4. McClenahan synthetic incremental method well-suited for count triangles. Gap_flag=False. Materiality: tail 1.2% of CDF (material, so materiality anchor does not apply). Closure anchor: 91% closed at age 72, approaching threshold but not >95%. Count tail (1.012) < dollar tails as expected.",
-    "pct_of_cdf": 1.2,
-    "prior_selection": 1.0100,
-    "prior_delta": 0.0020,
-    "prior_delta_driver": "Slightly elevated open counts in recent accident years. Closure rate slowed from 94% to 91% at age 72 over last 2 diagonals.",
-    "alternatives_considered": "Exp Dev Quick (1.013 - slightly higher R²=0.87 vs McClenahan 0.86, but McClenahan preferred for count triangles per best practice), Bondy (1.015 - no diagnostics, materiality >0.1%), Modified Bondy (1.016 - no diagnostics). Materiality cutoff at age 60 considered but count tail is material to reserve accuracy even at 1.2% of CDF.",
-    "diagnostics_summary": "R²=0.86 (good), LOO std dev=0.0005 (excellent stability), gap_flag=False, monotone from age 60, cv=0.06 (low variance). Sensitivity: +10% → +$8k (+0.9%), −10% → −$7k (−0.8%)."
-  },
-  {
-    "measure": "Closed Count",
-    "cutoff_age": 60,
-    "tail_factor": 1.0050,
-    "method": "bondy",
-    "reasoning": "Closed count triangle — expect tail similar to paid loss, longer than reported count. Selected starting age 60: monotone, cv=0.04, no slope breaks. Closure substantially complete by age 60 (98% closed, open counts <2%). Tail <0.1% of CDF (0.08%) confirms materiality anchor applies. Simple Bondy sufficient given immaterial tail and stable last observed factor (1.001 at age 60). No curve fitting needed when materiality anchor applies.",
-    "pct_of_cdf": 0.08,
-    "prior_selection": 1.0050,
-    "prior_delta": 0.0000,
-    "prior_delta_driver": "No change — pattern remains stable. Last 3 LDFs (ages 48, 54, 60) are 1.002, 1.001, 1.001.",
-    "alternatives_considered": "Exp Dev Quick (1.006 - marginally higher R²=0.84 but increase not material given tail <0.1% of CDF), materiality cutoff at age 48 considered but prefer age 60 for consistency with reported count and to ensure >97% closure threshold met.",
-    "diagnostics_summary": "Materiality anchor applies (0.08% of CDF). Closure anchor also applies (98% closed, open counts <2%). Last observed avg factor stable at 1.001. No curve fitting diagnostics needed. Sensitivity: +10% → +$1k (+0.1%), −10% → −$1k (−0.1%)."
+    "prior_delta_driver": "New diagonal shows slower decay. Updated curve with 2 additional years.",
+    "alternatives_considered": "Age 72 rejected (slope breaks). Bondy/Modified Bondy rejected (no diagnostics, materiality >0.1%). McClenahan R²=0.87 lower than exp_dev.",
+    "diagnostics_summary": "R²=0.92, LOO std dev=0.0008, gap_flag=False, 2.3% of CDF. Sensitivity: ±10% → ±1.3%."
   }
 ]
 ```

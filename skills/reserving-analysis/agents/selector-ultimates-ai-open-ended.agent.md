@@ -39,7 +39,7 @@ Multiple periods:
 ]
 ```
 
-The `reasoning` field must start with the method(s) you weighted most heavily, then two new lines, and then state: what you saw in the data, which methods you considered credible and why, your weighting rationale, how maturity influenced your decision, any notable departures from the prior ultimate, and any cross-year patterns or data quality flags for next study.
+The `reasoning` field format: **Start with the selected ultimate value and primary method(s) weighted.** Then concisely explain: why this selection is appropriate; credibility of available methods; weighting rationale and maturity considerations; comparison to prior ultimate if material change; any cross-year patterns or data quality notes if relevant. **Do not include the measure name** (already captured in the `measure` field). Focus on the result and supporting rationale, not the process of arriving there. Keep it readable and focused.
 
 **Important:** Include the `measure` field in each selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
 
