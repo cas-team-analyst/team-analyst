@@ -68,17 +68,19 @@
 
 - [ ] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. This framework includes 14 selection criteria and 10 diagnostic adjustment rules. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
 
+- [ ] Run `2a-chainladder-create-excel.py` to create the LDF selection workbook and export per-measure context files. The script will print the context file paths it creates (e.g., "Exported MD: selections/chainladder-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
+
 - [ ] Compress your context to make space for the upcoming subagent responses.
 
-- [ ] **Invoke the rules-based selector once** for all measures. Call the `selector-chain-ladder-ldf-ai-rules-based` subagent and tell it ONLY the measure names in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). **Do NOT pass file paths, file contents, or JSON data** — just the measure names. The subagent will:
-  - Find and read each measure's context file from `selections/chainladder-context-<measure>.md`
+- [ ] **Invoke the rules-based selector once** for all measures. Call the `selector-chain-ladder-ldf-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+  - Read each context file
   - Apply the rules-based selection framework to each measure independently
   - Write one JSON file per measure: `selections/chainladder-ai-rules-based-<measure>.json`
   
   Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
-- [ ] **Invoke the open-ended selector once** for all measures. Call the `selector-chain-ladder-ldf-ai-open-ended` subagent and tell it ONLY the measure names in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). **Do NOT pass file paths, file contents, or JSON data** — just the measure names. The subagent will:
-  - Find and read each measure's context file from `selections/chainladder-context-<measure>.md`
+- [ ] **Invoke the open-ended selector once** for all measures. Call the `selector-chain-ladder-ldf-ai-open-ended` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+  - Read each context file
   - Apply holistic actuarial judgment (no rigid rules framework) to each measure independently
   - Write one JSON file per measure: `selections/chainladder-ai-open-ended-<measure>.json`
   
@@ -113,19 +115,19 @@ _(Pause for Selections only):_
 
 - [ ] Run `2c-tail-methods-diagnostics.py` to fit tail curves and generate diagnostics. Debug any errors.
 
-- [ ] Run `2d-tail-create-excel.py` to create `selections/Chain Ladder Selections - Tail.xlsx` with curve fit results and diagnostics. If prior tail selections exist (`selections/tail-factor-prior.csv`), they will be included in a "Prior Selection" row for reference.
+- [ ] Run `2d-tail-create-excel.py` to create `selections/Chain Ladder Selections - Tail.xlsx` with curve fit results and diagnostics. If prior tail selections exist (`selections/tail-factor-prior.csv`), they will be included in a "Prior Selection" row for reference. The script will print the context file paths it creates (e.g., "  Exported MD: selections/tail-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
 
 - [ ] Compress your context to make space for the upcoming subagent responses.
 
-- [ ] **Invoke the rules-based tail selector once** for all measures. Call the `selector-tail-factor-ai-rules-based` subagent and tell it ONLY the measure names in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). **Do NOT pass file paths, file contents, or JSON data** — just the measure names. The subagent will:
-  - Find and read each measure's context file from `selections/tail-context-<measure>.md`
+- [ ] **Invoke the rules-based tail selector once** for all measures. Call the `selector-tail-factor-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+  - Read each context file
   - Apply the 15-point tail factor decision framework to each measure independently
   - Write one JSON file per measure: `selections/tail-ai-rules-based-<measure>.json`
   
   Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
-- [ ] **Invoke the open-ended tail selector once** for all measures. Call the `selector-tail-factor-ai-open-ended` subagent and tell it ONLY the measure names in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). **Do NOT pass file paths, file contents, or JSON data** — just the measure names. The subagent will:
-  - Find and read each measure's context file from `selections/tail-context-<measure>.md`
+- [ ] **Invoke the open-ended tail selector once** for all measures. Call the `selector-tail-factor-ai-open-ended` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+  - Read each context file
   - Apply holistic actuarial judgment (no rigid rules framework) to each measure independently
   - Write one JSON file per measure: `selections/tail-ai-open-ended-<measure>.json`
   
@@ -172,17 +174,17 @@ _(Pause for Selections only):_
 
 - [ ] Copy `scripts/5a-ultimates-create-excel.py` and `scripts/5b-ultimates-update-selections.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`, don't rewrite them yourself). Ensure `scripts/modules/` is already in place (copied in Step 3).
 
-- [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export per-measure context files.
+- [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export per-measure context files. The script will print the context file paths it creates (e.g., "  Exported MD: selections/ultimates-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
 
-- [ ] **Invoke the rules-based ultimates selector once** for all measures. Call the `selector-ultimates-ai-rules-based` subagent and tell it ONLY the measure names in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). **Do NOT pass file paths, file contents, or JSON data** — just the measure names. The subagent will:
-  - Find and read each measure's context file from `selections/ultimates-context-<measure>.md`
+- [ ] **Invoke the rules-based ultimates selector once** for all measures. Call the `selector-ultimates-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+  - Read each context file
   - Apply the structured method weighting framework to each measure independently
   - Write one JSON file per measure: `selections/ultimates-ai-rules-based-<measure>.json`
   
   Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
-- [ ] **Invoke the open-ended ultimates selector once** for all measures. Call the `selector-ultimates-ai-open-ended` subagent and tell it ONLY the measure names in this analysis (e.g., "Paid Loss, Incurred Loss, Reported Count"). **Do NOT pass file paths, file contents, or JSON data** — just the measure names. The subagent will:
-  - Find and read each measure's context file from `selections/ultimates-context-<measure>.md`
+- [ ] **Invoke the open-ended ultimates selector once** for all measures. Call the `selector-ultimates-ai-open-ended` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+  - Read each context file
   - Apply holistic actuarial judgment (no rigid rules framework) to each measure independently
   - Write one JSON file per measure: `selections/ultimates-ai-open-ended-<measure>.json`
   
