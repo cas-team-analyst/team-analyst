@@ -198,8 +198,10 @@ _(Pause for Selections only):_
 _(Pause for Selections only):_
 - [ ] Open `selections/Ultimates.xlsx` for the user. Let them know they can review and override any AI ultimate selections. Pause and wait for the user to confirm they are done reviewing before continuing.
 
+- [ ] **Update PROGRESS.md with headline indications:** After ultimate selections are complete, add a "Headline Indications" section showing: total unpaid reserve, case reserves, and IBNR from `selections/Ultimates.xlsx`. Use totals from the selected ultimates.
+
 - [ ] **Update REPORT.md:**
-  - Fill in **Section 2** Summary of Indications table: paid to date, case reserves, IBNR, total unpaid, and ultimate by segment/AY from `selections/Ultimates.xlsx`. Use totals from the selected ultimates.
+  - Fill in **Section 2** Summary of Indications table: total unpaid reserve, case reserves, and IBNR by segment/AY from `selections/Ultimates.xlsx`. Use totals from the selected ultimates.
   - Fill in **Section 6** Results by Segment: one subsection per measure (Paid LDF, Incurred LDF, etc.) with selected ultimates and method weighting summary; note any low-confidence selections or overrides.
   - Fill in **Section 5.2** Expected Loss Ratios: if IE/BF ran, populate from the ELR input file.
   - Add to **Section 11** Open Questions any AYs where method indications diverged materially or selections required significant judgment.
@@ -218,7 +220,7 @@ _(Pause for Selections only):_
 - [ ] Run `scripts/6-create-complete-analysis.py` and alert the user of the location and description of the final output files.
 
 - [ ] **Update REPORT.md:**
-  - Fill in **Section 2** Summary of Indications table: verify the totals match the final output from `6-create-complete-analysis.py`.
+  - Fill in **Section 2** Summary of Indications table: verify the total unpaid reserve, case reserves, and IBNR totals match the final output from `6-create-complete-analysis.py`.
   - Fill in **Section 0** Reviewer Quick-Start: summarize what the analysis covers (1–2 sentences), what key judgment calls were made, and where reviewer scrutiny is most needed.
   - Update **Section 14** Version History: add a row for the current version with today's date and a summary of changes since v0.1.
   - Fill any other sections to complete the first draft of the report.
