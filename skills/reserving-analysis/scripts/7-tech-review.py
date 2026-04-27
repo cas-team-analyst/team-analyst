@@ -219,14 +219,35 @@ def read_cl_sheet(ws):
 
 def detect_sheets(wb):
     names = wb.sheetnames
-    known_measures = {"Incurred Loss", "Paid Loss", "Reported Count", "Closed Count"}
+    known_measures_full = {"Incurred Loss", "Paid Loss", "Reported Count", "Closed Count"}
+    known_measures_short = {"Incurred", "Paid", "Reported", "Closed"}
+    known_selection = {"Loss Selection", "Count Selection"}
     tri_known = {"Incurred-to-Ult", "Paid-to-Ult", "Reported-to-Ult", "Closed-to-Ult"}
 
-    # Support both bare names ("Incurred Loss") and "Sel - " prefixed names.
-    # complete-analysis-values.xlsx uses the "Sel - " prefix with proper columns.
-    bare_measure_sheets = [n for n in names if n in known_measures]
-    sel_measure_sheets  = [n for n in names if n.startswith("Sel - ") and n[6:] in known_measures]
-    measure_sheets      = bare_measure_sheets if bare_measure_sheets else sel_measure_sheets
+    # Support multiple naming conventions:
+    # 1. Full names ("Incurred Loss", "Paid Loss") - complete analysis format
+    # 2. Short names ("Incurred", "Paid") - but these might be triangles, not measure tables
+    # 3. Selection sheets ("Loss Selection", "Count Selection") - values-only format
+    # 4. "Sel - " prefixed names - alternative complete analysis format
+    selection_sheets = [n for n in names if n in known_selection]
+    bare_measure_sheets = [n for n in names if n in known_measures_full]
+    short_measure_sheets = [n for n in names if n in known_measures_short]
+    sel_measure_sheets  = [n for n in names if n.startswith("Sel - ") and n[6:] in known_measures_full]
+    
+    # Priority: selection sheets > full names > Sel- prefix > short names
+    # (short names are last because they might be triangles, not tables)
+    if selection_sheets:
+        measure_sheets = selection_sheets
+        measure_sel_prefix = False
+    elif bare_measure_sheets:
+        measure_sheets = bare_measure_sheets
+        measure_sel_prefix = False
+    elif sel_measure_sheets:
+        measure_sheets = sel_measure_sheets
+        measure_sel_prefix = True
+    else:
+        measure_sheets = short_measure_sheets
+        measure_sel_prefix = False
 
     return {
         "measure_sheets":     measure_sheets,
@@ -258,7 +279,7 @@ def check_structure(ck, wb, info):
         ck.ok(g, "Measure sheets present", ", ".join(info["measure_sheets"]))
     else:
         ck.fail(g, "Measure sheets present",
-                "None of: Incurred Loss, Paid Loss, Reported Count, Closed Count")
+                "Expected: Incurred/Paid/Reported/Closed or Incurred Loss/Paid Loss/Reported Count/Closed Count")
 
     if info["diag_sheet"]:
         ck.ok(g, "Diagnostics sheet present")
@@ -1515,11 +1536,16 @@ def main():
           f"CL: {len(info['cl_sheets'])} | Sel: {len(info['sel_sheets'])} | "
           f"Triangles: {len(info['tri_sheets'])}\n")
 
+    # Load measure sheets based on format detected
     if info["measure_sel_prefix"]:
         # Sheets are named "Sel - Incurred Loss" etc. with headers on row 1 (no title row).
         # Strip the prefix so downstream checks receive the bare measure name as key.
         measure_dfs = {m[6:]: read_no_title(wb[m]) for m in info["measure_sheets"]}
+    elif any("Selection" in m for m in info["measure_sheets"]):
+        # Selection sheets ("Loss Selection", "Count Selection") - no title row, row 1 = headers
+        measure_dfs = {m: read_no_title(wb[m]) for m in info["measure_sheets"]}
     else:
+        # Full or short measure sheet names - expect title row
         measure_dfs = {m: read_with_title(wb[m]) for m in info["measure_sheets"]}
     sel_dfs       = {s: read_no_title(wb[s])   for s in info["sel_sheets"]}
     cl_dfs        = {c: read_cl_sheet(wb[c])   for c in info["cl_sheets"]}

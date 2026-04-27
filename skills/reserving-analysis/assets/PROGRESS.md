@@ -12,8 +12,10 @@
 
 - [ ] **Update REPORT.md:**
   - Fill in the header fields using the values from the setup plus Prepared by (user name), Draft Date (today).
-  - Fill in **Section 1.1** with the purpose of this analysis (e.g., "quarterly reserve review") and **Section 1.2** Scope table with any known segment/LOB/coverage/basis info.
-  - Add a row to **Section 14** Version History: v0.1, today's date, analyst, "Initial draft".
+  - Fill in **Section 1.1 Purpose** with the purpose of this analysis from the setup form (e.g., "quarterly reserve review for internal management").
+  - Fill in **Section 1.2 Scope** table with any known info from setup: Segment/LOB, basis (gross/net), currency, geography.
+  - Fill in **Section 1.3 Intended Internal Users** with the audience from the setup form.
+  - Add a row to **Section 14 Version History**: v0.1, today's date, analyst name, "Initial draft".
 
 - [ ] **Update REPLICATE.md:**
   - Fill in the Overview section using values from the setup form: Analysis name, Prepared by, Draft Date, etc.
@@ -24,9 +26,9 @@
 - [ ] Review the files available using the explore-excel in the reserving-analysis skill scripts. For each file add a file summary subsection to REPORT.md in the data section.
 
 - [ ] **Update REPORT.md:**
-  - Fill in **Section 3.1** Data Used table: one row per file (source name, as-of date, any notes on format or coverage).
-  - Fill in **Section 3.2** Data Reconciliation: note whether data was reconciled to a prior valuation or financial system and the result.
-  - Fill in **Section 3.3** Data Quality Observations: any outliers, gaps, negative development, coding anomalies, or unusual patterns noticed during exploration.
+  - Fill in **Section 3.1 Data Used** table: one row per data file (source name, as-of date, notes on format/coverage). Include triangle files and any other inputs.
+  - Fill in **Section 3.2 Data Reconciliation**: note whether data was reconciled to a prior valuation or financial system. If no reconciliation was performed, state "Not reconciled - data accepted as provided by [source]."
+  - Fill in **Section 3.3 Data Quality Observations**: any outliers, gaps, negative development, coding anomalies, or unusual patterns noticed during exploration. If none observed, state "No material data quality issues observed during initial review."
 
 # Step 3: Data Intake
 
@@ -56,10 +58,10 @@
 - [ ] Run all the other Python scripts to create output in `processed-data/`.
 
 - [ ] **Update REPORT.md:**
-  - Update **Section 3.1** Data Used table: add rows for triangle types used (paid, incurred, counts), confirm source file names and as-of dates; note if ELR file is present or absent.
-  - Update **Section 3.3** Data Quality Observations: note any adjustments made to `1a-load-and-validate.py` (e.g., outlier exclusions, coding changes), any data limitations discovered.
-  - Update **Section 3.4** Data Limitations: note missing data types (e.g., no ELR file → IE/BF skipped) and how limitations were handled.
-  - Update **Section 1.2** Scope table: fill in accident/underwriting years, coverages, and basis once confirmed from the data.
+  - Update **Section 3.1 Data Used** table: add rows for triangle types used (paid loss, incurred loss, reported count, closed count, exposure), confirm source file names and as-of dates; note if ELR file is present or absent.
+  - Update **Section 3.3 Data Quality Observations**: note any adjustments made to `1a-load-and-validate.py` (e.g., outlier exclusions, coding changes, negative development corrections), any data limitations discovered.
+  - Update **Section 3.4 Data Limitations**: note missing data types (e.g., "No closed count data - unable to estimate closure rates", "No ELR file provided - IE/BF methods skipped", "No prior selections available") and how limitations impact the analysis.
+  - Update **Section 1.2 Scope** table: fill in accident/underwriting years range (e.g., "2001-2024"), coverages (which measures are available), and basis once confirmed from the processed data.
 
 - [ ] **Update REPLICATE.md Step 2:**
   - List all input files in raw-data/ with brief descriptions
@@ -99,10 +101,12 @@ _(Pause for Selections only):_
 - [ ] Open `selections/Chain Ladder Selections - LDFs.xlsx` for the user. Let them know they can review and override any AI selections. Pause and wait for the user to confirm they are done reviewing before continuing.
 
 - [ ] **Update REPORT.md:**
-  - Fill in **Section 4.1** Methods Applied: add "Paid LDF" and/or "Reported LDF" rows for each triangle measure used; note "Selected via rule-based framework + AI cross-check."
-  - Fill in **Section 4.2** Method Weighting / Selection Logic: briefly describe the 14-criteria rule-based framework and that AI selections were used as a cross-check. Note maturity-based weighting approach.
-  - Fill in **Section 5.1** Development Patterns: note the selection basis (volume-weighted averages, which average windows were considered).
-  - Add to **Section 11** Open Questions any selections flagged as low-confidence or where the rule-based and AI selections diverged materially.
+  - Fill in **Section 4.1 Methods Applied** table: add rows for each method used. For each triangle measure (Paid Loss, Incurred Loss, Reported Count), add rows for "Paid LDF" or "Incurred LDF" or "Reported LDF" as applicable. In "Why Selected" column, note "Selected via rule-based framework with AI cross-check - mature year primary method."
+  - Fill in **Section 4.2 Method Weighting / Selection Logic**: Describe the 14-criteria rule-based framework used for LDF selections and note that AI selections provided a cross-check. Describe maturity-based weighting approach (e.g., "Chain Ladder weighted 100% for years 96+ months developed, BF/CL blend for immature years").
+  - Fill in **Section 5.1 Development Patterns**: Note the selection basis: "Volume-weighted averages with averaging windows from 3-year to all-year. Rule-based framework selected optimal window per age based on stability, volume, and fit diagnostics."
+  - **Section 5.3 Trend Assumptions** and **Section 5.4 Other Assumptions** are already filled with "Not implemented" - leave as-is unless user performed manual trend adjustments.
+  - **Section 4.3 LAE Treatment** is already filled with "Not applicable" - leave as-is unless user indicates LAE is handled separately.
+  - Add to **Section 11 Open Questions** any LDF selections flagged as low-confidence or where the rule-based and AI selections diverged materially (check the JSON reasoning files for "low" confidence flags).
 
 - [ ] **Update REPLICATE.md Step 4:**
   - Document that `2a-chainladder-create-excel.py` was run to create the selection workbook
@@ -144,8 +148,8 @@ _(Pause for Selections only):_
 - [ ] Open `selections/Chain Ladder Selections - Tail.xlsx` for the user. Let them know they can review and override any tail factor selections. Pause and wait for the user to confirm they are done reviewing before continuing.
 
 - [ ] **Update REPORT.md:**
-  - Update **Section 5.1** Development Patterns: add tail factor source (curve fit method selected, R² values, leave-one-out diagnostics).
-  - Add to **Section 11** Open Questions any tail selections flagged as low-confidence or where curve fit diagnostics were poor or rule-based and AI selections diverged materially.
+  - Update **Section 5.1 Development Patterns**: Add tail factor details: "Tail factor selected from curve fitting diagnostics. [State which method was selected for each measure - Bondy, Exponential Decay, etc.] with R² values of [X.XX]. Leave-one-out testing showed [describe results]." Reference the tail selection workbook for full diagnostics.
+  - Add to **Section 11 Open Questions** any tail selections flagged as low-confidence or where curve fit diagnostics were poor (R² < 0.85) or where rule-based and AI selections diverged materially.
 
 - [ ] **Update REPLICATE.md Step 5:**
   - Document that `2c-tail-methods-diagnostics.py` was run to fit curves and create diagnostics
@@ -160,9 +164,9 @@ _(Pause for Selections only):_
 - [ ] Run `2f-chainladder-ultimates.py`, `3-ie-ultimates.py`, and `4-bf-ultimates.py`. Debug any errors that occur. It is normal for IE and BF to get skipped if the user didn't provide the necessary data (exposure, initial expected). Note: `2f-chainladder-ultimates.py` will use tail factors from `selections/Chain Ladder Selections - Tail.xlsx` (priority 1 — user's final selection), falling back to `selections/tail-ai-rules-based.json` (priority 2), then `selections/tail-ai-open-ended.json` (priority 3) if Excel is empty.
 
 - [ ] **Update REPORT.md:**
-  - Update **Section 4.1** Methods Applied: confirm which methods actually ran vs. were skipped, and why (e.g., "BF skipped — no ELR file provided").
-  - Update **Section 5.2** Expected Loss Ratios: if IE/BF ran, fill in the ELR table from the input file.
-  - Update **Section 4.3** LAE Treatment: fill in how DCC/ALAE and A&O/ULAE are handled, if applicable.
+  - Update **Section 4.1 Methods Applied** table: Confirm which methods actually ran vs. were skipped. If IE or BF were skipped, note why (e.g., "Initial Expected skipped - no expected loss rate file provided"). Update the "Segments Applied" and "Why Selected" columns based on actual execution.
+  - Update **Section 5.2 Expected Loss Ratios**: If IE/BF ran, fill in the ELR table showing the a priori expected loss ratios used for each accident year. If these methods were skipped, state "Not applicable - IE/BF methods not used in this analysis."
+  - **Section 4.3 LAE Treatment** should already state "Not applicable" unless user has specified separate LAE handling - confirm this is correct or update if needed.
 
 - [ ] **Update REPLICATE.md Step 6:**
   - Document that `2f-chainladder-ultimates.py` was run (note which Excel file it read LDFs and tail factors from)
@@ -205,10 +209,13 @@ _(Pause for Selections only):_
 - [ ] **Update PROGRESS.md with headline indications:** After ultimate selections are complete, add a "Headline Indications" section showing: total unpaid reserve, case reserves, and IBNR from `selections/Ultimates.xlsx`. Use totals from the selected ultimates.
 
 - [ ] **Update REPORT.md:**
-  - Fill in **Section 2** Summary of Indications table: total unpaid reserve, case reserves, and IBNR by segment/AY from `selections/Ultimates.xlsx`. Use totals from the selected ultimates.
-  - Fill in **Section 6** Results by Segment: one subsection per category (Loss and Count) with selected ultimates and method weighting summary; note any low-confidence selections or overrides.
-  - Fill in **Section 5.2** Expected Loss Ratios: if IE/BF ran, populate from the ELR input file.
-  - Add to **Section 11** Open Questions any AYs where method indications diverged materially or selections required significant judgment.
+  - Fill in **Section 2 Summary of Indications** table: Extract total unpaid reserve, case reserves, and IBNR from the selected ultimates in `selections/Ultimates.xlsx`. Sum across all accident years. If multiple segments/categories exist, create one row per category (Loss, Count) showing totals.
+  - Fill in **Section 2 Comparison to prior estimate** table: If prior estimate data is available, show prior ultimate, current ultimate, change ($), and change (%). If no prior estimate exists, state "Not applicable - no prior estimate available for comparison."
+  - Fill in **Section 2 Key drivers of change**: If comparing to prior, briefly describe what changed (e.g., "emergence better/worse than expected", "LDF selections revised", "additional year of data"). If no comparison, state "Not applicable."
+  - Fill in **Section 6 Results by Segment**: Create one subsection (6.1, 6.2, etc.) per category (Loss, Count). For each, state: "Selected ultimates: See Ultimates.xlsx [category] sheet", "Method weighting: [summarize - e.g., mature years use CL, immature years use BF]", "Notable judgment calls: [list any manual overrides or low-confidence selections]."
+  - Update **Section 5.2 Expected Loss Ratios**: If IE/BF methods were used, populate the table with the a priori ELRs by accident year. If not used, state "Not applicable - IE/BF not used."
+  - Update **Section 5.5 Assumption Rationale**: Add the ELR source if applicable (e.g., "Expected loss ratios from [company pricing / industry benchmark / historical average]").
+  - Add to **Section 11 Open Questions** any accident years where method indications diverged materially (e.g., "> 20% difference between CL and BF") or where selections required significant judgment. Flag any years with low confidence ratings.
 
 - [ ] **Update REPLICATE.md Step 7:**
   - Document that `5a-ultimates-create-excel.py` was run to create the ultimates workbook with Losses and Counts sheets
@@ -224,10 +231,12 @@ _(Pause for Selections only):_
 - [ ] Run `scripts/6-create-complete-analysis.py` and alert the user of the location and description of the final output files.
 
 - [ ] **Update REPORT.md:**
-  - Fill in **Section 2** Summary of Indications table: verify the total unpaid reserve, case reserves, and IBNR totals match the final output from `6-create-complete-analysis.py`.
-  - Fill in **Section 0** Reviewer Quick-Start: summarize what the analysis covers (1–2 sentences), what key judgment calls were made, and where reviewer scrutiny is most needed.
-  - Update **Section 14** Version History: add a row for the current version with today's date and a summary of changes since v0.1.
-  - Fill any other sections to complete the first draft of the report.
+  - Verify **Section 2 Summary of Indications** table: Confirm the total unpaid reserve, case reserves, and IBNR totals match the final output from `6-create-complete-analysis.py`. Check against the Analysis.xlsx file totals.
+  - Fill in **Section 0 Reviewer Quick-Start**: Write a brief 1-2 sentence summary of what the analysis covers (e.g., "Workers Compensation reserve analysis for AY 2001-2024 using Chain Ladder and Bornhuetter-Ferguson methods"). List 2-3 key judgment calls made (e.g., "BF selected for AY 2023-2024 due to low maturity"). State where reviewer scrutiny is most needed (e.g., "Recent year ultimate selections", "Tail factor assumptions", "Method divergence for AY 2012").
+  - Fill in **Section 9 Reliance on Others** table: List data sources and information relied upon (e.g., "Claims Department - triangle data as of [date]", "Finance - exposure data", etc.). If no external reliance, state "No external sources relied upon beyond internal company data systems."
+  - Fill in **Section 10 Information Date**: State the valuation date/as-of date for the analysis. Under "Subsequent events considered", state either "None known as of [draft date]" or describe any events.
+  - Update **Section 14 Version History**: Add a row for the current version with today's date and a summary of changes since v0.1 (e.g., "v0.2 - added ultimate selections and completed initial analysis").
+  - **Final completeness check**: Review all sections and fill any remaining placeholders. For sections that genuinely don't apply (LAE, trending, sensitivity), confirm the "Not implemented" or "Not applicable" text is present. For sections with content, ensure no bracketed placeholders remain.
 
 - [ ] **Update REPLICATE.md Step 8:**
   - Document that `6-create-complete-analysis.py` was run
@@ -242,8 +251,21 @@ _(Pause for Selections only):_
 - [ ] Run `scripts/7-tech-review.py` and alert the user of the results and where the output is saved to.
 
 - [ ] **Update REPORT.md:**
-  - Fill in **Section 7** Diagnostics and Reasonableness Checks: check off each item and note results (e.g., loss ratio progression, frequency/severity trends, actual vs. expected emergence). Populate "Anomalies to investigate" with any flags from `7-tech-review.py`.
-  - Fill in **Section 8.2** Sources of Uncertainty: note key risk factors — process risk (thin data), parameter risk (trend/tail uncertainty), model risk (method selection), any systemic risks flagged.
+  - Fill in **Section 7 Diagnostics and Reasonableness Checks**: Check off each item in the checklist and add notes:
+    - "Loss ratios by AY": State "Reviewed - progression is reasonable" or note any anomalies (e.g., "AY 2007 shows elevated loss ratio - large claim suspected")
+    - "Frequency / severity trends": State "Consistent with historical patterns" or note any flags from `7-tech-review.py` (e.g., "YoY severity spikes flagged in periods 3, 4, 6 - see tech review")
+    - "Implied paid and reported development": State "Patterns consistent with triangle selections"
+    - "Actual vs. expected emergence": State "Not applicable - no prior estimate" or provide brief comparison if available
+    - "Comparison to independent benchmark": State "Not performed" unless benchmark data was used
+    - "Hindsight test on prior ultimates": State "Not performed" or provide results if available
+    - "Ratio of IBNR to case reserves": State "Reviewed - ratios reasonable" or note concerns
+  - Under **"Anomalies to investigate"**: List all FAIL and WARN items from `7-tech-review.py`. Examples: "Tech review FAIL: 16 periods with IBNR < 0 (IE method mis-calibrated)", "Tech review WARN: YoY severity spikes of 45%, 101%, 244% in periods 3, 4, 6", "Tech review WARN: 136 reported-to-ult cells > 1.0 due to sub-1.0 count CDFs"
+  - Fill in **Section 8.2 Sources of Uncertainty**: Describe key risk factors:
+    - Process risk: e.g., "Limited development history for recent years - thin data increases parameter uncertainty"
+    - Parameter risk: e.g., "Tail factor uncertainty - curve fits show R² of [values], alternative tail factors could shift reserve by [estimate]", "LDF selection uncertainty - mature years stable, recent years volatile"
+    - Model risk: e.g., "Method selection for immature years - CL vs BF choice drives material reserve differences"
+    - Systemic risk: Note any flagged by tech review or judgment (e.g., "AY 2007 large loss not separately estimated - if re-opened could impact ultimate")
+  - **Section 8.1 Sensitivity** is marked "Not implemented" - leave as-is unless user performed manual sensitivity testing.
 
 - [ ] **Update REPLICATE.md Step 9:**
   - Document that `7-tech-review.py` was run

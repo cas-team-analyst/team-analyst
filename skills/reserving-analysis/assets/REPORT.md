@@ -128,8 +128,10 @@
 [Describe how methods were weighted by maturity, and any segment-specific logic. Call out where judgment was applied vs. formulaic selection.]
 
 ### 4.3 LAE Treatment
-- **DCC / ALAE:** [Analyzed with loss / separately / ratio method]
-- **A&O / ULAE:** [Paid-to-paid ratio / other]
+**Not applicable.** This analysis assumes loss triangles include LAE (loss and allocated loss adjustment expense combined), or LAE is not being estimated separately. If LAE needs to be estimated separately, that is outside the scope of this workflow.
+
+- **DCC / ALAE:** Not separately estimated
+- **A&O / ULAE:** Not separately estimated
 
 ---
 
@@ -145,18 +147,25 @@
 | | | |
 
 ### 5.3 Trend Assumptions
+**Not implemented in this analysis.** The current workflow does not include trend selection or application. Loss development methods (Chain Ladder, BF, IE) rely on historical development patterns without explicit trending adjustments.
+
 | Segment | Frequency | Severity | Pure Premium |
 |---|---|---|---|
-| | | | |
+| N/A | N/A | N/A | N/A |
 
 ### 5.4 Other Assumptions
-- **Rate change:** [ ]
-- **Case reserve adequacy:** [Assumed stable / Adjustment applied]
-- **Settlement rate / claim closing patterns:** [ ]
-- **Mix / law / tort environment:** [ ]
+- **Rate change:** Not explicitly modeled in this analysis
+- **Case reserve adequacy:** Assumed stable (no adjustments applied)
+- **Settlement rate / claim closing patterns:** Patterns emerge from historical triangle development; no explicit assumptions
+- **Mix / law / tort environment:** Not explicitly modeled
 
 ### 5.5 Assumption Rationale
-*For each material assumption, note the rationale and supporting evidence. Flag any that are primarily judgment-driven.*
+**Material assumptions in this analysis:**
+- **LDF selections:** Based on volume-weighted averages with rule-based framework (14 criteria) and AI cross-check. See Section 4.2 and LDF selection workbooks for detailed reasoning.
+- **Tail factors:** Based on curve fitting (Bondy, Exponential Decay, etc.) with leave-one-out validation. See tail selection workbook for detailed reasoning.
+- **Expected loss ratios (if used):** [Fill in source if BF/IE methods were used, otherwise note "Not applicable - CL only"]
+
+*Any assumption primarily judgment-driven should be flagged in Section 11.*
 
 ---
 
@@ -191,11 +200,13 @@
 ## 8. Sensitivity and Uncertainty
 
 ### 8.1 Sensitivity to Key Assumptions
+**Not implemented in this analysis.** Sensitivity testing would require re-running projections with varied assumptions. This can be added in future iterations.
+
 | Assumption | Change | Impact on Total Ultimate |
 |---|---|---|
-| Tail factor | ± [ ] | [ ] |
-| ELR | ± [ ] | [ ] |
-| Severity trend | ± [ ] | [ ] |
+| Tail factor | ± (not tested) | (not tested) |
+| ELR | ± (not tested) | (not tested) |
+| LDF selections | ± (not tested) | (not tested) |
 
 ### 8.2 Sources of Uncertainty
 *Per ASOP No. 43 — discuss the risks that could cause actuals to differ from estimate.*
