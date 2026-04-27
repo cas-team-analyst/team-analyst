@@ -8,7 +8,7 @@ description: Actuarial reserving analysis workflow. Use when the user requests r
 ## Startup Steps - Follow Every Time!
 
 1. Identify and mount the project folder. Obtain permission to modify it.
-2. Identify and mount the plugin skill folder (if applicable, NOT the anthropic-skills folder).
+2. Identify and mount the plugin skill folder (if applicable, NOT the anthropic-skills folder) so you can copy files from it into the project folder.
 3. Check for existing `PROGRESS.md` file and use it to understand what the next step is.
 4. If no `PROGRESS.md` exists:
    - Copy PROGRESS.md, REPORT.md, and REPLICATE.md from `assets/` to project directory. Use copy commands, do NOT read and write the files.

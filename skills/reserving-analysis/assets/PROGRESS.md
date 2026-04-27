@@ -70,7 +70,7 @@
 
 # Step 4: Chain Ladder LDF Selections
 
-- [ ] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. This framework includes 14 selection criteria and 10 diagnostic adjustment rules. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
+- [ ] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
 
 - [ ] Run `2a-chainladder-create-excel.py` to create the LDF selection workbook and export per-measure context files. The script will print the context file paths it creates (e.g., "Exported MD: selections/chainladder-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
 
