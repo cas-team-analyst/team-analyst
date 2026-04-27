@@ -456,8 +456,11 @@ def main():
         tri_df = pd.read_parquet(INPUT_TRIANGLES)
         exp_sub = tri_df[(tri_df['measure'] == 'Exposure') & tri_df['value'].notna()]
         if not exp_sub.empty:
-            exp_piv = exp_sub.pivot(index='period', columns='age', values='value')
-            exp_md = df_to_markdown(exp_piv, index=True)
+            # Format Exposure as simple 2-column table (period, value)
+            # Exposure doesn't develop over age, so we take the last value per period
+            exp_simple = exp_sub.groupby('period', observed=True).agg({'value': 'last'}).reset_index()
+            exp_simple.columns = ['Period', 'Exposure']
+            exp_md = df_to_markdown(exp_simple, index=False)
     except Exception:
         pass
         
