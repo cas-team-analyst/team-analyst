@@ -3,18 +3,27 @@
 import pandas as pd
 from typing import List, Optional
 
+__all__ = [
+    'validate_triangle_data',
+    'validate_exposure_data',
+    'validate_combined_data',
+    'validate_prior_selections',
+    'validate_expected_loss_rates'
+]
+
 
 def validate_triangle_data(df: pd.DataFrame) -> None:
-    """Validate triangle data format. Raises ValueError if validation fails.
+    """Validate developing triangle data (Incurred Loss, Paid Loss, Reported Count, Closed Count).
     
-    Special handling for Exposure:
-    - Exposure measure can have null/placeholder ages since it doesn't develop over time
-    - Downstream scripts only use the most recent exposure value per period (diagonal)
+    Raises ValueError if validation fails.
+    
+    For Exposure data, use validate_exposure_data() instead.
+    For combined data with both triangles and exposure, use validate_combined_data().
     """
     errors = []
     
     if df.empty:
-        raise ValueError("Data validation failed!\n\nERRORS:\n  - DataFrame is empty")
+        raise ValueError("Triangle data validation failed!\n\nERRORS:\n  - DataFrame is empty")
     
     # Required columns and types
     required = {
@@ -33,18 +42,10 @@ def validate_triangle_data(df: pd.DataFrame) -> None:
         elif expected_type == 'numeric' and not pd.api.types.is_numeric_dtype(df[col]):
             errors.append(f"'{col}' must be numeric")
     
-    # Check for nulls in critical columns (excluding age for Exposure measure)
-    for col in ['period', 'value', 'measure']:
+    # Check for nulls in all critical columns (triangles develop over age)
+    for col in ['period', 'age', 'value', 'measure']:
         if col in df.columns and df[col].isna().sum() > 0:
             errors.append(f"'{col}' contains {df[col].isna().sum()} null value(s)")
-    
-    # Check age nulls only for non-Exposure measures
-    if 'age' in df.columns and 'measure' in df.columns:
-        non_exposure = df[df['measure'] != 'Exposure']
-        if not non_exposure.empty:
-            age_nulls = non_exposure['age'].isna().sum()
-            if age_nulls > 0:
-                errors.append(f"'age' contains {age_nulls} null value(s) in non-Exposure measures")
     
     # Check ordered categoricals
     for col in ['period', 'age']:
@@ -59,29 +60,108 @@ def validate_triangle_data(df: pd.DataFrame) -> None:
             errors.append(f"Invalid unit_type: {', '.join(map(str, invalid))}")
     
     if 'measure' in df.columns:
-        valid_measures = ['Incurred Loss', 'Paid Loss', 'Reported Count', 'Closed Count', 'Exposure']
+        valid_measures = ['Incurred Loss', 'Paid Loss', 'Reported Count', 'Closed Count']
         invalid = df[~df['measure'].isin(valid_measures)]['measure'].unique()
         if len(invalid) > 0:
-            errors.append(f"Invalid measure: {', '.join(map(str, invalid))}")
+            errors.append(f"Invalid measure: {', '.join(map(str, invalid))} (use validate_exposure_data for Exposure)")
     
-    # Check duplicates (only for measures that have meaningful ages)
+    # Check duplicates
     if all(col in df.columns for col in ['source', 'period', 'age', 'measure']):
-        # For non-Exposure measures, check duplicates
-        non_exposure = df[df['measure'] != 'Exposure']
-        if not non_exposure.empty:
-            dups = non_exposure.duplicated(subset=['source', 'period', 'age', 'measure'], keep=False)
-            if dups.any():
-                errors.append(f"Found {dups.sum()} duplicate source/period/age/measure combinations (non-Exposure)")
-        
-        # For Exposure, check period duplicates only
-        exposure = df[df['measure'] == 'Exposure']
-        if not exposure.empty:
-            dups = exposure.duplicated(subset=['source', 'period', 'measure'], keep=False)
-            if dups.any():
-                errors.append(f"Found {dups.sum()} duplicate source/period/measure combinations for Exposure")
+        dups = df.duplicated(subset=['source', 'period', 'age', 'measure'], keep=False)
+        if dups.any():
+            errors.append(f"Found {dups.sum()} duplicate source/period/age/measure combinations")
     
     if errors:
-        raise ValueError("Data validation failed!\n\nERRORS:\n" + "\n".join(f"  - {e}" for e in errors))
+        raise ValueError("Triangle data validation failed!\n\nERRORS:\n" + "\n".join(f"  - {e}" for e in errors))
+
+
+def validate_exposure_data(df: pd.DataFrame) -> None:
+    """Validate exposure data format. Raises ValueError if validation fails.
+    
+    Exposure data requirements:
+    - Required columns: period, value, measure, unit_type
+    - age column is optional; if present, values can be None/null
+    - period must be an ordered categorical
+    - One value per period (no duplicates by source/period/measure)
+    """
+    errors = []
+    
+    if df.empty:
+        raise ValueError("Exposure data validation failed!\n\nERRORS:\n  - DataFrame is empty")
+    
+    # Check measure is Exposure
+    if 'measure' in df.columns:
+        if not (df['measure'] == 'Exposure').all():
+            non_exposure = df[df['measure'] != 'Exposure']['measure'].unique()
+            errors.append(f"validate_exposure_data() expects only Exposure measure, found: {', '.join(map(str, non_exposure))}")
+    
+    # Required columns and types (age is not required for exposure)
+    required = {
+        'period': 'category',
+        'value': 'numeric',
+        'measure': 'category',
+        'unit_type': 'category'
+    }
+    
+    for col, expected_type in required.items():
+        if col not in df.columns:
+            errors.append(f"Missing required column: {col}")
+        elif expected_type == 'category' and df[col].dtype.name != 'category':
+            errors.append(f"'{col}' must be categorical")
+        elif expected_type == 'numeric' and not pd.api.types.is_numeric_dtype(df[col]):
+            errors.append(f"'{col}' must be numeric")
+    
+    # Check for nulls in critical columns (age nulls are OK for exposure)
+    for col in ['period', 'value', 'measure']:
+        if col in df.columns and df[col].isna().sum() > 0:
+            errors.append(f"'{col}' contains {df[col].isna().sum()} null value(s)")
+    
+    # Check period is ordered categorical
+    if 'period' in df.columns and df['period'].dtype.name == 'category' and not df['period'].cat.ordered:
+        errors.append("'period' categorical must be ordered")
+    
+    # If age column exists, it should be an ordered categorical (even if all values are None)
+    if 'age' in df.columns and df['age'].dtype.name == 'category' and not df['age'].cat.ordered:
+        errors.append("'age' categorical must be ordered (values can be None for Exposure)")
+    
+    # Check valid values
+    if 'unit_type' in df.columns:
+        valid_units = ['Count', 'Dollars']
+        invalid = df[~df['unit_type'].isin(valid_units)]['unit_type'].unique()
+        if len(invalid) > 0:
+            errors.append(f"Invalid unit_type: {', '.join(map(str, invalid))}")
+    
+    # Check duplicates (by period only, age is irrelevant for exposure)
+    if all(col in df.columns for col in ['source', 'period', 'measure']):
+        dups = df.duplicated(subset=['source', 'period', 'measure'], keep=False)
+        if dups.any():
+            errors.append(f"Found {dups.sum()} duplicate source/period/measure combinations")
+    
+    if errors:
+        raise ValueError("Exposure data validation failed!\n\nERRORS:\n" + "\n".join(f"  - {e}" for e in errors))
+
+
+def validate_combined_data(df: pd.DataFrame) -> None:
+    """Validate combined triangle and exposure data.
+    
+    Separates Exposure from triangle measures and validates each appropriately.
+    """
+    if df.empty:
+        raise ValueError("Data validation failed!\n\nERRORS:\n  - DataFrame is empty")
+    
+    if 'measure' not in df.columns:
+        raise ValueError("Data validation failed!\n\nERRORS:\n  - Missing required column: measure")
+    
+    # Separate exposure from triangles
+    exposure = df[df['measure'] == 'Exposure']
+    triangles = df[df['measure'] != 'Exposure']
+    
+    # Validate each separately
+    if not triangles.empty:
+        validate_triangle_data(triangles)
+    
+    if not exposure.empty:
+        validate_exposure_data(exposure)
 
 
 def validate_prior_selections(df: pd.DataFrame, triangle_data: pd.DataFrame) -> None:

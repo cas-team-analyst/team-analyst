@@ -1,7 +1,3 @@
-# Reads raw insurance claims data from Excel files and converts it into a standardized format
-# that all the other chain-ladder scripts can work with. Handles different data types (paid
-# losses, incurred losses, claim counts) and validates that everything is formatted correctly.
-
 """
 Data preparation script for triangle analysis.
 
@@ -16,7 +12,11 @@ from pathlib import Path
 from typing import Optional
 
 from modules import config
-from modules.validators import validate_triangle_data, validate_prior_selections, validate_expected_loss_rates
+from modules.validators import (
+    validate_combined_data,
+    validate_prior_selections, 
+    validate_expected_loss_rates
+)
 
 # Paths from modules/config.py — override here if needed:
 DATA_FILE_PATH = config.RAW_DATA
@@ -92,7 +92,7 @@ def read_triangle_data(
         "ERROR: read_triangle_data() is not implemented!\n\n"
         "You must implement this function to read your raw triangle data.\n"
         "See the function docstring for required output format.\n\n"
-        "The output must pass validate_triangle_data() checks.\n"
+        "The output must pass validate_combined_data() checks.\n"
         "="*70
     )
 
@@ -104,7 +104,7 @@ def read_and_process_triangles():
     This function should:
     1. Call read_triangle_data() for each triangle type you have
     2. Combine them into a single DataFrame
-    3. Ensure proper categorical ordering
+    3. Ensure proper categorical ordering (CRITICAL: age must be ordered categorical)
     4. Pass validation
     5. Save to parquet and CSV
     
@@ -119,21 +119,42 @@ def read_and_process_triangles():
     )
     
     paid = read_triangle_data(...)
-    # ... repeat for other triangles
+    
+    # For Exposure: create with age=None, but define age categories from other triangles
+    exposure_data = []
+    for period in incurred['period'].cat.categories:
+        exposure_data.append({
+            'period': period,
+            'age': None,  # Exposure doesn't develop
+            'value': get_exposure_for_period(period),
+            'measure': 'Exposure',
+            'unit_type': 'Count',
+            'source': 'your_source',
+            'details': ''
+        })
+    exposure = pd.DataFrame(exposure_data)
     
     # Combine
-    all_data = pd.concat([incurred, paid, ...], ignore_index=True)
+    all_data = pd.concat([incurred, paid, exposure, ...], ignore_index=True)
     
-    # Ensure categorical ordering
+    # CRITICAL: Re-apply categorical ordering after concat
+    # The age column MUST be an ordered categorical even though Exposure rows have None values
     all_data['period'] = pd.Categorical(
         all_data['period'], 
         categories=incurred['period'].cat.categories, 
         ordered=True
     )
-    # ... same for age, measure, unit_type, source
+    all_data['age'] = pd.Categorical(
+        all_data['age'],  # This will have None values for Exposure rows
+        categories=incurred['age'].cat.categories,  # Use age categories from a non-Exposure triangle
+        ordered=True
+    )
+    all_data['measure'] = all_data['measure'].astype('category')
+    all_data['unit_type'] = all_data['unit_type'].astype('category')
+    all_data['source'] = all_data['source'].astype('category')
     
-    # Validate (will raise error if format is wrong)
-    validate_triangle_data(all_data)
+    # Validate using the combined validator that handles both triangles and exposure
+    validate_combined_data(all_data)
     
     # Save
     all_data.to_parquet(OUTPUT_PATH + "1_triangles.parquet", index=False)
@@ -225,22 +246,27 @@ if __name__ == "__main__":
         read_and_process_triangles()
         print(f"✓ Triangle data complete: {OUTPUT_PATH}1_triangles.parquet/.csv")
         
-        # Load triangles for validation of optional data
+        # Load triangles and validate
+        print("  Validating combined data...")
         df_triangles = pd.read_parquet(OUTPUT_PATH + "1_triangles.parquet")
+        validate_combined_data(df_triangles)
+        print(f"  ✓ Validation passed: {len(df_triangles)} rows")
         
         # Process prior selections (optional)
         print("\n[2/3] Processing prior selections (if available)...")
         df_prior = read_and_process_prior_selections(df_triangles)
         if df_prior is not None:
+            validate_prior_selections(df_prior, df_triangles)
             output_file = OUTPUT_PATH + "../prior-selections.csv"
             df_prior.to_csv(output_file, index=False)
-            print(f"✓ Saved to: {output_file}")
+            print(f"✓ Prior selections validated and saved to: {output_file}")
         
         # Process expected loss rates (optional)
         print("\n[3/3] Processing expected loss rates (if available)...")
         df_expected = read_and_process_expected_loss_rates(df_triangles)
         if df_expected is not None:
-            print(f"✓ Saved to: {OUTPUT_PATH}1_expected_loss_rates.parquet/.csv")
+            validate_expected_loss_rates(df_expected, df_triangles)
+            print(f"✓ Expected loss rates validated and saved to: {OUTPUT_PATH}1_expected_loss_rates.parquet/.csv")
         
         print("\n" + "="*70)
         print("✓ DATA PREPARATION COMPLETE!")
@@ -251,7 +277,7 @@ if __name__ == "__main__":
         print("\nNEXT STEPS:")
         print("1. Implement read_triangle_data() to read your raw data source")
         print("2. Implement read_and_process_triangles() to combine triangles")
-        print("3. Ensure output passes validate_triangle_data() checks")
+        print("3. Ensure output passes validate_combined_data() checks")
         print("4. Run this script again")
         print("\nSee function docstrings for detailed requirements.")
         print("="*70)
