@@ -121,13 +121,13 @@ This document provides step-by-step instructions to reproduce the analysis resul
    - **Reads:** `selections/Chain Ladder Selections - Tail.xlsx` (User Selection → Rules-Based AI → Open-Ended AI)
    - **Output:** `ultimates/projected-ultimates.parquet` (includes ultimate_cl, ibnr_cl columns)
 
-2. `scripts/3-ie-ultimates.py` — Calculate Initial Expected ultimates (if ELR file provided)
-   - **Status:** [Ran / Skipped - reason]
-   - **Output:** Added ultimate_ie column to `ultimates/projected-ultimates.parquet`
+2. `scripts/3-ie-ultimates.py` — Calculate Initial Expected ultimates
+   - **Status:** Ran — used exposure-based fallback ELR (3-year rolling average of incurred loss per payroll; confirmed April 27, 2026)
+   - **Output:** Added `ultimate_ie`, `ibnr_ie` columns to `ultimates/projected-ultimates.parquet`
 
-3. `scripts/4-bf-ultimates.py` — Calculate Bornhuetter-Ferguson ultimates (if ELR file provided)
-   - **Status:** [Ran / Skipped - reason]
-   - **Output:** Added ultimate_bf column to `ultimates/projected-ultimates.parquet`
+3. `scripts/4-bf-ultimates.py` — Calculate Bornhuetter-Ferguson ultimates
+   - **Status:** Ran — used CL ultimates and IE expected rates from above
+   - **Output:** Added `ultimate_bf`, `ibnr_bf` columns to `ultimates/projected-ultimates.parquet`
 
 ---
 
@@ -135,7 +135,26 @@ This document provides step-by-step instructions to reproduce the analysis resul
 
 **Scripts run:**
 1. `scripts/5a-ultimates-create-excel.py` — Create ultimates selection workbook
-   - **Output:** `selections/Ultimates.xlsx`
+   - **Output:** `selections/Ultimates.xlsx` (sheets: Losses, Counts)
+   - **Context files exported:** `selections/ultimates-context-loss.md`, `selections/ultimates-context-count.md`
+
+**AI Selection Process:**
+- Rules-based AI selector reviewed both context files → `selections/ultimates-ai-rules-based-loss.json`, `selections/ultimates-ai-rules-based-count.json`
+- Open-ended AI selector independently reviewed both context files → `selections/ultimates-ai-open-ended-loss.json`, `selections/ultimates-ai-open-ended-count.json`
+- Both selectors agree on AYs 2001–2022 (Paid CL for Loss; Reported Count CL for Count)
+- Divergence on 2023 and 2024 (Loss only): Rules-Based selected Paid CL (higher); Open-Ended selected a lower BF-based ultimate. Difference: ~$1.5M on 2023, ~$1.4M on 2024.
+
+2. `scripts/5b-ultimates-update-selections.py` — Insert AI selections into Excel workbook
+   - Populated Rules-Based AI Selection columns (48 updates across Loss + Count sheets)
+   - Populated Open-Ended AI Selection columns (48 updates across Loss + Count sheets)
+
+**USER ACTION - Manual Selections:**
+[If user made manual selections, list them here]
+- **Category:** [Loss/Count], **Period:** [year], **Selected Ultimate:** [value], **Reason:** [explanation]
+- **If no manual overrides:** All selections are from the Rules-Based AI Selection column.
+
+**To replicate:** Extract final ultimates from the "User Selection" column in `selections/Ultimates.xlsx`. If blank, use "Rules-Based AI Selection" column. Do not re-run the AI selector.
+
 
 **AI Selection Process:**
 - Rules-based AI selector reviewed method indications and made ultimate selections → `selections/ultimates-ai-rules-based.json`
@@ -158,18 +177,21 @@ This document provides step-by-step instructions to reproduce the analysis resul
 ## Step 7: Final Analysis
 
 **Scripts run:**
-1. `scripts/6-create-complete-analysis.py` — Create consolidated analysis workbook
+1. `scripts/6-create-complete-analysis.py` — Create consolidated analysis workbook (run April 27, 2026)
    - **Reads:** `ultimates/projected-ultimates.parquet`
-   - **Reads:** `selections/Ultimates.xlsx` (User Selection → Rules-Based AI → Open-Ended AI → JSON → method fallback)
-   - **Output:** 
-     - `output/selected-ultimates.xlsx`
-     - `output/post-method-series.xlsx`
-     - `output/post-method-triangles.xlsx`
-     - `output/complete-analysis.xlsx`
+   - **Reads:** `selections/Ultimates.xlsx` (User Selection → Rules-Based AI; 48 selections loaded)
+   - **Reads:** `selections/Chain Ladder Selections - LDFs.xlsx`, `selections/Chain Ladder Selections - Tail.xlsx`
+   - **Reads:** `processed-data/2_enhanced.parquet`, `processed-data/4_ldf_averages.parquet`
+   - **Output:**
+     - `output/Complete Analysis.xlsx` — Full workbook with cross-sheet formulas (open in Excel)
+     - `output/Complete Analysis - Values Only.xlsx` — Plain computed values (safe for programmatic reads)
+   - **Headline indications:** Total unpaid $5,090,086 (IBNR $3,241,545 + case $1,848,541); total ultimate $48,706,481
 
-2. `scripts/7-tech-review.py` — Run technical review checks
-   - **Output:** `output/tech-review.[format]`
-   - **Issues flagged:** [List any warnings or errors, or "None - all checks passed"]
+2. `scripts/7-tech-review.py` — Run technical review checks (run April 27, 2026)
+   - **Output:** `output/Tech Review.xlsx`
+   - **Result:** 17 PASS / 18 WARN / 1 FAIL
+   - **Expected FAIL:** Measure sheets (Incurred Loss, Paid Loss, etc.) not present in Values Only file — by design; see Complete Analysis.xlsx for full sheets.
+   - **Key warnings:** (1) Negative IBNR on 5 mature AYs — case reserve takedown artifact, no action needed. (2) AY 2007 severity outlier — large-loss year, flagged for reviewer. (3) X-to-Ult reversals in Incurred (31) and Count (6) — normal for WC case reserve reductions and count reopenings. (4) AYs 2023–2024 method divergence — documented in REPORT.md Section 11.
 
 ---
 

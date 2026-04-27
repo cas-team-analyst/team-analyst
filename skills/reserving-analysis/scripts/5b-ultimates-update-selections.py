@@ -19,6 +19,7 @@ import pathlib
 from openpyxl import load_workbook
 
 from modules import config
+from modules.xl_utils import build_column_map
 
 # Paths from modules/config.py — override here if needed:
 RULES_BASED_LOSS_FILE = config.SELECTIONS + "ultimates-ai-rules-based-loss.json"
@@ -42,14 +43,24 @@ def update_sheet_selections(ws, periods_data, selection_type="rules-based"):
     """
     updates_made = 0
     
-    # Rules-based: Column 11 is Selection, 12 is Reasoning
-    # Open-ended: Column 13 is Selection, 14 is Reasoning
+    # Build column map for dynamic column lookups
+    col_map = build_column_map(ws, header_row=1)
+    
+    # Determine which columns to update based on selection type
     if selection_type == "rules-based":
-        sel_col = 11
-        reason_col = 12
+        sel_header = "Rules-Based AI Selection"
+        reason_header = "Rules-Based AI Reasoning"
     else:  # open-ended
-        sel_col = 13
-        reason_col = 14
+        sel_header = "Open-Ended AI Selection"
+        reason_header = "Open-Ended AI Reasoning"
+    
+    # Get column indices from the map
+    sel_col = col_map.get(sel_header)
+    reason_col = col_map.get(reason_header)
+    
+    if sel_col is None or reason_col is None:
+        print(f"  WARNING: Could not find columns '{sel_header}' or '{reason_header}' in sheet {ws.title}")
+        return 0
     
     # Iterate through rows starting at 2 (row 1 is headers)
     row = 2

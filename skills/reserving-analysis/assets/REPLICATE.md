@@ -40,17 +40,17 @@ This document provides step-by-step instructions to reproduce the analysis resul
 - [List each file in raw-data/ with description]
 
 **Scripts run:**
-1. `scripts/1a-prep-data.py` — Read raw data and create canonical triangle format
+1. `scripts/1a-load-and-validate.py` — Read raw data and create canonical triangle format
    - **Customizations made:** [List any modifications to read_and_process_triangles() or other functions]
    - **Output:** `processed-data/1_triangles.parquet`
 
-2. `scripts/1b-enhance-data.py` — Add LDFs, incremental values, cumulative data
+2. `scripts/1b-calculate-ldfs.py` — Add LDFs, incremental values, cumulative data
    - **Output:** `processed-data/2_enhanced.parquet`
 
 3. `scripts/1c-diagnostics.py` — Calculate diagnostic triangles (paid-to-incurred, severity, etc.)
    - **Output:** `processed-data/3_diagnostics.parquet`
 
-4. `scripts/1d-averages-qa.py` — Calculate LDF averages (simple, weighted, exclude high/low)
+4. `scripts/1d-ldf-averages.py` — Calculate LDF averages (simple, weighted, exclude high/low)
    - **Output:** `processed-data/4_ldf_averages.parquet`
 
 **Data validation:** User confirmed data format on [date]

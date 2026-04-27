@@ -71,7 +71,11 @@ def _fill_method_bf_values(ws, measure, combined, actual_lookup):
 
 def _fill_selection_values(ws, measures_group, combined, actual_lookup):
     """Replace Selection sheet formula cells with computed values."""
-    active_m = [m for m in measures_group if m in combined["measure"].unique()]
+    active_m = [
+        m for m in measures_group
+        if m in combined["measure"].unique()
+        and combined[combined["measure"] == m]["actual"].notna().any()
+    ]
     if not active_m:
         return
 
@@ -98,22 +102,25 @@ def _fill_selection_values(ws, measures_group, combined, actual_lookup):
             v = ult_cl[m].get(period)
             ws.cell(r, col).value = None if v is None or (isinstance(v, float) and v != v) else v
             col += 1
-        for m in bf_m:
-            v = ult_bf[m].get(period)
-            ws.cell(r, col).value = None if v is None or (isinstance(v, float) and v != v) else v
-            col += 1
         if has_group_ie:
             v = row.get("ultimate_ie", np.nan)
             ws.cell(r, col).value = None if (v is None or (isinstance(v, float) and v != v)) else float(v)
             col += 1
-        # Selected Ultimate already hardcoded
+        for m in bf_m:
+            v = ult_bf[m].get(period)
+            ws.cell(r, col).value = None if v is None or (isinstance(v, float) and v != v) else v
+            col += 1
         sel_ult = row["selected_ultimate"]
         sel_ult = None if pd.isna(sel_ult) else float(sel_ult)
+        ws.cell(r, col).value = sel_ult
+        col += 1
         first_act = actuals[active_m[0]].get(period)
         ws.cell(r, col).value = (sel_ult - first_act) if sel_ult is not None and first_act is not None else None
         col += 1
         proxy_act = actuals[active_m[1]].get(period) if n > 1 else first_act
         ws.cell(r, col).value = (sel_ult - proxy_act) if sel_ult is not None and proxy_act is not None else None
+        col += 1
+        ws.cell(r, col).value = row.get("selected_reasoning", "") or ""
 
 
 def _fill_cdf_row_values(ws):

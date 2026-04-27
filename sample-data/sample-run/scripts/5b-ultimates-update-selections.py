@@ -19,6 +19,7 @@ import pathlib
 from openpyxl import load_workbook
 
 from modules import config
+from modules.xl_utils import build_column_map
 
 # Paths from modules/config.py — override here if needed:
 RULES_BASED_LOSS_FILE = config.SELECTIONS + "ultimates-ai-rules-based-loss.json"
@@ -42,14 +43,24 @@ def update_sheet_selections(ws, periods_data, selection_type="rules-based"):
     """
     updates_made = 0
     
-    # Rules-based: Column 11 is Selection, 12 is Reasoning
-    # Open-ended: Column 13 is Selection, 14 is Reasoning
+    # Build column map for dynamic column lookups
+    col_map = build_column_map(ws, header_row=1)
+    
+    # Determine which columns to update based on selection type
     if selection_type == "rules-based":
-        sel_col = 11
-        reason_col = 12
+        sel_header = "Rules-Based AI Selection"
+        reason_header = "Rules-Based AI Reasoning"
     else:  # open-ended
-        sel_col = 13
-        reason_col = 14
+        sel_header = "Open-Ended AI Selection"
+        reason_header = "Open-Ended AI Reasoning"
+    
+    # Get column indices from the map
+    sel_col = col_map.get(sel_header)
+    reason_col = col_map.get(reason_header)
+    
+    if sel_col is None or reason_col is None:
+        print(f"  WARNING: Could not find columns '{sel_header}' or '{reason_header}' in sheet {ws.title}")
+        return 0
     
     # Iterate through rows starting at 2 (row 1 is headers)
     row = 2
@@ -134,33 +145,33 @@ def main():
     total_updates_rb = 0
     total_updates_oe = 0
     
-    # Update Loss sheet
-    if 'Loss' in wb.sheetnames:
-        ws = wb['Loss']
+    # Update Losses sheet
+    if 'Losses' in wb.sheetnames:
+        ws = wb['Losses']
         if rules_based_loss_by_period:
             updates = update_sheet_selections(ws, rules_based_loss_by_period, "rules-based")
             total_updates_rb += updates
-            print(f"  Updated {updates} rules-based selections in 'Loss'")
+            print(f"  Updated {updates} rules-based selections in 'Losses'")
         if open_ended_loss_by_period:
             updates = update_sheet_selections(ws, open_ended_loss_by_period, "open-ended")
             total_updates_oe += updates
-            print(f"  Updated {updates} open-ended selections in 'Loss'")
+            print(f"  Updated {updates} open-ended selections in 'Losses'")
     else:
-        print("  WARNING: Sheet 'Loss' not found in workbook")
+        print("  WARNING: Sheet 'Losses' not found in workbook")
     
-    # Update Count sheet
-    if 'Count' in wb.sheetnames:
-        ws = wb['Count']
+    # Update Counts sheet
+    if 'Counts' in wb.sheetnames:
+        ws = wb['Counts']
         if rules_based_count_by_period:
             updates = update_sheet_selections(ws, rules_based_count_by_period, "rules-based")
             total_updates_rb += updates
-            print(f"  Updated {updates} rules-based selections in 'Count'")
+            print(f"  Updated {updates} rules-based selections in 'Counts'")
         if open_ended_count_by_period:
             updates = update_sheet_selections(ws, open_ended_count_by_period, "open-ended")
             total_updates_oe += updates
-            print(f"  Updated {updates} open-ended selections in 'Count'")
+            print(f"  Updated {updates} open-ended selections in 'Counts'")
     else:
-        print("  WARNING: Sheet 'Count' not found in workbook")
+        print("  WARNING: Sheet 'Counts' not found in workbook")
                 
     wb.save(EXCEL_FILE)
     print(f"\nSaved: {EXCEL_FILE}")

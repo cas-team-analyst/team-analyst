@@ -47,6 +47,43 @@ def _period_int(v):
     return v
 
 
+def find_column_by_header(ws, header_name, header_row=1):
+    """
+    Find the column index (1-based) for a given header name.
+    
+    Args:
+        ws: openpyxl worksheet object
+        header_name: String to search for in the header row
+        header_row: Row number containing headers (default 1)
+    
+    Returns:
+        Column index (1-based) if found, None otherwise
+    """
+    for cell in ws[header_row]:
+        if cell.value and str(cell.value).strip() == str(header_name).strip():
+            return cell.column
+    return None
+
+
+def build_column_map(ws, header_row=1):
+    """
+    Build a dictionary mapping header names to column indices (1-based).
+    
+    Args:
+        ws: openpyxl worksheet object
+        header_row: Row number containing headers (default 1)
+    
+    Returns:
+        Dict mapping header name (str) -> column index (int, 1-based)
+    """
+    column_map = {}
+    for cell in ws[header_row]:
+        if cell.value:
+            header = str(cell.value).strip()
+            column_map[header] = cell.column
+    return column_map
+
+
 def _copy_ws(ws_src, ws_dst):
     """Copy all cells and styles from source to destination worksheet."""
     for row in ws_src.iter_rows():

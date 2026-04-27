@@ -1,0 +1,122 @@
+[
+  {
+    "period": 2001,
+    "selection": 3054159.61,
+    "reasoning": "Paid CL selected. Age 287 months (fully developed). Paid CL ultimate 3,054,160; Incurred CL 3,279,962. Paid CL is preferred at full maturity when payment data is highly credible and case adequacy effects are minimal. Convergence near 1.004 CDF indicates minimal tail. No material diagnostic concerns. Prior ultimate anchoring not specified, but selection reflects most mature measure choice."
+  },
+  {
+    "period": 2002,
+    "selection": 2216836.93,
+    "reasoning": "Paid CL selected. Age 275 months (fully developed). Paid CL ultimate 2,216,837; Incurred CL 2,441,936. Paid CL 1.008 CDF indicates closure of final claims. Incurred CL higher (1.049 CDF) suggesting reserve bias. At this maturity, paid data is most credible. No IBNR concerns."
+  },
+  {
+    "period": 2003,
+    "selection": 1805606.84,
+    "reasoning": "Paid CL selected. Age 263 months (fully developed). Paid CL 1,805,607 (CDF 1.015); Incurred CL 1,865,328 (CDF 1.049). Paid CL is lower and reflects actual payment finality. Incurred CL IBNR of 87k suggests residual case reserves. Paid measure is more objective at full maturity."
+  },
+  {
+    "period": 2004,
+    "selection": 1146484.68,
+    "reasoning": "Paid CL selected. Age 251 months (fully developed). Paid CL 1,146,485; Incurred CL 1,197,242. CDF 1.021 for Paid, 1.066 for Incurred. Incurred shows larger tail estimation (74.6k IBNR). Paid CL is cleaner at this age. No red flags on paid development."
+  },
+  {
+    "period": 2005,
+    "selection": 2299898.75,
+    "reasoning": "Paid CL selected. Age 239 months (fully developed). Paid CL 2,299,899; Incurred CL 2,401,480. Paid shows normal development (CDF 1.026). Incurred CL IBNR of 159k and IE showing negative adjustment (-529.9k) indicates incurred measure instability. Paid is more reliable. Selected paid with confidence in tail closure."
+  },
+  {
+    "period": 2006,
+    "selection": 1503399.99,
+    "reasoning": "Paid CL selected. Age 227 months (fully developed). Paid CL 1,503,400; Incurred CL 1,639,300. Paid CDF 1.028; Incurred 1.080. Incurred shows 121.7k IBNR and IE volatility. Paid measure reflects actual cash finality. No material concerns on paid development trajectory."
+  },
+  {
+    "period": 2007,
+    "selection": 4947059.08,
+    "reasoning": "Paid CL selected. Age 215 months. Paid CL 4,947,059; Incurred CL 5,196,435. Paid CDF 1.033, Incurred 1.081. Large Incurred IBNR (385.7k) and negative IE (-1,960.4k) indicate case adequacy instability. Paid CL more objective. Note: High loss period, paid development normal for this size."
+  },
+  {
+    "period": 2008,
+    "selection": 1426693.03,
+    "reasoning": "Paid CL selected. Age 203 months. Paid CL 1,426,693; Incurred CL 1,491,909. Paid CDF 1.035, Incurred 1.082. Incurred IE shows 1,165.5k IBNR (unrealistic), suggesting case adequacy bias. Paid measure is cleaner. IBNR on Paid (48.3k) is reasonable tail."
+  },
+  {
+    "period": 2009,
+    "selection": 1225907.27,
+    "reasoning": "Paid CL selected. Age 191 months. Paid CL 1,225,907; Incurred CL 1,276,755. Paid CDF 1.048, Incurred 1.092. Incurred IE (1,425.2k IBNR) is illogical relative to actual reported. Paid measure reflects real payment momentum. Convergence check: Paid and Incurred within reasonable distance; Paid selected as more objective."
+  },
+  {
+    "period": 2010,
+    "selection": 1352060.19,
+    "reasoning": "Paid CL selected. Age 179 months. Paid CL 1,352,060; Incurred CL 1,401,306. Paid CDF 1.058, Incurred 1.097. Incurred IE shows negative IBNR (-143.4k), indicating overstated reported reserves. Paid development is steady. IBNR 74.4k on paid is credible tail."
+  },
+  {
+    "period": 2011,
+    "selection": 2019075.00,
+    "reasoning": "Paid CL selected. Age 167 months. Paid CL 2,019,075; Incurred CL 2,122,506. Paid CDF 1.067, Incurred 1.108. Incurred IE shows -350k negative reserve (stale case reserves), Paid normal. Paid CDF 1.067 reasonable for this age. Selected Paid CL as more stable measure."
+  },
+  {
+    "period": 2012,
+    "selection": 1282667.01,
+    "reasoning": "Paid CL selected. Age 155 months. Paid CL 1,282,667; Incurred CL 1,511,278. Paid CDF 1.074, Incurred 1.108. Incurred IE (379.3k IBNR) diverges significantly, suggesting case bias. Paid measure is developing smoothly. Paid IBNR 88.4k is reasonable for expected tail."
+  },
+  {
+    "period": 2013,
+    "selection": 776290.79,
+    "reasoning": "Paid CL selected. Age 143 months. Paid CL 776,291; Incurred CL 787,767. Paid CDF 1.096, Incurred 1.112. Close convergence (1.5% apart). Paid selected as primary at this maturity with Incurred CL as secondary confirmation. Paid IBNR 67.8k is reasonable."
+  },
+  {
+    "period": 2014,
+    "selection": 1552188.21,
+    "reasoning": "Paid CL selected. Age 131 months. Paid CL 1,552,188; Incurred CL 1,603,562. Paid CDF 1.117, Incurred 1.154. Incurred IE negative IBNR (-161.8k) signals case reserve over-statement. Paid is more credible. Paid IBNR 162.6k is reasonable for maturity."
+  },
+  {
+    "period": 2015,
+    "selection": 3790166.03,
+    "reasoning": "Paid CL selected. Age 119 months. Paid CL 3,790,166; Incurred CL 3,926,874. Paid CDF 1.127, Incurred 1.161. Incurred IE shows catastrophic -1,713k negative IBNR, completely unreliable. Paid measure is the only credible option. Paid IBNR 425.9k reasonable for this maturity and size."
+  },
+  {
+    "period": 2016,
+    "selection": 2891278.87,
+    "reasoning": "Paid CL selected. Age 107 months. Paid CL 2,891,279; Incurred CL 3,012,278. Paid CDF 1.174, Incurred 1.202. Incurred IE positive (92.6k IBNR) but Incurred CL IBNR 506k signals divergence. Paid measure at 1.174 is reasonable for this maturity. Paid development stable."
+  },
+  {
+    "period": 2017,
+    "selection": 1434346.61,
+    "reasoning": "Paid CL selected. Age 95 months. Paid CL 1,434,347; Incurred CL 1,479,229. Paid CDF 1.190, Incurred 1.227. Incurred IE (1,400k IBNR) shows case growth bias. Paid measure more stable. At 95 months, paid development reasonable. Paid IBNR 228.5k credible for maturity."
+  },
+  {
+    "period": 2018,
+    "selection": 2938070.29,
+    "reasoning": "Paid CL selected. Age 83 months. Paid CL 2,938,070; Incurred CL 2,960,949. Paid CDF 1.227, Incurred 1.236. Very close convergence (0.8% apart). Both measures reasonable. Paid selected with Incurred as secondary check. Paid IBNR 542.6k reasonable for maturity."
+  },
+  {
+    "period": 2019,
+    "selection": 3294690.13,
+    "reasoning": "Paid CL selected. Age 71 months. Paid CL 3,294,690; Incurred CL 3,482,306. Paid CDF 1.376, Incurred 1.339. Paid higher here (unusual), but Incurred IE negative (-135.9k) signals case adequacy decline. Paid CDF 1.376 indicates significant tail development expected. Paid measure is cleaner. Paid IBNR 899.5k reflects substantial remaining development."
+  },
+  {
+    "period": 2020,
+    "selection": 1502370.93,
+    "reasoning": "Paid CL selected. Age 59 months. Paid CL 1,502,371; Incurred CL 1,451,570. Paid CDF 1.539, Incurred 1.483. Paid higher, reflecting newer claims and heavy development ahead. Paid CDF 1.539 is substantial. Incurred IE (864.7k IBNR) is 59.6% of reported—unrealistic. Paid measure is primary. IBNR 526.3k significant but reasonable for age 59."
+  },
+  {
+    "period": 2021,
+    "selection": 1639388.40,
+    "reasoning": "Paid CL selected. Age 47 months. Paid CL 1,639,388; Incurred CL 1,585,115. Paid CDF 1.681, Incurred 1.567. Paid development is heavy (67.1% IBNR ratio). Incurred IE (399k IBNR, 39.4% of reported) also substantial. Paid shows stronger development signal; selected as primary. Paid IBNR 664.4k reflects significant immaturity."
+  },
+  {
+    "period": 2022,
+    "selection": 1562862.38,
+    "reasoning": "Paid CL selected. Age 35 months. Paid CL 1,562,862; Incurred CL 1,539,912. Paid CDF 1.976, Incurred 1.861. Paid shows accelerated development (49.5% IBNR ratio). Very close convergence (1.5% apart). Paid selected for its objective payment-based development. Paid IBNR 771.8k reflects green maturity."
+  },
+  {
+    "period": 2023,
+    "selection": 3369891.48,
+    "reasoning": "Paid CL selected. Age 23 months. Paid CL 3,369,891; Incurred CL 3,783,911. Paid CDF 2.810, Incurred 2.291. Paid shows stronger development factor, reflecting real payment acceleration. Paid CDF 2.810 indicates 64% of ultimate still to develop. Incurred IE negative (-221k) unreliable. Paid IBNR 2,170.6k (64.4% of ultimate) reasonable for age 23."
+  },
+  {
+    "period": 2024,
+    "selection": 2579684.13,
+    "reasoning": "Paid CL selected. Age 11 months. Paid CL 2,579,684; Incurred CL 3,471,540. Paid CDF 7.262, Incurred 3.900. Paid shows extreme development factor, reflecting only 13.8% developed to date. Paid CDF credible given incipient claim emergence. Incurred IE (642.5k IBNR, 64.4% of reported) diverges sharply. At 11 months, Paid CL tail is justified. IBNR 2,224.4k (86.2% of ultimate) reflects heavy development ahead."
+  }
+]

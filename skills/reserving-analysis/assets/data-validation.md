@@ -30,7 +30,7 @@ Showing [Paid Loss] (cumulative) as a sanity check on shape and magnitude:
 | 2016 | ... | ... | ... | ... | |
 | ... | | | | | |
 
-### 4. Adjustments Made to `1a-prep-data.py`
+### 4. Adjustments Made to `1a-load-and-validate.py`
 
 - [Bullet each customization — column renames, source-specific parsing, outlier handling, etc.]
 - If no changes were made, say: "No adjustments required — data matched the expected format."

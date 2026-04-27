@@ -35,7 +35,7 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     - Loss rates (if exposure provided)
     
     Args:
-        df_enhanced: Enhanced long format DataFrame from 2-enhance-data.py
+        df_enhanced: Enhanced long format DataFrame from 1b-calculate-ldfs.py
                      Should have columns: period, age, value, measure, source, etc.
         exposure: Optional DataFrame with exposure data for calculating rates
     

@@ -70,13 +70,13 @@ _METHOD_COLS = [
 
 # Map individual measure names to ultimates selection categories.
 # projected-ultimates.parquet has per-measure data (Incurred Loss, Paid Loss, etc.)
-# but Ultimates.xlsx now has category sheets (Loss, Count) where one ultimate
+# but Ultimates.xlsx now has category sheets (Losses, Counts) where one ultimate
 # is selected per category. This mapping converts measure → category for lookups.
 MEASURE_TO_CATEGORY = {
-    "Incurred Loss": "Loss",
-    "Paid Loss": "Loss",
-    "Reported Count": "Count",
-    "Closed Count": "Count",
+    "Incurred Loss": "Losses",
+    "Paid Loss": "Losses",
+    "Reported Count": "Counts",
+    "Closed Count": "Counts",
 }
 
 _NUM_FMT = "#,##0"
@@ -106,7 +106,7 @@ def load_selections(excel_path):
         period_col = user_col = rb_col = None
         for cell in ws[1]:
             v = cell.value
-            if v == "Period":
+            if v == "Accident Period":
                 period_col = cell.column
             elif v == "User Selection":
                 user_col = cell.column
@@ -157,7 +157,7 @@ def load_selection_reasoning(excel_path):
         period_col = user_col = rb_col = user_r_col = rb_r_col = None
         for cell in ws[1]:
             v = cell.value
-            if v == "Period":                   period_col = cell.column
+            if v == "Accident Period":          period_col = cell.column
             elif v == "User Selection":         user_col   = cell.column
             elif v == "Rules-Based AI Selection": rb_col   = cell.column
             elif v == "User Reasoning":         user_r_col = cell.column
@@ -261,7 +261,7 @@ def load_combined(ultimates_path, sel_lookup):
     Returns (df, available_methods) where available_methods = [(col, label), ...].
     
     Note: projected-ultimates.parquet has per-measure data (Incurred Loss, Paid Loss, etc.)
-    but Ultimates.xlsx now has category sheets (Loss, Count). We map measures to categories
+    but Ultimates.xlsx now has category sheets (Losses, Counts). We map measures to categories
     using MEASURE_TO_CATEGORY when looking up selections.
     """
     df = pd.read_parquet(ultimates_path)
@@ -274,7 +274,7 @@ def load_combined(ultimates_path, sel_lookup):
     ]
 
     # Validate: every non-Exposure row must have a selection.
-    # Map measure to category for lookup (e.g., "Incurred Loss" → "Loss").
+    # Map measure to category for lookup (e.g., "Incurred Loss" → "Losses").
     missing = [
         (row["measure"], row["period"])
         for _, row in df.iterrows()
@@ -300,7 +300,7 @@ def load_combined(ultimates_path, sel_lookup):
             return np.nan
         return row["selected_ultimate"] - proxy_actual
 
-    # Map measure to category when looking up selection (e.g., "Incurred Loss" → "Loss").
+    # Map measure to category when looking up selection (e.g., "Incurred Loss" → "Losses").
     df["selected_ultimate"] = df.apply(
         lambda row: sel_lookup.get(
             (MEASURE_TO_CATEGORY.get(row["measure"], row["measure"]), row["period"]), 
@@ -470,10 +470,15 @@ def write_method_ie(gen_wb, combined, measure, exp_map):
 def write_selection_grouped(gen_wb, combined, measures_group, title):
     ws = gen_wb.create_sheet(title=title)
     
-    # columns e.g.: Accident Period, Current Age, Incurred, Paid, Incurred CL, Paid CL, Incurred BF, Paid BF, Initial Expected, Selected Ultimate, IBNR, Unpaid
+    # columns e.g.: Accident Period, Current Age, Incurred, Paid, Incurred CL, Paid CL, Initial Expected, Incurred BF, Paid BF, Selected Ultimate, IBNR, Unpaid
+    # Column ordering convention: CL, IE, BF
     
     # Find active measures in this group
-    active_m = [m for m in measures_group if m in combined["measure"].unique()]
+    active_m = [
+        m for m in measures_group
+        if m in combined["measure"].unique()
+        and combined[combined["measure"] == m]["actual"].notna().any()
+    ]
     if not active_m:
         return
         
@@ -486,42 +491,77 @@ def write_selection_grouped(gen_wb, combined, measures_group, title):
     bf_m  = [m for m in active_m if _has_method(combined, m, "ultimate_bf")]
     has_group_ie = any(_has_method(combined, m, "ultimate_ie") for m in active_m)
 
+    # Ultimates.xlsx now has "Losses"/"Counts" category sheets (not per-measure).
+    # IE column position differs by category and whether Closed Count data exists.
+    ult_sheet = "Losses" if any("Loss" in m for m in measures_group) else "Counts"
+    if ult_sheet == "Counts":
+        has_closed_actual = (
+            "Closed Count" in combined["measure"].unique()
+            and combined[combined["measure"] == "Closed Count"]["actual"].notna().any()
+        )
+        ie_col = "G" if has_closed_actual else "E"
+    else:
+        ie_col = "G"
+    ult_ref = f"'[Ultimates.xlsx]{ult_sheet}'"
+    _ult_idx = f"{ult_ref}!$A:$Z"
+    _ult_hdr = f"{ult_ref}!$1:$1"
+
+    # Build headers in CL, IE, BF order
     headers = ["Accident Period", "Current Age"]
     for s in short_names:
         headers.append(s)
     for s in short_names:
         headers.append(f"{s} CL")
-    for m in bf_m:
-        headers.append(f"{measure_short_name(m)} BF")
     if has_group_ie:
         headers.append("Initial Expected")
-    headers.extend(["Selected Ultimate", "IBNR", "Unpaid"])
+    for m in bf_m:
+        headers.append(f"{measure_short_name(m)} BF")
+    headers.extend(["Selected Ultimate", "IBNR", "Unpaid", "Selected Reasoning"])
 
     _write_headers(ws, headers)
+    ws.column_dimensions[get_column_letter(len(headers))].width = 40
 
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
         _data_cell(ws.cell(r, 1), row["period_int"])
         _data_cell(ws.cell(r, 2), row["current_age"])
 
         col_idx = 3
+        # Actuals
         for s in short_names:
             _formula_cell(ws, r, col_idx, f"='{s} CL'!C{r}", _NUM_FMT)
             col_idx += 1
+        # CL ultimates
         for s in short_names:
             _formula_cell(ws, r, col_idx, f"='{s} CL'!E{r}", _NUM_FMT)
             col_idx += 1
+        # IE ultimate (if available)
+        if has_group_ie:
+            _formula_cell(ws, r, col_idx, f"='[Ultimates.xlsx]{ult_sheet}'!{ie_col}{r}", _NUM_FMT)
+            col_idx += 1
+        # BF ultimates
         for m in bf_m:
             _formula_cell(ws, r, col_idx, f"='{measure_short_name(m)} BF'!H{r}", _NUM_FMT)
             col_idx += 1
-        if has_group_ie:
-            _formula_cell(ws, r, col_idx, f"='[Ultimates.xlsx]{main_m}'!D{r}", _NUM_FMT)
-            col_idx += 1
-        _data_cell(ws.cell(r, col_idx), row["selected_ultimate"], _NUM_FMT)
+        # Selected Ultimate → links Ultimates.xlsx (User Selection, falls back to RB-AI)
+        sel_formula = (
+            f'=IFERROR(IF(INDEX({_ult_idx},{r},MATCH("User Selection",{_ult_hdr},0))<>"",'
+            f'INDEX({_ult_idx},{r},MATCH("User Selection",{_ult_hdr},0)),'
+            f'INDEX({_ult_idx},{r},MATCH("Rules-Based AI Selection",{_ult_hdr},0))),"")'
+        )
+        _formula_cell(ws, r, col_idx, sel_formula, _NUM_FMT)
         col_idx += 1
         _formula_cell(ws, r, col_idx, f"={get_column_letter(col_idx-1)}{r}-C{r}", _NUM_FMT)
         col_idx += 1
         unpaid_actual = "D" if len(active_m) > 1 else "C"
         _formula_cell(ws, r, col_idx, f"={get_column_letter(col_idx-2)}{r}-{unpaid_actual}{r}", _NUM_FMT)
+        col_idx += 1
+        # Selected Reasoning → links Ultimates.xlsx (User Reasoning, falls back to RB-AI)
+        reason_formula = (
+            f'=IFERROR(IF(INDEX({_ult_idx},{r},MATCH("User Selection",{_ult_hdr},0))<>"",'
+            f'INDEX({_ult_idx},{r},MATCH("User Reasoning",{_ult_hdr},0)),'
+            f'INDEX({_ult_idx},{r},MATCH("Rules-Based AI Reasoning",{_ult_hdr},0))),"")'
+        )
+        _formula_cell(ws, r, col_idx, reason_formula, "@")
 
     # Totals row — SUM every numeric column, skip Period and Age
     n_cols = 2 + len(active_m) * 2 + len(bf_m) + (1 if has_group_ie else 0) + 3
@@ -947,6 +987,14 @@ def main():
     os.makedirs(OUTPUT_PATH, exist_ok=True)
     sel_lookup = load_selections(INPUT_SELECTIONS_EXCEL)
     combined, available_methods = load_combined(INPUT_ULTIMATES, sel_lookup)
+    reason_lookup = load_selection_reasoning(INPUT_SELECTIONS_EXCEL)
+    combined["selected_reasoning"] = combined.apply(
+        lambda row: reason_lookup.get(
+            (MEASURE_TO_CATEGORY.get(row["measure"], row["measure"]), row["period"]),
+            ""
+        ) or "",
+        axis=1
+    )
     exp_map = get_exposure(INPUT_TRIANGLES)
     has_exposure = bool(exp_map)
     measures = [m for m in combined["measure"].unique() if m != "Exposure"]
@@ -979,7 +1027,7 @@ def main():
 
     print("Building Counts sheets...")
     if count_m:
-        write_selection_grouped(gen_wb, combined, ["Reported Count", "Closed Count"], "Counts Selection")
+        write_selection_grouped(gen_wb, combined, ["Reported Count", "Closed Count"], "Count Selection")
         for m in count_m:
             write_method_cl(gen_wb, combined, m)
         for m in count_m:
@@ -1056,8 +1104,10 @@ def main():
             pass  # IE sheet has no formula cells
         elif sname == "Loss Selection":
             _fill_selection_values(ws, ["Incurred Loss", "Paid Loss"], combined, actual_lookup_full)
-        elif sname == "Counts Selection":
+            _strip_formulas(ws)
+        elif sname == "Count Selection":
             _fill_selection_values(ws, ["Reported Count", "Closed Count"], combined, actual_lookup_full)
+            _strip_formulas(ws)
         else:
             _strip_formulas(ws)
 

@@ -7,15 +7,15 @@
 **Data and analysis files:**
 - `raw-data/` — The original input files the user supplied.
 - `processed-data/` — Cleaned triangles, enhanced data, diagnostics, and LDF averages produced by scripts 1a–1d.
-  - `1_triangles.csv` — Standardized triangle data from `1a-prep-data.py`
-  - `2_enhanced.csv` — Enhanced with prior selections and metadata from `1b-enhance-data.py`
+  - `1_triangles.csv` — Standardized triangle data from `1a-load-and-validate.py`
+  - `2_enhanced.csv` — Enhanced with prior selections and metadata from `1b-calculate-ldfs.py`
   - `3_diagnostics.csv` — Development diagnostics from `1c-diagnostics.py`
-  - `4_ldf_averages.csv` — LDF averages (volume-weighted, simple, various windows) from `1d-averages-qa.py`
+  - `4_ldf_averages.csv` — LDF averages (volume-weighted, simple, various windows) from `1d-ldf-averages.py`
 - `scripts/` — All numbered Python scripts (1a through 7) and `scripts/modules/`, exactly as run for this analysis. Re-running them against `raw-data/` should reproduce `processed-data/` and the selection workbooks.
-  - `1a-prep-data.py` — Data intake and standardization
-  - `1b-enhance-data.py` — Add prior selections and metadata
+  - `1a-load-and-validate.py` — Data intake and standardization
+  - `1b-calculate-ldfs.py` — Add prior selections and metadata
   - `1c-diagnostics.py` — Calculate development diagnostics
-  - `1d-averages-qa.py` — Calculate LDF averages
+  - `1d-ldf-averages.py` — Calculate LDF averages
   - `2a-chainladder-create-excel.py` — Create LDF selection workbook
   - `2b-chainladder-update-selections.py` — Insert AI selections into LDF workbook
   - `2c-tail-methods-diagnostics.py` — Fit tail curves and generate diagnostics

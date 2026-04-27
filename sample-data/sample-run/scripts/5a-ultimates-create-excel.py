@@ -28,6 +28,7 @@ from modules import config
 from modules.xl_styles import (
     HEADER_FILL, HEADER_FONT, SELECTION_FILL, AI_FILL, PRIOR_FILL, USER_FILL, THIN_BORDER,
 )
+from modules.xl_utils import build_column_map
 from modules.markdown_utils import df_to_markdown
 
 # Paths from modules/config.py — override here if needed:
@@ -171,6 +172,9 @@ def format_loss_sheet(ws, df_ult, df_prior):
     ws.column_dimensions['N'].width = 30
     ws.column_dimensions['P'].width = 40
     
+    # Build column map for dynamic column lookups
+    col_map = build_column_map(ws, header_row=1)
+    
     # Create dict of prior
     prior_dict = {}
     if df_prior is not None and 'Losses' in df_prior.get('category', df_prior.get('measure', pd.Series())).values:
@@ -201,45 +205,45 @@ def format_loss_sheet(ws, df_ult, df_prior):
         prior_sel = prior_dict.get(period, {}).get("sel", "")
         prior_reason = prior_dict.get(period, {}).get("reason", "")
         
-        c = ws.cell(row=r_idx, column=11, value=prior_sel)
+        c = ws.cell(row=r_idx, column=col_map["Prior Selection"], value=prior_sel)
         c.fill = PRIOR_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=12, value=prior_reason)
+        c = ws.cell(row=r_idx, column=col_map["Prior Reasoning"], value=prior_reason)
         c.fill = PRIOR_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # Rules-Based AI Selection (yellow fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=13)
+        c = ws.cell(row=r_idx, column=col_map["Rules-Based AI Selection"])
         c.fill = SELECTION_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=14)
+        c = ws.cell(row=r_idx, column=col_map["Rules-Based AI Reasoning"])
         c.fill = SELECTION_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # Open-Ended AI Selection (purple fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=15)
+        c = ws.cell(row=r_idx, column=col_map["Open-Ended AI Selection"])
         c.fill = AI_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=16)
+        c = ws.cell(row=r_idx, column=col_map["Open-Ended AI Reasoning"])
         c.fill = AI_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # User Selection (blank - actuary input)
-        c = ws.cell(row=r_idx, column=17)
+        c = ws.cell(row=r_idx, column=col_map["User Selection"])
         c.fill = USER_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=18)
+        c = ws.cell(row=r_idx, column=col_map["User Reasoning"])
         c.fill = USER_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
@@ -318,24 +322,15 @@ def format_count_sheet(ws, df_ult, df_prior):
         cell.alignment = Alignment(horizontal="center")
         ws.column_dimensions[cell.column_letter].width = 18
     
-    # Calculate column indices based on number of data columns
-    # Structure: Period(1) + Age(2) + data_columns + Prior(2) + RB AI(2) + OE AI(2) + User(2)
-    num_data_cols = len(data_columns)
-    col_prior_sel = 3 + num_data_cols
-    col_prior_reason = col_prior_sel + 1
-    col_rb_sel = col_prior_reason + 1
-    col_rb_reason = col_rb_sel + 1
-    col_oe_sel = col_rb_reason + 1
-    col_oe_reason = col_oe_sel + 1
-    col_user_sel = col_oe_reason + 1
-    col_user_reason = col_user_sel + 1
+    # Build column map for dynamic column lookups
+    col_map = build_column_map(ws, header_row=1)
     
     # Set wider widths for reasoning columns
     from openpyxl.utils import get_column_letter
-    ws.column_dimensions[get_column_letter(col_prior_reason)].width = 30
-    ws.column_dimensions[get_column_letter(col_rb_reason)].width = 30
-    ws.column_dimensions[get_column_letter(col_oe_reason)].width = 30
-    ws.column_dimensions[get_column_letter(col_user_reason)].width = 40
+    ws.column_dimensions[get_column_letter(col_map["Prior Reasoning"])].width = 30
+    ws.column_dimensions[get_column_letter(col_map["Rules-Based AI Reasoning"])].width = 30
+    ws.column_dimensions[get_column_letter(col_map["Open-Ended AI Reasoning"])].width = 30
+    ws.column_dimensions[get_column_letter(col_map["User Reasoning"])].width = 40
     
     # Create dict of prior
     prior_dict = {}
@@ -367,45 +362,45 @@ def format_count_sheet(ws, df_ult, df_prior):
         prior_sel = prior_dict.get(period, {}).get("sel", "")
         prior_reason = prior_dict.get(period, {}).get("reason", "")
         
-        c = ws.cell(row=r_idx, column=col_prior_sel, value=prior_sel)
+        c = ws.cell(row=r_idx, column=col_map["Prior Selection"], value=prior_sel)
         c.fill = PRIOR_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=col_prior_reason, value=prior_reason)
+        c = ws.cell(row=r_idx, column=col_map["Prior Reasoning"], value=prior_reason)
         c.fill = PRIOR_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # Rules-Based AI Selection (yellow fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=col_rb_sel)
+        c = ws.cell(row=r_idx, column=col_map["Rules-Based AI Selection"])
         c.fill = SELECTION_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=col_rb_reason)
+        c = ws.cell(row=r_idx, column=col_map["Rules-Based AI Reasoning"])
         c.fill = SELECTION_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # Open-Ended AI Selection (purple fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=col_oe_sel)
+        c = ws.cell(row=r_idx, column=col_map["Open-Ended AI Selection"])
         c.fill = AI_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=col_oe_reason)
+        c = ws.cell(row=r_idx, column=col_map["Open-Ended AI Reasoning"])
         c.fill = AI_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # User Selection (blank - actuary input)
-        c = ws.cell(row=r_idx, column=col_user_sel)
+        c = ws.cell(row=r_idx, column=col_map["User Selection"])
         c.fill = USER_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=col_user_reason)
+        c = ws.cell(row=r_idx, column=col_map["User Reasoning"])
         c.fill = USER_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)

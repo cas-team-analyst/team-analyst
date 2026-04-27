@@ -4,7 +4,7 @@ Data preparation script for triangle analysis.
 Reads raw triangle data, optional prior selections, and optional expected loss rates,
 validates them, and saves to standardized format.
 
-Run from scripts/ directory: python 1a-prep-data.py
+Run from scripts/ directory: python 1a-load-and-validate.py
 """
 
 import pandas as pd

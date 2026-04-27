@@ -74,8 +74,6 @@
 
 - [ ] Run `2a-chainladder-create-excel.py` to create the LDF selection workbook and export per-measure context files. The script will print the context file paths it creates (e.g., "Exported MD: selections/chainladder-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
 
-- [ ] Compress your context to make space for the upcoming subagent responses.
-
 - [ ] **Invoke the rules-based selector once** for all measures. Call the `selector-chain-ladder-ldf-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
   - Read each context file
   - Apply the rules-based selection framework to each measure independently
@@ -120,8 +118,6 @@ _(Pause for Selections only):_
 - [ ] Run `2c-tail-methods-diagnostics.py` to fit tail curves and generate diagnostics. Debug any errors.
 
 - [ ] Run `2d-tail-create-excel.py` to create `selections/Chain Ladder Selections - Tail.xlsx` with curve fit results and diagnostics. If prior tail selections exist (`selections/tail-factor-prior.csv`), they will be included in a "Prior Selection" row for reference. The script will print the context file paths it creates (e.g., "  Exported MD: selections/tail-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
-
-- [ ] Compress your context to make space for the upcoming subagent responses.
 
 - [ ] **Invoke the rules-based tail selector once** for all measures. Call the `selector-tail-factor-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
   - Read each context file
