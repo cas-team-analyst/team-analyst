@@ -62,10 +62,10 @@ def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
 
 def extract_exposure_diagonal(triangle_data: pd.DataFrame) -> dict:
     """
-    Extract the latest (diagonal) exposure value for each period.
+    Extract exposure values for each period.
     
-    The diagonal represents the most mature value for each period, which is
-    the total exposure for that period.
+    Exposure should be provided in simple 2-column format (period, value).
+    If provided as a triangle, extracts the latest age for each period.
     
     Args:
         triangle_data: DataFrame with triangle data including Exposure measure
@@ -79,11 +79,10 @@ def extract_exposure_diagonal(triangle_data: pd.DataFrame) -> dict:
     if exposure_data.empty:
         raise ValueError("No Exposure measure found in triangle data. Initial Expected calculation requires Exposure.")
     
-    # For each period, get the latest age (diagonal value)
-    # Group by period and take the last value (most mature)
+    # Group by period to handle both simple format (one row) and triangle format (multiple rows)
+    # Take the last value which is either the only value or the most mature age
     exposure_diagonal = exposure_data.groupby('period', observed=True).agg({
-        'value': 'last',  # Last value is the most mature (diagonal)
-        'age': 'last'
+        'value': 'last'
     }).reset_index()
     
     # Convert to dictionary
