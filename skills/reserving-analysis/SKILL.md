@@ -15,10 +15,7 @@ Focus first exclusively on **orienting to the OS environment**.
    - Copy PROGRESS.md, REPORT.md, and REPLICATE.md from `assets/` to project directory
    - Start steps in PROGRESS.md. Mark them in progress/complete as you go.
 
-**Confirm interaction mode:**
-- Ask user to choose: **Pause for Selections** or **Fully Automatic**
-- Use exact option names from PROGRESS.md
-- Track chosen mode for subsequent user interaction points
+**Project elicitation (required):** After the welcome message, present the project-setup-form from assets and collect all five fields: Analysis Title, Project Folder, Triangle File(s), Valuation Date, and Analysis Mode. Do not proceed until all fields are filled. Do not ask for interaction mode separately — it is captured in the form.
 
 **Overview:** PROGRESS.md contains the detailed step-by-step workflow. Follow that file for execution. This skill provides supporting context and principles.
 
@@ -53,6 +50,10 @@ Focus first exclusively on **orienting to the OS environment**.
 - Copy template files from `assets/` using command line - never create from scratch
 - Copy Python scripts from `scripts/` to project folder before running
 - Fix bugs with targeted edits AFTER copying - never rewrite entire files
+
+**Project folder naming (Windows path length):**
+- When creating a new project folder, derive a short slug from the analysis title — do NOT use the full title as the folder name. Convert to lowercase, replace spaces with hyphens, strip special characters, and cap at 30 characters. Example: "Q1 2025 Reserve Review — WC" → `q1-2025-reserve-review-wc`. The full analysis title is used only inside documents (REPORT.md, REPLICATE.md).
+- Windows MAX_PATH is 260 characters. Deep project paths (base folder + project slug + `selections/Chain Ladder Selections - LDFs.xlsx`) can easily hit this limit if the folder name is long. If the resolved output path will exceed 200 characters, warn the user and suggest moving the project folder closer to the drive root.
 
 **Documentation:**
 - Follow PROGRESS.md to track workflow state (mark In Progress → Complete)
