@@ -103,7 +103,9 @@ def _fill_selection_values(ws, measures_group, combined, actual_lookup):
             ws.cell(r, col).value = None if v is None or (isinstance(v, float) and v != v) else v
             col += 1
         if has_group_ie:
-            col += 1  # Initial Expected already hardcoded
+            v = row.get("ultimate_ie", np.nan)
+            ws.cell(r, col).value = None if (v is None or (isinstance(v, float) and v != v)) else float(v)
+            col += 1
         # Selected Ultimate already hardcoded
         sel_ult = row["selected_ultimate"]
         sel_ult = None if pd.isna(sel_ult) else float(sel_ult)

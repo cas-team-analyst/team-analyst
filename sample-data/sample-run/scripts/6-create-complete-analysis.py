@@ -492,7 +492,7 @@ def write_selection_grouped(gen_wb, combined, measures_group, title):
             _formula_cell(ws, r, col_idx, f"='{measure_short_name(m)} BF'!H{r}", _NUM_FMT)
             col_idx += 1
         if has_group_ie:
-            _data_cell(ws.cell(r, col_idx), row.get("ultimate_ie", np.nan), _NUM_FMT)
+            _formula_cell(ws, r, col_idx, f"='[Ultimates.xlsx]{main_m}'!D{r}", _NUM_FMT)
             col_idx += 1
         _data_cell(ws.cell(r, col_idx), row["selected_ultimate"], _NUM_FMT)
         col_idx += 1
