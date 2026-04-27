@@ -148,15 +148,21 @@ def format_loss_sheet(ws, df_ult, df_prior):
         df_combined['incurred_cl'] = None
         df_combined['incurred_bf'] = None
     
-    # Write headers
+    # Check if we have prior data for Losses
+    has_prior_data = df_prior is not None and 'Losses' in df_prior.get('category', df_prior.get('measure', pd.Series())).values
+    
+    # Write headers - conditionally include Prior columns
     headers = [
         "Accident Period", "Current Age", "Incurred", "Paid",
-        "Incurred CL", "Paid CL", "Incurred IE", "Paid IE", "Incurred BF", "Paid BF",
-        "Prior Selection", "Prior Reasoning",
+        "Incurred CL", "Paid CL", "Incurred IE", "Paid IE", "Incurred BF", "Paid BF"
+    ]
+    if has_prior_data:
+        headers.extend(["Prior Selection", "Prior Reasoning"])
+    headers.extend([
         "Rules-Based AI Selection", "Rules-Based AI Reasoning",
         "Open-Ended AI Selection", "Open-Ended AI Reasoning",
         "User Selection", "User Reasoning"
-    ]
+    ])
     
     ws.append(headers)
     for c_idx in range(1, len(headers) + 1):
@@ -167,17 +173,20 @@ def format_loss_sheet(ws, df_ult, df_prior):
         cell.alignment = Alignment(horizontal="center")
         ws.column_dimensions[cell.column_letter].width = 18
     
-    ws.column_dimensions['J'].width = 30
-    ws.column_dimensions['L'].width = 30
-    ws.column_dimensions['N'].width = 30
-    ws.column_dimensions['P'].width = 40
-    
     # Build column map for dynamic column lookups
     col_map = build_column_map(ws, header_row=1)
     
+    # Set wider widths for reasoning columns
+    from openpyxl.utils import get_column_letter
+    if has_prior_data:
+        ws.column_dimensions[get_column_letter(col_map["Prior Reasoning"])].width = 30
+    ws.column_dimensions[get_column_letter(col_map["Rules-Based AI Reasoning"])].width = 30
+    ws.column_dimensions[get_column_letter(col_map["Open-Ended AI Reasoning"])].width = 30
+    ws.column_dimensions[get_column_letter(col_map["User Reasoning"])].width = 40
+    
     # Create dict of prior
     prior_dict = {}
-    if df_prior is not None and 'Losses' in df_prior.get('category', df_prior.get('measure', pd.Series())).values:
+    if has_prior_data:
         mp = df_prior[df_prior.get('category', df_prior.get('measure')) == 'Losses']
         for _, r in mp.iterrows():
             prior_dict[str(r['period'])] = {"sel": r.get('selection', r.get('selected_ultimate')), "reason": r.get('reasoning', '')}
@@ -201,19 +210,20 @@ def format_loss_sheet(ws, df_ult, df_prior):
             cell.number_format = "#,##0"
             cell.border = THIN_BORDER
         
-        # Prior
-        prior_sel = prior_dict.get(period, {}).get("sel", "")
-        prior_reason = prior_dict.get(period, {}).get("reason", "")
-        
-        c = ws.cell(row=r_idx, column=col_map["Prior Selection"], value=prior_sel)
-        c.fill = PRIOR_FILL
-        c.border = THIN_BORDER
-        c.number_format = "#,##0"
-        
-        c = ws.cell(row=r_idx, column=col_map["Prior Reasoning"], value=prior_reason)
-        c.fill = PRIOR_FILL
-        c.border = THIN_BORDER
-        c.alignment = Alignment(wrap_text=True)
+        # Prior (only if prior data available)
+        if has_prior_data:
+            prior_sel = prior_dict.get(period, {}).get("sel", "")
+            prior_reason = prior_dict.get(period, {}).get("reason", "")
+            
+            c = ws.cell(row=r_idx, column=col_map["Prior Selection"], value=prior_sel)
+            c.fill = PRIOR_FILL
+            c.border = THIN_BORDER
+            c.number_format = "#,##0"
+            
+            c = ws.cell(row=r_idx, column=col_map["Prior Reasoning"], value=prior_reason)
+            c.fill = PRIOR_FILL
+            c.border = THIN_BORDER
+            c.alignment = Alignment(wrap_text=True)
         
         # Rules-Based AI Selection (yellow fill - will be populated by 5b script)
         c = ws.cell(row=r_idx, column=col_map["Rules-Based AI Selection"])
@@ -291,27 +301,32 @@ def format_count_sheet(ws, df_ult, df_prior):
         df_combined = df_closed[['period', 'current_age', 'actual', 'ultimate_ie', 'ultimate_cl', 'ultimate_bf']].copy()
         df_combined.rename(columns={'actual': 'closed', 'ultimate_ie': 'closed_ie', 'ultimate_cl': 'closed_cl', 'ultimate_bf': 'closed_bf'}, inplace=True)
     
-    # Build headers based on whether closed count exists
+    # Check if we have prior data for Counts
+    has_prior_data = df_prior is not None and 'Counts' in df_prior.get('category', df_prior.get('measure', pd.Series())).values
+    
+    # Build headers based on whether closed count exists and whether we have prior data
     if has_closed:
         headers = [
             "Accident Period", "Current Age", "Reported", "Closed",
-            "Reported CL", "Closed CL", "Reported IE", "Closed IE", "Reported BF", "Closed BF",
-            "Prior Selection", "Prior Reasoning",
-            "Rules-Based AI Selection", "Rules-Based AI Reasoning",
-            "Open-Ended AI Selection", "Open-Ended AI Reasoning",
-            "User Selection", "User Reasoning"
+            "Reported CL", "Closed CL", "Reported IE", "Closed IE", "Reported BF", "Closed BF"
         ]
         data_columns = ['reported', 'closed', 'reported_cl', 'closed_cl', 'reported_ie', 'closed_ie', 'reported_bf', 'closed_bf']
     else:
         headers = [
             "Accident Period", "Current Age", "Reported",
-            "Reported CL", "Reported IE", "Reported BF",
-            "Prior Selection", "Prior Reasoning",
-            "Rules-Based AI Selection", "Rules-Based AI Reasoning",
-            "Open-Ended AI Selection", "Open-Ended AI Reasoning",
-            "User Selection", "User Reasoning"
+            "Reported CL", "Reported IE", "Reported BF"
         ]
         data_columns = ['reported', 'reported_cl', 'reported_ie', 'reported_bf']
+    
+    # Conditionally add Prior columns
+    if has_prior_data:
+        headers.extend(["Prior Selection", "Prior Reasoning"])
+    
+    headers.extend([
+        "Rules-Based AI Selection", "Rules-Based AI Reasoning",
+        "Open-Ended AI Selection", "Open-Ended AI Reasoning",
+        "User Selection", "User Reasoning"
+    ])
     
     ws.append(headers)
     for c_idx in range(1, len(headers) + 1):
@@ -327,14 +342,15 @@ def format_count_sheet(ws, df_ult, df_prior):
     
     # Set wider widths for reasoning columns
     from openpyxl.utils import get_column_letter
-    ws.column_dimensions[get_column_letter(col_map["Prior Reasoning"])].width = 30
+    if has_prior_data:
+        ws.column_dimensions[get_column_letter(col_map["Prior Reasoning"])].width = 30
     ws.column_dimensions[get_column_letter(col_map["Rules-Based AI Reasoning"])].width = 30
     ws.column_dimensions[get_column_letter(col_map["Open-Ended AI Reasoning"])].width = 30
     ws.column_dimensions[get_column_letter(col_map["User Reasoning"])].width = 40
     
     # Create dict of prior
     prior_dict = {}
-    if df_prior is not None and 'Counts' in df_prior.get('category', df_prior.get('measure', pd.Series())).values:
+    if has_prior_data:
         mp = df_prior[df_prior.get('category', df_prior.get('measure')) == 'Counts']
         for _, r in mp.iterrows():
             prior_dict[str(r['period'])] = {"sel": r.get('selection', r.get('selected_ultimate')), "reason": r.get('reasoning', '')}
@@ -358,19 +374,20 @@ def format_count_sheet(ws, df_ult, df_prior):
             cell.number_format = "#,##0"
             cell.border = THIN_BORDER
         
-        # Prior
-        prior_sel = prior_dict.get(period, {}).get("sel", "")
-        prior_reason = prior_dict.get(period, {}).get("reason", "")
-        
-        c = ws.cell(row=r_idx, column=col_map["Prior Selection"], value=prior_sel)
-        c.fill = PRIOR_FILL
-        c.border = THIN_BORDER
-        c.number_format = "#,##0"
-        
-        c = ws.cell(row=r_idx, column=col_map["Prior Reasoning"], value=prior_reason)
-        c.fill = PRIOR_FILL
-        c.border = THIN_BORDER
-        c.alignment = Alignment(wrap_text=True)
+        # Prior (only if prior data available)
+        if has_prior_data:
+            prior_sel = prior_dict.get(period, {}).get("sel", "")
+            prior_reason = prior_dict.get(period, {}).get("reason", "")
+            
+            c = ws.cell(row=r_idx, column=col_map["Prior Selection"], value=prior_sel)
+            c.fill = PRIOR_FILL
+            c.border = THIN_BORDER
+            c.number_format = "#,##0"
+            
+            c = ws.cell(row=r_idx, column=col_map["Prior Reasoning"], value=prior_reason)
+            c.fill = PRIOR_FILL
+            c.border = THIN_BORDER
+            c.alignment = Alignment(wrap_text=True)
         
         # Rules-Based AI Selection (yellow fill - will be populated by 5b script)
         c = ws.cell(row=r_idx, column=col_map["Rules-Based AI Selection"])

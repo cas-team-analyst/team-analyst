@@ -204,20 +204,23 @@ def _exp_ref(exp_row_map, period):
     return '""'
 
 
-
-def _tri_col_map_from_df(triangles_df, measure):
+def _tri_col_map_from_df(triangles_df, measure, max_age=None):
     """Build {age_str: col_letter} for the triangle sheet from parquet data.
     Triangle sheet col A = period, so ages start at col B (index 2).
     Ages sorted ascending match the order written by _copy_ws_filtered.
+    max_age caps the map to the cutoff age — add_tail_to_triangle_ws deletes
+    data columns beyond the cutoff, so referencing those cols returns empty.
     """
     tri_m = triangles_df[triangles_df["measure"].astype(str) == measure]
     if tri_m.empty:
         return {}
     ages = sorted(tri_m["age"].dropna().unique(), key=lambda a: float(str(a)))
+    if max_age is not None:
+        ages = [a for a in ages if float(str(a)) <= max_age]
     return {str(int(float(str(a)))): get_column_letter(i + 2) for i, a in enumerate(ages)}
 
 
-def write_method_cl(gen_wb, combined, measure, ult_col_map, tri_col_map=None, cdf_row=None):
+def write_method_cl(gen_wb, combined, measure, ult_col_map, tri_col_map=None):
     short_name = measure_short_name(measure)
     ws = gen_wb.create_sheet(title=f"{short_name} CL"[:31])
     headers = ["Accident Period", "Current Age", short_name, "CDF", "Ultimate", "IBNR", "Unpaid"]
@@ -244,16 +247,16 @@ def write_method_cl(gen_wb, combined, measure, ult_col_map, tri_col_map=None, cd
         except (ValueError, TypeError):
             age_key = None
         tri_col = tri_col_map.get(age_key) if age_key else None
-        actual_formula = f"='{short_name}'!{tri_col}{r+1}" if tri_col else _ult_ref(ult_col_map, ult_sheet, actual_hdr, r)
-        _formula_cell(ws, r, 3, actual_formula, _NUM_FMT)
-        if cdf_row:
-            _formula_cell(ws, r, 4,
-                f"=_xlfn.XLOOKUP(B{r},'{short_name}'!$A$2:${max_age_col}$2,"
-                f"'{short_name}'!$A${cdf_row}:${max_age_col}${cdf_row})",
-                _DEC_FMT)
+        if tri_col:
+            _formula_cell(ws, r, 3, f"='{short_name}'!{tri_col}{r+1}", _NUM_FMT)
         else:
-            _data_cell(ws.cell(r, 4), row.get("cdf"), _DEC_FMT)
-        _formula_cell(ws, r, 5, f"=C{r}*D{r}", _NUM_FMT)
+            ref = _ult_ref(ult_col_map, ult_sheet, actual_hdr, r)
+            if ref == '""':
+                _data_cell(ws.cell(r, 3), row["actual"], _NUM_FMT)
+            else:
+                _formula_cell(ws, r, 3, ref, _NUM_FMT)
+        _data_cell(ws.cell(r, 4), row.get("cdf"), _DEC_FMT)
+        _formula_cell(ws, r, 5, f'=IF(AND(ISNUMBER(C{r}),ISNUMBER(D{r})),C{r}*D{r},"")', _NUM_FMT)
         _formula_cell(ws, r, 6, f"=E{r}-C{r}", _NUM_FMT)
         if proxy_exists:
             _formula_cell(ws, r, 7, f"=E{r}-'{measure_short_name(proxy)} CL'!C{r}", _NUM_FMT)
@@ -338,6 +341,13 @@ def write_method_ie(gen_wb, combined, measure, exp_row_map, ult_col_map):
         _formula_cell(ws, r, 3, exp_formula, _NUM_FMT)
 
         _formula_cell(ws, r, 4, _ult_ref(ult_col_map, ult_sheet, ie_hdr, r), _NUM_FMT)
+        _formula_cell(ws, r, 5, f"=D{r}/C{r}", _DEC_FMT)
+
+        ie_ref = _ult_ref(ult_col_map, ult_sheet, ie_hdr, r)
+        if ie_ref == '""':
+            _data_cell(ws.cell(r, 4), row.get("ultimate_ie"), _NUM_FMT)
+        else:
+            _formula_cell(ws, r, 4, ie_ref, _NUM_FMT)
         _formula_cell(ws, r, 5, f"=D{r}/C{r}", _DEC_FMT)
 
 
@@ -879,18 +889,12 @@ def main():
     
     # We also need triangles_df for diagnostics
     triangles_df = pd.read_parquet(INPUT_TRIANGLES)
-
-    # Find CDF row number per measure from the LDF selections workbook.
-    cdf_row_map = {}
-    if pathlib.Path(INPUT_CL_EXCEL).exists():
-        _wb_ldf = load_workbook(INPUT_CL_EXCEL, data_only=False)
-        for _sn in _wb_ldf.sheetnames:
-            _ws = _wb_ldf[_sn]
-            for _row in _ws.iter_rows(min_col=1, max_col=1):
-                if _row[0].value == "CDF":
-                    cdf_row_map[measure_short_name(_sn)] = _row[0].row
-                    break
-        _wb_ldf.close()
+    # Load tail selections early to know which ages survive add_tail_to_triangle_ws.
+    # _tri_col_map_from_df caps at cutoff so CL actual refs don't point to deleted columns.
+    tail_cutoff = {}
+    if pathlib.Path(INPUT_TAIL_EXCEL).exists():
+        _ts = load_tail_selections(INPUT_TAIL_EXCEL)
+        tail_cutoff = {m: info[0] for m, info in _ts.items()}
 
     print(f"Measures: {measures}")
     print(f"Methods: {available_methods}")
@@ -907,7 +911,7 @@ def main():
     if loss_m:
         write_selection_grouped(gen_wb, combined, ["Incurred Loss", "Paid Loss"], "Loss Selection", ult_col_map)
         for m in loss_m:
-            write_method_cl(gen_wb, combined, m, ult_col_map, _tri_col_map_from_df(triangles_df, m), cdf_row_map.get(measure_short_name(m)))
+            write_method_cl(gen_wb, combined, m, ult_col_map, _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)))
         for m in loss_m:
             if _has_method(combined, m, "ultimate_bf"):
                 write_method_bf(gen_wb, combined, m, ult_col_map)
@@ -919,7 +923,7 @@ def main():
     if count_m:
         write_selection_grouped(gen_wb, combined, ["Reported Count", "Closed Count"], "Count Selection", ult_col_map)
         for m in count_m:
-            write_method_cl(gen_wb, combined, m, ult_col_map, _tri_col_map_from_df(triangles_df, m), cdf_row_map.get(measure_short_name(m)))
+            write_method_cl(gen_wb, combined, m, ult_col_map, _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)))
         for m in count_m:
             if _has_method(combined, m, "ultimate_bf"):
                 write_method_bf(gen_wb, combined, m, ult_col_map)
@@ -930,7 +934,7 @@ def main():
     if other_m:
         print("Building other method sheets...")
         for m in other_m:
-            write_method_cl(gen_wb, combined, m, ult_col_map, _tri_col_map_from_df(triangles_df, m), cdf_row_map.get(measure_short_name(m)))
+            write_method_cl(gen_wb, combined, m, ult_col_map, _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)))
             if _has_method(combined, m, "ultimate_bf"):
                 write_method_bf(gen_wb, combined, m, ult_col_map)
             if _has_method(combined, m, "ultimate_ie"):

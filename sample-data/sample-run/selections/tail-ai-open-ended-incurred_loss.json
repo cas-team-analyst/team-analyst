@@ -2,8 +2,8 @@
   {
     "measure": "Incurred Loss",
     "cutoff_age": 203,
-    "tail_factor": 1.0000,
-    "method": "mcclenahan",
-    "reasoning": "Incurred loss triangle exhibits rapid development closure by age 143, with observed factors clustering near 1.0 thereafter. McClenahan (r=0.2439 at age 143, r=0.5388 at age 203) correctly identifies essential tail closure across both starting points. All scenarios at ages 143 and 203 produce factors at or near 1.0, with Bondy/modified variants yielding only 1.01–1.024. Double Exponential at age 143 (R²=0.323) shows poor fit quality. At age 203, double exponential improves (R²=0.729) but still produces only 1.0367. The observed data shows no meaningful tail development beyond age 143—later factors are predominantly 1.0. McClenahan's null tail correctly reflects the actuarial reality that this workers comp book is substantially developed by the selected starting age. Selection anchors to demonstrated closure in the triangle itself."
+    "tail_factor": 1.0216,
+    "method": "double_exp",
+    "reasoning": "Incurred loss exhibits more tail development volatility than paid loss, with observed factors showing modest but non-negligible development beyond age 143. The Double Exponential method at age 203 delivers a tail factor of 1.0216 supported by strong diagnostics: R² = 0.886 (excellent fit to sparse tail), tight LOO stability (std_dev = 0.0037), and minimal gap to last observed (0.000032). Age 203 better captures the lingering development than age 143, where R² drops to 0.332. McClenahan's near-unity estimate at both ages inadequately reflects the observed development intensity. The 1.0216 factor is material (0.71% of CDF) and justified by incurred's characteristic longer tail relative to paid. This selection balances observed development, diagnostic strength, and actuarial reasonableness."
   }
 ]

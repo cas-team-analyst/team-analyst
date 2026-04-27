@@ -503,10 +503,11 @@ def main():
     
     exp_sub = df_enhanced[(df_enhanced['measure'] == 'Exposure') & df_enhanced['value'].notna()]
     if not exp_sub.empty:
-        exp_piv = exp_sub[['period', 'value']].copy()
-        exp_piv.columns = ['Period', 'Exposure']
-        exp_piv = exp_piv.set_index('Period')
-        exp_md = df_to_markdown(exp_piv, index=True)
+        # Format Exposure as simple 2-column table (period, value)
+        # Exposure doesn't develop over age, so we take the last value per period
+        exp_simple = exp_sub.groupby('period', observed=True).agg({'value': 'last'}).reset_index()
+        exp_simple.columns = ['Period', 'Exposure']
+        exp_md = df_to_markdown(exp_simple, index=False)
     else:
         exp_md = "No Exposure data\n"
         

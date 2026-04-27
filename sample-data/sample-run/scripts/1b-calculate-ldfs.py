@@ -9,7 +9,7 @@ contents:
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
-    python 1b-enhance-data.py
+    python 1b-calculate-ldfs.py
 """
 
 import pandas as pd

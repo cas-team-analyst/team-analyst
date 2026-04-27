@@ -9,7 +9,7 @@ contents:
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
-    python 1d-averages-qa.py
+    python 1d-ldf-averages.py
 """
 
 import pandas as pd
@@ -26,7 +26,7 @@ METHOD_ID   = "chainladder"
 def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     """
     Calculate LDF averages and QA metrics in a single wide format DataFrame.
-    Works with long format data from 2-enhance-data.py.
+    Works with long format data from 1b-calculate-ldfs.py.
     
     Args:
         df_enhanced: Long format DataFrame with columns: period, age, value, measure, source,

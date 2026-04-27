@@ -4,22 +4,6 @@
     "cutoff_age": 143,
     "tail_factor": 1.0,
     "method": "bondy",
-    "reasoning": "Reported Count triangle—shortest tail expected. Bondy tail factor 1.0 selected at starting age 143. Criteria satisfied: is_monotone_from_here=True, cv=0.0, slope_sign_changes=0, n_factors_in_fit=12. Observed factor at age 143 is 1.0; Bondy carries forward this last finite factor. All reported count factors remain at 1.0 from age 143 onward—early closure evident in data. Gap_flag=False; no disconnection. Materiality anchor applies: pct_of_cdf is negligible (tail immaterial, <0.1%). Closure anchor applies: all reported claims exhausted by mid-development. Reserve impact negligible; count triangle has fully closed by this age. This is the appropriate selection for a count measure with rapid closure. ASOP 43 compliant.",
-    "framework_points": {
-      "triangle_type": "Reported Count",
-      "starting_age_selected": 143,
-      "starting_age_criteria_met": true,
-      "is_monotone": true,
-      "cv_at_starting_age": 0.0,
-      "slope_sign_changes": 0,
-      "n_factors_in_fit": 12,
-      "curve_form": "bondy",
-      "gap_flag": false,
-      "materiality_anchor_applies": true,
-      "closure_anchor_applies": true,
-      "reserve_impact_range": "negligible",
-      "loo_std_dev": null,
-      "r_squared": null
-    }
+    "reasoning": "Reported Count triangle exhibits shortest tail of all measures — factors are 1.0 from age 143 onward (zero development). Starting age 143 satisfies monotonicity (is_monotone_from_here=True), zero CV, zero slope sign changes, and 12 factors in fit. No curve fit diagnostics required. Tail immateriality anchor applies: pct_of_cdf not evaluated due to zero development (tail immaterial). Bondy method (last observed factor = 1.0) is appropriate default for reported count where development has ceased. Gap to last observed negligible (gap_flag=False). ASOP 43 compliant: tail selection reflects completed reporting pattern; no future development expected in reported counts."
   }
 ]

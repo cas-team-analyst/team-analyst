@@ -34,7 +34,7 @@
 
 - [ ] Based on available data, determine which triangles we will use to come up with Ultimates estimates using the Chain Ladder method: Paid Losses, Incurred Losses, Reported Claims, Closed Claims, etc.
 
-- [ ] If you haven't already found prior selections, ask the user if prior LDF selections exist from a previous analysis. If they do, ask where they are located (Excel file, CSV, database, etc.). You will need to modify `read_and_process_prior_selections()` in `1a-prep-data.py` to read from that source during data extraction.
+- [ ] If you haven't already found prior selections, ask the user if prior LDF selections exist from a previous analysis. If they do, ask where they are located (Excel file, CSV, database, etc.). You will need to modify `read_and_process_prior_selections()` in `1a-load-and-validate.py` to read from that source during data extraction.
 
 - [ ] Ask the user if prior tail factor selections exist from a previous analysis. If they do, ask where they are located and what tail factor was used for each measure. Create a CSV file at `selections/tail-factor-prior.csv` with columns: `measure`, `cutoff_age`, `tail_factor`, `method`, `reasoning`. This will be loaded by `2d-tail-create-excel.py` and shown in the "Prior Selection" row for reference. If no prior tail selections exist, skip this step.
 
@@ -44,27 +44,27 @@
 
 - [ ] Modify the variables at the top of each script with the appropriate DATA_FILE_PATH, OUTPUT_PATH, and TEMPLATE_PATH.
 
-- [ ] Modify `1a-prep-data.py` to accept the format of the data provided by the user. This includes:
+- [ ] Modify `1a-load-and-validate.py` to accept the format of the data provided by the user. This includes:
   - Customizing `read_and_process_triangles()` to read triangle data from your source
   - If prior selections exist, customizing `read_and_process_prior_selections()` to read from your source.
   - Run it to verify it works and passes validation. Only mark this step complete once the tests in the script have passed to verify the output is in the necessary format.
 
 - [ ] **Confirm data format with the user.** This step always runs, regardless of interaction mode. Use the data-validation template from assets so every analysis presents data validation the same way. Do not improvise the format, reorder sections, or omit headings — even if a section is short or trivial. Populate every section from the actual processed data. The spot-check triangle should default to Paid Loss; if Paid Loss is not present, use the first loss measure available (Incurred, then Reported). Do not proceed until the user confirms.
 
-- [ ] Report to the user what LDF averages (review `1d-averages-qa.py`) and metrics will be calculated. _(Pause for Selections only: also ask if they'd like to add others before continuing.)_
+- [ ] Report to the user what LDF averages (review `1d-ldf-averages.py`) and metrics will be calculated. _(Pause for Selections only: also ask if they'd like to add others before continuing.)_
 
 - [ ] Run all the other Python scripts to create output in `processed-data/`.
 
 - [ ] **Update REPORT.md:**
   - Update **Section 3.1** Data Used table: add rows for triangle types used (paid, incurred, counts), confirm source file names and as-of dates; note if ELR file is present or absent.
-  - Update **Section 3.3** Data Quality Observations: note any adjustments made to `1a-prep-data.py` (e.g., outlier exclusions, coding changes), any data limitations discovered.
+  - Update **Section 3.3** Data Quality Observations: note any adjustments made to `1a-load-and-validate.py` (e.g., outlier exclusions, coding changes), any data limitations discovered.
   - Update **Section 3.4** Data Limitations: note missing data types (e.g., no ELR file → IE/BF skipped) and how limitations were handled.
   - Update **Section 1.2** Scope table: fill in accident/underwriting years, coverages, and basis once confirmed from the data.
 
 - [ ] **Update REPLICATE.md Step 2:**
   - List all input files in raw-data/ with brief descriptions
   - Document which scripts were run (1a through 1d)
-  - List any customizations made to `1a-prep-data.py` (column mappings, data transformations, outlier handling)
+  - List any customizations made to `1a-load-and-validate.py` (column mappings, data transformations, outlier handling)
   - Note the output files created in `processed-data/`
   - Record the data validation confirmation date
 
@@ -174,7 +174,7 @@ _(Pause for Selections only):_
 
 - [ ] Copy `scripts/5a-ultimates-create-excel.py` and `scripts/5b-ultimates-update-selections.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`, don't rewrite them yourself). Ensure `scripts/modules/` is already in place (copied in Step 3).
 
-- [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export category context files. The script will create two sheets: **Loss** (combining Incurred and Paid) and **Count** (combining Reported and Closed). It will print the context file paths it creates (e.g., "  Exported MD: selections/ultimates-context-loss.md", "  Exported MD: selections/ultimates-context-count.md"). **Capture the list of context file paths** from the script output.
+- [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export category context files. The script will create two sheets: **Losses** (combining Incurred and Paid) and **Counts** (combining Reported and Closed). It will print the context file paths it creates (e.g., "  Exported MD: selections/ultimates-context-loss.md", "  Exported MD: selections/ultimates-context-count.md"). **Capture the list of context file paths** from the script output.
 
 - [ ] **Invoke the rules-based ultimates selector once** for both categories. Call the `selector-ultimates-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
   - Read each context file (loss and count)
@@ -197,7 +197,7 @@ _(Pause for Selections only):_
   - Load `selections/ultimates-ai-open-ended-loss.json` and `selections/ultimates-ai-open-ended-count.json`
   - Populate the Rules-Based AI Selection and Open-Ended AI Selection columns in the Loss and Count sheets
 
-- [ ] Tell the user where `selections/Ultimates.xlsx` is located. Explain that both rules-based and open-ended AI selections are visible. The rules-based selection is what gets used by default — the user can override it manually. The open-ended selection provides an independent cross-check. Note that the workbook now has **Loss** and **Count** sheets instead of per-measure sheets, and one ultimate is selected per category per accident year.
+- [ ] Tell the user where `selections/Ultimates.xlsx` is located. Explain that both rules-based and open-ended AI selections are visible. The rules-based selection is what gets used by default — the user can override it manually. The open-ended selection provides an independent cross-check. Note that the workbook now has **Losses** and **Counts** sheets instead of per-measure sheets, and one ultimate is selected per category per accident year.
 
 _(Pause for Selections only):_
 - [ ] Open `selections/Ultimates.xlsx` for the user. Let them know they can review and override any AI ultimate selections. Pause and wait for the user to confirm they are done reviewing before continuing.
@@ -211,7 +211,7 @@ _(Pause for Selections only):_
   - Add to **Section 11** Open Questions any AYs where method indications diverged materially or selections required significant judgment.
 
 - [ ] **Update REPLICATE.md Step 7:**
-  - Document that `5a-ultimates-create-excel.py` was run to create the ultimates workbook with Loss and Count sheets
+  - Document that `5a-ultimates-create-excel.py` was run to create the ultimates workbook with Losses and Counts sheets
   - Note that AI selectors made rules-based and open-ended ultimate selections for both categories (JSON files created)
   - Document that `5b-ultimates-update-selections.py` populated the Excel file with AI selections
   - **Critical:** If user made manual overrides in the "User Selection" column, list each one with category (Loss or Count), period, selected ultimate, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection columns."
@@ -258,7 +258,7 @@ Be explicit and exhaustive. The user should leave this step knowing exactly what
 
 - [ ] Tell the user the analysis is complete and list every output file produced, grouped by folder. For each file, give the path and a one-line description of what it contains and who it is for. See closing-summary.md from assets.
 
-- [ ] After listing the files, tell the user the single most important takeaway: **REPORT.md is the primary narrative deliverable, and `output/complete-analysis.xlsx` is the primary numerical deliverable.** Everything else is supporting evidence or reproducibility material.
+- [ ] After listing the files, tell the user the single most important takeaway: **REPORT.md is the primary narrative deliverable, and `Complete Analysis.xlsx` is the primary numerical deliverable.** Everything else is supporting evidence or reproducibility material.
 
 - [ ] Ask the user if anything is unclear about any of the outputs before the workflow closes.
 

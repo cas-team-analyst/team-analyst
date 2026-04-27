@@ -2,139 +2,139 @@
   {
     "measure": "Reported Count",
     "interval": "11-23",
-    "selection": 1.102,
-    "reasoning": "1.102 selected. The all-years weighted is 1.0617, but recent years show substantial elevation (3yr: 1.133). Given the stable nature of claims counts (low volatility across time for this measure), recent emergence patterns should be trusted. The 5-year average of 1.118 and 10-year simple of 1.101 bound the estimate. Using 1.102 to reflect the recent claim reporting acceleration while staying near the long-run average."
+    "selection": 1.1100,
+    "reasoning": "LDF 1.110. Early reported count development. All-years weighted 1.062, simple 1.068, but these are pulled down by very early years with minimal count changes. The 5-year and 10-year weighted averages (1.118, 1.096) better reflect recent experience. Recent individual years (2020-2024) show 1.06-1.13, with 2024 showing 1.19. Selected above all-years averages to reflect recent years' slightly elevated late-report trickle, acknowledging claims management practices may have shifted toward more delayed reporting in recent cohorts."
   },
   {
     "measure": "Reported Count",
     "interval": "23-35",
-    "selection": 1.005,
-    "reasoning": "1.005 selected. Extremely tight data (CV 0.0-0.0145). All averages cluster around 1.003-1.004. The reported counts stabilize quickly after initial reporting; this small factor reflects late-reported claims that emerged after month 23."
+    "selection": 1.0030,
+    "reasoning": "LDF 1.003. All-years weighted 1.0, simple 1.004. Negligible additional count development after age 23. CV is 0. The triangle shows counts are essentially locked at age 23 for most years, with only minimal late reports. Selected at the simple average, reflecting near-complete report realization by month 23."
   },
   {
     "measure": "Reported Count",
     "interval": "35-47",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All-years weighted is 1.0004, with all values extremely close to 1.0 (CV 0.0-0.002). Claims are essentially fully reported by age 35 months; minimal additional reporting occurs."
+    "selection": 1.0005,
+    "reasoning": "LDF 1.0005. All-years weighted 1.0, simple 1.0. Development is literally nil. CV 0. Counts are fully reported by age 35. Selected at 1.0, rounding to reflect the virtually perfect maturity."
   },
   {
     "measure": "Reported Count",
     "interval": "47-59",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All-years weighted is 0.9998, with the simple and exclude-high-low also at 0.9999. At this stage no additional claims are reported; using 1.0 reflects completion of the reporting process."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. CV near zero (0.002). No development. Counts are completely closed. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "59-71",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. The all-years weighted is 1.0019, but all values are extremely close to 1.0 (CV 0.001-0.002). Claims are fully reported; using 1.0 reflects the practical completion of the count triangle."
+    "selection": 1.0010,
+    "reasoning": "LDF 1.001. All-years weighted 1.0, simple 1.001. Minimal development. CV is 0.002. Nearly no additional reports expected at this maturity. Selected at the simple average, reflecting minute tail activity."
   },
   {
     "measure": "Reported Count",
     "interval": "71-83",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All-years weighted is 1.0024 but simple is 1.0015 and exclude-high-low is 1.0002. The tight cluster around 1.0 indicates minimal development. Using 1.0 reflects the complete reporting achieved well before this interval."
+    "selection": 1.0015,
+    "reasoning": "LDF 1.0015. All-years weighted 1.002, simple 1.001. CV is 0. Very slight late-report trickle. Selected between the two averages, acknowledging minimal but non-zero development at this tail stage."
   },
   {
     "measure": "Reported Count",
     "interval": "83-95",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All-years weighted is 0.9998, with all other averages at or very near 1.0. Reported counts have fully stabilized; no meaningful development."
+    "selection": 0.9995,
+    "reasoning": "LDF 0.9995. All-years weighted 1.0, simple 1.0 approximately. CV 0.002. Some years show infinitesimal decreases (likely closure or duplication removal). Development is essentially flat. Selected slightly below 1.0 to reflect the rare decrements observed."
   },
   {
     "measure": "Reported Count",
     "interval": "95-107",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All-years weighted, simple, and exclude-high-low are all exactly 1.0. Perfect stability at this stage."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development whatsoever. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "107-119",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. The all-years weighted is 0.9994, with slight recent variation (3yr: 0.9964) but all values extremely close to 1.0 (CV 0.004-0.007). Using 1.0 reflects the practical completion and stability of reported counts."
+    "selection": 0.9990,
+    "reasoning": "LDF 0.9990. All-years weighted 1.0, simple 1.0 approximately. CV is 0.007. Some years show minor count decreases. Development is negligible but occasionally slightly negative. Selected slightly below 1.0 to reflect the observed rare closures or corrections."
   },
   {
     "measure": "Reported Count",
     "interval": "119-131",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All-years weighted, simple, and exclude-high-low are all exactly 1.0. Complete stability."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "131-143",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages are exactly 1.0 across all time windows. No development."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "143-155",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. Perfect stability with all averages at 1.0."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "155-167",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages exactly 1.0; complete stability."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "167-179",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages exactly 1.0."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "179-191",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages exactly 1.0."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "191-203",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages exactly 1.0."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "203-215",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages exactly 1.0."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "215-227",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages exactly 1.0."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "227-239",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages exactly 1.0."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "239-251",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages exactly 1.0."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "251-263",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages exactly 1.0."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "263-275",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages exactly 1.0."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. No development. CV is 0. Selected at 1.0."
   },
   {
     "measure": "Reported Count",
     "interval": "275-287",
-    "selection": 1.0,
-    "reasoning": "1.0 selected. All averages exactly 1.0. The reported count triangle is essentially complete and flat from early in the development period."
+    "selection": 1.0000,
+    "reasoning": "LDF 1.000. All-years weighted 1.0, simple 1.0. Limited data at this extreme tail maturity; no development observed. Selected at 1.0."
   }
 ]

@@ -1,122 +1,122 @@
 [
   {
     "period": 2001,
-    "selection": 700.7076,
-    "reasoning": "Reported Count CL selected. Age 287 months (fully developed, CDF 1.000). Ultimate 700.7 counts. No IBNR needed (0.0). All three methods (CL, IE, BF) converge on ~700-701, indicating full closure and claim count maturity. Reported Count is appropriate measure at this age. Zero additional development expected."
+    "selection": 700.71,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 700.71 (CDF 1.0, 100% developed). All methods (CL, IE, BF) converge at 700.7–700.8 for fully-developed tail period. Reported IE (700.78) is 0.01% higher but adds minimal IBNR (0.07 counts). Reported CL selected as standard method for fully-developed years. Count data shows no case adequacy issues."
   },
   {
     "period": 2002,
-    "selection": 651.8824,
-    "reasoning": "Reported Count CL selected. Age 275 months (fully developed, CDF 1.000). Ultimate 651.9 counts. Zero IBNR. Reported IE shows 31.3 additional counts (overstated relative to CL/BF convergence). Reported CL and BF both indicate ~651.9, suggesting stable closure. CL selected as primary."
+    "selection": 651.88,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 651.88 (CDF 1.0, 100% developed). Reported IE (683.17) shows elevated IBNR (+31.28 counts), implying late reporting, but at full maturity this is implausible. Reported CL is primary. Reported BF (651.88) identical. Selection based on data-driven CL at extreme tail maturity."
   },
   {
     "period": 2003,
-    "selection": 551.5928,
-    "reasoning": "Reported Count CL selected. Age 263 months (fully developed, CDF 1.000). Ultimate 551.6 counts. Zero IBNR on CL. IE shows +97 counts (11.7% inflation, unreliable). CL and BF converge at 551.6, confirming full development. Reported Count CL is most credible."
+    "selection": 551.59,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 551.59 (CDF 1.0, 100% developed). Reported IE projects 648.44 (+96.85 IBNR) but this contradicts full development; case adequacy assumption fails. Reported CL is sole credible method at full maturity. IE disqualified due to implausible late reporting assumption at 100% development."
   },
   {
     "period": 2004,
-    "selection": 642.6452,
-    "reasoning": "Reported Count CL selected. Age 251 months (fully developed, CDF 1.000). Ultimate 642.6 counts. CL shows zero IBNR. IE shows -14.8 counts (negative, illogical). CL at 642.6 is credible. BF at 642.6 confirms. Reported Count CL selected."
+    "selection": 642.65,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 642.65 (CDF 1.0, 100% developed). Reported IE (627.84) shows negative IBNR (-14.81), disqualifying it. Reported BF (642.65) identical. Reported CL is primary. Count is fully developed; no late-reporting signal."
   },
   {
     "period": 2005,
-    "selection": 641.3256,
-    "reasoning": "Reported Count CL selected. Age 239 months (fully developed, CDF 1.000). Ultimate 641.3 counts. CL zero IBNR. IE shows -17.7 counts (unreliable negative). CL and BF both ~641.3. Reported Count CL is only credible method at this maturity."
+    "selection": 641.33,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 641.33 (CDF 1.0, 100% developed). Reported IE (623.61) shows negative IBNR (-17.71), disqualifying case adequacy assumption. Reported BF (641.33) identical. CL is standard at full maturity; IE fitness fails."
   },
   {
     "period": 2006,
-    "selection": 497.4892,
-    "reasoning": "Reported Count CL selected. Age 227 months (fully developed, CDF 1.000). Ultimate 497.5 counts. CL shows zero IBNR. IE shows +109.3 counts (22% inflation). CL at 497.5 and BF converge. Reported Count CL is objective measure. IE unreliable."
+    "selection": 497.49,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 497.49 (CDF 1.0, 100% developed). Reported IE (606.74) projects +109.26 IBNR despite full development; assumption violated. Reported BF (497.49) identical. Reported CL is sole credible method at maturity level."
   },
   {
     "period": 2007,
-    "selection": 476.3756,
-    "reasoning": "Reported Count CL selected. Age 215 months (fully developed, CDF 1.000). Ultimate 476.4 counts. CL zero IBNR. IE shows +74.1 counts (15.6% overstate). CL 476.4 and BF converge. Reported Count CL is credible at full maturity. No additional development."
+    "selection": 476.38,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 476.38 (CDF 1.0, 100% developed). Reported IE (550.47) shows +74.10 IBNR; implausible at full development. Reported CL is primary. IE disqualified. BF matches CL."
   },
   {
     "period": 2008,
-    "selection": 328.5804,
-    "reasoning": "Reported Count CL selected. Age 203 months (fully developed, CDF 1.000). Ultimate 328.6 counts. CL zero IBNR. IE shows +115.5 counts (35.2% inflation). CL 328.6 and BF converge. Reported Count CL only credible method. IE severely overestimates."
+    "selection": 328.58,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 328.58 (CDF 1.0, 100% developed). Reported IE (444.10) projects +115.52 IBNR despite full maturity; case adequacy assumption fails at 100% development. Reported CL is standard. IE disqualified for implausible development assumption."
   },
   {
     "period": 2009,
-    "selection": 321.9824,
-    "reasoning": "Reported Count CL selected. Age 191 months (fully developed, CDF 1.000). Ultimate 322.0 counts. CL zero IBNR. IE shows +62.4 counts (19.4% overstate). CL and BF both 322.0. Reported Count CL is only objective measure at full development."
+    "selection": 321.98,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 321.98 (CDF 1.0, 100% developed). Reported IE (384.40) shows +62.42 IBNR; implausible at full development. Reported BF (321.98) matches CL. Reported CL is primary; IE fitness fails."
   },
   {
     "period": 2010,
-    "selection": 271.8376,
-    "reasoning": "Reported Count CL selected. Age 179 months (fully developed, CDF 1.000). Ultimate 271.8 counts. CL zero IBNR. IE shows +42.4 counts (15.6% inflation). CL 271.8 and BF converge. Reported Count CL is credible primary. IE unreliable."
+    "selection": 271.84,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 271.84 (CDF 1.0, 100% developed). Reported IE (314.20) projects +42.36 IBNR despite full development; case adequacy assumption violated. Reported CL selected as standard at maturity. IE disqualified."
   },
   {
     "period": 2011,
-    "selection": 345.7352,
-    "reasoning": "Reported Count CL selected. Age 167 months (fully developed, CDF 1.000). Ultimate 345.7 counts. CL zero IBNR. IE shows -26.4 counts (negative, illogical). CL 345.7 and BF converge. Reported Count CL is only sound method. IE unreliable at all ages."
+    "selection": 345.74,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 345.74 (CDF 1.0, 100% developed). Reported IE (319.33) shows negative IBNR (-26.41), disqualifying case adequacy model. Reported BF (345.74) matches CL. CL is primary at full maturity; IE fitness fails."
   },
   {
     "period": 2012,
-    "selection": 261.2808,
-    "reasoning": "Reported Count CL selected. Age 155 months (fully developed, CDF 1.000). Ultimate 261.3 counts. CL zero IBNR. IE shows +37.7 counts (14.4% inflation). CL 261.3 and BF converge. Reported Count CL is objective measure. IE consistently biased."
+    "selection": 261.28,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 261.28 (CDF 1.0, 100% developed). Reported IE (298.97) shows +37.68 IBNR despite full development; assumption violated. Reported BF (261.28) identical. Reported CL is primary. IE disqualified."
   },
   {
     "period": 2013,
-    "selection": 291.6316,
-    "reasoning": "Reported Count CL selected. Age 143 months (fully developed, CDF 1.000). Ultimate 291.6 counts. CL zero IBNR. IE shows +14.1 counts (4.8% overstate). CL 291.6 and BF converge. Reported Count CL is credible. IE method not reliable across all periods."
+    "selection": 291.63,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 291.63 (CDF 1.0, 100% developed). Reported IE (305.75) shows +14.12 IBNR despite full maturity; implausible. Reported BF (291.63) matches CL. Reported CL is standard at full development; IE fitness marginal but fails on plausibility."
   },
   {
     "period": 2014,
-    "selection": 455.262,
-    "reasoning": "Reported Count CL selected. Age 131 months (fully developed, CDF 1.000). Ultimate 455.3 counts. CL zero IBNR. IE shows -113.9 counts (severely negative, illogical). CL 455.3 and BF converge. Reported Count CL is only credible method. IE completely unreliable."
+    "selection": 455.26,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 455.26 (CDF 1.0, 100% developed). Reported IE (341.33) shows negative IBNR (-113.93), disqualifying case adequacy assumption. Reported BF (455.26) matches CL. Reported CL is primary; IE fitness fails."
   },
   {
     "period": 2015,
-    "selection": 333.8588,
-    "reasoning": "Reported Count CL selected. Age 119 months (fully developed, CDF 1.000). Ultimate 333.9 counts. CL zero IBNR. IE shows +33.5 counts (10% inflation). CL 333.9 and BF converge. Reported Count CL is credible primary at full maturity."
+    "selection": 333.86,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 333.86 (CDF 1.0, 100% developed). Reported IE (367.36) shows +33.50 IBNR at full development; assumption violated. Reported BF (333.86) identical. Reported CL is standard at maturity. IE disqualified on fitness grounds."
   },
   {
     "period": 2016,
-    "selection": 389.703,
-    "reasoning": "Reported Count CL selected. Age 107 months (CDF 0.9977, slight reopening). Ultimate 389.7 counts. CL shows -0.9 IBNR (slight closure adjustment). IE shows +10.9 counts (2.8% inflation). CL 389.7 and BF (389.676) converge within 0.1%. Reported Count CL is credible primary."
+    "selection": 389.70,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 389.70 (CDF 0.9977, 100.2% developed). Slight CDF <1.0 indicates potential reopens or count adjustments (marginal). Reported IE (401.53) shows +10.93 IBNR (2.7% adjustment). Reported CL selected as primary; IE is secondary backup. BF shows minimal negative IBNR (-0.93). CL is most credible."
   },
   {
     "period": 2017,
-    "selection": 309.393,
-    "reasoning": "Reported Count CL selected. Age 95 months (CDF 0.9977, slight reopening). Ultimate 309.4 counts. CL shows -0.7 IBNR (closure adjustment). IE shows +41.7 counts (13.4% inflation, unreliable). CL 309.4 and BF converge. Reported Count CL is primary measure."
+    "selection": 309.39,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 309.39 (CDF 0.9977, 100.2% developed). Similar to 2016, slight CDF <1.0 (reopens marginal). Reported IE (351.80) shows +41.69 IBNR (13.5% inflation) despite near-full development; fitness questionable. Reported CL is primary. BF shows minor negative (-0.81). CL most credible."
   },
   {
     "period": 2018,
-    "selection": 324.931,
-    "reasoning": "Reported Count CL selected. Age 83 months (CDF 0.9969, slight reopening). Ultimate 324.9 counts. CL shows -1.0 IBNR (closure). IE shows +23.6 counts (7.3% inflation). CL 324.9 and BF (324.855) converge. Reported Count CL is most credible. Reopening effect minor."
+    "selection": 324.96,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 324.96 (CDF 0.997, 100.3% developed). CDF <1.0 indicates marginal reopens. Reported IE (349.53) shows +23.59 IBNR (7.3% adjustment); fitness marginal. Reported CL is primary for near-full development. BF shows minor negative (-1.05). CL selected."
   },
   {
     "period": 2019,
-    "selection": 356.504,
-    "reasoning": "Reported Count CL selected. Age 71 months (CDF 0.9969, slight reopening). Ultimate 356.5 counts. CL shows -1.1 IBNR (closure effect). IE shows -20.1 counts (negative, unreliable). CL 356.5 and BF (356.563) converge tightly. Reported Count CL is credible primary."
+    "selection": 356.54,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 356.54 (CDF 0.997, 100.3% developed). CDF <1.0 signals marginal reopens. Reported IE (337.54) shows negative IBNR (-20.07); disqualifies case adequacy assumption. Reported CL is primary. BF shows minor negative (-1.02). Reported CL selected as most credible method."
   },
   {
     "period": 2020,
-    "selection": 369.4,
-    "reasoning": "Reported Count CL selected. Age 59 months (CDF 0.9962, reopening effect). Ultimate 369.4 counts. CL shows -1.4 IBNR (closure). IE shows -12.7 counts (negative). CL 369.4 and BF (369.443) converge. Reported Count CL is primary. Slight reopening embedded in CDF."
+    "selection": 369.40,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 369.40 (CDF 0.9962, 100.4% developed). CDF <1.0 indicates reopens. Reported IE (358.12) shows negative IBNR (-12.69); case adequacy fails. Reported CL is primary. BF shows minor negative (-1.36). At near-full maturity, Reported CL is most reliable."
   },
   {
     "period": 2021,
-    "selection": 328.648,
-    "reasoning": "Reported Count CL selected. Age 47 months (CDF 0.9962, reopening effect). Ultimate 328.6 counts. CL shows -1.3 IBNR (closure). IE shows +30.2 counts (9.2% inflation). CL 328.6 and BF (328.528) converge. Reported Count CL is credible primary. Reopening minor."
+    "selection": 328.65,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 328.65 (CDF 0.9962, 100.4% developed). CDF <1.0 indicates reopens. Reported IE (360.11) shows +30.21 IBNR (9.2% adjustment); plausibility questionable at near-full development. Reported CL is primary. BF shows minor negative (-1.37). CL selected."
   },
   {
     "period": 2022,
-    "selection": 297.335,
-    "reasoning": "Reported Count CL selected. Age 35 months (CDF 0.9970, reopening). Ultimate 297.3 counts. CL shows -0.9 IBNR (closure). IE shows +41.8 counts (14.0% inflation). CL 297.3 and BF (297.207) converge. Reported Count CL is primary. Reopening very minor."
+    "selection": 297.34,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 297.34 (CDF 0.9970, 100.3% developed). CDF <1.0 marginal. Reported IE (339.98) shows +41.75 IBNR (14.0% adjustment); fitness weak at near-full development. Reported CL is primary. BF shows minor negative (-1.02). CL most credible at 48% developed."
   },
   {
     "period": 2023,
-    "selection": 303.913,
-    "reasoning": "Reported Count CL selected. Age 23 months (CDF 0.9970, reopening). Ultimate 303.9 counts. CL shows -0.9 IBNR (closure effect). IE shows +12.6 counts (4.2% inflation). CL 303.9 and BF (303.873) converge tightly. Reported Count CL is primary. Young age, reopening embedded in CDF."
+    "selection": 303.91,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 303.91 (CDF 0.9970, 100.3% developed). CDF <1.0 marginal. Reported IE (317.43) shows +12.61 IBNR (4.1% adjustment); marginal given 53% development. Reported CL is primary. BF shows minor negative (-0.95). CL selected as most data-driven method."
   },
   {
     "period": 2024,
-    "selection": 285.352,
-    "reasoning": "Reported Count CL selected. Age 11 months (CDF 1.1146, significant development ahead). Ultimate 285.4 counts. CL shows +29.3 IBNR (10.3% of reported). IE shows +36.4 counts (12.6% of reported, consistent with CL). CL 285.4 and IE 292.4 show 2.4% convergence. CL selected as primary; at 11 months, CDF 1.1146 indicates ~10% additional claim count development expected."
+    "selection": 286.07,
+    "reasoning": "Reported Count selected. Reported CL ultimate of 285.35 (CDF 1.1146, 89.7% developed). High CDF indicates significant development ahead (10.3%). Reported IE (292.35) shows +36.35 IBNR (12.4% adjustment); fitness weak at very early stage. Reported BF (286.07) very close to CL (0.26% difference). At extreme immaturity, Reported BF is typically primary, but CL and BF nearly converge. Selected midpoint/BF (286.07) for very green period; CDF volatility at 11 months. BF slightly preferred for a priori credibility."
   }
 ]
