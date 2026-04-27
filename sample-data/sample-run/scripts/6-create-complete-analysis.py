@@ -1,5 +1,5 @@
 # Reads projected ultimates, actuary selections, and triangle data to produce
-# Complete Analysis.xlsx — formulas intact, links to Ultimates.xlsx and LDFs workbooks.
+# Analysis.xlsx — formulas intact, links to Ultimates.xlsx and LDFs workbooks.
 # Open in Excel to evaluate cross-workbook references.
 #
 # For the plain-numbers version (used by script 7+) run 6b-create-values-only.py next.
@@ -50,7 +50,7 @@ INPUT_TRIANGLES        = config.PROCESSED_DATA + "1_triangles.parquet"
 INPUT_SELECTIONS_EXCEL = config.SELECTIONS + "Ultimates.xlsx"
 OUTPUT_PATH            = config.OUTPUT
 
-OUTPUT_COMPLETE = config.BASE_DIR + "Complete Analysis.xlsx"
+OUTPUT_COMPLETE = config.BASE_DIR + "Analysis.xlsx"
 
 INPUT_CL_EXCEL      = config.SELECTIONS  + "Chain Ladder Selections - LDFs.xlsx"
 INPUT_TAIL_EXCEL    = config.SELECTIONS  + "Chain Ladder Selections - Tail.xlsx"
@@ -905,7 +905,7 @@ def main():
     ws_diag = gen_wb.create_sheet(title="Diagnostics")
     write_diagnostics_sheet(ws_diag, combined, exp_map)
 
-    print("\nAssembling Complete Analysis.xlsx...")
+    print("\nAssembling Analysis.xlsx...")
     assemble_workbook(OUTPUT_COMPLETE, gen_wb)
     print("Done. Run 6b-create-values-only.py to produce the plain-numbers copy.")
 

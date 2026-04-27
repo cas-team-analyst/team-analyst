@@ -34,8 +34,8 @@ Focus first exclusively on **orienting to the OS environment**.
 1. **Identify and mount the plugin skill folder** (if applicable, NOT the anthropic-skills folder)
 2. **Identify the analysis folder** - where the completed analysis lives (project root folder)
 3. **Verify required files exist in the analysis folder:**
-   - `output/Complete Analysis - Values Only.xlsx` - the values-only workbook to review (formulas pre-evaluated)
-   - `output/Tech Review.xlsx` - the technical review diagnostics to review
+   - `Analysis - Values Only.xlsx` - the values-only workbook to review (formulas pre-evaluated)
+   - `Tech Review.xlsx` - the technical review diagnostics to review
    - `REPORT.md` - the actuarial report to review
    - `REPLICATE.md` - the reproducibility log to review
    - `PROGRESS.md` - to confirm analysis state
@@ -57,8 +57,8 @@ Focus first exclusively on **orienting to the OS environment**.
 ## Workflow
 
 1. **Read the analysis folder files:**
-   - `output/Complete Analysis - Values Only.xlsx` - selections and projections (values only, formulas pre-evaluated)
-   - `output/Tech Review.xlsx` - technical review diagnostics and checks
+   - `Analysis - Values Only.xlsx` - selections and projections (values only, formulas pre-evaluated)
+   - `Tech Review.xlsx` - technical review diagnostics and checks
    - `REPORT.md` - actuarial report documentation
    - `REPLICATE.md` - reproducibility log
 2. **Prioritize high-materiality segments** - largest reserves, widest uncertainty
@@ -125,8 +125,8 @@ Write `PEER_REVIEW.md` in the analysis folder root, structured as:
 **Status:** Advisory — no selections were modified
 
 **Files reviewed:**
-- output/Complete Analysis - Values Only.xlsx
-- output/Tech Review.xlsx
+- Analysis - Values Only.xlsx
+- Tech Review.xlsx
 - REPORT.md
 - REPLICATE.md
 
@@ -443,12 +443,12 @@ Write `PEER_REVIEW.md` in the analysis folder root, structured as:
 
 ## Output Format
 
-Write `output/PEER_REVIEW.md` structured as:
+Write `PEER_REVIEW.md` structured as:
 
 ```markdown
 # Peer Review — [Line of Business / Segment]
 
-**Analysis file:** output/Complete Analysis - Values Only.xlsx
+**Analysis file:** Analysis - Values Only.xlsx
 **Review date:** [date]
 **Status:** Advisory — no selections were modified
 

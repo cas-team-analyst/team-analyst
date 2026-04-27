@@ -157,13 +157,13 @@ This document provides step-by-step instructions to reproduce the analysis resul
    - **Reads:** `ultimates/projected-ultimates.parquet`
    - **Reads:** `selections/Ultimates.xlsx` (User Selection → Rules-Based AI → Open-Ended AI → JSON → method fallback)
    - **Output:** 
-     - `output/selected-ultimates.xlsx`
-     - `output/post-method-series.xlsx`
-     - `output/post-method-triangles.xlsx`
-     - `output/complete-analysis.xlsx`
+     - `selected-ultimates.xlsx`
+     - `post-method-series.xlsx`
+     - `post-method-triangles.xlsx`
+     - `Complete Analysis.xlsx`
 
 2. `scripts/7-tech-review.py` — Run technical review checks
-   - **Output:** `output/tech-review.[format]`
+   - **Output:** `tech-review.[format]`
    - **Issues flagged:** [List any warnings or errors, or "None - all checks passed"]
 
 ---
@@ -172,7 +172,7 @@ This document provides step-by-step instructions to reproduce the analysis resul
 
 **Primary deliverables:**
 - `REPORT.md` — Actuarial report with methodology, assumptions, results, and diagnostics
-- `output/complete-analysis.xlsx` — Consolidated numerical results
+- `Complete Analysis.xlsx` — Consolidated numerical results
 
 **Supporting files:**
 - `selections/Chain Ladder Selections - LDFs.xlsx` — LDF selections with reasoning

@@ -159,7 +159,7 @@ No external ELR file was provided. The IE and BF methods used a fallback expecte
 
 ## 6. Results by Segment
 
-*Detailed exhibits in `output/Complete Analysis.xlsx`.*
+*Detailed exhibits in `output/Analysis.xlsx`.*
 
 ### 6.1 Loss (Paid Loss — Chain Ladder, all AYs)
 
@@ -167,7 +167,7 @@ Selected measure is Paid Loss CL throughout. Paid loss is preferred over Incurre
 
 AY 2007 warrants a flagged note: ultimate of $4,947,059 substantially exceeds adjacent years and is consistent with a large-loss year. Five mature AYs (2001, 2002, 2006, 2012, and one other) show slightly negative IBNR (case reserves exceed selected ultimate), indicating modest reserve over-adequacy on those years — normal for WC.
 
-Total selected ultimates by AY are in `selections/Ultimates.xlsx` and `output/Complete Analysis.xlsx`.
+Total selected ultimates by AY are in `selections/Ultimates.xlsx` and `output/Analysis.xlsx`.
 
 ### 6.2 Count (Reported Count — Chain Ladder, all AYs)
 
@@ -280,7 +280,7 @@ Technical review run April 27, 2026 via `scripts/7-tech-review.py`. Full output:
 | Version | Date | Author | Summary of Changes |
 |---|---|---|---|
 | v0.1 | April 27, 2026 | Bryce | Initial draft — data intake, LDF/tail selections, method projections |
-| v0.2 | April 27, 2026 | Bryce | Ultimate selections complete; complete analysis workbook built; awaiting technical review |
+| v0.2 | April 27, 2026 | Bryce | Ultimate selections complete; analysis workbook built; awaiting technical review |
 
 ---
 

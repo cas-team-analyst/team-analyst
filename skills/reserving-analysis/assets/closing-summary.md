@@ -44,9 +44,9 @@
 - `selections/ultimates-context-<measure>.md` — Per-measure context files exported by `5a-ultimates-create-excel.py` (used by AI selectors).
 - `ultimates/` — Per-method ultimate outputs from scripts 2f, 3, and 4 (Chain Ladder, Initial Expected, Bornhuetter-Ferguson). Note any methods that were skipped and why.
   - `projected-ultimates.parquet` — Combined output with ultimates from all methods that ran
-- `output/` — Final consolidated output files from `6-create-complete-analysis.py` and `7-tech-review.py`.
-  - `selected-ultimates.xlsx` — Selected ultimates extracted from `selections/Ultimates.xlsx`
-  - `post-method-series.xlsx` — Time series view of selected results
-  - `post-method-triangles.xlsx` — Triangle view of selected results
+- **Final consolidated output files** from `6-create-complete-analysis.py` and `7-tech-review.py` (in main project folder):
+  - `Complete Analysis.xlsx` — Master workbook with all sheets and formulas
+  - `Analysis - Values Only.xlsx` — Same content with formulas pre-evaluated
+  - `Tech Review.xlsx` — Technical review diagnostics and checks
   - `complete-analysis.xlsx` — Consolidated workbook containing paid-to-date, case reserves, IBNR, total unpaid, and selected ultimates by segment/period. This is the single-file numerical deliverable.
   - `tech-review.*` — Output from `7-tech-review.py` flagging any internal-consistency or reasonableness issues found in the analysis.

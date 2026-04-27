@@ -217,7 +217,7 @@ _(Pause for Selections only):_
   - **Critical:** If user made manual overrides in the "User Selection" column, list each one with category (Loss or Count), period, selected ultimate, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection columns."
   - Add instruction: "To replicate: Extract final ultimates from User Selection column if present, otherwise use Rules-Based AI Selection column. Do not re-run AI selector."
 
-# Step 8: Build Complete Analysis
+# Step 8: Build Analysis Workbook
 
 - [ ] Copy `scripts/6-create-complete-analysis.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`). Ensure `scripts/modules/` is already in place.
 
@@ -258,8 +258,8 @@ Be explicit and exhaustive. The user should leave this step knowing exactly what
 
 - [ ] Tell the user the analysis is complete and list every output file produced, grouped by folder. For each file, give the path and a one-line description of what it contains and who it is for. See closing-summary.md from assets.
 
-- [ ] After listing the files, tell the user the single most important takeaway: **REPORT.md is the primary narrative deliverable, and `output/complete-analysis.xlsx` is the primary numerical deliverable.** Everything else is supporting evidence or reproducibility material.
+- [ ] After listing the files, tell the user the single most important takeaway: **REPORT.md is the primary narrative deliverable, and `Complete Analysis.xlsx` is the primary numerical deliverable.** Everything else is supporting evidence or reproducibility material.
 
 - [ ] Ask the user if anything is unclear about any of the outputs before the workflow closes.
 
-- [ ] Ask the user if they have any questions about the analysis itself — methodology, selections, assumptions, data quality, results interpretation, or any findings in the technical review. Remind them they can also run `/peer-review` in a separate session for an independent AI review of the complete analysis.
+- [ ] Ask the user if they have any questions about the analysis itself — methodology, selections, assumptions, data quality, results interpretation, or any findings in the technical review. Remind them they can also run `/peer-review` in a separate session for an independent AI review of the analysis.

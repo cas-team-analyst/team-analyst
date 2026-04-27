@@ -183,14 +183,14 @@ This document provides step-by-step instructions to reproduce the analysis resul
    - **Reads:** `selections/Chain Ladder Selections - LDFs.xlsx`, `selections/Chain Ladder Selections - Tail.xlsx`
    - **Reads:** `processed-data/2_enhanced.parquet`, `processed-data/4_ldf_averages.parquet`
    - **Output:**
-     - `output/Complete Analysis.xlsx` — Full workbook with cross-sheet formulas (open in Excel)
-     - `output/Complete Analysis - Values Only.xlsx` — Plain computed values (safe for programmatic reads)
+     - `output/Analysis.xlsx` — Full workbook with cross-sheet formulas (open in Excel)
+     - `output/Analysis - Values Only.xlsx` — Plain computed values (safe for programmatic reads)
    - **Headline indications:** Total unpaid $5,090,086 (IBNR $3,241,545 + case $1,848,541); total ultimate $48,706,481
 
 2. `scripts/7-tech-review.py` — Run technical review checks (run April 27, 2026)
    - **Output:** `output/Tech Review.xlsx`
    - **Result:** 17 PASS / 18 WARN / 1 FAIL
-   - **Expected FAIL:** Measure sheets (Incurred Loss, Paid Loss, etc.) not present in Values Only file — by design; see Complete Analysis.xlsx for full sheets.
+   - **Expected FAIL:** Measure sheets (Incurred Loss, Paid Loss, etc.) not present in Values Only file — by design; see Analysis.xlsx for full sheets.
    - **Key warnings:** (1) Negative IBNR on 5 mature AYs — case reserve takedown artifact, no action needed. (2) AY 2007 severity outlier — large-loss year, flagged for reviewer. (3) X-to-Ult reversals in Incurred (31) and Count (6) — normal for WC case reserve reductions and count reopenings. (4) AYs 2023–2024 method divergence — documented in REPORT.md Section 11.
 
 ---

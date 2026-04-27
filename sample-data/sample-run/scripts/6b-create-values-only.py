@@ -1,5 +1,5 @@
-# Reads Complete Analysis.xlsx (produced by 6a) and fills formula cells with
-# Python-computed values to produce Complete Analysis - Values Only.xlsx.
+# Reads Analysis.xlsx (produced by 6a) and fills formula cells with
+# Python-computed values to produce Analysis - Values Only.xlsx.
 # The Values Only file is safe to read with openpyxl/pandas without Excel
 # evaluating cross-workbook formulas first (used by script 7+).
 #
@@ -41,8 +41,8 @@ from modules.analysis_loaders import (
 INPUT_ULTIMATES        = config.ULTIMATES + "projected-ultimates.parquet"
 INPUT_TRIANGLES        = config.PROCESSED_DATA + "1_triangles.parquet"
 INPUT_SELECTIONS_EXCEL = config.SELECTIONS + "Ultimates.xlsx"
-INPUT_COMPLETE         = config.BASE_DIR + "Complete Analysis.xlsx"
-OUTPUT_VALUES          = config.BASE_DIR + "Complete Analysis - Values Only.xlsx"
+INPUT_COMPLETE         = config.BASE_DIR + "Analysis.xlsx"
+OUTPUT_VALUES          = config.BASE_DIR + "Analysis - Values Only.xlsx"
 
 INPUT_CL_ENHANCED  = config.PROCESSED_DATA + "2_enhanced.parquet"
 INPUT_LDF_AVERAGES = config.PROCESSED_DATA + "4_ldf_averages.parquet"

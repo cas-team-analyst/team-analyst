@@ -365,23 +365,42 @@ def build_main_sheet(ws, measure, df2, df4, df_prior=None):
     }
 
 def build_exposure_sheet(ws, df2):
-    """Build exposure sheet displaying exposure triangle."""
+    """Build exposure sheet displaying exposure as simple 2-column table (Period, Exposure)."""
     exp_sub = df2[(df2['measure'] == 'Exposure') & df2['value'].notna()].copy()
     if exp_sub.empty:
         return
     
-    periods = exp_sub['period'].cat.categories.tolist()
-    ages = [str(a) for a in exp_sub['age'].cat.categories.tolist()]
+    # Take the latest value per period
+    exp_sub['age_num'] = pd.to_numeric(exp_sub['age'].astype(str), errors='coerce')
+    exp_simple = exp_sub.sort_values('age_num').groupby('period', observed=True).last().reset_index()
     
-    exp_dict = {}
-    for _, row in exp_sub.iterrows():
-        exp_dict[(str(row['period']), str(row['age']))] = row['value']
+    # Write title
+    title_cell = ws.cell(row=1, column=1, value="Exposure")
+    style_header(title_cell, "section")
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=2)
     
-    write_triangle(ws, 1, "Exposure", periods, ages, exp_dict, number_format="#,##0")
+    # Write headers
+    ws.cell(row=2, column=1, value="Period")
+    ws.cell(row=2, column=2, value="Exposure")
+    for c in [1, 2]:
+        cell = ws.cell(row=2, column=c)
+        style_header(cell, "subheader")
+    
+    # Write data
+    for r_idx, (_, row) in enumerate(exp_simple.iterrows(), start=3):
+        period_cell = ws.cell(row=r_idx, column=1, value=str(row['period']))
+        period_cell.font = LABEL_FONT
+        period_cell.alignment = Alignment(horizontal="left")
+        period_cell.border = THIN_BORDER
+        
+        exp_cell = ws.cell(row=r_idx, column=2, value=row['value'])
+        exp_cell.font = DATA_FONT
+        exp_cell.alignment = Alignment(horizontal="right")
+        exp_cell.border = THIN_BORDER
+        exp_cell.number_format = "#,##0"
     
     ws.column_dimensions['A'].width = 22
-    for c_idx in range(2, len(ages) + 2):
-        ws.column_dimensions[get_column_letter(c_idx)].width = 12
+    ws.column_dimensions['B'].width = 18
 
 def build_diagnostic_sheet(ws, diag_col, df2, df3):
     first_measure = df2['measure'].cat.categories[0]

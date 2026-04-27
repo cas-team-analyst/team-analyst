@@ -1,5 +1,5 @@
 # Reads projected ultimates, actuary selections, and triangle data to produce
-# Complete Analysis.xlsx — formulas intact, links to Ultimates.xlsx and LDFs workbooks.
+# Analysis.xlsx — formulas intact, links to Ultimates.xlsx and LDFs workbooks.
 # Open in Excel to evaluate cross-workbook references.
 #
 # For the plain-numbers version (used by script 7+) run 6b-create-values-only.py next.
@@ -50,7 +50,7 @@ INPUT_TRIANGLES        = config.PROCESSED_DATA + "1_triangles.parquet"
 INPUT_SELECTIONS_EXCEL = config.SELECTIONS + "Ultimates.xlsx"
 OUTPUT_PATH            = config.OUTPUT
 
-OUTPUT_COMPLETE = config.BASE_DIR + "Complete Analysis.xlsx"
+OUTPUT_COMPLETE = config.BASE_DIR + "Analysis.xlsx"
 
 INPUT_CL_EXCEL      = config.SELECTIONS  + "Chain Ladder Selections - LDFs.xlsx"
 INPUT_TAIL_EXCEL    = config.SELECTIONS  + "Chain Ladder Selections - Tail.xlsx"
@@ -61,6 +61,7 @@ _NUM_FMT = "#,##0"
 _DEC_FMT = "#,##0.000"
 # Absolute path so Excel resolves the link without prompting, regardless of where the output file sits.
 _ULT_WB  = os.path.abspath(config.SELECTIONS) + "\\[Ultimates.xlsx]"
+_CL_LDF_WB = os.path.abspath(config.SELECTIONS) + "\\[Chain Ladder Selections - LDFs.xlsx]"
 
 def load_tail_selections(tail_excel_path):
     """
@@ -124,6 +125,49 @@ def load_tail_selections(tail_excel_path):
     return tail_map
 
 
+def load_exposure_row_map(cl_ldf_excel_path):
+    """
+    Load exposure row map from Chain Ladder Selections - LDFs.xlsx.
+    Returns {period: row_number} for building formula references.
+    Returns {} if file absent or Exposure sheet not found.
+    """
+    path = pathlib.Path(cl_ldf_excel_path)
+    if not path.exists():
+        print(f"  Note: {cl_ldf_excel_path} not found -- no exposure row map loaded")
+        return {}
+    
+    wb = load_workbook(cl_ldf_excel_path, data_only=True)
+    if "Exposure" not in wb.sheetnames:
+        wb.close()
+        print("  Note: Exposure sheet not found in Chain Ladder LDFs workbook")
+        return {}
+    
+    ws = wb["Exposure"]
+    row_map = {}
+    
+    # Find Period column (should be in row 2)
+    period_col = None
+    for cell in ws[2]:
+        if cell.value == "Period":
+            period_col = cell.column
+            break
+    
+    if period_col is None:
+        wb.close()
+        print("  Note: Period column not found in Exposure sheet")
+        return {}
+    
+    # Read period values starting from row 3 (data starts after title and headers)
+    for row_idx in range(3, ws.max_row + 1):
+        period_val = ws.cell(row=row_idx, column=period_col).value
+        if period_val is not None:
+            row_map[str(period_val)] = row_idx
+    
+    wb.close()
+    print(f"  Loaded exposure row map for {len(row_map)} periods")
+    return row_map
+
+
 # ── Generated sheet writers ───────────────────────────────────────────────────
 
 def _get_cdf_cell_ref(ws_triangle, target_age):
@@ -150,6 +194,15 @@ def _formula_cell(ws, r, c, formula, num_fmt):
 def _ult_ref(ult_col_map, sheet, col_header, row):
     col = ult_col_map.get((sheet, col_header))
     return f"='{_ULT_WB}{sheet}'!{col}{row}" if col else '""'
+
+
+def _exp_ref(exp_row_map, period):
+    """Build formula reference to exposure value in Chain Ladder Selections - LDFs.xlsx."""
+    row = exp_row_map.get(str(period))
+    if row:
+        return f"='{_CL_LDF_WB}Exposure'!B{row}"
+    return '""'
+
 
 
 def _tri_col_map_from_df(triangles_df, measure):
@@ -264,7 +317,7 @@ def write_method_bf(gen_wb, combined, measure, ult_col_map):
     _formula_cell(ws, t, 10, f"=SUM(J2:J{t-2})", _NUM_FMT)
 
 
-def write_method_ie(gen_wb, combined, measure, exp_map, ult_col_map):
+def write_method_ie(gen_wb, combined, measure, exp_row_map, ult_col_map):
     short_name = measure_short_name(measure)
     ws = gen_wb.create_sheet(title=f"{short_name} IE"[:31])
     headers = ["Accident Period", "Current Age", "Exposure", "IE Ultimate", "Selected Loss Rate"]
@@ -280,8 +333,9 @@ def write_method_ie(gen_wb, combined, measure, exp_map, ult_col_map):
         _data_cell(ws.cell(r, 1), row["period_int"])
         _data_cell(ws.cell(r, 2), row["current_age"])
 
-        exp = exp_map.get(row["period"], np.nan)
-        _data_cell(ws.cell(r, 3), _safe(exp), _NUM_FMT)
+        # Link to Chain Ladder Selections - LDFs.xlsx Exposure sheet
+        exp_formula = _exp_ref(exp_row_map, row["period"])
+        _formula_cell(ws, r, 3, exp_formula, _NUM_FMT)
 
         _formula_cell(ws, r, 4, _ult_ref(ult_col_map, ult_sheet, ie_hdr, r), _NUM_FMT)
         _formula_cell(ws, r, 5, f"=D{r}/C{r}", _DEC_FMT)
@@ -820,6 +874,9 @@ def main():
     has_exposure = bool(exp_map)
     measures = [m for m in combined["measure"].unique() if m != "Exposure"]
     
+    # Load exposure row map for linking to Chain Ladder LDFs workbook
+    exp_row_map = load_exposure_row_map(INPUT_CL_EXCEL)
+    
     # We also need triangles_df for diagnostics
     triangles_df = pd.read_parquet(INPUT_TRIANGLES)
 
@@ -856,7 +913,7 @@ def main():
                 write_method_bf(gen_wb, combined, m, ult_col_map)
         for m in loss_m:
             if _has_method(combined, m, "ultimate_ie"):
-                write_method_ie(gen_wb, combined, m, exp_map, ult_col_map)
+                write_method_ie(gen_wb, combined, m, exp_row_map, ult_col_map)
 
     print("Building Counts sheets...")
     if count_m:
@@ -868,7 +925,7 @@ def main():
                 write_method_bf(gen_wb, combined, m, ult_col_map)
         for m in count_m:
             if _has_method(combined, m, "ultimate_ie"):
-                write_method_ie(gen_wb, combined, m, exp_map, ult_col_map)
+                write_method_ie(gen_wb, combined, m, exp_row_map, ult_col_map)
 
     if other_m:
         print("Building other method sheets...")
@@ -877,7 +934,7 @@ def main():
             if _has_method(combined, m, "ultimate_bf"):
                 write_method_bf(gen_wb, combined, m, ult_col_map)
             if _has_method(combined, m, "ultimate_ie"):
-                write_method_ie(gen_wb, combined, m, exp_map, ult_col_map)
+                write_method_ie(gen_wb, combined, m, exp_row_map, ult_col_map)
         
     print("Copying CL LDF sheets (Triangle + Averages)...")
     create_triangle_sheets(gen_wb, measures)
@@ -903,7 +960,7 @@ def main():
     ws_diag = gen_wb.create_sheet(title="Diagnostics")
     write_diagnostics_sheet(ws_diag, combined, exp_map)
 
-    print("\nAssembling Complete Analysis.xlsx...")
+    print("\nAssembling Analysis.xlsx...")
     assemble_workbook(OUTPUT_COMPLETE, gen_wb)
     print("Done. Run 6b-create-values-only.py to produce the plain-numbers copy.")
 
