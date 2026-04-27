@@ -32,8 +32,8 @@ from modules.xl_styles import HEADER_FILL, HEADER_FONT, THIN_BORDER
 
 # ── User-configurable properties ─────────────────────────────────────────────
 # Paths from modules/config.py - override here if needed:
-INPUT_COMPLETE_ANALYSIS = config.OUTPUT + "Complete Analysis - Values Only.xlsx"
-OUTPUT_REVIEW           = config.OUTPUT + "Tech Review.xlsx"
+INPUT_COMPLETE_ANALYSIS = config.BASE_DIR + "Complete Analysis - Values Only.xlsx"
+OUTPUT_REVIEW           = config.BASE_DIR + "Tech Review.xlsx"
 
 IBNR_NEG_TOLERANCE     = -500   # WARN if IBNR < this (small negatives OK from rounding)
 SEV_OUTLIER_RATIO      = 5.0    # WARN if any severity > this × median

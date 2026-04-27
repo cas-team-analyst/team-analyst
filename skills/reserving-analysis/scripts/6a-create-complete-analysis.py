@@ -1,16 +1,12 @@
-# Reads projected ultimates, actuary selections, and triangle data to produce the
-# Complete Analysis workbooks.
+# Reads projected ultimates, actuary selections, and triangle data to produce
+# Complete Analysis.xlsx — formulas intact, links to Ultimates.xlsx and LDFs workbooks.
+# Open in Excel to evaluate cross-workbook references.
 #
-# Outputs:
-#   Complete Analysis.xlsx            Source Excel files assembled with formulas intact.
-#                                     Open in Excel to evaluate any cross-sheet references.
-#   Complete Analysis - Values Only.xlsx  Same content as plain computed numbers.
-#                                         Safe to read with openpyxl/pandas without requiring
-#                                         Excel to re-evaluate formulas first (used by script 7+).
+# For the plain-numbers version (used by script 7+) run 6b-create-values-only.py next.
 #
 # run-note: Run from the scripts/ directory:
 #     cd scripts/
-#     python 6-create-complete-analysis.py
+#     python 6a-create-complete-analysis.py
 
 import copy
 import os
@@ -31,20 +27,21 @@ from modules.xl_selections import (
     find_selected_reasoning as _find_selected_reasoning,
     copy_ws_filtered as _copy_ws_filtered,
 )
-from modules.xl_utils import _safe, _to_py, _period_int, _copy_ws
-from modules.xl_writers import _data_cell, _write_title_and_headers, _write_headers
-from modules.xl_values import (
-    UNPAID_PROXY,
-    _has_method,
-    _fill_method_cl_values,
-    _fill_method_bf_values,
-    _fill_selection_values,
-    _fill_cdf_row_values,
-    _strip_formulas,
-    _fill_cl_main_values,
-    _fill_tail_values,
+from modules.xl_utils import (
+    _safe, _to_py, _period_int, _copy_ws,
+    measure_short_name,
+    ultimates_sheet_for_measure, ultimates_col_header,
 )
+from modules.xl_writers import _data_cell, _write_title_and_headers, _write_headers
+from modules.xl_values import UNPAID_PROXY, _has_method
 from modules.xl_notes import _sheet_desc, write_notes_sheet
+from modules.analysis_loaders import (
+    MEASURE_TO_CATEGORY,
+    load_selections,
+    load_selection_reasoning,
+    load_combined,
+    get_exposure,
+)
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
@@ -53,141 +50,17 @@ INPUT_TRIANGLES        = config.PROCESSED_DATA + "1_triangles.parquet"
 INPUT_SELECTIONS_EXCEL = config.SELECTIONS + "Ultimates.xlsx"
 OUTPUT_PATH            = config.OUTPUT
 
-OUTPUT_COMPLETE = OUTPUT_PATH + "Complete Analysis.xlsx"
-OUTPUT_VALUES   = OUTPUT_PATH + "Complete Analysis - Values Only.xlsx"
+OUTPUT_COMPLETE = config.BASE_DIR + "Complete Analysis.xlsx"
 
 INPUT_CL_EXCEL      = config.SELECTIONS  + "Chain Ladder Selections - LDFs.xlsx"
 INPUT_TAIL_EXCEL    = config.SELECTIONS  + "Chain Ladder Selections - Tail.xlsx"
 INPUT_CL_ENHANCED   = config.PROCESSED_DATA + "2_enhanced.parquet"
 INPUT_LDF_AVERAGES  = config.PROCESSED_DATA + "4_ldf_averages.parquet"
 
-# Preferred display order for method columns — discovered dynamically from parquet.
-_METHOD_COLS = [
-    ("ultimate_cl", "Chain Ladder"),
-    ("ultimate_ie", "Initial Expected"),
-    ("ultimate_bf", "BF"),
-]
-
-# Map individual measure names to ultimates selection categories.
-# projected-ultimates.parquet has per-measure data (Incurred Loss, Paid Loss, etc.)
-# but Ultimates.xlsx now has category sheets (Losses, Counts) where one ultimate
-# is selected per category. This mapping converts measure → category for lookups.
-MEASURE_TO_CATEGORY = {
-    "Incurred Loss": "Losses",
-    "Paid Loss": "Losses",
-    "Reported Count": "Counts",
-    "Closed Count": "Counts",
-}
-
 _NUM_FMT = "#,##0"
 _DEC_FMT = "#,##0.000"
-
-# ── Selection loading ─────────────────────────────────────────────────────────
-
-def load_selections(excel_path):
-    """
-    Load final selections from Ultimates.xlsx.
-    Priority per (measure, period): User Selection > Rules-Based AI Selection.
-    Open-Ended AI is intentionally excluded — it is not a trusted final selection source.
-    Columns are located by header name — adapts to layout changes automatically.
-    Returns dict {(measure, period): float}.  Returns {} when file is absent.
-    """
-    path = pathlib.Path(excel_path)
-    if not path.exists():
-        print(f"  Note: {excel_path} not found -- no selections loaded")
-        return {}
-
-    wb = load_workbook(excel_path, data_only=True)
-    sel_lookup = {}
-    total = 0
-
-    for sheet_name in wb.sheetnames:
-        ws = wb[sheet_name]
-        period_col = user_col = rb_col = None
-        for cell in ws[1]:
-            v = cell.value
-            if v == "Accident Period":
-                period_col = cell.column
-            elif v == "User Selection":
-                user_col = cell.column
-            elif v == "Rules-Based AI Selection":
-                rb_col = cell.column
-
-        if period_col is None:
-            continue
-
-        measure = sheet_name
-        for row in range(2, ws.max_row + 1):
-            period_val = ws.cell(row=row, column=period_col).value
-            if period_val is None:
-                continue
-            period = str(period_val).strip()
-            key = (measure, period)
-            if key in sel_lookup:
-                continue
-            for col_idx in [user_col, rb_col]:
-                if col_idx is None:
-                    continue
-                v = ws.cell(row=row, column=col_idx).value
-                if isinstance(v, (int, float)) and not (isinstance(v, float) and v != v):
-                    sel_lookup[key] = float(v)
-                    total += 1
-                    break
-
-    wb.close()
-    print(f"  Loaded {total} selections from {excel_path}")
-    return sel_lookup
-
-
-def load_selection_reasoning(excel_path):
-    """
-    Load reasoning text for each (measure, period) from Ultimates.xlsx.
-    Priority matches load_selections: User Selection reasoning first, then RB-AI.
-    Returns {(measure, period): str}.  Returns {} when file is absent.
-    """
-    path = pathlib.Path(excel_path)
-    if not path.exists():
-        return {}
-
-    wb = load_workbook(excel_path, data_only=True)
-    reason_lookup = {}
-
-    for sheet_name in wb.sheetnames:
-        ws = wb[sheet_name]
-        period_col = user_col = rb_col = user_r_col = rb_r_col = None
-        for cell in ws[1]:
-            v = cell.value
-            if v == "Accident Period":          period_col = cell.column
-            elif v == "User Selection":         user_col   = cell.column
-            elif v == "Rules-Based AI Selection": rb_col   = cell.column
-            elif v == "User Reasoning":         user_r_col = cell.column
-            elif v == "Rules-Based AI Reasoning": rb_r_col = cell.column
-
-        if period_col is None:
-            continue
-
-        measure = sheet_name
-        for row in range(2, ws.max_row + 1):
-            period_val = ws.cell(row=row, column=period_col).value
-            if period_val is None:
-                continue
-            period = str(period_val).strip()
-            key = (measure, period)
-            if key in reason_lookup:
-                continue
-
-            user_v = ws.cell(row=row, column=user_col).value if user_col else None
-            rb_v   = ws.cell(row=row, column=rb_col).value   if rb_col   else None
-            is_num = lambda v: isinstance(v, (int, float)) and not (isinstance(v, float) and v != v)
-
-            if is_num(user_v) and user_r_col:
-                reason_lookup[key] = ws.cell(row=row, column=user_r_col).value or ""
-            elif is_num(rb_v) and rb_r_col:
-                reason_lookup[key] = ws.cell(row=row, column=rb_r_col).value or ""
-
-    wb.close()
-    return reason_lookup
-
+# Absolute path so Excel resolves the link without prompting, regardless of where the output file sits.
+_ULT_WB  = os.path.abspath(config.SELECTIONS) + "\\[Ultimates.xlsx]"
 
 def load_tail_selections(tail_excel_path):
     """
@@ -251,98 +124,7 @@ def load_tail_selections(tail_excel_path):
     return tail_map
 
 
-# ── Data loading ──────────────────────────────────────────────────────────────
-
-def load_combined(ultimates_path, sel_lookup):
-    """
-    Load projected ultimates, apply final selections, compute IBNR and Unpaid.
-    Methods (CL/IE/BF) are discovered dynamically from non-empty parquet columns.
-    Raises ValueError for any non-Exposure (measure, period) missing from sel_lookup.
-    Returns (df, available_methods) where available_methods = [(col, label), ...].
-    
-    Note: projected-ultimates.parquet has per-measure data (Incurred Loss, Paid Loss, etc.)
-    but Ultimates.xlsx now has category sheets (Losses, Counts). We map measures to categories
-    using MEASURE_TO_CATEGORY when looking up selections.
-    """
-    df = pd.read_parquet(ultimates_path)
-    df["period"]  = df["period"].astype(str)
-    df["measure"] = df["measure"].astype(str)
-
-    available_methods = [
-        (col, label) for col, label in _METHOD_COLS
-        if col in df.columns and df[col].notna().any()
-    ]
-
-    # Validate: every non-Exposure row must have a selection.
-    # Map measure to category for lookup (e.g., "Incurred Loss" → "Losses").
-    missing = [
-        (row["measure"], row["period"])
-        for _, row in df.iterrows()
-        if row["measure"] != "Exposure" and 
-           (MEASURE_TO_CATEGORY.get(row["measure"], row["measure"]), row["period"]) not in sel_lookup
-    ]
-    if missing:
-        lines = "\n  ".join(f"{m} / {p}" for m, p in missing)
-        raise ValueError(
-            f"{len(missing)} (measure, period) pair(s) have no User Selection or "
-            f"Rules-Based AI Selection in Ultimates.xlsx:\n  {lines}\n"
-            "Populate Rules-Based AI Selection (run 5b) or add a User Selection."
-        )
-
-    actual_lookup = df.set_index(["period", "measure"])["actual"].to_dict()
-
-    def _pick_unpaid(row):
-        proxy = UNPAID_PROXY.get(row["measure"])
-        if proxy is None:
-            return np.nan
-        proxy_actual = actual_lookup.get((row["period"], proxy), np.nan)
-        if pd.isna(proxy_actual) or pd.isna(row["selected_ultimate"]):
-            return np.nan
-        return row["selected_ultimate"] - proxy_actual
-
-    # Map measure to category when looking up selection (e.g., "Incurred Loss" → "Losses").
-    df["selected_ultimate"] = df.apply(
-        lambda row: sel_lookup.get(
-            (MEASURE_TO_CATEGORY.get(row["measure"], row["measure"]), row["period"]), 
-            np.nan
-        ), 
-        axis=1
-    )
-    df["selected_ibnr"]   = df["selected_ultimate"] - df["actual"]
-    df["selected_unpaid"] = df.apply(_pick_unpaid, axis=1)
-
-    return df, available_methods
-
-
-def get_exposure(triangles_path):
-    """Latest Exposure value per period from triangles. Returns {} if absent."""
-    if not pathlib.Path(triangles_path).exists():
-        return {}
-    tri = pd.read_parquet(triangles_path)
-    exp = tri[tri["measure"].astype(str) == "Exposure"].copy()
-    if exp.empty:
-        return {}
-    exp["period"]  = exp["period"].astype(str)
-    exp["age_num"] = pd.to_numeric(exp["age"].astype(str), errors="coerce")
-    latest = exp.sort_values("age_num").groupby("period").last()
-    return latest["value"].to_dict()
-
-
-def get_triangles(triangles_path):
-    """Load triangle data. Returns empty DataFrame when file is absent."""
-    if not pathlib.Path(triangles_path).exists():
-        return pd.DataFrame()
-    tri = pd.read_parquet(triangles_path)
-    tri["period"]  = tri["period"].astype(str)
-    tri["measure"] = tri["measure"].astype(str)
-    return tri
-
-
 # ── Generated sheet writers ───────────────────────────────────────────────────
-
-def measure_short_name(measure):
-    """Strip ' Loss' or ' Count' for sheet names."""
-    return measure.replace(" Loss", "").replace(" Count", "")
 
 def _get_cdf_cell_ref(ws_triangle, target_age):
     # Search row 1 or 2 for the age
@@ -365,7 +147,28 @@ def _formula_cell(ws, r, c, formula, num_fmt):
     cell.border = THIN_BORDER
 
 
-def write_method_cl(gen_wb, combined, measure):
+def _ult_ref(ult_col_map, sheet, col_header, row):
+    col = ult_col_map.get((sheet, col_header))
+    return f"='{_ULT_WB}{sheet}'!{col}{row}" if col else '""'
+
+
+def _tri_col_map_from_df(triangles_df, measure, max_age=None):
+    """Build {age_str: col_letter} for the triangle sheet from parquet data.
+    Triangle sheet col A = period, so ages start at col B (index 2).
+    Ages sorted ascending match the order written by _copy_ws_filtered.
+    max_age caps the map to the cutoff age — add_tail_to_triangle_ws deletes
+    data columns beyond the cutoff, so referencing those cols returns empty.
+    """
+    tri_m = triangles_df[triangles_df["measure"].astype(str) == measure]
+    if tri_m.empty:
+        return {}
+    ages = sorted(tri_m["age"].dropna().unique(), key=lambda a: float(str(a)))
+    if max_age is not None:
+        ages = [a for a in ages if float(str(a)) <= max_age]
+    return {str(int(float(str(a)))): get_column_letter(i + 2) for i, a in enumerate(ages)}
+
+
+def write_method_cl(gen_wb, combined, measure, ult_col_map, tri_col_map=None):
     short_name = measure_short_name(measure)
     ws = gen_wb.create_sheet(title=f"{short_name} CL"[:31])
     headers = ["Accident Period", "Current Age", short_name, "CDF", "Ultimate", "IBNR", "Unpaid"]
@@ -376,13 +179,32 @@ def write_method_cl(gen_wb, combined, measure):
     sub = sub.sort_values("period_int")
     proxy = UNPAID_PROXY.get(measure)
     proxy_exists = proxy and proxy != measure and proxy in combined["measure"].unique()
+    ult_sheet  = ultimates_sheet_for_measure(measure)
+    actual_hdr = ultimates_col_header(measure, "actual")
+
+    # Direct cell refs into the triangle sheet (row 1=title, row 2=age header, row 3+=data).
+    # CL sheet row r maps to triangle row r+1 — both sorted ascending period_int from rows 2/3.
+    tri_col_map = tri_col_map or {}
+    max_age_col = get_column_letter(len(tri_col_map) + 1) if tri_col_map else "ZZ"
 
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
         _data_cell(ws.cell(r, 1), row["period_int"])
         _data_cell(ws.cell(r, 2), row["current_age"])
-        _data_cell(ws.cell(r, 3), row["actual"], _NUM_FMT)
+        try:
+            age_key = str(int(float(str(row["current_age"]))))
+        except (ValueError, TypeError):
+            age_key = None
+        tri_col = tri_col_map.get(age_key) if age_key else None
+        if tri_col:
+            _formula_cell(ws, r, 3, f"='{short_name}'!{tri_col}{r+1}", _NUM_FMT)
+        else:
+            ref = _ult_ref(ult_col_map, ult_sheet, actual_hdr, r)
+            if ref == '""':
+                _data_cell(ws.cell(r, 3), row["actual"], _NUM_FMT)
+            else:
+                _formula_cell(ws, r, 3, ref, _NUM_FMT)
         _data_cell(ws.cell(r, 4), row.get("cdf"), _DEC_FMT)
-        _formula_cell(ws, r, 5, f"=C{r}*D{r}", _NUM_FMT)
+        _formula_cell(ws, r, 5, f'=IF(AND(ISNUMBER(C{r}),ISNUMBER(D{r})),C{r}*D{r},"")', _NUM_FMT)
         _formula_cell(ws, r, 6, f"=E{r}-C{r}", _NUM_FMT)
         if proxy_exists:
             _formula_cell(ws, r, 7, f"=E{r}-'{measure_short_name(proxy)} CL'!C{r}", _NUM_FMT)
@@ -396,7 +218,7 @@ def write_method_cl(gen_wb, combined, measure):
     _formula_cell(ws, t, 6, f"=SUM(F2:F{t-2})", _NUM_FMT)
     _formula_cell(ws, t, 7, f"=SUM(G2:G{t-2})", _NUM_FMT)
 
-def write_method_bf(gen_wb, combined, measure):
+def write_method_bf(gen_wb, combined, measure, ult_col_map):
     short_name = measure_short_name(measure)
     ws = gen_wb.create_sheet(title=f"{short_name} BF"[:31])
     
@@ -408,20 +230,25 @@ def write_method_bf(gen_wb, combined, measure):
     sub = combined[combined["measure"] == measure].copy()
     sub["period_int"] = sub["period"].apply(_period_int)
     sub = sub.sort_values("period_int")
-    
+
     ws_triangle = gen_wb[short_name] if short_name in gen_wb.sheetnames else None
-    
+
     proxy = UNPAID_PROXY.get(measure)
     proxy_exists = proxy and proxy != measure and proxy in combined["measure"].unique()
+    ult_sheet  = ultimates_sheet_for_measure(measure)
+    actual_hdr = ultimates_col_header(measure, "actual")
+    ie_hdr     = ultimates_col_header(measure, "ie")
+    has_ie_method = _has_method(combined, measure, "ultimate_ie")
 
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
         _data_cell(ws.cell(r, 1), row["period_int"])
         _data_cell(ws.cell(r, 2), row["current_age"])
-        _data_cell(ws.cell(r, 3), row.get("ultimate_ie", np.nan), _NUM_FMT)
-        _data_cell(ws.cell(r, 4), row.get("cdf"), _DEC_FMT)
+        ie_formula = f"='{short_name} IE'!D{r}" if has_ie_method else _ult_ref(ult_col_map, ult_sheet, ie_hdr, r)
+        _formula_cell(ws, r, 3, ie_formula, _NUM_FMT)
+        _formula_cell(ws, r, 4, f"='{short_name} CL'!D{r}", _DEC_FMT)
         _formula_cell(ws, r, 5, f"=1-(1/D{r})", "0.0%")
         _formula_cell(ws, r, 6, f"=C{r}*E{r}", _NUM_FMT)
-        _data_cell(ws.cell(r, 7), row["actual"], _NUM_FMT)
+        _formula_cell(ws, r, 7, f"='{short_name} CL'!C{r}", _NUM_FMT)
         _formula_cell(ws, r, 8, f"=F{r}+G{r}", _NUM_FMT)
         _formula_cell(ws, r, 9, f"=H{r}-G{r}", _NUM_FMT)
         if proxy_exists:
@@ -441,15 +268,17 @@ def write_method_bf(gen_wb, combined, measure):
     _formula_cell(ws, t, 10, f"=SUM(J2:J{t-2})", _NUM_FMT)
 
 
-def write_method_ie(gen_wb, combined, measure, exp_map):
+def write_method_ie(gen_wb, combined, measure, exp_map, ult_col_map):
     short_name = measure_short_name(measure)
     ws = gen_wb.create_sheet(title=f"{short_name} IE"[:31])
-    headers = ["Accident Period", "Current Age", "Exposure", "Selected Loss Rate", "IE Ultimate"]
+    headers = ["Accident Period", "Current Age", "Exposure", "IE Ultimate", "Selected Loss Rate"]
     _write_headers(ws, headers)
 
     sub = combined[combined["measure"] == measure].copy()
     sub["period_int"] = sub["period"].apply(_period_int)
     sub = sub.sort_values("period_int")
+    ult_sheet = ultimates_sheet_for_measure(measure)
+    ie_hdr    = ultimates_col_header(measure, "ie")
 
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
         _data_cell(ws.cell(r, 1), row["period_int"])
@@ -458,16 +287,15 @@ def write_method_ie(gen_wb, combined, measure, exp_map):
         exp = exp_map.get(row["period"], np.nan)
         _data_cell(ws.cell(r, 3), _safe(exp), _NUM_FMT)
 
-        ult_ie = row.get("ultimate_ie", np.nan)
-        if pd.notna(ult_ie) and pd.notna(exp) and exp != 0:
-            elr = float(ult_ie) / float(exp)
+        ie_ref = _ult_ref(ult_col_map, ult_sheet, ie_hdr, r)
+        if ie_ref == '""':
+            _data_cell(ws.cell(r, 4), row.get("ultimate_ie"), _NUM_FMT)
         else:
-            elr = np.nan
-        _data_cell(ws.cell(r, 4), _safe(elr), _DEC_FMT)
-        _data_cell(ws.cell(r, 5), _safe(ult_ie), _NUM_FMT)
+            _formula_cell(ws, r, 4, ie_ref, _NUM_FMT)
+        _formula_cell(ws, r, 5, f"=D{r}/C{r}", _DEC_FMT)
 
 
-def write_selection_grouped(gen_wb, combined, measures_group, title):
+def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map):
     ws = gen_wb.create_sheet(title=title)
     
     # columns e.g.: Accident Period, Current Age, Incurred, Paid, Incurred CL, Paid CL, Initial Expected, Incurred BF, Paid BF, Selected Ultimate, IBNR, Unpaid
@@ -491,20 +319,14 @@ def write_selection_grouped(gen_wb, combined, measures_group, title):
     bf_m  = [m for m in active_m if _has_method(combined, m, "ultimate_bf")]
     has_group_ie = any(_has_method(combined, m, "ultimate_ie") for m in active_m)
 
-    # Ultimates.xlsx now has "Losses"/"Counts" category sheets (not per-measure).
-    # IE column position differs by category and whether Closed Count data exists.
-    ult_sheet = "Losses" if any("Loss" in m for m in measures_group) else "Counts"
-    if ult_sheet == "Counts":
-        has_closed_actual = (
-            "Closed Count" in combined["measure"].unique()
-            and combined[combined["measure"] == "Closed Count"]["actual"].notna().any()
-        )
-        ie_col = "G" if has_closed_actual else "E"
-    else:
-        ie_col = "G"
-    ult_ref = f"'[Ultimates.xlsx]{ult_sheet}'"
-    _ult_idx = f"{ult_ref}!$A:$Z"
-    _ult_hdr = f"{ult_ref}!$1:$1"
+    ult_sheet  = ultimates_sheet_for_measure(active_m[0])
+    ext_ref    = f"'{_ULT_WB}{ult_sheet}'"
+    user_col   = ult_col_map.get((ult_sheet, "User Selection"), "")
+    rb_col     = ult_col_map.get((ult_sheet, "Rules-Based AI Selection"), "")
+    user_r_col = ult_col_map.get((ult_sheet, "User Reasoning"), "")
+    rb_r_col   = ult_col_map.get((ult_sheet, "Rules-Based AI Reasoning"), "")
+    ie_measure = next((m for m in active_m if _has_method(combined, m, "ultimate_ie")), active_m[0])
+    ie_short   = measure_short_name(ie_measure)
 
     # Build headers in CL, IE, BF order
     headers = ["Accident Period", "Current Age"]
@@ -536,7 +358,7 @@ def write_selection_grouped(gen_wb, combined, measures_group, title):
             col_idx += 1
         # IE ultimate (if available)
         if has_group_ie:
-            _formula_cell(ws, r, col_idx, f"='[Ultimates.xlsx]{ult_sheet}'!{ie_col}{r}", _NUM_FMT)
+            _formula_cell(ws, r, col_idx, f"='{ie_short} IE'!D{r}", _NUM_FMT)
             col_idx += 1
         # BF ultimates
         for m in bf_m:
@@ -544,9 +366,8 @@ def write_selection_grouped(gen_wb, combined, measures_group, title):
             col_idx += 1
         # Selected Ultimate → links Ultimates.xlsx (User Selection, falls back to RB-AI)
         sel_formula = (
-            f'=IFERROR(IF(INDEX({_ult_idx},{r},MATCH("User Selection",{_ult_hdr},0))<>"",'
-            f'INDEX({_ult_idx},{r},MATCH("User Selection",{_ult_hdr},0)),'
-            f'INDEX({_ult_idx},{r},MATCH("Rules-Based AI Selection",{_ult_hdr},0))),"")'
+            f'=IF({ext_ref}!{user_col}{r}<>"",{ext_ref}!{user_col}{r},{ext_ref}!{rb_col}{r})'
+            if user_col and rb_col else '""'
         )
         _formula_cell(ws, r, col_idx, sel_formula, _NUM_FMT)
         col_idx += 1
@@ -557,9 +378,8 @@ def write_selection_grouped(gen_wb, combined, measures_group, title):
         col_idx += 1
         # Selected Reasoning → links Ultimates.xlsx (User Reasoning, falls back to RB-AI)
         reason_formula = (
-            f'=IFERROR(IF(INDEX({_ult_idx},{r},MATCH("User Selection",{_ult_hdr},0))<>"",'
-            f'INDEX({_ult_idx},{r},MATCH("User Reasoning",{_ult_hdr},0)),'
-            f'INDEX({_ult_idx},{r},MATCH("Rules-Based AI Reasoning",{_ult_hdr},0))),"")'
+            f'=IF({ext_ref}!{user_col}{r}<>"",{ext_ref}!{user_r_col}{r},{ext_ref}!{rb_r_col}{r})'
+            if user_col and user_r_col and rb_r_col else '""'
         )
         _formula_cell(ws, r, col_idx, reason_formula, "@")
 
@@ -986,6 +806,15 @@ def assemble_workbook(output_path, generated_wb):
 def main():
     os.makedirs(OUTPUT_PATH, exist_ok=True)
     sel_lookup = load_selections(INPUT_SELECTIONS_EXCEL)
+
+    ult_wb = load_workbook(INPUT_SELECTIONS_EXCEL, data_only=True)
+    ult_col_map = {}
+    for _sname in ult_wb.sheetnames:
+        for _cell in ult_wb[_sname][1]:
+            if _cell.value:
+                ult_col_map[(_sname, str(_cell.value).strip())] = get_column_letter(_cell.column)
+    ult_wb.close()
+
     combined, available_methods = load_combined(INPUT_ULTIMATES, sel_lookup)
     reason_lookup = load_selection_reasoning(INPUT_SELECTIONS_EXCEL)
     combined["selected_reasoning"] = combined.apply(
@@ -1001,7 +830,13 @@ def main():
     
     # We also need triangles_df for diagnostics
     triangles_df = pd.read_parquet(INPUT_TRIANGLES)
-    
+    # Load tail selections early to know which ages survive add_tail_to_triangle_ws.
+    # _tri_col_map_from_df caps at cutoff so CL actual refs don't point to deleted columns.
+    tail_cutoff = {}
+    if pathlib.Path(INPUT_TAIL_EXCEL).exists():
+        _ts = load_tail_selections(INPUT_TAIL_EXCEL)
+        tail_cutoff = {m: info[0] for m, info in _ts.items()}
+
     print(f"Measures: {measures}")
     print(f"Methods: {available_methods}")
     
@@ -1015,36 +850,36 @@ def main():
 
     print("Building Loss sheets...")
     if loss_m:
-        write_selection_grouped(gen_wb, combined, ["Incurred Loss", "Paid Loss"], "Loss Selection")
+        write_selection_grouped(gen_wb, combined, ["Incurred Loss", "Paid Loss"], "Loss Selection", ult_col_map)
         for m in loss_m:
-            write_method_cl(gen_wb, combined, m)
+            write_method_cl(gen_wb, combined, m, ult_col_map, _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)))
         for m in loss_m:
             if _has_method(combined, m, "ultimate_bf"):
-                write_method_bf(gen_wb, combined, m)
+                write_method_bf(gen_wb, combined, m, ult_col_map)
         for m in loss_m:
             if _has_method(combined, m, "ultimate_ie"):
-                write_method_ie(gen_wb, combined, m, exp_map)
+                write_method_ie(gen_wb, combined, m, exp_map, ult_col_map)
 
     print("Building Counts sheets...")
     if count_m:
-        write_selection_grouped(gen_wb, combined, ["Reported Count", "Closed Count"], "Count Selection")
+        write_selection_grouped(gen_wb, combined, ["Reported Count", "Closed Count"], "Count Selection", ult_col_map)
         for m in count_m:
-            write_method_cl(gen_wb, combined, m)
+            write_method_cl(gen_wb, combined, m, ult_col_map, _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)))
         for m in count_m:
             if _has_method(combined, m, "ultimate_bf"):
-                write_method_bf(gen_wb, combined, m)
+                write_method_bf(gen_wb, combined, m, ult_col_map)
         for m in count_m:
             if _has_method(combined, m, "ultimate_ie"):
-                write_method_ie(gen_wb, combined, m, exp_map)
+                write_method_ie(gen_wb, combined, m, exp_map, ult_col_map)
 
     if other_m:
         print("Building other method sheets...")
         for m in other_m:
-            write_method_cl(gen_wb, combined, m)
+            write_method_cl(gen_wb, combined, m, ult_col_map, _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)))
             if _has_method(combined, m, "ultimate_bf"):
-                write_method_bf(gen_wb, combined, m)
+                write_method_bf(gen_wb, combined, m, ult_col_map)
             if _has_method(combined, m, "ultimate_ie"):
-                write_method_ie(gen_wb, combined, m, exp_map)
+                write_method_ie(gen_wb, combined, m, exp_map, ult_col_map)
         
     print("Copying CL LDF sheets (Triangle + Averages)...")
     create_triangle_sheets(gen_wb, measures)
@@ -1072,47 +907,7 @@ def main():
 
     print("\nAssembling Complete Analysis.xlsx...")
     assemble_workbook(OUTPUT_COMPLETE, gen_wb)
-
-    print("Computing formula values for Values Only...")
-    df2_enh = pd.read_parquet(INPUT_CL_ENHANCED) if pathlib.Path(INPUT_CL_ENHANCED).exists() else pd.DataFrame()
-    df4_avg = pd.read_parquet(INPUT_LDF_AVERAGES) if pathlib.Path(INPUT_LDF_AVERAGES).exists() else None
-    measures_short_set = {measure_short_name(m) for m in measures}
-    actual_lookup_full = combined.set_index(["period", "measure"])["actual"].to_dict()
-
-    for sname in gen_wb.sheetnames:
-        ws = gen_wb[sname]
-        if sname in measures_short_set and not df2_enh.empty:
-            full_m = next((m for m in measures if measure_short_name(m) == sname), None)
-            if full_m:
-                _fill_cl_main_values(ws, full_m, df2_enh, df4_avg)
-                _fill_cdf_row_values(ws)
-            else:
-                _strip_formulas(ws)
-        elif sname.endswith(" CL"):
-            full_m = next((m for m in measures if measure_short_name(m) == sname[:-3]), None)
-            if full_m:
-                _fill_method_cl_values(ws, full_m, combined, actual_lookup_full)
-            else:
-                _strip_formulas(ws)
-        elif sname.endswith(" BF"):
-            full_m = next((m for m in measures if measure_short_name(m) == sname[:-3]), None)
-            if full_m:
-                _fill_method_bf_values(ws, full_m, combined, actual_lookup_full)
-            else:
-                _strip_formulas(ws)
-        elif sname.endswith(" IE"):
-            pass  # IE sheet has no formula cells
-        elif sname == "Loss Selection":
-            _fill_selection_values(ws, ["Incurred Loss", "Paid Loss"], combined, actual_lookup_full)
-            _strip_formulas(ws)
-        elif sname == "Count Selection":
-            _fill_selection_values(ws, ["Reported Count", "Closed Count"], combined, actual_lookup_full)
-            _strip_formulas(ws)
-        else:
-            _strip_formulas(ws)
-
-    print("Assembling Complete Analysis - Values Only.xlsx...")
-    assemble_workbook(OUTPUT_VALUES, gen_wb)
+    print("Done. Run 6b-create-values-only.py to produce the plain-numbers copy.")
 
 if __name__ == "__main__":
     main()

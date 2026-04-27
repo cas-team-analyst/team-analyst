@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from modules.xl_utils import _period_int
+from modules.xl_utils import _period_int, ultimates_col_header
 
 # Unpaid = selected ultimate - latest actual of the proxy measure for that period.
 UNPAID_PROXY = {
@@ -28,7 +28,10 @@ def _fill_method_cl_values(ws, measure, combined, actual_lookup):
         ult = None if pd.isna(ult) else float(ult)
         actual = row["actual"]
         actual = None if pd.isna(actual) else float(actual)
+        cdf = row.get("cdf", np.nan)
 
+        ws.cell(r, 3).value = actual
+        ws.cell(r, 4).value = None if pd.isna(cdf) else float(cdf)
         ws.cell(r, 5).value = ult
         ws.cell(r, 6).value = (ult - actual) if ult is not None and actual is not None else None
         if proxy and proxy != measure:
@@ -58,8 +61,11 @@ def _fill_method_bf_values(ws, measure, combined, actual_lookup):
         pct_unr = (1.0 - 1.0 / cdf) if cdf is not None and cdf != 0 else None
         unreported = (ult_bf - actual) if ult_bf is not None and actual is not None else None
 
+        ws.cell(r, 3).value = ult_ie
+        ws.cell(r, 4).value = cdf
         ws.cell(r, 5).value = pct_unr
         ws.cell(r, 6).value = unreported
+        ws.cell(r, 7).value = actual
         ws.cell(r, 8).value = ult_bf
         ws.cell(r, 9).value = (ult_bf - actual) if ult_bf is not None and actual is not None else None
         if proxy and proxy != measure:
@@ -67,6 +73,23 @@ def _fill_method_bf_values(ws, measure, combined, actual_lookup):
             ws.cell(r, 10).value = (ult_bf - proxy_actual) if ult_bf is not None and proxy_actual is not None else None
         else:
             ws.cell(r, 10).value = (ult_bf - actual) if ult_bf is not None and actual is not None else None
+
+
+def _fill_method_ie_values(ws, measure, combined, exp_map):
+    """Replace IE method sheet formula cells (cols 4-5) with Python-computed values."""
+    sub = combined[combined["measure"] == measure].copy()
+    sub["period_int"] = sub["period"].apply(_period_int)
+    sub = sub.sort_values("period_int")
+
+    for r, (_, row) in enumerate(sub.iterrows(), start=2):
+        ult_ie = row.get("ultimate_ie", np.nan)
+        ult_ie = None if pd.isna(ult_ie) else float(ult_ie)
+        exp = exp_map.get(row["period"], np.nan)
+        exp = None if pd.isna(exp) else float(exp)
+
+        elr = (ult_ie / exp) if ult_ie is not None and exp is not None and exp != 0 else None
+        ws.cell(r, 4).value = ult_ie
+        ws.cell(r, 5).value = elr
 
 
 def _fill_selection_values(ws, measures_group, combined, actual_lookup):

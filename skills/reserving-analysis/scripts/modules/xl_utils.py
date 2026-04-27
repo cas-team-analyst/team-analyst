@@ -84,6 +84,31 @@ def build_column_map(ws, header_row=1):
     return column_map
 
 
+def measure_short_name(measure: str) -> str:
+    """Strip ' Loss' or ' Count' suffix for use as sheet name or column prefix."""
+    return measure.replace(" Loss", "").replace(" Count", "")
+
+
+def ultimates_sheet_for_measure(measure: str) -> str:
+    """Return Ultimates.xlsx sheet name for a measure: 'Losses' or 'Counts'."""
+    return "Losses" if "Loss" in measure else "Counts"
+
+
+def ultimates_col_header(measure: str, method: str) -> str:
+    """
+    Return the Ultimates.xlsx column header for a measure and method.
+
+    method in {"actual", "cl", "ie", "bf"}.
+    Short name strips ' Loss' / ' Count' (e.g. 'Incurred Loss' → 'Incurred').
+    """
+    short = measure.replace(" Loss", "").replace(" Count", "")
+    suffix = {"actual": "", "cl": " CL", "ie": " IE", "bf": " BF"}.get(method)
+    if suffix is None:
+        raise ValueError(f"Unknown method '{method}'. Expected: actual, cl, ie, bf")
+    return short + suffix
+
+
+
 def _copy_ws(ws_src, ws_dst):
     """Copy all cells and styles from source to destination worksheet."""
     for row in ws_src.iter_rows():
