@@ -134,33 +134,33 @@ def main():
     total_updates_rb = 0
     total_updates_oe = 0
     
-    # Update Loss sheet
-    if 'Loss' in wb.sheetnames:
-        ws = wb['Loss']
+    # Update Losses sheet
+    if 'Losses' in wb.sheetnames:
+        ws = wb['Losses']
         if rules_based_loss_by_period:
             updates = update_sheet_selections(ws, rules_based_loss_by_period, "rules-based")
             total_updates_rb += updates
-            print(f"  Updated {updates} rules-based selections in 'Loss'")
+            print(f"  Updated {updates} rules-based selections in 'Losses'")
         if open_ended_loss_by_period:
             updates = update_sheet_selections(ws, open_ended_loss_by_period, "open-ended")
             total_updates_oe += updates
-            print(f"  Updated {updates} open-ended selections in 'Loss'")
+            print(f"  Updated {updates} open-ended selections in 'Losses'")
     else:
-        print("  WARNING: Sheet 'Loss' not found in workbook")
+        print("  WARNING: Sheet 'Losses' not found in workbook")
     
-    # Update Count sheet
-    if 'Count' in wb.sheetnames:
-        ws = wb['Count']
+    # Update Counts sheet
+    if 'Counts' in wb.sheetnames:
+        ws = wb['Counts']
         if rules_based_count_by_period:
             updates = update_sheet_selections(ws, rules_based_count_by_period, "rules-based")
             total_updates_rb += updates
-            print(f"  Updated {updates} rules-based selections in 'Count'")
+            print(f"  Updated {updates} rules-based selections in 'Counts'")
         if open_ended_count_by_period:
             updates = update_sheet_selections(ws, open_ended_count_by_period, "open-ended")
             total_updates_oe += updates
-            print(f"  Updated {updates} open-ended selections in 'Count'")
+            print(f"  Updated {updates} open-ended selections in 'Counts'")
     else:
-        print("  WARNING: Sheet 'Count' not found in workbook")
+        print("  WARNING: Sheet 'Counts' not found in workbook")
                 
     wb.save(EXCEL_FILE)
     print(f"\nSaved: {EXCEL_FILE}")

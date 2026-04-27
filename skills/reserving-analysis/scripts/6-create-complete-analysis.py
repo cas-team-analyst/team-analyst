@@ -70,13 +70,13 @@ _METHOD_COLS = [
 
 # Map individual measure names to ultimates selection categories.
 # projected-ultimates.parquet has per-measure data (Incurred Loss, Paid Loss, etc.)
-# but Ultimates.xlsx now has category sheets (Loss, Count) where one ultimate
+# but Ultimates.xlsx now has category sheets (Losses, Counts) where one ultimate
 # is selected per category. This mapping converts measure → category for lookups.
 MEASURE_TO_CATEGORY = {
-    "Incurred Loss": "Loss",
-    "Paid Loss": "Loss",
-    "Reported Count": "Count",
-    "Closed Count": "Count",
+    "Incurred Loss": "Losses",
+    "Paid Loss": "Losses",
+    "Reported Count": "Counts",
+    "Closed Count": "Counts",
 }
 
 _NUM_FMT = "#,##0"
@@ -106,7 +106,7 @@ def load_selections(excel_path):
         period_col = user_col = rb_col = None
         for cell in ws[1]:
             v = cell.value
-            if v == "Period":
+            if v == "Accident Period":
                 period_col = cell.column
             elif v == "User Selection":
                 user_col = cell.column
@@ -157,7 +157,7 @@ def load_selection_reasoning(excel_path):
         period_col = user_col = rb_col = user_r_col = rb_r_col = None
         for cell in ws[1]:
             v = cell.value
-            if v == "Period":                   period_col = cell.column
+            if v == "Accident Period":          period_col = cell.column
             elif v == "User Selection":         user_col   = cell.column
             elif v == "Rules-Based AI Selection": rb_col   = cell.column
             elif v == "User Reasoning":         user_r_col = cell.column
@@ -261,7 +261,7 @@ def load_combined(ultimates_path, sel_lookup):
     Returns (df, available_methods) where available_methods = [(col, label), ...].
     
     Note: projected-ultimates.parquet has per-measure data (Incurred Loss, Paid Loss, etc.)
-    but Ultimates.xlsx now has category sheets (Loss, Count). We map measures to categories
+    but Ultimates.xlsx now has category sheets (Losses, Counts). We map measures to categories
     using MEASURE_TO_CATEGORY when looking up selections.
     """
     df = pd.read_parquet(ultimates_path)
@@ -274,7 +274,7 @@ def load_combined(ultimates_path, sel_lookup):
     ]
 
     # Validate: every non-Exposure row must have a selection.
-    # Map measure to category for lookup (e.g., "Incurred Loss" → "Loss").
+    # Map measure to category for lookup (e.g., "Incurred Loss" → "Losses").
     missing = [
         (row["measure"], row["period"])
         for _, row in df.iterrows()
@@ -300,7 +300,7 @@ def load_combined(ultimates_path, sel_lookup):
             return np.nan
         return row["selected_ultimate"] - proxy_actual
 
-    # Map measure to category when looking up selection (e.g., "Incurred Loss" → "Loss").
+    # Map measure to category when looking up selection (e.g., "Incurred Loss" → "Losses").
     df["selected_ultimate"] = df.apply(
         lambda row: sel_lookup.get(
             (MEASURE_TO_CATEGORY.get(row["measure"], row["measure"]), row["period"]), 

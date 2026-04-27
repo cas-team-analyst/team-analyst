@@ -178,7 +178,7 @@ _(Pause for Selections only):_
 
 - [ ] Copy `scripts/5a-ultimates-create-excel.py` and `scripts/5b-ultimates-update-selections.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`, don't rewrite them yourself). Ensure `scripts/modules/` is already in place (copied in Step 3).
 
-- [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export category context files. The script will create two sheets: **Loss** (combining Incurred and Paid) and **Count** (combining Reported and Closed). It will print the context file paths it creates (e.g., "  Exported MD: selections/ultimates-context-loss.md", "  Exported MD: selections/ultimates-context-count.md"). **Capture the list of context file paths** from the script output.
+- [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export category context files. The script will create two sheets: **Losses** (combining Incurred and Paid) and **Counts** (combining Reported and Closed). It will print the context file paths it creates (e.g., "  Exported MD: selections/ultimates-context-loss.md", "  Exported MD: selections/ultimates-context-count.md"). **Capture the list of context file paths** from the script output.
 
 - [ ] **Invoke the rules-based ultimates selector once** for both categories. Call the `selector-ultimates-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
   - Read each context file (loss and count)
@@ -201,7 +201,7 @@ _(Pause for Selections only):_
   - Load `selections/ultimates-ai-open-ended-loss.json` and `selections/ultimates-ai-open-ended-count.json`
   - Populate the Rules-Based AI Selection and Open-Ended AI Selection columns in the Loss and Count sheets
 
-- [ ] Tell the user where `selections/Ultimates.xlsx` is located. Explain that both rules-based and open-ended AI selections are visible. The rules-based selection is what gets used by default — the user can override it manually. The open-ended selection provides an independent cross-check. Note that the workbook now has **Loss** and **Count** sheets instead of per-measure sheets, and one ultimate is selected per category per accident year.
+- [ ] Tell the user where `selections/Ultimates.xlsx` is located. Explain that both rules-based and open-ended AI selections are visible. The rules-based selection is what gets used by default — the user can override it manually. The open-ended selection provides an independent cross-check. Note that the workbook now has **Losses** and **Counts** sheets instead of per-measure sheets, and one ultimate is selected per category per accident year.
 
 _(Pause for Selections only):_
 - [ ] Open `selections/Ultimates.xlsx` for the user. Let them know they can review and override any AI ultimate selections. Pause and wait for the user to confirm they are done reviewing before continuing.
@@ -215,7 +215,7 @@ _(Pause for Selections only):_
   - Add to **Section 11** Open Questions any AYs where method indications diverged materially or selections required significant judgment.
 
 - [ ] **Update REPLICATE.md Step 7:**
-  - Document that `5a-ultimates-create-excel.py` was run to create the ultimates workbook with Loss and Count sheets
+  - Document that `5a-ultimates-create-excel.py` was run to create the ultimates workbook with Losses and Counts sheets
   - Note that AI selectors made rules-based and open-ended ultimate selections for both categories (JSON files created)
   - Document that `5b-ultimates-update-selections.py` populated the Excel file with AI selections
   - **Critical:** If user made manual overrides in the "User Selection" column, list each one with category (Loss or Count), period, selected ultimate, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection columns."

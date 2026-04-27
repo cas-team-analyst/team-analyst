@@ -71,12 +71,15 @@ def export_md_data(df_ult, exp_md):
             f.write(md_content)
         print(f"  Exported MD: {md_path}")
     
-    # Export Count category (Reported + Closed)
+    # Export Count category (Reported + Closed, skip Closed if no actual data)
     count_measures = ['Reported Count', 'Closed Count']
     count_data = []
     for measure in count_measures:
         df_m = df_ult[df_ult['measure'] == measure].copy()
+        # Skip Closed Count if no actual data exists
         if not df_m.empty:
+            if measure == 'Closed Count' and not df_m['actual'].notna().any():
+                continue  # Skip closed count with no actual data
             count_data.append((measure, df_m))
     
     if count_data:
@@ -119,33 +122,35 @@ def format_loss_sheet(ws, df_ult, df_prior):
     if not df_incurred.empty and not df_paid.empty:
         df_combined = df_incurred[['period', 'current_age', 'actual']].copy()
         df_combined.rename(columns={'actual': 'incurred_actual'}, inplace=True)
-        df_paid_subset = df_paid[['period', 'actual', 'ultimate_cl', 'ultimate_bf']].copy()
-        df_paid_subset.rename(columns={'actual': 'paid_actual', 'ultimate_cl': 'paid_cl', 'ultimate_bf': 'paid_bf'}, inplace=True)
+        df_paid_subset = df_paid[['period', 'actual', 'ultimate_ie', 'ultimate_cl', 'ultimate_bf']].copy()
+        df_paid_subset.rename(columns={'actual': 'paid_actual', 'ultimate_ie': 'paid_ie', 'ultimate_cl': 'paid_cl', 'ultimate_bf': 'paid_bf'}, inplace=True)
         df_combined = df_combined.merge(df_paid_subset, on='period', how='outer')
         df_combined.rename(columns={'incurred_actual': 'incurred', 'paid_actual': 'paid'}, inplace=True)
         
         # Add incurred ultimates
         df_combined = df_combined.merge(
-            df_incurred[['period', 'ultimate_cl', 'ultimate_bf']].rename(columns={'ultimate_cl': 'incurred_cl', 'ultimate_bf': 'incurred_bf'}),
+            df_incurred[['period', 'ultimate_ie', 'ultimate_cl', 'ultimate_bf']].rename(columns={'ultimate_ie': 'incurred_ie', 'ultimate_cl': 'incurred_cl', 'ultimate_bf': 'incurred_bf'}),
             on='period', how='left'
         )
     elif not df_incurred.empty:
-        df_combined = df_incurred[['period', 'current_age', 'actual', 'ultimate_cl', 'ultimate_bf']].copy()
-        df_combined.rename(columns={'actual': 'incurred', 'ultimate_cl': 'incurred_cl', 'ultimate_bf': 'incurred_bf'}, inplace=True)
+        df_combined = df_incurred[['period', 'current_age', 'actual', 'ultimate_ie', 'ultimate_cl', 'ultimate_bf']].copy()
+        df_combined.rename(columns={'actual': 'incurred', 'ultimate_ie': 'incurred_ie', 'ultimate_cl': 'incurred_cl', 'ultimate_bf': 'incurred_bf'}, inplace=True)
         df_combined['paid'] = None
+        df_combined['paid_ie'] = None
         df_combined['paid_cl'] = None
         df_combined['paid_bf'] = None
     else:  # only paid
-        df_combined = df_paid[['period', 'current_age', 'actual', 'ultimate_cl', 'ultimate_bf']].copy()
-        df_combined.rename(columns={'actual': 'paid', 'ultimate_cl': 'paid_cl', 'ultimate_bf': 'paid_bf'}, inplace=True)
+        df_combined = df_paid[['period', 'current_age', 'actual', 'ultimate_ie', 'ultimate_cl', 'ultimate_bf']].copy()
+        df_combined.rename(columns={'actual': 'paid', 'ultimate_ie': 'paid_ie', 'ultimate_cl': 'paid_cl', 'ultimate_bf': 'paid_bf'}, inplace=True)
         df_combined['incurred'] = None
+        df_combined['incurred_ie'] = None
         df_combined['incurred_cl'] = None
         df_combined['incurred_bf'] = None
     
     # Write headers
     headers = [
         "Accident Period", "Current Age", "Incurred", "Paid",
-        "Incurred CL", "Paid CL", "Incurred BF", "Paid BF",
+        "Incurred CL", "Paid CL", "Incurred IE", "Paid IE", "Incurred BF", "Paid BF",
         "Prior Selection", "Prior Reasoning",
         "Rules-Based AI Selection", "Rules-Based AI Reasoning",
         "Open-Ended AI Selection", "Open-Ended AI Reasoning",
@@ -168,8 +173,8 @@ def format_loss_sheet(ws, df_ult, df_prior):
     
     # Create dict of prior
     prior_dict = {}
-    if df_prior is not None and 'Loss' in df_prior.get('category', df_prior.get('measure', pd.Series())).values:
-        mp = df_prior[df_prior.get('category', df_prior.get('measure')) == 'Loss']
+    if df_prior is not None and 'Losses' in df_prior.get('category', df_prior.get('measure', pd.Series())).values:
+        mp = df_prior[df_prior.get('category', df_prior.get('measure')) == 'Losses']
         for _, r in mp.iterrows():
             prior_dict[str(r['period'])] = {"sel": r.get('selection', r.get('selected_ultimate')), "reason": r.get('reasoning', '')}
     
@@ -185,7 +190,7 @@ def format_loss_sheet(ws, df_ult, df_prior):
         ws.cell(row=r_idx, column=2, value=val_age).border = THIN_BORDER
         
         # Values
-        for c_idx, col_name in enumerate(['incurred', 'paid', 'incurred_cl', 'paid_cl', 'incurred_bf', 'paid_bf'], start=3):
+        for c_idx, col_name in enumerate(['incurred', 'paid', 'incurred_cl', 'paid_cl', 'incurred_ie', 'paid_ie', 'incurred_bf', 'paid_bf'], start=3):
             val = row.get(col_name)
             if pd.isna(val): val = ""
             cell = ws.cell(row=r_idx, column=c_idx, value=val)
@@ -196,45 +201,45 @@ def format_loss_sheet(ws, df_ult, df_prior):
         prior_sel = prior_dict.get(period, {}).get("sel", "")
         prior_reason = prior_dict.get(period, {}).get("reason", "")
         
-        c = ws.cell(row=r_idx, column=9, value=prior_sel)
+        c = ws.cell(row=r_idx, column=11, value=prior_sel)
         c.fill = PRIOR_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=10, value=prior_reason)
+        c = ws.cell(row=r_idx, column=12, value=prior_reason)
         c.fill = PRIOR_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # Rules-Based AI Selection (yellow fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=11)
+        c = ws.cell(row=r_idx, column=13)
         c.fill = SELECTION_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=12)
+        c = ws.cell(row=r_idx, column=14)
         c.fill = SELECTION_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # Open-Ended AI Selection (purple fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=13)
+        c = ws.cell(row=r_idx, column=15)
         c.fill = AI_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=14)
+        c = ws.cell(row=r_idx, column=16)
         c.fill = AI_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # User Selection (blank - actuary input)
-        c = ws.cell(row=r_idx, column=15)
+        c = ws.cell(row=r_idx, column=17)
         c.fill = USER_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=16)
+        c = ws.cell(row=r_idx, column=18)
         c.fill = USER_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
@@ -243,6 +248,7 @@ def format_loss_sheet(ws, df_ult, df_prior):
 def format_count_sheet(ws, df_ult, df_prior):
     """
     Format the Count sheet with Reported and Closed columns combined.
+    Closed columns are omitted if no closed count data is present.
     
     Args:
         ws: openpyxl worksheet object
@@ -256,42 +262,52 @@ def format_count_sheet(ws, df_ult, df_prior):
     if df_reported.empty and df_closed.empty:
         return
     
+    # Determine if we have closed count data (any non-null actual values)
+    has_closed = not df_closed.empty and df_closed['actual'].notna().any()
+    
     # Merge on period to get one row per period
-    if not df_reported.empty and not df_closed.empty:
+    if not df_reported.empty and has_closed:
         df_combined = df_reported[['period', 'current_age', 'actual']].copy()
         df_combined.rename(columns={'actual': 'reported_actual'}, inplace=True)
-        df_closed_subset = df_closed[['period', 'actual', 'ultimate_cl', 'ultimate_bf']].copy()
-        df_closed_subset.rename(columns={'actual': 'closed_actual', 'ultimate_cl': 'closed_cl', 'ultimate_bf': 'closed_bf'}, inplace=True)
+        df_closed_subset = df_closed[['period', 'actual', 'ultimate_ie', 'ultimate_cl', 'ultimate_bf']].copy()
+        df_closed_subset.rename(columns={'actual': 'closed_actual', 'ultimate_ie': 'closed_ie', 'ultimate_cl': 'closed_cl', 'ultimate_bf': 'closed_bf'}, inplace=True)
         df_combined = df_combined.merge(df_closed_subset, on='period', how='outer')
         df_combined.rename(columns={'reported_actual': 'reported', 'closed_actual': 'closed'}, inplace=True)
         
         # Add reported ultimates
         df_combined = df_combined.merge(
-            df_reported[['period', 'ultimate_cl', 'ultimate_bf']].rename(columns={'ultimate_cl': 'reported_cl', 'ultimate_bf': 'reported_bf'}),
+            df_reported[['period', 'ultimate_ie', 'ultimate_cl', 'ultimate_bf']].rename(columns={'ultimate_ie': 'reported_ie', 'ultimate_cl': 'reported_cl', 'ultimate_bf': 'reported_bf'}),
             on='period', how='left'
         )
     elif not df_reported.empty:
-        df_combined = df_reported[['period', 'current_age', 'actual', 'ultimate_cl', 'ultimate_bf']].copy()
-        df_combined.rename(columns={'actual': 'reported', 'ultimate_cl': 'reported_cl', 'ultimate_bf': 'reported_bf'}, inplace=True)
-        df_combined['closed'] = None
-        df_combined['closed_cl'] = None
-        df_combined['closed_bf'] = None
+        # Only reported count - no closed columns needed
+        df_combined = df_reported[['period', 'current_age', 'actual', 'ultimate_ie', 'ultimate_cl', 'ultimate_bf']].copy()
+        df_combined.rename(columns={'actual': 'reported', 'ultimate_ie': 'reported_ie', 'ultimate_cl': 'reported_cl', 'ultimate_bf': 'reported_bf'}, inplace=True)
     else:  # only closed
-        df_combined = df_closed[['period', 'current_age', 'actual', 'ultimate_cl', 'ultimate_bf']].copy()
-        df_combined.rename(columns={'actual': 'closed', 'ultimate_cl': 'closed_cl', 'ultimate_bf': 'closed_bf'}, inplace=True)
-        df_combined['reported'] = None
-        df_combined['reported_cl'] = None
-        df_combined['reported_bf'] = None
+        df_combined = df_closed[['period', 'current_age', 'actual', 'ultimate_ie', 'ultimate_cl', 'ultimate_bf']].copy()
+        df_combined.rename(columns={'actual': 'closed', 'ultimate_ie': 'closed_ie', 'ultimate_cl': 'closed_cl', 'ultimate_bf': 'closed_bf'}, inplace=True)
     
-    # Write headers
-    headers = [
-        "Accident Period", "Current Age", "Reported", "Closed",
-        "Reported CL", "Closed CL", "Reported BF", "Closed BF",
-        "Prior Selection", "Prior Reasoning",
-        "Rules-Based AI Selection", "Rules-Based AI Reasoning",
-        "Open-Ended AI Selection", "Open-Ended AI Reasoning",
-        "User Selection", "User Reasoning"
-    ]
+    # Build headers based on whether closed count exists
+    if has_closed:
+        headers = [
+            "Accident Period", "Current Age", "Reported", "Closed",
+            "Reported CL", "Closed CL", "Reported IE", "Closed IE", "Reported BF", "Closed BF",
+            "Prior Selection", "Prior Reasoning",
+            "Rules-Based AI Selection", "Rules-Based AI Reasoning",
+            "Open-Ended AI Selection", "Open-Ended AI Reasoning",
+            "User Selection", "User Reasoning"
+        ]
+        data_columns = ['reported', 'closed', 'reported_cl', 'closed_cl', 'reported_ie', 'closed_ie', 'reported_bf', 'closed_bf']
+    else:
+        headers = [
+            "Accident Period", "Current Age", "Reported",
+            "Reported CL", "Reported IE", "Reported BF",
+            "Prior Selection", "Prior Reasoning",
+            "Rules-Based AI Selection", "Rules-Based AI Reasoning",
+            "Open-Ended AI Selection", "Open-Ended AI Reasoning",
+            "User Selection", "User Reasoning"
+        ]
+        data_columns = ['reported', 'reported_cl', 'reported_ie', 'reported_bf']
     
     ws.append(headers)
     for c_idx in range(1, len(headers) + 1):
@@ -302,15 +318,29 @@ def format_count_sheet(ws, df_ult, df_prior):
         cell.alignment = Alignment(horizontal="center")
         ws.column_dimensions[cell.column_letter].width = 18
     
-    ws.column_dimensions['J'].width = 30
-    ws.column_dimensions['L'].width = 30
-    ws.column_dimensions['N'].width = 30
-    ws.column_dimensions['P'].width = 40
+    # Calculate column indices based on number of data columns
+    # Structure: Period(1) + Age(2) + data_columns + Prior(2) + RB AI(2) + OE AI(2) + User(2)
+    num_data_cols = len(data_columns)
+    col_prior_sel = 3 + num_data_cols
+    col_prior_reason = col_prior_sel + 1
+    col_rb_sel = col_prior_reason + 1
+    col_rb_reason = col_rb_sel + 1
+    col_oe_sel = col_rb_reason + 1
+    col_oe_reason = col_oe_sel + 1
+    col_user_sel = col_oe_reason + 1
+    col_user_reason = col_user_sel + 1
+    
+    # Set wider widths for reasoning columns
+    from openpyxl.utils import get_column_letter
+    ws.column_dimensions[get_column_letter(col_prior_reason)].width = 30
+    ws.column_dimensions[get_column_letter(col_rb_reason)].width = 30
+    ws.column_dimensions[get_column_letter(col_oe_reason)].width = 30
+    ws.column_dimensions[get_column_letter(col_user_reason)].width = 40
     
     # Create dict of prior
     prior_dict = {}
-    if df_prior is not None and 'Count' in df_prior.get('category', df_prior.get('measure', pd.Series())).values:
-        mp = df_prior[df_prior.get('category', df_prior.get('measure')) == 'Count']
+    if df_prior is not None and 'Counts' in df_prior.get('category', df_prior.get('measure', pd.Series())).values:
+        mp = df_prior[df_prior.get('category', df_prior.get('measure')) == 'Counts']
         for _, r in mp.iterrows():
             prior_dict[str(r['period'])] = {"sel": r.get('selection', r.get('selected_ultimate')), "reason": r.get('reasoning', '')}
     
@@ -325,8 +355,8 @@ def format_count_sheet(ws, df_ult, df_prior):
         if pd.isna(val_age): val_age = ""
         ws.cell(row=r_idx, column=2, value=val_age).border = THIN_BORDER
         
-        # Values
-        for c_idx, col_name in enumerate(['reported', 'closed', 'reported_cl', 'closed_cl', 'reported_bf', 'closed_bf'], start=3):
+        # Data values (reported, closed, IE, CL, BF - dynamically based on what's available)
+        for c_idx, col_name in enumerate(data_columns, start=3):
             val = row.get(col_name)
             if pd.isna(val): val = ""
             cell = ws.cell(row=r_idx, column=c_idx, value=val)
@@ -337,45 +367,45 @@ def format_count_sheet(ws, df_ult, df_prior):
         prior_sel = prior_dict.get(period, {}).get("sel", "")
         prior_reason = prior_dict.get(period, {}).get("reason", "")
         
-        c = ws.cell(row=r_idx, column=9, value=prior_sel)
+        c = ws.cell(row=r_idx, column=col_prior_sel, value=prior_sel)
         c.fill = PRIOR_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=10, value=prior_reason)
+        c = ws.cell(row=r_idx, column=col_prior_reason, value=prior_reason)
         c.fill = PRIOR_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # Rules-Based AI Selection (yellow fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=11)
+        c = ws.cell(row=r_idx, column=col_rb_sel)
         c.fill = SELECTION_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=12)
+        c = ws.cell(row=r_idx, column=col_rb_reason)
         c.fill = SELECTION_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # Open-Ended AI Selection (purple fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=13)
+        c = ws.cell(row=r_idx, column=col_oe_sel)
         c.fill = AI_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=14)
+        c = ws.cell(row=r_idx, column=col_oe_reason)
         c.fill = AI_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
         
         # User Selection (blank - actuary input)
-        c = ws.cell(row=r_idx, column=15)
+        c = ws.cell(row=r_idx, column=col_user_sel)
         c.fill = USER_FILL
         c.border = THIN_BORDER
         c.number_format = "#,##0"
         
-        c = ws.cell(row=r_idx, column=16)
+        c = ws.cell(row=r_idx, column=col_user_reason)
         c.fill = USER_FILL
         c.border = THIN_BORDER
         c.alignment = Alignment(wrap_text=True)
@@ -431,19 +461,19 @@ def main():
     wb = Workbook()
     wb.remove(wb.active)  # Remove default sheet
     
-    # Create Loss sheet (Incurred + Paid)
+    # Create Losses sheet (Incurred + Paid)
     has_loss = any(m in df_ult['measure'].values for m in ['Incurred Loss', 'Paid Loss'])
     if has_loss:
-        ws = wb.create_sheet(title='Loss')
+        ws = wb.create_sheet(title='Losses')
         format_loss_sheet(ws, df_ult, df_prior)
-        print(f"  Created sheet for Loss (Incurred + Paid)")
+        print(f"  Created sheet for Losses (Incurred + Paid)")
     
-    # Create Count sheet (Reported + Closed)
+    # Create Counts sheet (Reported + Closed)
     has_count = any(m in df_ult['measure'].values for m in ['Reported Count', 'Closed Count'])
     if has_count:
-        ws = wb.create_sheet(title='Count')
+        ws = wb.create_sheet(title='Counts')
         format_count_sheet(ws, df_ult, df_prior)
-        print(f"  Created sheet for Count (Reported + Closed)")
+        print(f"  Created sheet for Counts (Reported + Closed)")
     
     out_dir = pathlib.Path(OUTPUT_FILE).parent
     out_dir.mkdir(parents=True, exist_ok=True)

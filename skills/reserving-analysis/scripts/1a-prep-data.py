@@ -55,6 +55,21 @@ def read_triangle_data(
         - source (categorical): Source identifier for auditing
         - details (object/str): Additional context (optional)
     
+    Count Triangle Interpretation:
+    ------------------------------
+    **Default Assumption:** Count triangles should be assumed to represent 
+    "Reported Count" unless there is strong evidence otherwise.
+    
+    Common patterns that indicate Reported Count:
+    - Column headers like "Ct", "Count", "Claims", "# Claims"
+    - Generic count data without "Closed" qualifier
+    - Counts that increase or stabilize over development periods
+    
+    Only classify as "Closed Count" if you see explicit evidence:
+    - Column headers containing "Closed", "Settled", "Finalized"
+    - Source documentation clearly indicating closed/settled claims
+    - Counts that plateau at mature ages (closed cannot exceed reported)
+    
     Special Handling for Exposure:
     ------------------------------
     **Recommended:** Provide Exposure in simple 2-column format (period, value)

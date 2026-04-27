@@ -2,9 +2,10 @@
 # by exposure to get expected ultimate losses and claim counts for each period.
 #
 # Fallback behavior:
-# If the expected loss rates file is not provided, this script derives an expected
-# loss rate by period from diagonal loss/exposure and smooths it with a 3-year
-# rolling average (rounded to 3 decimals).
+# If the expected loss rates file is not provided, this script derives expected rates
+# from diagonal data and exposure, smoothed with a 3-year rolling average:
+# - Expected loss rate: rounded to 3 decimals, from Incurred Loss (or Paid Loss if unavailable)
+# - Expected frequency: rounded to 9 decimals, from Reported Count (or Closed Count if unavailable)
 
 """
 goal: Calculate Initial Expected ultimates for all periods and measures.
@@ -97,14 +98,11 @@ def extract_exposure_diagonal(triangle_data: pd.DataFrame) -> dict:
 
 def build_fallback_expected_rates(diagonal: pd.DataFrame, exposure: dict) -> pd.DataFrame:
     """
-    Build fallback expected loss rates when no expected rates input file is available.
+    Build fallback expected loss rates and frequencies when no expected rates input file is available.
 
     Method by period:
-    1. Compute diagonal loss per unit exposure
-    2. Smooth with a 3-year rolling average
-    3. Round to 3 decimals
-
-    The fallback produces expected_loss_rate only. expected_freq is left as NaN.
+    1. Loss Rate: Compute diagonal loss per unit exposure, smooth with a 3-year rolling average, round to 3 decimals
+    2. Frequency: Compute diagonal reported count per unit exposure, smooth with a 3-year rolling average, round to 3 decimals
 
     Args:
         diagonal: DataFrame with diagonal values (period, measure, age, value)
@@ -113,43 +111,86 @@ def build_fallback_expected_rates(diagonal: pd.DataFrame, exposure: dict) -> pd.
     Returns:
         DataFrame with columns: period, expected_loss_rate, expected_freq
     """
+    fallback = None
+    
+    # Build loss rate fallback
     diagonal_loss = diagonal[diagonal['measure'].isin(['Incurred Loss', 'Paid Loss'])].copy()
-
-    if diagonal_loss.empty:
-        raise ValueError(
-            "Fallback expected-rate calculation requires 'Incurred Loss' or 'Paid Loss' in triangle data."
+    
+    if not diagonal_loss.empty:
+        preferred_measure = 'Incurred Loss' if (diagonal_loss['measure'] == 'Incurred Loss').any() else 'Paid Loss'
+        diagonal_loss = diagonal_loss[diagonal_loss['measure'] == preferred_measure].copy()
+        
+        diagonal_loss['period'] = diagonal_loss['period'].astype(str)
+        diagonal_loss['loss_value'] = diagonal_loss['value'].astype(float)
+        diagonal_loss['exposure'] = diagonal_loss['period'].map(exposure).astype(float)
+        
+        if (diagonal_loss['exposure'] <= 0).any():
+            bad_periods = diagonal_loss.loc[diagonal_loss['exposure'] <= 0, 'period'].tolist()
+            raise ValueError(
+                f"Fallback expected-rate calculation requires positive exposure. Non-positive exposure for period(s): {bad_periods}"
+            )
+        
+        diagonal_loss['raw_loss_rate'] = diagonal_loss['loss_value'] / diagonal_loss['exposure']
+        diagonal_loss['period_num'] = pd.to_numeric(diagonal_loss['period'], errors='coerce')
+        diagonal_loss = diagonal_loss.sort_values(by=['period_num', 'period'], kind='stable')
+        diagonal_loss['expected_loss_rate'] = (
+            diagonal_loss['raw_loss_rate']
+            .rolling(window=3, min_periods=1)
+            .mean()
+            .round(3)
         )
-
-    preferred_measure = 'Incurred Loss' if (diagonal_loss['measure'] == 'Incurred Loss').any() else 'Paid Loss'
-    diagonal_loss = diagonal_loss[diagonal_loss['measure'] == preferred_measure].copy()
-
-    diagonal_loss['period'] = diagonal_loss['period'].astype(str)
-    diagonal_loss['loss_value'] = diagonal_loss['value'].astype(float)
-    diagonal_loss['exposure'] = diagonal_loss['period'].map(exposure).astype(float)
-
-    if (diagonal_loss['exposure'] <= 0).any():
-        bad_periods = diagonal_loss.loc[diagonal_loss['exposure'] <= 0, 'period'].tolist()
+        
+        fallback = diagonal_loss[['period', 'expected_loss_rate']].copy()
+        print(f"  Built fallback expected loss rates from '{preferred_measure}' using 3-year rolling average")
+    
+    # Build frequency fallback
+    diagonal_count = diagonal[diagonal['measure'].isin(['Reported Count', 'Closed Count'])].copy()
+    
+    if not diagonal_count.empty:
+        # Prefer Reported Count for frequency calculation
+        preferred_count = 'Reported Count' if (diagonal_count['measure'] == 'Reported Count').any() else 'Closed Count'
+        diagonal_count = diagonal_count[diagonal_count['measure'] == preferred_count].copy()
+        
+        diagonal_count['period'] = diagonal_count['period'].astype(str)
+        diagonal_count['count_value'] = diagonal_count['value'].astype(float)
+        diagonal_count['exposure'] = diagonal_count['period'].map(exposure).astype(float)
+        
+        if (diagonal_count['exposure'] <= 0).any():
+            bad_periods = diagonal_count.loc[diagonal_count['exposure'] <= 0, 'period'].tolist()
+            print(f"  Warning: Non-positive exposure for period(s) {bad_periods}, skipping frequency fallback")
+        else:
+            diagonal_count['raw_freq'] = diagonal_count['count_value'] / diagonal_count['exposure']
+            diagonal_count['period_num'] = pd.to_numeric(diagonal_count['period'], errors='coerce')
+            diagonal_count = diagonal_count.sort_values(by=['period_num', 'period'], kind='stable')
+            diagonal_count['expected_freq'] = (
+                diagonal_count['raw_freq']
+                .rolling(window=3, min_periods=1)
+                .mean()
+                .round(9)  # Use 9 decimals for frequency (much smaller values than loss rate)
+            )
+            
+            count_fallback = diagonal_count[['period', 'expected_freq']].copy()
+            print(f"  Built fallback expected frequencies from '{preferred_count}' using 3-year rolling average")
+            
+            if fallback is not None:
+                fallback = fallback.merge(count_fallback, on='period', how='outer')
+            else:
+                fallback = count_fallback
+    
+    if fallback is None:
         raise ValueError(
-            f"Fallback expected-rate calculation requires positive exposure. Non-positive exposure for period(s): {bad_periods}"
+            "Fallback expected-rate calculation requires 'Incurred Loss', 'Paid Loss', 'Reported Count', or 'Closed Count' in triangle data."
         )
-
-    diagonal_loss['raw_loss_rate'] = diagonal_loss['loss_value'] / diagonal_loss['exposure']
-    diagonal_loss['period_num'] = pd.to_numeric(diagonal_loss['period'], errors='coerce')
-    diagonal_loss = diagonal_loss.sort_values(by=['period_num', 'period'], kind='stable')
-    diagonal_loss['expected_loss_rate'] = (
-        diagonal_loss['raw_loss_rate']
-        .rolling(window=3, min_periods=1)
-        .mean()
-        .round(3)
-    )
-
-    fallback = diagonal_loss[['period', 'expected_loss_rate']].copy()
-    fallback['expected_freq'] = np.nan
-
-    print(f"  Built fallback expected loss rates from '{preferred_measure}' using 3-year rolling average")
+    
+    # Fill missing columns with NaN
+    if 'expected_loss_rate' not in fallback.columns:
+        fallback['expected_loss_rate'] = np.nan
+    if 'expected_freq' not in fallback.columns:
+        fallback['expected_freq'] = np.nan
+    
     print(f"  Fallback generated for {len(fallback)} period(s)")
-
-    return fallback
+    
+    return fallback[['period', 'expected_loss_rate', 'expected_freq']]
 
 
 def compute_initial_ultimate_ies(expected_rates: pd.DataFrame, exposure: dict, diagonal: pd.DataFrame) -> pd.DataFrame:
