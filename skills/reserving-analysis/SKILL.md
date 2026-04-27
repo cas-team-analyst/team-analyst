@@ -1,23 +1,18 @@
 ---
 name: reserving-analysis
-description: Actuarial reserving analysis workflow. Do NOT use for peer review (separate skill exists).
+description: Actuarial reserving analysis workflow. Use when the user requests reserving. Do NOT use for peer review (separate skill exists).
 ---
 
 # Reserving Analysis Workflow
 
-## Initial Setup
+## Startup Steps - Follow Every Time!
 
-Focus first exclusively on **orienting to the OS environment**.
-1. Identify and mount the plugin skill folder (if applicable, NOT the anthropic-skills folder).
-2. Identify and mount (if applicable) the project folder
-3. Check for existing `PROGRESS.md` file and use it to understand what the next step is
+1. Identify and mount the project folder. Obtain permission to modify it.
+2. Identify and mount the plugin skill folder (if applicable, NOT the anthropic-skills folder).
+3. Check for existing `PROGRESS.md` file and use it to understand what the next step is.
 4. If no `PROGRESS.md` exists:
-   - Copy PROGRESS.md, REPORT.md, and REPLICATE.md from `assets/` to project directory
+   - Copy PROGRESS.md, REPORT.md, and REPLICATE.md from `assets/` to project directory. Use copy commands, do NOT read and write the files.
    - Start steps in PROGRESS.md. Mark them in progress/complete as you go.
-
-**Project elicitation (required):** After the welcome message, present the project-setup-form from assets. Do not proceed until all fields are filled. Do not ask for interaction mode separately — it is captured in the form.
-
-**Overview:** PROGRESS.md contains the detailed step-by-step workflow. Follow that file for execution. This skill provides supporting context and principles.
 
 ## CoWork Agent Guidelines
 

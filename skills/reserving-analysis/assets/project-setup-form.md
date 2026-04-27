@@ -11,15 +11,6 @@ What would you like to call this analysis? (e.g., "Q1 2025 Reserve Review — Co
 
 ---
 
-**Project Folder**
-Select the folder where analysis files should be saved. Use the file picker to browse to the location.
-
-> **Don't know the path?** Open File Explorer, navigate to the folder, then copy the path from the address bar at the top. Or right-click the folder and choose **Properties** — the path is shown next to "Location". Keep it short and close to the drive root (e.g. `C:\Reserving\Q1-2025`) to avoid Windows path length issues.
-
-> _Select folder:_
-
----
-
 **Triangle File(s)**
 Use the file picker to attach your Excel triangle file(s).
 

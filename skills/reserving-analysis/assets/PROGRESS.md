@@ -1,5 +1,7 @@
 # Step 1: Project Setup
 
+- [ ] Orient to the OS Environment following steps in SKILL.md. It is critical to get this set up before continuing. Downstream steps won't work if we lose track of this task.
+
 - [ ] Respond to the user with the welcome message from assets and wait for their confirmation.
 
 - [ ] Present the project-setup-form from assets. Display the form exactly as written. Wait for the user to provide all the fields before proceeding. Do not skip fields or infer missing values.
@@ -9,7 +11,7 @@
 - [ ] Create folders `raw-data/`, `processed-data/`, `selections/`, `scripts/`, and `ultimates/` inside the project folder. The user will have selected their triangle file(s) and project folder via the file picker — use those paths to copy the triangle file(s) into `raw-data/` with bash cp. Do not ask the user to copy files manually.
 
 - [ ] **Update REPORT.md:**
-  - Fill in the header fields using the values from the setup form plus Prepared by (user name), Draft Date (today).
+  - Fill in the header fields using the values from the setup plus Prepared by (user name), Draft Date (today).
   - Fill in **Section 1.1** with the purpose of this analysis (e.g., "quarterly reserve review") and **Section 1.2** Scope table with any known segment/LOB/coverage/basis info.
   - Add a row to **Section 14** Version History: v0.1, today's date, analyst, "Initial draft".
 
