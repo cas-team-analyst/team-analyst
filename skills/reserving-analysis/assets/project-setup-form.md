@@ -27,13 +27,6 @@ Use the file picker to attach your Excel triangle file(s).
 
 ---
 
-**Valuation Date**
-What is the as-of date for this analysis? (e.g., 12/31/2024)
-
-> _Your answer:_
-
----
-
 **Analysis Mode**
 How would you like to run the analysis?
 
