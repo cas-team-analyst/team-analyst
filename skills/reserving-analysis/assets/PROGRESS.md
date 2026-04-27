@@ -2,19 +2,19 @@
 
 - [ ] Respond to the user with the welcome message from assets and wait for their confirmation.
 
-- [ ] Present the project-setup-form from assets. Display the form exactly as written. Wait for the user to provide all five fields — Analysis Title, Project Folder, Triangle File(s), Valuation Date, and Analysis Mode — before proceeding. Do not skip fields or infer missing values.
+- [ ] Present the project-setup-form from assets. Display the form exactly as written. Wait for the user to provide all the fields before proceeding. Do not skip fields or infer missing values.
 
 - [ ] Use bash cp to copy PROGRESS.md, REPLICATE.md, and REPORT.md from skill assets into the project folder provided in the setup form. Do NOT read them or write them.
 
 - [ ] Create folders `raw-data/`, `processed-data/`, `selections/`, `scripts/`, and `ultimates/` inside the project folder. The user will have selected their triangle file(s) and project folder via the file picker — use those paths to copy the triangle file(s) into `raw-data/` with bash cp. Do not ask the user to copy files manually.
 
 - [ ] **Update REPORT.md:**
-  - Fill in the header fields using the values from the setup form: Analysis name (title), Valuation Date, Prepared by (user name), Draft Date (today).
+  - Fill in the header fields using the values from the setup form plus Prepared by (user name), Draft Date (today).
   - Fill in **Section 1.1** with the purpose of this analysis (e.g., "quarterly reserve review") and **Section 1.2** Scope table with any known segment/LOB/coverage/basis info.
   - Add a row to **Section 14** Version History: v0.1, today's date, analyst, "Initial draft".
 
 - [ ] **Update REPLICATE.md:**
-  - Fill in the Overview section using values from the setup form: Analysis name, Valuation Date, Prepared by, Date
+  - Fill in the Overview section using values from the setup form: Analysis name, Prepared by, Draft Date, etc.
   - Fill in Step 1: List folders created, note interaction mode selected
 
 # Step 2: Exploratory Data Analysis

@@ -15,7 +15,7 @@ Focus first exclusively on **orienting to the OS environment**.
    - Copy PROGRESS.md, REPORT.md, and REPLICATE.md from `assets/` to project directory
    - Start steps in PROGRESS.md. Mark them in progress/complete as you go.
 
-**Project elicitation (required):** After the welcome message, present the project-setup-form from assets and collect all five fields: Analysis Title, Project Folder, Triangle File(s), Valuation Date, and Analysis Mode. Do not proceed until all fields are filled. Do not ask for interaction mode separately — it is captured in the form.
+**Project elicitation (required):** After the welcome message, present the project-setup-form from assets. Do not proceed until all fields are filled. Do not ask for interaction mode separately — it is captured in the form.
 
 **Overview:** PROGRESS.md contains the detailed step-by-step workflow. Follow that file for execution. This skill provides supporting context and principles.
 
