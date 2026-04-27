@@ -1,11 +1,12 @@
 # Refreshes only the selections section of the Ultimates Excel workbook based on saved selections 
-# from the ultimates-ai-rules-based.json and ultimates-ai-open-ended.json files. Allows you to 
-# update the displayed selections without rebuilding the entire workbook, which is useful when 
-# you need to revert changes or apply selections from another source.
+# from the ultimates-ai-rules-based-loss.json, ultimates-ai-rules-based-count.json, 
+# ultimates-ai-open-ended-loss.json, and ultimates-ai-open-ended-count.json files. 
+# Allows you to update the displayed selections without rebuilding the entire workbook, 
+# which is useful when you need to revert changes or apply selections from another source.
 
 """
-goal: Update ONLY the selections section of Ultimates.xlsx from ultimates-ai-rules-based.json 
-      and ultimates-ai-open-ended.json.
+goal: Update ONLY the selections section of Ultimates.xlsx from ultimates-ai-rules-based-*.json 
+      and ultimates-ai-open-ended-*.json files.
       Re-run this script any time selections change without needing to rebuild the full Excel.
 
 run-note: When copied to a project, run from the scripts/ directory. Close the Excel file before running.
@@ -14,15 +15,16 @@ run-note: When copied to a project, run from the scripts/ directory. Close the E
 """
 
 import json
-import glob
-import pandas as pd
+import pathlib
 from openpyxl import load_workbook
 
 from modules import config
 
 # Paths from modules/config.py — override here if needed:
-RULES_BASED_PATTERN  = config.SELECTIONS + "ultimates-ai-rules-based-*.json"
-OPEN_ENDED_PATTERN   = config.SELECTIONS + "ultimates-ai-open-ended-*.json"
+RULES_BASED_LOSS_FILE = config.SELECTIONS + "ultimates-ai-rules-based-loss.json"
+RULES_BASED_COUNT_FILE = config.SELECTIONS + "ultimates-ai-rules-based-count.json"
+OPEN_ENDED_LOSS_FILE = config.SELECTIONS + "ultimates-ai-open-ended-loss.json"
+OPEN_ENDED_COUNT_FILE = config.SELECTIONS + "ultimates-ai-open-ended-count.json"
 EXCEL_FILE = config.SELECTIONS + "Ultimates.xlsx"
 
 
@@ -40,14 +42,14 @@ def update_sheet_selections(ws, periods_data, selection_type="rules-based"):
     """
     updates_made = 0
     
-    # Rules-based: Column 9 is Selection, 10 is Reasoning
-    # Open-ended: Column 11 is Selection, 12 is Reasoning
+    # Rules-based: Column 11 is Selection, 12 is Reasoning
+    # Open-ended: Column 13 is Selection, 14 is Reasoning
     if selection_type == "rules-based":
-        sel_col = 9
-        reason_col = 10
-    else:  # open-ended
         sel_col = 11
         reason_col = 12
+    else:  # open-ended
+        sel_col = 13
+        reason_col = 14
     
     # Iterate through rows starting at 2 (row 1 is headers)
     row = 2
@@ -66,71 +68,61 @@ def update_sheet_selections(ws, periods_data, selection_type="rules-based"):
     return updates_made
 
 
-def load_per_measure_json_files(pattern, selection_type):
-    """Load and combine all per-measure JSON files matching the pattern."""
-    combined = []
-    files = glob.glob(pattern)
-    
-    if not files:
+def load_category_json_file(filepath, category_name):
+    """Load a single category JSON file (loss or count)."""
+    if not pathlib.Path(filepath).exists():
         return []
     
-    for filepath in sorted(files):
-        try:
-            with open(filepath, 'r') as f:
-                data = json.load(f)
-                # If it's a single object, wrap it in a list
-                if isinstance(data, dict):
-                    data = [data]
-                combined.extend(data)
-        except Exception as e:
-            print(f"  WARNING: Failed to load {filepath}: {e}")
-            continue
-    
-    print(f"Loaded {len(combined)} {selection_type} ultimate selections from {len(files)} file(s)")
-    return combined
+    try:
+        with open(filepath, 'r') as f:
+            data = json.load(f)
+            # If it's a single object, wrap it in a list
+            if isinstance(data, dict):
+                data = [data]
+            return data
+    except Exception as e:
+        print(f"  WARNING: Failed to load {filepath}: {e}")
+        return []
 
 
 def main():
-    """Update Ultimates Excel file with selections from per-measure JSON files."""
-    # Load rules-based selections from per-measure JSON files
-    rules_based_selections = load_per_measure_json_files(RULES_BASED_PATTERN, "rules-based")
-    if not rules_based_selections:
-        print(f"No rules-based selections found matching pattern: {RULES_BASED_PATTERN}")
-        print("Skipping rules-based update - no selections to apply.")
+    """Update Ultimates Excel file with selections from category JSON files."""
+    # Load rules-based selections for Loss and Count
+    rules_based_loss = load_category_json_file(RULES_BASED_LOSS_FILE, "Loss")
+    rules_based_count = load_category_json_file(RULES_BASED_COUNT_FILE, "Count")
     
-    # Load open-ended selections from per-measure JSON files
-    open_ended_selections = load_per_measure_json_files(OPEN_ENDED_PATTERN, "open-ended AI")
-    if not open_ended_selections:
-        print(f"No open-ended selections found matching pattern: {OPEN_ENDED_PATTERN} (optional)")
+    # Load open-ended selections for Loss and Count
+    open_ended_loss = load_category_json_file(OPEN_ENDED_LOSS_FILE, "Loss")
+    open_ended_count = load_category_json_file(OPEN_ENDED_COUNT_FILE, "Count")
     
-    # Check if both are empty
-    if (not rules_based_selections or len(rules_based_selections) == 0) and \
-       (not open_ended_selections or len(open_ended_selections) == 0):
-        print("No selections found in either file")
+    # Check if we have any selections to apply
+    has_selections = any([rules_based_loss, rules_based_count, open_ended_loss, open_ended_count])
+    
+    if not has_selections:
+        print("No selections found in any file")
         print("Skipping update - selections arrays are empty.")
         return
         
-    print(f"Loaded {len(rules_based_selections)} rules-based selections")
-    print(f"Loaded {len(open_ended_selections)} open-ended selections")
+    print(f"Loaded {len(rules_based_loss)} rules-based Loss selections")
+    print(f"Loaded {len(rules_based_count)} rules-based Count selections")
+    print(f"Loaded {len(open_ended_loss)} open-ended Loss selections")
+    print(f"Loaded {len(open_ended_count)} open-ended Count selections")
     
-    # Organize selections by measure
-    def organize_by_measure(selections):
-        by_measure = {}
+    # Organize selections by period for each category
+    def organize_by_period(selections):
+        by_period = {}
         for entry in selections:
-            meas = entry.get('measure')
-            if not meas: 
-                continue
-            if meas not in by_measure:
-                by_measure[meas] = {}
-            # Key by period
-            by_measure[meas][str(entry['period'])] = {
-                'selection': entry.get('selection', entry.get('selected_ultimate')),  # support both key names
+            period = str(entry['period'])
+            by_period[period] = {
+                'selection': entry.get('selection', entry.get('selected_ultimate')),
                 'reasoning': entry['reasoning']
             }
-        return by_measure
+        return by_period
     
-    rules_based_by_measure = organize_by_measure(rules_based_selections)
-    open_ended_by_measure = organize_by_measure(open_ended_selections)
+    rules_based_loss_by_period = organize_by_period(rules_based_loss)
+    rules_based_count_by_period = organize_by_period(rules_based_count)
+    open_ended_loss_by_period = organize_by_period(open_ended_loss)
+    open_ended_count_by_period = organize_by_period(open_ended_count)
     
     print(f"Opening workbook {EXCEL_FILE}")
     try:
@@ -142,27 +134,33 @@ def main():
     total_updates_rb = 0
     total_updates_oe = 0
     
-    # Update rules-based selections
-    for measure, periods_data in rules_based_by_measure.items():
-        sheet_name = measure
-        if sheet_name in wb.sheetnames:
-            ws = wb[sheet_name]
-            updates = update_sheet_selections(ws, periods_data, "rules-based")
+    # Update Loss sheet
+    if 'Loss' in wb.sheetnames:
+        ws = wb['Loss']
+        if rules_based_loss_by_period:
+            updates = update_sheet_selections(ws, rules_based_loss_by_period, "rules-based")
             total_updates_rb += updates
-            print(f"  Updated {updates} rules-based selections in '{sheet_name}'")
-        else:
-            print(f"  WARNING: Sheet '{sheet_name}' not found in workbook - skipping")
-    
-    # Update open-ended selections
-    for measure, periods_data in open_ended_by_measure.items():
-        sheet_name = measure
-        if sheet_name in wb.sheetnames:
-            ws = wb[sheet_name]
-            updates = update_sheet_selections(ws, periods_data, "open-ended")
+            print(f"  Updated {updates} rules-based selections in 'Loss'")
+        if open_ended_loss_by_period:
+            updates = update_sheet_selections(ws, open_ended_loss_by_period, "open-ended")
             total_updates_oe += updates
-            print(f"  Updated {updates} open-ended selections in '{sheet_name}'")
-        else:
-            print(f"  WARNING: Sheet '{sheet_name}' not found in workbook - skipping")
+            print(f"  Updated {updates} open-ended selections in 'Loss'")
+    else:
+        print("  WARNING: Sheet 'Loss' not found in workbook")
+    
+    # Update Count sheet
+    if 'Count' in wb.sheetnames:
+        ws = wb['Count']
+        if rules_based_count_by_period:
+            updates = update_sheet_selections(ws, rules_based_count_by_period, "rules-based")
+            total_updates_rb += updates
+            print(f"  Updated {updates} rules-based selections in 'Count'")
+        if open_ended_count_by_period:
+            updates = update_sheet_selections(ws, open_ended_count_by_period, "open-ended")
+            total_updates_oe += updates
+            print(f"  Updated {updates} open-ended selections in 'Count'")
+    else:
+        print("  WARNING: Sheet 'Count' not found in workbook")
                 
     wb.save(EXCEL_FILE)
     print(f"\nSaved: {EXCEL_FILE}")

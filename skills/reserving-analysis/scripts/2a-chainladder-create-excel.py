@@ -29,6 +29,7 @@ from modules.xl_styles import (
     SUBHEADER_FONT, LABEL_FONT, DATA_FONT,
     THIN_BORDER, style_header,
 )
+from modules.markdown_utils import df_to_markdown
 
 # Paths from modules/config.py — override here if needed:
 OUTPUT_PATH = config.PROCESSED_DATA
@@ -364,46 +365,23 @@ def build_main_sheet(ws, measure, df2, df4, df_prior=None):
     }
 
 def build_exposure_sheet(ws, df2):
-    """Build exposure sheet displaying exposure values per period.
-    
-    Exposure is typically provided in simple 2-column format (period, value).
-    If provided as a triangle, displays it accordingly.
-    """
+    """Build exposure sheet displaying exposure triangle."""
     exp_sub = df2[(df2['measure'] == 'Exposure') & df2['value'].notna()].copy()
     if exp_sub.empty:
         return
     
     periods = exp_sub['period'].cat.categories.tolist()
+    ages = [str(a) for a in exp_sub['age'].cat.categories.tolist()]
     
-    # Check if exposure has meaningful age values or is in simple format
-    has_ages = exp_sub['age'].notna().any()
+    exp_dict = {}
+    for _, row in exp_sub.iterrows():
+        exp_dict[(str(row['period']), str(row['age']))] = row['value']
     
-    if has_ages:
-        # Triangle format - display as triangle
-        ages = [str(a) for a in exp_sub['age'].cat.categories.tolist() if pd.notna(a)]
-        exp_dict = {}
-        for _, row in exp_sub.iterrows():
-            if pd.notna(row['age']):
-                exp_dict[(str(row['period']), str(row['age']))] = row['value']
-        write_triangle(ws, 1, "Exposure", periods, ages, exp_dict, number_format="#,##0")
-    else:
-        # Simple format - display as single column
-        ws['A1'] = "Exposure by Period"
-        ws['A1'].font = Font(bold=True, size=12)
-        ws['A3'] = "Period"
-        ws['A3'].font = Font(bold=True)
-        ws['B3'] = "Exposure"
-        ws['B3'].font = Font(bold=True)
-        
-        for idx, period in enumerate(periods, start=4):
-            period_val = exp_sub[exp_sub['period'] == period]['value'].iloc[0] if len(exp_sub[exp_sub['period'] == period]) > 0 else None
-            ws[f'A{idx}'] = period
-            if period_val is not None:
-                ws[f'B{idx}'] = period_val
-                ws[f'B{idx}'].number_format = "#,##0"
+    write_triangle(ws, 1, "Exposure", periods, ages, exp_dict, number_format="#,##0")
     
     ws.column_dimensions['A'].width = 22
-    ws.column_dimensions['B'].width = 15
+    for c_idx in range(2, len(ages) + 2):
+        ws.column_dimensions[get_column_letter(c_idx)].width = 12
 
 def build_diagnostic_sheet(ws, diag_col, df2, df3):
     first_measure = df2['measure'].cat.categories[0]
@@ -449,19 +427,6 @@ def build_cv_slopes_sheet(ws, measure, df2, df4):
         ws.column_dimensions[get_column_letter(c_idx)].width = 12
 
 
-def df_to_markdown(df, index=False):
-    if df.empty:
-        return "No data\n"
-    if index:
-        df = df.reset_index()
-    str_df = df.astype(str)
-    headers = list(str_df.columns)
-    header_str = "| " + " | ".join(headers) + " |"
-    sep_str = "|" + "|".join(["---"] * len(headers)) + "|"
-    rows = []
-    for _, row in str_df.iterrows():
-        rows.append("| " + " | ".join(row.values) + " |")
-    return "\n".join([header_str, sep_str] + rows) + "\n"
 def export_md_data(measures, df2, df3, df4, exp_md):
     # Subagents should use these markdown files as canonical context.
     # The workbook contains formulas that may not be recalculated in headless environments,

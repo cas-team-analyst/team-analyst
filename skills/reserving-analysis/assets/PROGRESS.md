@@ -176,28 +176,30 @@ _(Pause for Selections only):_
 
 - [ ] Copy `scripts/5a-ultimates-create-excel.py` and `scripts/5b-ultimates-update-selections.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`, don't rewrite them yourself). Ensure `scripts/modules/` is already in place (copied in Step 3).
 
-- [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export per-measure context files. The script will print the context file paths it creates (e.g., "  Exported MD: selections/ultimates-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
+- [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export category context files. The script will create two sheets: **Loss** (combining Incurred and Paid) and **Count** (combining Reported and Closed). It will print the context file paths it creates (e.g., "  Exported MD: selections/ultimates-context-loss.md", "  Exported MD: selections/ultimates-context-count.md"). **Capture the list of context file paths** from the script output.
 
-- [ ] **Invoke the rules-based ultimates selector once** for all measures. Call the `selector-ultimates-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
-  - Read each context file
-  - Apply the structured method weighting framework to each measure independently
-  - Write one JSON file per measure: `selections/ultimates-ai-rules-based-<measure>.json`
+- [ ] **Invoke the rules-based ultimates selector once** for both categories. Call the `selector-ultimates-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+  - Read each context file (loss and count)
+  - For each category, choose ONE ultimate per accident year (selecting between Incurred/Paid for Loss, or Reported/Closed for Count)
+  - Apply the structured method weighting framework to both categories
+  - Write two JSON files: `selections/ultimates-ai-rules-based-loss.json` and `selections/ultimates-ai-rules-based-count.json`
   
-  Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
+  Verify that two JSON files were created (one for Loss, one for Count). **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
-- [ ] **Invoke the open-ended ultimates selector once** for all measures. Call the `selector-ultimates-ai-open-ended` subagent and pass the list of context file paths you captured from the script output. The subagent will:
-  - Read each context file
-  - Apply holistic actuarial judgment (no rigid rules framework) to each measure independently
-  - Write one JSON file per measure: `selections/ultimates-ai-open-ended-<measure>.json`
+- [ ] **Invoke the open-ended ultimates selector once** for both categories. Call the `selector-ultimates-ai-open-ended` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+  - Read each context file (loss and count)
+  - For each category, choose ONE ultimate per accident year (selecting between Incurred/Paid for Loss, or Reported/Closed for Count)
+  - Apply holistic actuarial judgment (no rigid rules framework) to both categories
+  - Write two JSON files: `selections/ultimates-ai-open-ended-loss.json` and `selections/ultimates-ai-open-ended-count.json`
   
-  Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
+  Verify that two JSON files were created (one for Loss, one for Count). **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
-- [ ] Run `5b-ultimates-update-selections.py` to collect all per-measure JSON files and insert both rules-based and open-ended selections and reasoning into `selections/Ultimates.xlsx`. This script will:
-  - Load all `selections/ultimates-ai-rules-based-*.json` files and combine them
-  - Load all `selections/ultimates-ai-open-ended-*.json` files and combine them
-  - Populate the Rules-Based AI Selection and Open-Ended AI Selection columns in each sheet
+- [ ] Run `5b-ultimates-update-selections.py` to load the category JSON files and insert both rules-based and open-ended selections and reasoning into `selections/Ultimates.xlsx`. This script will:
+  - Load `selections/ultimates-ai-rules-based-loss.json` and `selections/ultimates-ai-rules-based-count.json`
+  - Load `selections/ultimates-ai-open-ended-loss.json` and `selections/ultimates-ai-open-ended-count.json`
+  - Populate the Rules-Based AI Selection and Open-Ended AI Selection columns in the Loss and Count sheets
 
-- [ ] Tell the user where `selections/Ultimates.xlsx` is located. Explain that both rules-based and open-ended AI selections are visible. The rules-based selection is what gets used by default — the user can override it manually. The open-ended selection provides an independent cross-check.
+- [ ] Tell the user where `selections/Ultimates.xlsx` is located. Explain that both rules-based and open-ended AI selections are visible. The rules-based selection is what gets used by default — the user can override it manually. The open-ended selection provides an independent cross-check. Note that the workbook now has **Loss** and **Count** sheets instead of per-measure sheets, and one ultimate is selected per category per accident year.
 
 _(Pause for Selections only):_
 - [ ] Open `selections/Ultimates.xlsx` for the user. Let them know they can review and override any AI ultimate selections. Pause and wait for the user to confirm they are done reviewing before continuing.
@@ -206,15 +208,15 @@ _(Pause for Selections only):_
 
 - [ ] **Update REPORT.md:**
   - Fill in **Section 2** Summary of Indications table: total unpaid reserve, case reserves, and IBNR by segment/AY from `selections/Ultimates.xlsx`. Use totals from the selected ultimates.
-  - Fill in **Section 6** Results by Segment: one subsection per measure (Paid LDF, Incurred LDF, etc.) with selected ultimates and method weighting summary; note any low-confidence selections or overrides.
+  - Fill in **Section 6** Results by Segment: one subsection per category (Loss and Count) with selected ultimates and method weighting summary; note any low-confidence selections or overrides.
   - Fill in **Section 5.2** Expected Loss Ratios: if IE/BF ran, populate from the ELR input file.
   - Add to **Section 11** Open Questions any AYs where method indications diverged materially or selections required significant judgment.
 
 - [ ] **Update REPLICATE.md Step 7:**
-  - Document that `5a-ultimates-create-excel.py` was run to create the ultimates workbook
-  - Note that AI selectors made rules-based and open-ended ultimate selections (JSON files created)
+  - Document that `5a-ultimates-create-excel.py` was run to create the ultimates workbook with Loss and Count sheets
+  - Note that AI selectors made rules-based and open-ended ultimate selections for both categories (JSON files created)
   - Document that `5b-ultimates-update-selections.py` populated the Excel file with AI selections
-  - **Critical:** If user made manual overrides in the "User Selection" column, list each one with measure, period, selected ultimate, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection columns."
+  - **Critical:** If user made manual overrides in the "User Selection" column, list each one with category (Loss or Count), period, selected ultimate, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection columns."
   - Add instruction: "To replicate: Extract final ultimates from User Selection column if present, otherwise use Rules-Based AI Selection column. Do not re-run AI selector."
 
 # Step 8: Build Complete Analysis
