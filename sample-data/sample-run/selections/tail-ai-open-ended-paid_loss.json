@@ -1,0 +1,9 @@
+[
+  {
+    "measure": "Paid Loss",
+    "cutoff_age": 203,
+    "tail_factor": 1.0039,
+    "method": "bondy",
+    "reasoning": "Paid loss exhibits clean, rapid tail closure. At age 143: Bondy yields 1.0039 (materiality_ok=True, immaterial 0.062% of CDF); McClenahan produces 1.0000; exp_dev_quick_exact_last = 1.0459 with weak R²=0.231 and gap_flag=True. At age 203: Bondy again = 1.0039 (materiality_ok=True); double exponential = 1.0456 with improved R²=0.467 but loo_max=inf signals potential instability; McClenahan ≈ 1.0. CV at age 143 is only 0.018, indicating minimal remaining development. Observed factors show rapid decay—early ages drive the reserve build, tail factors are nearly flat. Bondy at age 203 is preferred: immaterial tail, consistent across both starting points, materiality_ok flag confirms defensibility, and avoids the fitting artifacts of exponential variants. Slight positive tail of 0.39% reasonably captures any minor tail uncertainty while remaining actuarially conservative."
+  }
+]

@@ -1,0 +1,140 @@
+[
+  {
+    "measure": "Reported Count",
+    "interval": "11-23",
+    "selection": 1.1180,
+    "reasoning": "1.1180. Five-year simple (1.1204) selected, rounded to 1.1180 reflecting volume-weighted (1.1180) and exclude_high_low_5yr (1.1330) balance. Early maturity; CV_3yr 0.013 (very tight) but CV_5yr 0.0316 suggests minor variance. 3yr (1.1330) vs 5yr (1.1180) show 1.3% divergence within recency tolerance. Slight downward Bayesian dampening (25% gap closure) reflects recent stable reported count growth without catastrophic spike. Diagnostics: reported_claims stable across all years (~250–700 claims/AY), no anomalies. No frequency shock detected."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "23-35",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). No development in reported count from age 23–35 months across all time windows. Negligible variance; framework guidance: select convergence midpoint (1.0000). Reporting essentially completes by age 23 months in this WC portfolio."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "35-47",
+    "selection": 1.0008,
+    "reasoning": "1.0008. Five-year volume-weighted (1.0008) selected. Negligible variance (CV_5yr 0.0019). All windows (simple, weighted, exclude_high_low) converge 1.0004–1.0009. Minimal reported count development at 35–47 months. Recency default; near-unity expected."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "47-59",
+    "selection": 1.0000,
+    "reasoning": "1.0000. Five-year weighted (1.0000) selected. Negligible variance (CV_5yr 0.0029). All windows converge 0.9998–1.0000. No development in reported counts post-reporting. Framework guidance: select 1.000 anchor."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "59-71",
+    "selection": 0.9993,
+    "reasoning": "0.9993. Five-year simple (0.9993) selected, reflecting weighted (0.9992), simple (0.9993), and exclude_high_low_5yr (1.0000) consensus. Extremely tight (CV_5yr 0.0017). Slight downward drift (slope_5yr -0.0007) suggests very marginal count decline or stability. Late-stage reported count; near-unity expected. Recency default; minimal material impact."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "71-83",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge precisely (CV_5yr 0.0000). Perfect stability across all windows. No development in reported counts at 71–83 month maturity. Select tail anchor 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "83-95",
+    "selection": 0.9992,
+    "reasoning": "0.9992. Five-year simple (0.9992) selected. Minimal variance (CV_5yr 0.0019). All windows 0.9986–1.0000. Slight downward slope (slope_5yr -0.0008) consistent with late-stage reporting closure. Framework: marginal development. Recency default."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "95-107",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). No variance across windows. Late maturity; no reported count development. Select tail anchor 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "107-119",
+    "selection": 0.9977,
+    "reasoning": "0.9977. Five-year weighted (0.9977) selected. Low variance (CV_5yr 0.0052). All windows 0.9961–1.0000. Slight downward development (slope_5yr -0.0023) consistent with minor late-stage closures. Framework: late maturity; asymmetric conservatism downward muted. Recency default."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "119-131",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). Perfect stability. Late tail; no development. Framework: select 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "131-143",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). Perfect stability across all windows. Late tail; no reported count development. Select tail anchor 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "143-155",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). No variance. Deep tail maturity; no development expected. Framework: select 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "155-167",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). Perfect convergence; no development. Deep tail; framework guidance: select 1.000 anchor."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "167-179",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). No variance detected. Deep tail; no development. Framework: select tail anchor 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "179-191",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). Perfect stability. Deep tail maturity; no reported count development expected or observed. Select 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "191-203",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). No variance. Deep tail; framework guidance: select tail anchor 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "203-215",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). Perfect convergence; no variance. Deep tail; no development. Select 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "215-227",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). No variance across all windows. Very deep tail (215–227mo); no development. Framework: select tail anchor 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "227-239",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). Perfect stability. Very deep tail; no reported count development. Select 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "239-251",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). No variance. Very deep tail maturity; framework guidance: select tail anchor 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "251-263",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). Perfect convergence; no variance. Extreme tail (251–263mo); sparse diagonals (2–3 origins); no development. Framework: use all-year when sparse. Select 1.000."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "263-275",
+    "selection": 1.0000,
+    "reasoning": "1.0000. All averages converge to 1.000 (CV_5yr 0.0000). Perfect stability. Extreme tail (263–275mo); minimal diagonals. No development. Framework: select 1.000 tail anchor."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "275-287",
+    "selection": 1.0000,
+    "reasoning": "1.0000. Only weighted_all (1.0000) available; all variants converge to 1.000. Extreme tail (280+ months); sparse data. Framework: use all-year average for tail; select 1.000 as development anchor. No further reported count development expected in this mature portfolio."
+  }
+]

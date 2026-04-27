@@ -1,0 +1,140 @@
+[
+  {
+    "measure": "Incurred Loss",
+    "interval": "11-23",
+    "selection": 1.72,
+    "reasoning": "1.72 selected. Incurred loss shows higher volatility at this interval than paid loss (CV 0.16-0.33). The 5-year average of 1.70 and 10-year simple of 1.78 bracket the all-years weighted of 1.61. Recent cohorts (2023-2024) show substantially higher factors (~1.45-1.75), while older cohorts display lower emergence. Using 1.72 reflects the elevated recent environment and accounts for claims being reported but not yet fully valued."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "23-35",
+    "selection": 1.22,
+    "reasoning": "1.22 selected. Moderate volatility (CV 0.13-0.21) with 5-year average of 1.26 and 10-year simple of 1.25. The all-years weighted of 1.19 may underweight recent years' elevated factors. Selecting 1.22 balances recent experience with longer-term stability. Incurred losses still developing significantly at this stage as claims mature in valuation."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "35-47",
+    "selection": 1.16,
+    "reasoning": "1.16 selected. Volatility moderate (CV 0.06-0.13). The 5-year average of 1.20 is supported by the 10-year simple of 1.18. All-years weighted is 1.15. Recent years show consistent elevation. Using 1.16 reflects the pattern of continued incurred development as case reserves are refined."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "47-59",
+    "selection": 1.050,
+    "reasoning": "1.050 selected. Low volatility (CV 0.04-0.06). The all-years weighted is 1.049, with 5-year and 10-year averages very close (1.057 and 1.053). Claims are now mature in frequency; remaining development is reserve refinement rather than new claims."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "59-71",
+    "selection": 1.070,
+    "reasoning": "1.070 selected. Moderate volatility (CV 0.07-0.09) with recent years elevated (3yr: 1.12 vs 10yr: 1.06). The all-years weighted is 1.07. Using 1.070 reflects the average pattern while acknowledging recent slight elevation, possibly from reserve strengthening on older years."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "71-83",
+    "selection": 1.045,
+    "reasoning": "1.045 selected. Moderate volatility (CV 0.06-0.07). The all-years weighted is 1.046, 5-year is 1.087. Recent years show elevation (3yr: 1.09) but the long-term average is more credible. Development at this stage is reserve movement rather than new information."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "83-95",
+    "selection": 1.018,
+    "reasoning": "1.018 selected. Low volatility (CV 0.01-0.04). All-years weighted is 1.022; the 5-year simple is 1.008. Using 1.018 as a balanced estimate reflecting modest development at late stage."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "95-107",
+    "selection": 1.018,
+    "reasoning": "1.018 selected. Low volatility (CV 0.02-0.03). The all-years weighted is 1.0195, 5-year is 1.021. Very consistent across time windows, supporting the use of the all-years average."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "107-119",
+    "selection": 1.038,
+    "reasoning": "1.038 selected. Moderate volatility (CV 0.04-0.05) with recent years showing elevation (3yr: 1.063 vs 10yr: 1.035). The all-years weighted is 1.037. Using 1.038 acknowledges recent patterns of slight reserve development at very late stages."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "119-131",
+    "selection": 1.015,
+    "reasoning": "1.015 selected. Very low volatility (CV 0.01-0.03). All-years weighted is 1.0174, very close across time windows. At this mature stage, residual development is minimal and stable."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "131-143",
+    "selection": 1.034,
+    "reasoning": "1.034 selected. Notable volatility (CV 0.06-0.10) with recent years elevated (3yr: 1.053, 5yr: 1.035) versus the all-years weighted of 1.033. Using the all-years weighted as it represents the long-run pattern despite some recent elevation."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "143-155",
+    "selection": 1.005,
+    "reasoning": "1.005 selected. Extremely low volatility (CV 0.001-0.016). All averages cluster tightly around 1.004-1.006. Claims are essentially finalized with only nominal adjustments."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "155-167",
+    "selection": 1.005,
+    "reasoning": "1.005 selected. Extremely tight interval with all-years values (weighted: 1.0054, simple: 1.0051, exclude high-low: 1.0039). Using 1.005 reflects the stable late-tail development."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "167-179",
+    "selection": 1.012,
+    "reasoning": "1.012 selected. Low volatility (CV 0.004-0.019) with all-years weighted of 1.017. The 10-year simple of 1.0104 suggests the weighted may overstate recent emergence. Using 1.012 as a balanced middle estimate."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "179-191",
+    "selection": 1.009,
+    "reasoning": "1.009 selected. Very low volatility (CV 0.003-0.005). The all-years weighted is 1.0116; exclude-high-low is 1.006. Using 1.009 reflects the narrow observed range at this advanced development stage."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "191-203",
+    "selection": 1.015,
+    "reasoning": "1.015 selected. Very low volatility (CV 0.01) with all-years weighted and exclude-high-low nearly identical (1.0149 and 1.0114). The consistency supports using the all-years weighted value."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "203-215",
+    "selection": 1.007,
+    "reasoning": "1.007 selected. Very low volatility (CV 0.003-0.004). The all-years weighted is 1.0069, simple is 1.0060, exclude-high-low is 1.0022. Using 1.007 reflects the weighted average of the stable range."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "215-227",
+    "selection": 1.004,
+    "reasoning": "1.004 selected. All time windows show values around 1.003-1.004 (all-years weighted: 1.0045, 5yr weighted: 1.0, exclude high-low: 1.0). Using the all-years weighted as the best long-run estimate."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "227-239",
+    "selection": 1.007,
+    "reasoning": "1.007 selected. The all-years weighted is 1.0089, with 5-year weighted identical. The exclude-high-low of 1.0 suggests lower typical tail movement. Using 1.007 to weight recent years' slight elevation."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "239-251",
+    "selection": 1.006,
+    "reasoning": "1.006 selected. The all-years weighted is 1.0069, simple is 1.0043, exclude-high-low is 1.0. Using 1.006 reflects the modest tail continuation observed across the long history."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "251-263",
+    "selection": 1.017,
+    "reasoning": "1.017 selected. All-years weighted is 1.0174; values are identical across all time windows (1.0174 weighted, 1.0166 simple, 1.0139 exclude-high-low). At the extreme tail, using the weighted all average as the best estimate of consistent pattern."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "263-275",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All-years weighted, simple, and exclude-high-low are all exactly 1.0. No development at this extreme tail stage; claims are fully settled."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "275-287",
+    "selection": 1.012,
+    "reasoning": "1.012 selected. Only the all-years average is available (1.0119). Using this value as the best available estimate of the tail development pattern at the extreme end of the triangle."
+  }
+]

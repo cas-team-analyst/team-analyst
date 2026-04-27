@@ -1,0 +1,9 @@
+[
+  {
+    "measure": "Reported Count",
+    "cutoff_age": 143,
+    "tail_factor": 1.0,
+    "method": "bondy",
+    "reasoning": "Reported count triangle is fully developed by age 143. All scenarios (Bondy, modified_bondy variants) at both starting ages (143 and 203) produce tail_factor = 1.0 with is_monotone = True and cv = 0.0. Observed factors show the count development closes by age ~95, with all subsequent ages equal to 1.0. No curve fitting method produces meaningful tail development—the uniform 1.0 across all methods reflects complete closure of the count triangle. This is typical for workers comp claim counts, which materialize rapidly relative to claim amounts. Selection at age 143 captures the point of development completion, and the null tail factor of 1.0 is the only defensible choice. No further development should be projected beyond the observed data."
+  }
+]

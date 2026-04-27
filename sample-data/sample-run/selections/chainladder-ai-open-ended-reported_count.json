@@ -1,0 +1,140 @@
+[
+  {
+    "measure": "Reported Count",
+    "interval": "11-23",
+    "selection": 1.102,
+    "reasoning": "1.102 selected. The all-years weighted is 1.0617, but recent years show substantial elevation (3yr: 1.133). Given the stable nature of claims counts (low volatility across time for this measure), recent emergence patterns should be trusted. The 5-year average of 1.118 and 10-year simple of 1.101 bound the estimate. Using 1.102 to reflect the recent claim reporting acceleration while staying near the long-run average."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "23-35",
+    "selection": 1.005,
+    "reasoning": "1.005 selected. Extremely tight data (CV 0.0-0.0145). All averages cluster around 1.003-1.004. The reported counts stabilize quickly after initial reporting; this small factor reflects late-reported claims that emerged after month 23."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "35-47",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All-years weighted is 1.0004, with all values extremely close to 1.0 (CV 0.0-0.002). Claims are essentially fully reported by age 35 months; minimal additional reporting occurs."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "47-59",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All-years weighted is 0.9998, with the simple and exclude-high-low also at 0.9999. At this stage no additional claims are reported; using 1.0 reflects completion of the reporting process."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "59-71",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. The all-years weighted is 1.0019, but all values are extremely close to 1.0 (CV 0.001-0.002). Claims are fully reported; using 1.0 reflects the practical completion of the count triangle."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "71-83",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All-years weighted is 1.0024 but simple is 1.0015 and exclude-high-low is 1.0002. The tight cluster around 1.0 indicates minimal development. Using 1.0 reflects the complete reporting achieved well before this interval."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "83-95",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All-years weighted is 0.9998, with all other averages at or very near 1.0. Reported counts have fully stabilized; no meaningful development."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "95-107",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All-years weighted, simple, and exclude-high-low are all exactly 1.0. Perfect stability at this stage."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "107-119",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. The all-years weighted is 0.9994, with slight recent variation (3yr: 0.9964) but all values extremely close to 1.0 (CV 0.004-0.007). Using 1.0 reflects the practical completion and stability of reported counts."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "119-131",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All-years weighted, simple, and exclude-high-low are all exactly 1.0. Complete stability."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "131-143",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages are exactly 1.0 across all time windows. No development."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "143-155",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. Perfect stability with all averages at 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "155-167",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages exactly 1.0; complete stability."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "167-179",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages exactly 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "179-191",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages exactly 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "191-203",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages exactly 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "203-215",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages exactly 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "215-227",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages exactly 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "227-239",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages exactly 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "239-251",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages exactly 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "251-263",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages exactly 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "263-275",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages exactly 1.0."
+  },
+  {
+    "measure": "Reported Count",
+    "interval": "275-287",
+    "selection": 1.0,
+    "reasoning": "1.0 selected. All averages exactly 1.0. The reported count triangle is essentially complete and flat from early in the development period."
+  }
+]

@@ -1,0 +1,140 @@
+[
+  {
+    "measure": "Paid Loss",
+    "interval": "11-23",
+    "selection": 2.48,
+    "reasoning": "2.48 selected. This interval shows strong, consistent emergence across all cohorts. The weighted average (2.46) and 10-year simple (2.49) align closely. Early claim payments are predictable at this mature stage of development. The consistent data across recent and older cohorts supports this central estimate with confidence."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "23-35",
+    "selection": 1.34,
+    "reasoning": "1.34 selected. Slight downward trend in recent years (3yr: 1.27 vs 10yr: 1.39) but the 5-year average of 1.42 and all-years weighted of 1.34 provide a credible middle ground. The interval shows modest volatility (CV 0.25) but the magnitude of development is clear and stable enough to rely on the all-years average."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "35-47",
+    "selection": 1.18,
+    "reasoning": "1.18 selected. Highly stable interval with low coefficient of variation across all windows (0.05 or less). The all-years weighted (1.18) matches the simple average closely, indicating consistent behavior. This maturity level supports reliance on the long-period average."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "47-59",
+    "selection": 1.10,
+    "reasoning": "1.10 selected. Very stable and tight data (CV 0.11 or less). The weighted average of 1.10 is consistent across all time windows. Claims are largely paid by this stage; this modest factor reflects normal runoff."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "59-71",
+    "selection": 1.08,
+    "reasoning": "1.08 selected. Stable interval with CV around 0.06-0.07. The all-years weighted is 1.08; 3-year and 5-year averages are slightly higher (1.11-1.12) but the longer history supports the all-years value. Slight upward bias in recent years may reflect demographic or claims settlement patterns."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "71-83",
+    "selection": 1.06,
+    "reasoning": "1.06 selected. Low volatility (CV 0.08-0.10) and the weighted all-years average of 1.06 is supported by the exclude-high-low average. Recent years show slightly elevated factors but the long-term average is more credible given the data stability."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "83-95",
+    "selection": 1.025,
+    "reasoning": "1.025 selected. Very tight interval with minimal variation across time windows. All averages cluster around 1.02-1.03. At this mature stage, incremental development is small and predictable."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "95-107",
+    "selection": 1.020,
+    "reasoning": "1.020 selected. Stable interval with averages very close to each other. The all-years weighted of 1.02 reflects the normal slow runoff at late development stages."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "107-119",
+    "selection": 1.035,
+    "reasoning": "1.035 selected. Moderate variability (CV 0.04-0.07) with recent years slightly elevated (1.10 3yr) suggesting potentially longer tail development or payment timing shifts. Using 1.035 bridges the elevated recent and lower historical estimates, leaning slightly conservative."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "119-131",
+    "selection": 1.022,
+    "reasoning": "1.022 selected. Very stable (CV 0.01-0.03). The all-years weighted of 1.03 is consistent across time windows, though recent 3-year shows 1.01. The longer horizon supports 1.022 as a balanced estimate reflecting modest late-tail development."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "131-143",
+    "selection": 1.020,
+    "reasoning": "1.020 selected. Low volatility (CV 0.02-0.03). All long-period averages cluster around 1.019-1.023. Development is minimal but consistent at this mature stage."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "143-155",
+    "selection": 1.019,
+    "reasoning": "1.019 selected. Very tight all-years weighted of 1.021, with minimal deviation across time windows (CV 0.02-0.02). Claims are essentially finalized; this small factor reflects nominal late adjustments."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "155-167",
+    "selection": 1.013,
+    "reasoning": "1.013 selected. Extremely stable (CV 0.0017). The all-years weighted is 1.015; the 10-year simple is 1.011. Using 1.013 reflects the narrow range and minimal development at this advanced maturity."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "167-179",
+    "selection": 1.013,
+    "reasoning": "1.013 selected. Very low volatility consistent across all windows (CV 0.003-0.012). The all-years weighted is 1.016 but the exclude-high-low is 1.010, suggesting tight central behavior around 1.01-1.02. Selecting 1.013 as middle ground."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "179-191",
+    "selection": 1.012,
+    "reasoning": "1.012 selected. Stable interval with all-years weighted of 1.016 and exclude-high-low of 1.011. Recent 3yr is elevated (1.019) but the longer average supports a slightly lower value. Very late tail with minimal predictive information."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "191-203",
+    "selection": 1.015,
+    "reasoning": "1.015 selected. All averages are nearly identical (1.0158 weighted, 1.0157 exclude high-low). Very low coefficient of variation indicates stable, repeatable late-tail development."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "203-215",
+    "selection": 1.008,
+    "reasoning": "1.008 selected. All-years weighted is 1.0087; extremely tight data (CV 0.003-0.011). At this stage claims are fully settled; this reflects nominal final adjustments."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "215-227",
+    "selection": 1.010,
+    "reasoning": "1.010 selected. The all-years weighted of 1.013 is slightly elevated versus the exclude-high-low of 1.0054, but given the very late development stage and limited data, using 1.010 balances conservatism with the observed long-tail behavior."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "227-239",
+    "selection": 1.002,
+    "reasoning": "1.002 selected. The all-years weighted is 1.0025; exclude-high-low is 1.0. Using 1.002 reflects nominal continuation of the extreme tail with minimal expected development."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "239-251",
+    "selection": 1.005,
+    "reasoning": "1.005 selected. All-years weighted is 1.0054, close to the simple all of 1.0044. These late-tail intervals show minimal consistent development; using the weighted average as the best estimate of persistent pattern."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "251-263",
+    "selection": 1.006,
+    "reasoning": "1.006 selected. Identical across all time windows (weighted, simple, exclude high-low all equal 1.0062). This consistency supports the average directly."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "263-275",
+    "selection": 1.007,
+    "reasoning": "1.007 selected. All-years weighted is 1.0074, simple is 1.0076, exclude-high-low is 1.0076. Perfect consistency across methods indicates stable late-tail emergence pattern."
+  },
+  {
+    "measure": "Paid Loss",
+    "interval": "275-287",
+    "selection": 1.004,
+    "reasoning": "1.004 selected. Only all-years average available (1.0039). At the extreme tail with limited cohort-to-cohort movement, using the provided all-years average as the best available estimate of the tail development pattern."
+  }
+]
