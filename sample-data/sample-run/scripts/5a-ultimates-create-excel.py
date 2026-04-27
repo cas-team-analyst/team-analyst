@@ -28,6 +28,7 @@ from modules import config
 from modules.xl_styles import (
     HEADER_FILL, HEADER_FONT, SELECTION_FILL, AI_FILL, PRIOR_FILL, USER_FILL, THIN_BORDER,
 )
+from modules.markdown_utils import df_to_markdown
 
 # Paths from modules/config.py — override here if needed:
 INPUT_ULTIMATES  = config.ULTIMATES + "projected-ultimates.parquet"
@@ -38,19 +39,6 @@ OUTPUT_FILE      = config.SELECTIONS + "Ultimates.xlsx"
 SELECTIONS_OUTPUT_PATH = config.SELECTIONS
 
 
-def df_to_markdown(df, index=False):
-    if df.empty:
-        return "No data\n"
-    if index:
-        df = df.reset_index()
-    str_df = df.astype(str)
-    headers = list(str_df.columns)
-    header_str = "| " + " | ".join(headers) + " |"
-    sep_str = "|" + "|".join(["---"] * len(headers)) + "|"
-    rows = []
-    for _, row in str_df.iterrows():
-        rows.append("| " + " | ".join(row.values) + " |")
-    return "\n".join([header_str, sep_str] + rows) + "\n"
 def export_md_data(measures, df_ult, exp_md):
     import pathlib
     # Subagents should use these markdown files as canonical context.

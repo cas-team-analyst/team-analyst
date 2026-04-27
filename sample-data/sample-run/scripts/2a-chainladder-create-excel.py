@@ -29,6 +29,7 @@ from modules.xl_styles import (
     SUBHEADER_FONT, LABEL_FONT, DATA_FONT,
     THIN_BORDER, style_header,
 )
+from modules.markdown_utils import df_to_markdown
 
 # Paths from modules/config.py — override here if needed:
 OUTPUT_PATH = config.PROCESSED_DATA
@@ -426,19 +427,6 @@ def build_cv_slopes_sheet(ws, measure, df2, df4):
         ws.column_dimensions[get_column_letter(c_idx)].width = 12
 
 
-def df_to_markdown(df, index=False):
-    if df.empty:
-        return "No data\n"
-    if index:
-        df = df.reset_index()
-    str_df = df.astype(str)
-    headers = list(str_df.columns)
-    header_str = "| " + " | ".join(headers) + " |"
-    sep_str = "|" + "|".join(["---"] * len(headers)) + "|"
-    rows = []
-    for _, row in str_df.iterrows():
-        rows.append("| " + " | ".join(row.values) + " |")
-    return "\n".join([header_str, sep_str] + rows) + "\n"
 def export_md_data(measures, df2, df3, df4, exp_md):
     # Subagents should use these markdown files as canonical context.
     # The workbook contains formulas that may not be recalculated in headless environments,

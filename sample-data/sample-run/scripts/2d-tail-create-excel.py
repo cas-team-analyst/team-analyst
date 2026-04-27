@@ -28,6 +28,7 @@ from modules.xl_styles import (
     SUBHEADER_FONT, LABEL_FONT, DATA_FONT,
     THIN_BORDER, style_header,
 )
+from modules.markdown_utils import df_to_markdown
 
 # Paths
 TAIL_SCENARIOS_PATH = config.PROCESSED_DATA + "tail-scenarios.parquet"
@@ -431,19 +432,6 @@ def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, 
 
 
 
-def df_to_markdown(df, index=False):
-    if df.empty:
-        return "No data\n"
-    if index:
-        df = df.reset_index()
-    str_df = df.astype(str)
-    headers = list(str_df.columns)
-    header_str = "| " + " | ".join(headers) + " |"
-    sep_str = "|" + "|".join(["---"] * len(headers)) + "|"
-    rows = []
-    for _, row in str_df.iterrows():
-        rows.append("| " + " | ".join(row.values) + " |")
-    return "\n".join([header_str, sep_str] + rows) + "\n"
 def export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, exp_md):
     # Subagents should use these markdown files as canonical context.
     # The workbook can include formulas that are not recalculated in headless runs,
