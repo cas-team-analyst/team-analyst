@@ -15,7 +15,7 @@ import pathlib
 import numpy as np
 import pandas as pd
 from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Font
 from openpyxl.utils import get_column_letter
 
 from modules import config
@@ -59,9 +59,14 @@ INPUT_LDF_AVERAGES  = config.PROCESSED_DATA + "4_ldf_averages.parquet"
 
 _NUM_FMT = "#,##0"
 _DEC_FMT = "#,##0.000"
-# Absolute path so Excel resolves the link without prompting, regardless of where the output file sits.
-_ULT_WB  = os.path.abspath(config.SELECTIONS) + "\\[Ultimates.xlsx]"
-_CL_LDF_WB = os.path.abspath(config.SELECTIONS) + "\\[Chain Ladder Selections - LDFs.xlsx]"
+
+# Excel external reference paths - using absolute paths for reliability
+# (openpyxl doesn't set proper workbook relationships for relative paths to work)
+import pathlib
+_BASE_ABS = str(pathlib.Path(OUTPUT_COMPLETE).parent.resolve())
+_ULT_WB  = _BASE_ABS + "\\selections\\[Ultimates.xlsx]"
+_CL_LDF_WB = _BASE_ABS + "\\selections\\[Chain Ladder Selections - LDFs.xlsx]"
+_CL_TAIL_WB = _BASE_ABS + "\\selections\\[Chain Ladder Selections - Tail.xlsx]"
 
 def load_tail_selections(tail_excel_path):
     """
@@ -204,6 +209,268 @@ def _exp_ref(exp_row_map, period):
     return '""'
 
 
+def _build_cl_ldfs_col_row_maps(wb_cl, measure_sheet_name):
+    """
+    Build column and row maps for referencing Chain Ladder Selections - LDFs.xlsx.
+    Returns (col_map, user_row, rb_row, user_reason_row, rb_reason_row) where:
+      col_map: {column_header: column_letter}
+      user_row: row number of "User Selection"
+      rb_row: row number of "Rules-Based AI Selection"
+      user_reason_row: row number of "User Reasoning"
+      rb_reason_row: row number of "Rules-Based AI Reasoning"
+    """
+    if measure_sheet_name not in wb_cl.sheetnames:
+        return {}, None, None, None, None
+    
+    ws = wb_cl[measure_sheet_name]
+    col_map = {}
+    user_row = None
+    rb_row = None
+    user_reason_row = None
+    rb_reason_row = None
+    
+    # Find column headers and selection rows
+    for row_idx, row_cells in enumerate(ws.iter_rows(), start=1):
+        col1 = row_cells[0].value if row_cells else None
+        
+        # Track header rows (usually None in col A)
+        if col1 is None and row_idx <= 10:  # Headers in first few rows
+            for cell in row_cells[1:]:
+                if cell.value is not None:
+                    col_map[str(cell.value)] = get_column_letter(cell.column)
+        
+        # Track selection rows
+        if col1 == "User Selection":
+            user_row = row_idx
+        elif col1 == "Rules-Based AI Selection":
+            rb_row = row_idx
+        elif col1 == "User Reasoning":
+            user_reason_row = row_idx
+        elif col1 == "Rules-Based AI Reasoning":
+            rb_reason_row = row_idx
+    
+    return col_map, user_row, rb_row, user_reason_row, rb_reason_row
+
+
+def _copy_ws_with_ldfs_formulas(ws_src, ws_dst, measure_short_name, cl_ldfs_path):
+    """
+    Copy worksheet writing formulas that link to Chain Ladder Selections - LDFs.xlsx.
+    Selection rows use IF formula: User Selection if not blank, else Rules-Based AI.
+    Data rows reference the source workbook.
+    """
+    # Load source workbook to build maps
+    if not pathlib.Path(cl_ldfs_path).exists():
+        # Fallback to value copy if source doesn't exist
+        _copy_ws_filtered(ws_src, ws_dst, None, None)
+        return
+    
+    wb_cl = load_workbook(cl_ldfs_path, data_only=False)
+    col_map, user_row, rb_row, user_reason_row, rb_reason_row = _build_cl_ldfs_col_row_maps(wb_cl, measure_short_name)
+    wb_cl.close()
+    
+    if not col_map or user_row is None or rb_row is None:
+        # Fallback if structure not found
+        sel_vals = _find_selected_values(ws_src)
+        sel_reason = _find_selected_reasoning(ws_src)
+        _copy_ws_filtered(ws_src, ws_dst, sel_vals, sel_reason)
+        return
+    
+    selection_done = False
+    dst_row = 1
+    # Excel external ref format: '[Workbook.xlsx]SheetName'!CellRef
+    ext_ref = f"'{_CL_LDF_WB}{measure_short_name}'"
+    
+    src_rows = list(ws_src.iter_rows())
+    skip_next = False
+    
+    for row_idx, src_cells in enumerate(src_rows):
+        col1 = src_cells[0].value if src_cells else None
+        
+        # Skip if marked by previous iteration
+        if skip_next:
+            skip_next = False
+            continue
+        
+        # Skip AI option/reasoning rows
+        if col1 in _SKIP_ROW_LABELS:
+            continue
+        
+        # Check if this is a section title row (Age-to-Age Factors, Averages, LDF Selections)
+        is_section_title = (col1 in ("Age-to-Age Factors", "Averages", "LDF Selections") and 
+                           all(c.value in (None, "") for c in src_cells[1:]))
+        
+        # If section title and next row has headers, merge them
+        if is_section_title and row_idx + 1 < len(src_rows):
+            next_row = src_rows[row_idx + 1]
+            next_col1 = next_row[0].value if next_row else None
+            has_headers = next_col1 in (None, "") and any(c.value not in (None, "") for c in next_row[1:])
+            
+            if has_headers:
+                # Write title in col A and headers in cols 2+ on same row
+                for col_idx, src_cell in enumerate(src_cells):
+                    dst_cell = ws_dst.cell(dst_row, col_idx + 1)
+                    if col_idx == 0:
+                        dst_cell.value = col1
+                        if src_cell.has_style:
+                            dst_cell.font = Font(name=src_cell.font.name, size=src_cell.font.size, bold=False)
+                            dst_cell.border = copy.copy(src_cell.border)
+                            dst_cell.fill = copy.copy(src_cell.fill)
+                            dst_cell.alignment = copy.copy(src_cell.alignment)
+                    elif col_idx < len(next_row):
+                        # Take header from next row
+                        next_cell = next_row[col_idx]
+                        dst_cell.value = next_cell.value
+                        if next_cell.has_style:
+                            dst_cell.font = copy.copy(next_cell.font)
+                            dst_cell.border = copy.copy(next_cell.border)
+                            dst_cell.fill = copy.copy(next_cell.fill)
+                            dst_cell.number_format = next_cell.number_format
+                            dst_cell.alignment = copy.copy(next_cell.alignment)
+                dst_row += 1
+                skip_next = True
+                continue
+        
+        # Handle selection rows
+        if col1 in _SELECTION_LABELS:
+            if selection_done:
+                continue
+            selection_done = True
+            
+            # Write "Selected" row with IF formulas
+            for src_cell in src_cells:
+                dst_cell = ws_dst.cell(dst_row, src_cell.column)
+                if src_cell.column == 1:
+                    dst_cell.value = "Selected"
+                else:
+                    # Build IF formula: if User not blank, use User, else use RB-AI
+                    col_letter = get_column_letter(src_cell.column)
+                    formula = f'=IF({ext_ref}!{col_letter}{user_row}<>"",{ext_ref}!{col_letter}{user_row},{ext_ref}!{col_letter}{rb_row})'
+                    dst_cell.value = formula
+                
+                if src_cell.has_style:
+                    dst_cell.font = copy.copy(src_cell.font)
+                    dst_cell.border = copy.copy(src_cell.border)
+                    dst_cell.fill = copy.copy(src_cell.fill)
+                    dst_cell.number_format = src_cell.number_format
+                    dst_cell.alignment = copy.copy(src_cell.alignment)
+            dst_row += 1
+            
+            # Write "Selected Reasoning" row with IF formula
+            if user_reason_row and rb_reason_row:
+                for src_cell in src_cells:
+                    dst_cell = ws_dst.cell(dst_row, src_cell.column)
+                    if src_cell.column == 1:
+                        dst_cell.value = "Selected Reasoning"
+                    else:
+                        col_letter = get_column_letter(src_cell.column)
+                        formula = f'=IF({ext_ref}!{col_letter}{user_row}<>"",{ext_ref}!{col_letter}{user_reason_row},{ext_ref}!{col_letter}{rb_reason_row})'
+                        dst_cell.value = formula
+                    
+                    if src_cell.has_style:
+                        dst_cell.font = copy.copy(src_cell.font)
+                        dst_cell.border = copy.copy(src_cell.border)
+                        dst_cell.fill = copy.copy(src_cell.fill)
+                    dst_cell.number_format = ""
+                    dst_cell.alignment = Alignment(wrap_text=True, horizontal="left", vertical="top")
+                dst_row += 1
+            continue
+        
+        # Copy all other rows with formulas linking to source
+        for src_cell in src_cells:
+            dst_cell = ws_dst.cell(dst_row, src_cell.column)
+            
+            # For data cells (not labels), write formula; for labels, copy value
+            if src_cell.column == 1 or src_cell.value is None or isinstance(src_cell.value, str):
+                dst_cell.value = src_cell.value
+            else:
+                # Reference the source workbook
+                col_letter = get_column_letter(src_cell.column)
+                row_num = src_cells[0].row
+                dst_cell.value = f"={ext_ref}!{col_letter}{row_num}"
+            
+            if src_cell.has_style:
+                # Remove bold from column A cells
+                if src_cell.column == 1:
+                    dst_cell.font = Font(name=src_cell.font.name, size=src_cell.font.size, bold=False)
+                else:
+                    dst_cell.font = copy.copy(src_cell.font)
+                dst_cell.border = copy.copy(src_cell.border)
+                dst_cell.fill = copy.copy(src_cell.fill)
+                dst_cell.number_format = src_cell.number_format
+                dst_cell.alignment = copy.copy(src_cell.alignment)
+        
+        dst_row += 1
+
+
+def _add_cdf_formulas_to_triangle(ws):
+    """
+    Add CDF row formulas below Selected Reasoning in the LDF Selections section.
+    CDF formulas multiply Selected LDF by the next CDF to the right (right-to-left cumulative product).
+    Rightmost column references the Selected tail factor.
+    """
+    selected_row = None
+    selected_reasoning_row = None
+    cdf_row_num = None
+    last_data_col = None
+    
+    # Find the Selected row and determine where CDF row should be
+    for row_idx, row_cells in enumerate(ws.iter_rows(), start=1):
+        col1 = row_cells[0].value if row_cells else None
+        
+        if col1 == "Selected":
+            selected_row = row_idx
+            # Find the last column with data
+            for cell in reversed(list(row_cells)):
+                if cell.value not in (None, ""):
+                    last_data_col = cell.column
+                    break
+        elif col1 == "Selected Reasoning":
+            selected_reasoning_row = row_idx
+        elif col1 == "CDF":
+            cdf_row_num = row_idx
+            break
+    
+    if not selected_row or last_data_col is None:
+        return  # No Selected row found
+    
+    # If CDF row doesn't exist, create it after Selected Reasoning (or Selected if no reasoning)
+    if cdf_row_num is None:
+        cdf_row_num = (selected_reasoning_row or selected_row) + 1
+        # Insert a new row by shifting cells down if needed
+        # Actually, if the row exists but is empty, we can just use it
+    
+    # Set CDF label
+    ws.cell(cdf_row_num, 1).value = "CDF"
+    
+    # Copy style from Selected row (but remove bold)
+    ref_cell = ws.cell(selected_row, 1)
+    if ref_cell.has_style:
+        lbl = ws.cell(cdf_row_num, 1)
+        lbl.font = Font(name=ref_cell.font.name, size=ref_cell.font.size, bold=False)
+        lbl.border = copy.copy(ref_cell.border)
+        lbl.fill = copy.copy(ref_cell.fill)
+        lbl.alignment = copy.copy(ref_cell.alignment)
+    
+    # Write CDF formulas from right to left
+    # Rightmost column: reference Selected tail factor
+    tail_col_letter = get_column_letter(last_data_col)
+    tail_cell = ws.cell(cdf_row_num, last_data_col)
+    tail_cell.value = f'={tail_col_letter}{selected_row}'
+    tail_cell.number_format = _DEC_FMT
+    
+    # Other columns: =Selected_LDF * Next_CDF
+    for col in range(last_data_col - 1, 1, -1):
+        col_letter = get_column_letter(col)
+        next_col_letter = get_column_letter(col + 1)
+        
+        cell = ws.cell(cdf_row_num, col)
+        cell.value = f'=IFERROR({col_letter}{selected_row}*{next_col_letter}{cdf_row_num},"")'
+        cell.number_format = _DEC_FMT
+        if ref_cell.has_style:
+            cell.font = copy.copy(ref_cell.font)
+            cell.border = copy.copy(ref_cell.border)
+
+
 def _tri_col_map_from_df(triangles_df, measure, max_age=None):
     """Build {age_str: col_letter} for the triangle sheet from parquet data.
     Triangle sheet col A = period, so ages start at col B (index 2).
@@ -237,7 +504,8 @@ def write_method_cl(gen_wb, combined, measure, ult_col_map, tri_col_map=None):
     # Direct cell refs into the triangle sheet (row 1=title, row 2=age header, row 3+=data).
     # CL sheet row r maps to triangle row r+1 — both sorted ascending period_int from rows 2/3.
     tri_col_map = tri_col_map or {}
-    max_age_col = get_column_letter(len(tri_col_map) + 1) if tri_col_map else "ZZ"
+    # Tail column is the last column in the triangle (contains ultimate values for mature periods)
+    tail_col_letter = get_column_letter(len(tri_col_map) + 1) if tri_col_map else None
 
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
         _data_cell(ws.cell(r, 1), row["period_int"])
@@ -247,14 +515,17 @@ def write_method_cl(gen_wb, combined, measure, ult_col_map, tri_col_map=None):
         except (ValueError, TypeError):
             age_key = None
         tri_col = tri_col_map.get(age_key) if age_key else None
+        
+        # Always reference the triangle sheet for consistency
         if tri_col:
+            # Current age has a specific column in the triangle
             _formula_cell(ws, r, 3, f"='{short_name}'!{tri_col}{r+1}", _NUM_FMT)
+        elif tail_col_letter:
+            # Age beyond cutoff -> use tail/ultimate column
+            _formula_cell(ws, r, 3, f"='{short_name}'!{tail_col_letter}{r+1}", _NUM_FMT)
         else:
-            ref = _ult_ref(ult_col_map, ult_sheet, actual_hdr, r)
-            if ref == '""':
-                _data_cell(ws.cell(r, 3), row["actual"], _NUM_FMT)
-            else:
-                _formula_cell(ws, r, 3, ref, _NUM_FMT)
+            # No triangle data available -> use static value
+            _data_cell(ws.cell(r, 3), row["actual"], _NUM_FMT)
         _data_cell(ws.cell(r, 4), row.get("cdf"), _DEC_FMT)
         _formula_cell(ws, r, 5, f'=IF(AND(ISNUMBER(C{r}),ISNUMBER(D{r})),C{r}*D{r},"")', _NUM_FMT)
         _formula_cell(ws, r, 6, f"=E{r}-C{r}", _NUM_FMT)
@@ -295,7 +566,7 @@ def write_method_bf(gen_wb, combined, measure, ult_col_map):
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
         _data_cell(ws.cell(r, 1), row["period_int"])
         _data_cell(ws.cell(r, 2), row["current_age"])
-        ie_formula = f"='{short_name} IE'!D{r}" if has_ie_method else _ult_ref(ult_col_map, ult_sheet, ie_hdr, r)
+        ie_formula = f"='IE'!D{r}" if has_ie_method else _ult_ref(ult_col_map, ult_sheet, ie_hdr, r)
         _formula_cell(ws, r, 3, ie_formula, _NUM_FMT)
         _formula_cell(ws, r, 4, f"='{short_name} CL'!D{r}", _DEC_FMT)
         _formula_cell(ws, r, 5, f"=1-(1/D{r})", "0.0%")
@@ -322,7 +593,7 @@ def write_method_bf(gen_wb, combined, measure, ult_col_map):
 
 def write_method_ie(gen_wb, combined, measure, exp_row_map, ult_col_map):
     short_name = measure_short_name(measure)
-    ws = gen_wb.create_sheet(title=f"{short_name} IE"[:31])
+    ws = gen_wb.create_sheet(title="IE")
     headers = ["Accident Period", "Current Age", "Exposure", "IE Ultimate", "Selected Loss Rate"]
     _write_headers(ws, headers)
 
@@ -414,7 +685,7 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
             col_idx += 1
         # IE ultimate (if available)
         if has_group_ie:
-            _formula_cell(ws, r, col_idx, f"='{ie_short} IE'!D{r}", _NUM_FMT)
+            _formula_cell(ws, r, col_idx, f"='IE'!D{r}", _NUM_FMT)
             col_idx += 1
         # BF ultimates
         for m in bf_m:
@@ -446,6 +717,59 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
     for c in range(3, n_cols + 1):
         col_letter = get_column_letter(c)
         _formula_cell(ws, t, c, f"=SUM({col_letter}2:{col_letter}{t-2})", _NUM_FMT)
+
+
+def _build_tail_workbook_maps(tail_wb_path, measure_sheet_name):
+    """
+    Build row/column maps for Tail Factor Selection in Chain Ladder Selections - Tail.xlsx.
+    Returns (cutoff_col, tail_col, reason_col, user_row, rb_row) where columns/rows are
+    dynamically discovered from the workbook structure.
+    """
+    if not pathlib.Path(tail_wb_path).exists():
+        return None, None, None, None, None
+    
+    try:
+        wb = load_workbook(tail_wb_path, data_only=False)
+        if measure_sheet_name not in wb.sheetnames:
+            wb.close()
+            return None, None, None, None, None
+        
+        ws = wb[measure_sheet_name]
+        in_tail_section = False
+        cutoff_col = tail_col = reason_col = None
+        user_row = rb_row = None
+        
+        for row_idx, row_cells in enumerate(ws.iter_rows(), start=1):
+            col1 = row_cells[0].value if row_cells else None
+            
+            if col1 == "Tail Factor Selection":
+                in_tail_section = True
+                continue
+            
+            if not in_tail_section:
+                continue
+            
+            # Find column headers
+            if col1 == "Label":
+                for cell in row_cells:
+                    if cell.value == "Cutoff Age":
+                        cutoff_col = get_column_letter(cell.column)
+                    elif cell.value == "Tail Factor":
+                        tail_col = get_column_letter(cell.column)
+                    elif cell.value == "Reasoning":
+                        reason_col = get_column_letter(cell.column)
+                continue
+            
+            # Find selection rows
+            if col1 == "User Selection":
+                user_row = row_idx
+            elif col1 == "Rules-Based AI Selection":
+                rb_row = row_idx
+        
+        wb.close()
+        return cutoff_col, tail_col, reason_col, user_row, rb_row
+    except Exception:
+        return None, None, None, None, None
 
 
 def add_tail_to_triangle_ws(ws, cutoff_age, tail_factor, reasoning=None,
@@ -585,9 +909,22 @@ def add_tail_to_triangle_ws(ws, cutoff_age, tail_factor, reasoning=None,
     if selected_row_num is None:
         return
 
-    # Set Selected row at tail_col to the tail_factor (replacing stale interval LDF).
+    # Set Selected row at tail_col to formula referencing Tail workbook
+    # IF(User Selection not blank, User Selection, Rules-Based AI Selection)
     c = ws.cell(selected_row_num, tail_col)
-    c.value = tail_factor
+    if measure:
+        # Dynamically discover Tail workbook structure
+        tail_path = config.SELECTIONS + "/Chain Ladder Selections - Tail.xlsx"
+        t_cutoff_col, t_tail_col, t_reason_col, t_user_row, t_rb_row = _build_tail_workbook_maps(tail_path, measure)
+        
+        if t_tail_col and t_user_row and t_rb_row:
+            tail_ref = f"'{_CL_TAIL_WB}{measure}'"
+            c.value = f'=IF({tail_ref}!{t_tail_col}{t_user_row}<>"",{tail_ref}!{t_tail_col}{t_user_row},{tail_ref}!{t_tail_col}{t_rb_row})'
+        else:
+            # Fallback to static value if structure not found
+            c.value = tail_factor
+    else:
+        c.value = tail_factor
     c.number_format = _DEC_FMT
 
     # ── Compute cumulative CDFs right-to-left, seeded by tail_factor ─────────
@@ -603,7 +940,7 @@ def add_tail_to_triangle_ws(ws, cutoff_age, tail_factor, reasoning=None,
     lbl = ws.cell(cdf_row, 1)
     lbl.value = "CDF"
     if ref_cell.has_style:
-        lbl.font      = copy.copy(ref_cell.font)
+        lbl.font      = Font(name=ref_cell.font.name, size=ref_cell.font.size, bold=False)
         lbl.border    = copy.copy(ref_cell.border)
         lbl.fill      = copy.copy(ref_cell.fill)
         lbl.alignment = copy.copy(ref_cell.alignment)
@@ -613,7 +950,8 @@ def add_tail_to_triangle_ws(ws, cutoff_age, tail_factor, reasoning=None,
             continue
         c = ws.cell(cdf_row, col)
         if col == tail_col:
-            c.value = tail_factor          # tail: literal seed value
+            # Reference the Selected row's tail formula
+            c.value = f'={get_column_letter(col)}{selected_row_num}'
         else:
             sel_ref  = f"{get_column_letter(col)}{selected_row_num}"
             next_ref = f"{get_column_letter(col + 1)}{cdf_row}"
@@ -623,9 +961,22 @@ def add_tail_to_triangle_ws(ws, cutoff_age, tail_factor, reasoning=None,
         c.border        = THIN_BORDER
 
     # ── Write tail reasoning in Selected Reasoning row at tail column ─────────
-    if reasoning and last_sel_row and last_sel_row > selected_row_num:
+    if last_sel_row and last_sel_row > selected_row_num:
         rc = ws.cell(last_sel_row, tail_col)
-        rc.value = reasoning
+        if measure:
+            # Dynamically discover Tail workbook structure
+            tail_path = config.SELECTIONS + "/Chain Ladder Selections - Tail.xlsx"
+            t_cutoff_col, t_tail_col, t_reason_col, t_user_row, t_rb_row = _build_tail_workbook_maps(tail_path, measure)
+            
+            if t_tail_col and t_reason_col and t_user_row and t_rb_row:
+                tail_ref = f"'{_CL_TAIL_WB}{measure}'"
+                # Use tail column to check if User Selection is populated, then pull from reasoning column
+                rc.value = f'=IF({tail_ref}!{t_tail_col}{t_user_row}<>"",{tail_ref}!{t_reason_col}{t_user_row},{tail_ref}!{t_reason_col}{t_rb_row})'
+            else:
+                # Fallback to static value if structure not found
+                rc.value = reasoning
+        else:
+            rc.value = reasoning
         ref_r = ws.cell(last_sel_row, last_keep_col)
         if ref_r.has_style:
             rc.font   = copy.copy(ref_r.font)
@@ -635,7 +986,7 @@ def add_tail_to_triangle_ws(ws, cutoff_age, tail_factor, reasoning=None,
 
 
 def create_triangle_sheets(gen_wb, measures):
-    # Copy the triangle sheets from the CL selections workbook
+    # Copy the triangle sheets from the CL selections workbook with formulas
     tail_sel = load_tail_selections(INPUT_TAIL_EXCEL)
     df2_enh = (pd.read_parquet(INPUT_CL_ENHANCED)
                if pathlib.Path(INPUT_CL_ENHANCED).exists()
@@ -645,11 +996,12 @@ def create_triangle_sheets(gen_wb, measures):
         wb_cl_form = load_workbook(INPUT_CL_EXCEL, data_only=False)
         for measure in measures:
             if measure in wb_cl_vals.sheetnames:
-                sel_vals   = _find_selected_values(wb_cl_vals[measure])
-                sel_reason = _find_selected_reasoning(wb_cl_vals[measure])
                 short_name = measure_short_name(measure)[:31]
                 ws = gen_wb.create_sheet(title=short_name)
-                _copy_ws_filtered(wb_cl_form[measure], ws, sel_vals, sel_reason)
+                # Use formula-based copy to link to Chain Ladder Selections - LDFs.xlsx
+                _copy_ws_with_ldfs_formulas(wb_cl_form[measure], ws, measure, INPUT_CL_EXCEL)
+                # Add CDF formulas below Selected row
+                _add_cdf_formulas_to_triangle(ws)
                 if measure in tail_sel:
                     cutoff_age, tf, reasoning = tail_sel[measure]
                     add_tail_to_triangle_ws(
@@ -915,9 +1267,9 @@ def main():
         for m in loss_m:
             if _has_method(combined, m, "ultimate_bf"):
                 write_method_bf(gen_wb, combined, m, ult_col_map)
-        for m in loss_m:
-            if _has_method(combined, m, "ultimate_ie"):
-                write_method_ie(gen_wb, combined, m, exp_row_map, ult_col_map)
+        # Create single IE sheet for Incurred Loss only
+        if "Incurred Loss" in loss_m and _has_method(combined, "Incurred Loss", "ultimate_ie"):
+            write_method_ie(gen_wb, combined, "Incurred Loss", exp_row_map, ult_col_map)
 
     print("Building Counts sheets...")
     if count_m:
@@ -927,9 +1279,6 @@ def main():
         for m in count_m:
             if _has_method(combined, m, "ultimate_bf"):
                 write_method_bf(gen_wb, combined, m, ult_col_map)
-        for m in count_m:
-            if _has_method(combined, m, "ultimate_ie"):
-                write_method_ie(gen_wb, combined, m, exp_row_map, ult_col_map)
 
     if other_m:
         print("Building other method sheets...")
@@ -937,20 +1286,18 @@ def main():
             write_method_cl(gen_wb, combined, m, ult_col_map, _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)))
             if _has_method(combined, m, "ultimate_bf"):
                 write_method_bf(gen_wb, combined, m, ult_col_map)
-            if _has_method(combined, m, "ultimate_ie"):
-                write_method_ie(gen_wb, combined, m, exp_row_map, ult_col_map)
         
     print("Copying CL LDF sheets (Triangle + Averages)...")
     create_triangle_sheets(gen_wb, measures)
     if has_exposure:
         write_exposure_sheet(gen_wb, INPUT_TRIANGLES)
     
-    # Also copy remaining Diag and CV & Slopes sheets
+    # Also copy remaining Diagnostics and CV & Slopes sheets
     print("Copying remaining Diag and CV & Slopes sheets...")
     if pathlib.Path(INPUT_CL_EXCEL).exists():
         wb_cl_form = load_workbook(INPUT_CL_EXCEL, data_only=False)
         for sname in wb_cl_form.sheetnames:
-            if sname.startswith("Diag - ") or sname.endswith(" - CV & Slopes"):
+            if sname in ("Diagnostics", "CV & Slopes"):
                 ws = gen_wb.create_sheet(title=sname[:31])
                 _copy_ws_filtered(wb_cl_form[sname], ws, {}, {})
         wb_cl_form.close()
@@ -961,7 +1308,7 @@ def main():
         write_triangle_sheet(ws_t, sheet_name, df)
 
     print("Building diagnostics sheet...")
-    ws_diag = gen_wb.create_sheet(title="Diagnostics")
+    ws_diag = gen_wb.create_sheet(title="Summary Diagnostics")
     write_diagnostics_sheet(ws_diag, combined, exp_map)
 
     print("\nAssembling Analysis.xlsx...")

@@ -255,7 +255,7 @@ def detect_sheets(wb):
         "sel_sheets":         [n for n in names if n.startswith("Sel - ")],
         "cl_sheets":          [n for n in names if n.startswith("CL - ")],
         "tri_sheets":         [n for n in names if n in tri_known],
-        "diag_sheet":         "Diagnostics" in names,
+        "diag_sheet":         "Summary Diagnostics" in names,
         "avg_ibnr":           "Average IBNR" in names,
         "avg_unpaid":         "Average Unpaid" in names,
     }
@@ -1550,7 +1550,7 @@ def main():
     sel_dfs       = {s: read_no_title(wb[s])   for s in info["sel_sheets"]}
     cl_dfs        = {c: read_cl_sheet(wb[c])   for c in info["cl_sheets"]}
     tri_dfs       = {t: read_with_title(wb[t]) for t in info["tri_sheets"]}
-    diag_df       = read_with_title(wb["Diagnostics"])    if info["diag_sheet"] else None
+    diag_df       = read_with_title(wb["Summary Diagnostics"])    if info["diag_sheet"] else None
     avg_ibnr_df   = read_with_title(wb["Average IBNR"])   if info["avg_ibnr"]   else None
     avg_unpaid_df = read_with_title(wb["Average Unpaid"]) if info["avg_unpaid"] else None
 

@@ -28,21 +28,21 @@ EXCEL_FILE            = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx
 
 
 def find_selections_section(ws):
-    """Find the row where 'LDF Selections' section header and interval headers are."""
+    """Find the row where interval headers and selection rows are located."""
     for row in ws.iter_rows():
         for cell in row:
-            if cell.value == "LDF Selections":
-                section_row = cell.row
-                header_row = section_row + 1
-                # Scan for the "Rules-Based AI Selection" label row (not "Prior Selection")
-                # It may be offset by prior selection rows if they exist
-                for check_row in range(header_row + 1, header_row + 10):
-                    label = ws.cell(row=check_row, column=1).value
-                    if label == "Rules-Based AI Selection":
-                        selection_row = check_row
-                        reasoning_row = check_row + 1
-                        return header_row, selection_row, reasoning_row
-                return None, None, None
+            if cell.value == "Rules-Based AI Selection":
+                selection_row = cell.row
+                reasoning_row = selection_row + 1
+                # Header row is the row just before the Rules-Based AI Selection row
+                # (or before Prior Selection if it exists)
+                header_row = selection_row - 1
+                # Check if there are Prior Selection rows above
+                check_label = ws.cell(row=header_row, column=1).value
+                while check_label and check_label.startswith("Prior"):
+                    header_row -= 1
+                    check_label = ws.cell(row=header_row, column=1).value
+                return header_row, selection_row, reasoning_row
     return None, None, None
 
 
@@ -114,7 +114,7 @@ def update_sheet(ws, measure_selections):
     """Update the selections section of a single sheet."""
     header_row, selection_row, reasoning_row = find_selections_section(ws)
     if header_row is None:
-        print(f"  WARNING: Could not find 'LDF Selections' section in sheet '{ws.title}'")
+        print(f"  WARNING: Could not find selections section in sheet '{ws.title}'")
         return
 
     interval_to_col = get_interval_columns(ws, header_row)
