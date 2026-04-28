@@ -114,7 +114,6 @@ The `reasoning` field format: **Start with the selected LDF value.** Then concis
 - **Trigger:** Latest LDF deviates from 5-year average by >1.5σ OR >15%.
 - **Diagnose cause before excluding:**
   - `paid_severity_incr` also spikes >15% → real large loss; cap influence, don't fully exclude.
-  - `paid_severity_incr` normal but `incremental_incurred_severity` spikes → case reserve posting; exclude from incurred, rely on paid.
   - `incremental_closure_rate` abnormal → timing distortion; development may shift to next interval.
 - Confirmed outlier: exclude, select from remaining averages + prior, document.
 - Ambiguous: include but use blended selection, flag for monitoring.
@@ -180,7 +179,7 @@ Sub-1.000 paid LDFs always indicate data issues — investigate and correct.
 
 - Large = >10% of column's incremental development, or removal changes LDF by >5%.
 - Compute LDF with and without. If difference >5%, use ex-large LDF + separate large loss load.
-- Diagnostic signal: `paid_severity_incr` or `incremental_incurred_severity` spike with normal `reported_counts` = large loss, not frequency.
+- Diagnostic signal: `paid_severity_incr` spike with normal `reported_counts` = large loss, not frequency.
 - **Severity vs frequency shock test:** severity shock = losses spike, counts flat (→ treat as large loss / CAT). Frequency shock = counts and losses move proportionally (→ §15 Frequency Shock row, not this section).
 
 ### 13. Calendar Year Effects

@@ -20,16 +20,23 @@ run-note: When copied to a project, run from the scripts/ directory:
 
 import json
 import pandas as pd
-from openpyxl import Workbook
-from openpyxl.styles import Alignment
+import numpy as np
+import xlsxwriter
 import pathlib
 
 from modules import config
-from modules.xl_styles import (
-    HEADER_FILL, HEADER_FONT, SELECTION_FILL, AI_FILL, PRIOR_FILL, USER_FILL, THIN_BORDER,
-)
+from modules.xl_styles import create_xlsxwriter_formats, COLORS
 from modules.xl_utils import build_column_map
 from modules.markdown_utils import df_to_markdown
+
+
+def col_letter(col_idx):
+    """Convert 0-based column index to Excel column letter (A, B, C...)."""
+    result = ""
+    while col_idx >= 0:
+        result = chr(col_idx % 26 + ord('A')) + result
+        col_idx = col_idx // 26 - 1
+    return result
 
 # Paths from modules/config.py — override here if needed:
 INPUT_ULTIMATES  = config.ULTIMATES + "projected-ultimates.parquet"
@@ -103,12 +110,13 @@ def export_md_data(df_ult, exp_md):
 
 
 
-def format_loss_sheet(ws, df_ult, df_prior):
+def format_loss_sheet(wb, ws, df_ult, df_prior):
     """
     Format the Loss sheet with Incurred and Paid columns combined.
     
     Args:
-        ws: openpyxl worksheet object
+        wb: xlsxwriter workbook object (for creating formats)
+        ws: xlsxwriter worksheet object
         df_ult: DataFrame with projected ultimates for all measures
         df_prior: DataFrame with prior selections (or None if no prior selections)
     """
@@ -151,6 +159,9 @@ def format_loss_sheet(ws, df_ult, df_prior):
     # Check if we have prior data for Losses
     has_prior_data = df_prior is not None and 'Losses' in df_prior.get('category', df_prior.get('measure', pd.Series())).values
     
+    # Get formats
+    fmt = create_xlsxwriter_formats(wb)
+    
     # Write headers - conditionally include Prior columns
     headers = [
         "Accident Period", "Current Age", "Incurred", "Paid",
@@ -164,25 +175,23 @@ def format_loss_sheet(ws, df_ult, df_prior):
         "User Selection", "User Reasoning"
     ])
     
-    ws.append(headers)
-    for c_idx in range(1, len(headers) + 1):
-        cell = ws.cell(row=1, column=c_idx)
-        cell.fill = HEADER_FILL
-        cell.font = HEADER_FONT
-        cell.border = THIN_BORDER
-        cell.alignment = Alignment(horizontal="center")
-        ws.column_dimensions[cell.column_letter].width = 18
+    for c_idx, header in enumerate(headers):
+        ws.write(0, c_idx, header, fmt['header'])
+        ws.set_column(c_idx, c_idx, 18)
     
-    # Build column map for dynamic column lookups
-    col_map = build_column_map(ws, header_row=1)
+    # Build column map from headers list (xlsxwriter is write-only, cannot read back)
+    col_map = {header: idx for idx, header in enumerate(headers)}
     
     # Set wider widths for reasoning columns
-    from openpyxl.utils import get_column_letter
     if has_prior_data:
-        ws.column_dimensions[get_column_letter(col_map["Prior Reasoning"])].width = 30
-    ws.column_dimensions[get_column_letter(col_map["Rules-Based AI Reasoning"])].width = 30
-    ws.column_dimensions[get_column_letter(col_map["Open-Ended AI Reasoning"])].width = 30
-    ws.column_dimensions[get_column_letter(col_map["User Reasoning"])].width = 40
+        prior_reason_col = col_map["Prior Reasoning"]
+        ws.set_column(prior_reason_col, prior_reason_col, 30)
+    rb_reason_col = col_map["Rules-Based AI Reasoning"]
+    oe_reason_col = col_map["Open-Ended AI Reasoning"]
+    user_reason_col = col_map["User Reasoning"]
+    ws.set_column(rb_reason_col, rb_reason_col, 30)
+    ws.set_column(oe_reason_col, oe_reason_col, 30)
+    ws.set_column(user_reason_col, user_reason_col, 40)
     
     # Create dict of prior
     prior_dict = {}
@@ -191,81 +200,59 @@ def format_loss_sheet(ws, df_ult, df_prior):
         for _, r in mp.iterrows():
             prior_dict[str(r['period'])] = {"sel": r.get('selection', r.get('selected_ultimate')), "reason": r.get('reasoning', '')}
     
-    # Write rows
-    for r_idx, (_, row) in enumerate(df_combined.iterrows(), start=2):
-        period = str(row['period'])
+    # Write rows (0-based indexing, starting at row 1)
+    for r_idx, (_, row) in enumerate(df_combined.iterrows(), start=1):
+        period = row['period']  # Keep original type
         
-        # Period & current age
-        ws.cell(row=r_idx, column=1, value=period).border = THIN_BORDER
+        # Period - write as number if numeric to avoid Excel warnings
+        if isinstance(period, (int, float, np.integer, np.floating)):
+            ws.write_number(r_idx, 0, period, fmt['label'])
+        else:
+            ws.write(r_idx, 0, str(period), fmt['label'])
         
         val_age = row.get('current_age')
-        if pd.isna(val_age): val_age = ""
-        ws.cell(row=r_idx, column=2, value=val_age).border = THIN_BORDER
+        if pd.isna(val_age):
+            ws.write_blank(r_idx, 1, None, fmt['label'])
+        elif isinstance(val_age, (int, float, np.integer, np.floating)):
+            ws.write_number(r_idx, 1, val_age, fmt['label'])
+        else:
+            ws.write(r_idx, 1, str(val_age), fmt['label'])
         
-        # Values
-        for c_idx, col_name in enumerate(['incurred', 'paid', 'incurred_cl', 'paid_cl', 'incurred_ie', 'paid_ie', 'incurred_bf', 'paid_bf'], start=3):
+        # Values (incurred, paid, CL, IE, BF)
+        for col_offset, col_name in enumerate(['incurred', 'paid', 'incurred_cl', 'paid_cl', 'incurred_ie', 'paid_ie', 'incurred_bf', 'paid_bf']):
             val = row.get(col_name)
             if pd.isna(val): val = ""
-            cell = ws.cell(row=r_idx, column=c_idx, value=val)
-            cell.number_format = "#,##0"
-            cell.border = THIN_BORDER
+            ws.write(r_idx, 2 + col_offset, val, fmt['data'])
         
         # Prior (only if prior data available)
         if has_prior_data:
             prior_sel = prior_dict.get(period, {}).get("sel", "")
             prior_reason = prior_dict.get(period, {}).get("reason", "")
             
-            c = ws.cell(row=r_idx, column=col_map["Prior Selection"], value=prior_sel)
-            c.fill = PRIOR_FILL
-            c.border = THIN_BORDER
-            c.number_format = "#,##0"
-            
-            c = ws.cell(row=r_idx, column=col_map["Prior Reasoning"], value=prior_reason)
-            c.fill = PRIOR_FILL
-            c.border = THIN_BORDER
-            c.alignment = Alignment(wrap_text=True)
+            ws.write(r_idx, col_map["Prior Selection"], prior_sel, fmt['prior'])
+            ws.write(r_idx, col_map["Prior Reasoning"], prior_reason, fmt['prior'])
         
         # Rules-Based AI Selection (yellow fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=col_map["Rules-Based AI Selection"])
-        c.fill = SELECTION_FILL
-        c.border = THIN_BORDER
-        c.number_format = "#,##0"
-        
-        c = ws.cell(row=r_idx, column=col_map["Rules-Based AI Reasoning"])
-        c.fill = SELECTION_FILL
-        c.border = THIN_BORDER
-        c.alignment = Alignment(wrap_text=True)
+        ws.write(r_idx, col_map["Rules-Based AI Selection"], "", fmt['selection'])
+        ws.write(r_idx, col_map["Rules-Based AI Reasoning"], "", fmt['selection'])
         
         # Open-Ended AI Selection (purple fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=col_map["Open-Ended AI Selection"])
-        c.fill = AI_FILL
-        c.border = THIN_BORDER
-        c.number_format = "#,##0"
-        
-        c = ws.cell(row=r_idx, column=col_map["Open-Ended AI Reasoning"])
-        c.fill = AI_FILL
-        c.border = THIN_BORDER
-        c.alignment = Alignment(wrap_text=True)
+        ws.write(r_idx, col_map["Open-Ended AI Selection"], "", fmt['ai'])
+        ws.write(r_idx, col_map["Open-Ended AI Reasoning"], "", fmt['ai'])
         
         # User Selection (blank - actuary input)
-        c = ws.cell(row=r_idx, column=col_map["User Selection"])
-        c.fill = USER_FILL
-        c.border = THIN_BORDER
-        c.number_format = "#,##0"
-        
-        c = ws.cell(row=r_idx, column=col_map["User Reasoning"])
-        c.fill = USER_FILL
-        c.border = THIN_BORDER
-        c.alignment = Alignment(wrap_text=True)
+        ws.write(r_idx, col_map["User Selection"], "", fmt['user'])
+        ws.write(r_idx, col_map["User Reasoning"], "", fmt['user'])
 
 
-def format_count_sheet(ws, df_ult, df_prior):
+def format_count_sheet(wb, ws, df_ult, df_prior):
     """
     Format the Count sheet with Reported and Closed columns combined.
     Closed columns are omitted if no closed count data is present.
     
     Args:
-        ws: openpyxl worksheet object
+        wb: xlsxwriter workbook object (for creating formats)
+        ws: xlsxwriter worksheet object
         df_ult: DataFrame with projected ultimates for all measures
         df_prior: DataFrame with prior selections (or None if no prior selections)
     """
@@ -304,6 +291,9 @@ def format_count_sheet(ws, df_ult, df_prior):
     # Check if we have prior data for Counts
     has_prior_data = df_prior is not None and 'Counts' in df_prior.get('category', df_prior.get('measure', pd.Series())).values
     
+    # Get formats
+    fmt = create_xlsxwriter_formats(wb)
+    
     # Build headers based on whether closed count exists and whether we have prior data
     if has_closed:
         headers = [
@@ -328,25 +318,23 @@ def format_count_sheet(ws, df_ult, df_prior):
         "User Selection", "User Reasoning"
     ])
     
-    ws.append(headers)
-    for c_idx in range(1, len(headers) + 1):
-        cell = ws.cell(row=1, column=c_idx)
-        cell.fill = HEADER_FILL
-        cell.font = HEADER_FONT
-        cell.border = THIN_BORDER
-        cell.alignment = Alignment(horizontal="center")
-        ws.column_dimensions[cell.column_letter].width = 18
+    for c_idx, header in enumerate(headers):
+        ws.write(0, c_idx, header, fmt['header'])
+        ws.set_column(c_idx, c_idx, 18)
     
-    # Build column map for dynamic column lookups
-    col_map = build_column_map(ws, header_row=1)
+    # Build column map from headers list (xlsxwriter is write-only, cannot read back)
+    col_map = {header: idx for idx, header in enumerate(headers)}
     
     # Set wider widths for reasoning columns
-    from openpyxl.utils import get_column_letter
     if has_prior_data:
-        ws.column_dimensions[get_column_letter(col_map["Prior Reasoning"])].width = 30
-    ws.column_dimensions[get_column_letter(col_map["Rules-Based AI Reasoning"])].width = 30
-    ws.column_dimensions[get_column_letter(col_map["Open-Ended AI Reasoning"])].width = 30
-    ws.column_dimensions[get_column_letter(col_map["User Reasoning"])].width = 40
+        prior_reason_col = col_map["Prior Reasoning"]
+        ws.set_column(prior_reason_col, prior_reason_col, 30)
+    rb_reason_col = col_map["Rules-Based AI Reasoning"]
+    oe_reason_col = col_map["Open-Ended AI Reasoning"]
+    user_reason_col = col_map["User Reasoning"]
+    ws.set_column(rb_reason_col, rb_reason_col, 30)
+    ws.set_column(oe_reason_col, oe_reason_col, 30)
+    ws.set_column(user_reason_col, user_reason_col, 40)
     
     # Create dict of prior
     prior_dict = {}
@@ -355,72 +343,49 @@ def format_count_sheet(ws, df_ult, df_prior):
         for _, r in mp.iterrows():
             prior_dict[str(r['period'])] = {"sel": r.get('selection', r.get('selected_ultimate')), "reason": r.get('reasoning', '')}
     
-    # Write rows
-    for r_idx, (_, row) in enumerate(df_combined.iterrows(), start=2):
-        period = str(row['period'])
+    # Write rows (0-based indexing, starting at row 1)
+    for r_idx, (_, row) in enumerate(df_combined.iterrows(), start=1):
+        period = row['period']  # Keep original type
         
-        # Period & current age
-        ws.cell(row=r_idx, column=1, value=period).border = THIN_BORDER
+        # Period - write as number if numeric to avoid Excel warnings
+        if isinstance(period, (int, float, np.integer, np.floating)):
+            ws.write_number(r_idx, 0, period, fmt['label'])
+        else:
+            ws.write(r_idx, 0, str(period), fmt['label'])
         
         val_age = row.get('current_age')
-        if pd.isna(val_age): val_age = ""
-        ws.cell(row=r_idx, column=2, value=val_age).border = THIN_BORDER
+        if pd.isna(val_age):
+            ws.write_blank(r_idx, 1, None, fmt['label'])
+        elif isinstance(val_age, (int, float, np.integer, np.floating)):
+            ws.write_number(r_idx, 1, val_age, fmt['label'])
+        else:
+            ws.write(r_idx, 1, str(val_age), fmt['label'])
         
         # Data values (reported, closed, IE, CL, BF - dynamically based on what's available)
-        for c_idx, col_name in enumerate(data_columns, start=3):
+        for col_offset, col_name in enumerate(data_columns):
             val = row.get(col_name)
             if pd.isna(val): val = ""
-            cell = ws.cell(row=r_idx, column=c_idx, value=val)
-            cell.number_format = "#,##0"
-            cell.border = THIN_BORDER
+            ws.write(r_idx, 2 + col_offset, val, fmt['data'])
         
         # Prior (only if prior data available)
         if has_prior_data:
             prior_sel = prior_dict.get(period, {}).get("sel", "")
             prior_reason = prior_dict.get(period, {}).get("reason", "")
             
-            c = ws.cell(row=r_idx, column=col_map["Prior Selection"], value=prior_sel)
-            c.fill = PRIOR_FILL
-            c.border = THIN_BORDER
-            c.number_format = "#,##0"
-            
-            c = ws.cell(row=r_idx, column=col_map["Prior Reasoning"], value=prior_reason)
-            c.fill = PRIOR_FILL
-            c.border = THIN_BORDER
-            c.alignment = Alignment(wrap_text=True)
+            ws.write(r_idx, col_map["Prior Selection"], prior_sel, fmt['prior'])
+            ws.write(r_idx, col_map["Prior Reasoning"], prior_reason, fmt['prior'])
         
         # Rules-Based AI Selection (yellow fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=col_map["Rules-Based AI Selection"])
-        c.fill = SELECTION_FILL
-        c.border = THIN_BORDER
-        c.number_format = "#,##0"
-        
-        c = ws.cell(row=r_idx, column=col_map["Rules-Based AI Reasoning"])
-        c.fill = SELECTION_FILL
-        c.border = THIN_BORDER
-        c.alignment = Alignment(wrap_text=True)
+        ws.write(r_idx, col_map["Rules-Based AI Selection"], "", fmt['selection'])
+        ws.write(r_idx, col_map["Rules-Based AI Reasoning"], "", fmt['selection'])
         
         # Open-Ended AI Selection (purple fill - will be populated by 5b script)
-        c = ws.cell(row=r_idx, column=col_map["Open-Ended AI Selection"])
-        c.fill = AI_FILL
-        c.border = THIN_BORDER
-        c.number_format = "#,##0"
-        
-        c = ws.cell(row=r_idx, column=col_map["Open-Ended AI Reasoning"])
-        c.fill = AI_FILL
-        c.border = THIN_BORDER
-        c.alignment = Alignment(wrap_text=True)
+        ws.write(r_idx, col_map["Open-Ended AI Selection"], "", fmt['ai'])
+        ws.write(r_idx, col_map["Open-Ended AI Reasoning"], "", fmt['ai'])
         
         # User Selection (blank - actuary input)
-        c = ws.cell(row=r_idx, column=col_map["User Selection"])
-        c.fill = USER_FILL
-        c.border = THIN_BORDER
-        c.number_format = "#,##0"
-        
-        c = ws.cell(row=r_idx, column=col_map["User Reasoning"])
-        c.fill = USER_FILL
-        c.border = THIN_BORDER
-        c.alignment = Alignment(wrap_text=True)
+        ws.write(r_idx, col_map["User Selection"], "", fmt['user'])
+        ws.write(r_idx, col_map["User Reasoning"], "", fmt['user'])
 
 
 
@@ -470,27 +435,29 @@ def main():
         except Exception as e:
             print(f"  No prior selections found: {e}")
 
-    wb = Workbook()
-    wb.remove(wb.active)  # Remove default sheet
+    wb = xlsxwriter.Workbook(OUTPUT_FILE, {
+        'use_future_functions': True,
+        'nan_inf_to_errors': True
+    })
     
     # Create Losses sheet (Incurred + Paid)
     has_loss = any(m in df_ult['measure'].values for m in ['Incurred Loss', 'Paid Loss'])
     if has_loss:
-        ws = wb.create_sheet(title='Losses')
-        format_loss_sheet(ws, df_ult, df_prior)
+        ws = wb.add_worksheet('Losses')
+        format_loss_sheet(wb, ws, df_ult, df_prior)
         print(f"  Created sheet for Losses (Incurred + Paid)")
     
     # Create Counts sheet (Reported + Closed)
     has_count = any(m in df_ult['measure'].values for m in ['Reported Count', 'Closed Count'])
     if has_count:
-        ws = wb.create_sheet(title='Counts')
-        format_count_sheet(ws, df_ult, df_prior)
+        ws = wb.add_worksheet('Counts')
+        format_count_sheet(wb, ws, df_ult, df_prior)
         print(f"  Created sheet for Counts (Reported + Closed)")
     
     out_dir = pathlib.Path(OUTPUT_FILE).parent
     out_dir.mkdir(parents=True, exist_ok=True)
     
-    wb.save(OUTPUT_FILE)
+    wb.close()
     print(f"\nSaved: {OUTPUT_FILE}")
     
     exp_md = "No Exposure data\n"

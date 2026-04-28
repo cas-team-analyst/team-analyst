@@ -23,6 +23,7 @@ from pathlib import Path
 
 from modules import config
 from modules.markdown_utils import df_to_markdown
+from modules.xl_styles import create_xlsxwriter_formats
 
 # Paths from modules/config.py — override here if needed:
 OUTPUT_PATH = config.PROCESSED_DATA
@@ -38,7 +39,6 @@ DIAG_SHEET_LABELS = {
     'open_counts': 'OPEN COUNTS',
     'average_case_reserve': 'AVERAGE CASE RESERVE',
     'claim_closure_rate': 'CLAIM CLOSURE RATE',
-    'incremental_incurred_severity': 'INCREMENTAL INCURRED SEVERITY',
     'incremental_paid_severity': 'INCREMENTAL PAID SEVERITY',
     'incremental_closure_rate': 'INCREMENTAL CLOSURE RATE',
 }
@@ -51,7 +51,6 @@ DIAG_NUMBER_FORMATS = {
     'open_counts': '#,##0',
     'average_case_reserve': '#,##0',
     'claim_closure_rate': '0.00%',
-    'incremental_incurred_severity': '#,##0',
     'incremental_paid_severity': '#,##0',
     'incremental_closure_rate': '0.00%',
 }
@@ -64,155 +63,10 @@ def col_letter(col_idx):
         col_idx = col_idx // 26 - 1
     return result
 
-def create_formats(wb):
-    """Create all cell formats used in the workbook."""
-    formats = {}
-    
-    # Subheader (column/row headers)
-    formats['subheader'] = wb.add_format({
-        'bold': True,
-        'bg_color': '#D9D9D9',
-        'border': 1,
-        'align': 'center',
-        'valign': 'vcenter'
-    })
-    
-    # Label (row labels in first column)
-    formats['label'] = wb.add_format({
-        'border': 1,
-        'align': 'left',
-        'valign': 'vcenter'
-    })
-    
-    # Data cells
-    formats['data'] = wb.add_format({
-        'border': 1,
-        'align': 'right',
-        'valign': 'vcenter'
-    })
-    
-    # Data with number format
-    formats['data_num'] = wb.add_format({
-        'border': 1,
-        'align': 'right',
-        'valign': 'vcenter',
-        'num_format': '#,##0'
-    })
-    
-    formats['data_ldf'] = wb.add_format({
-        'border': 1,
-        'align': 'right',
-        'valign': 'vcenter',
-        'num_format': '0.0000'
-    })
-    
-    formats['data_pct'] = wb.add_format({
-        'border': 1,
-        'align': 'right',
-        'valign': 'vcenter',
-        'num_format': '0.00%'
-    })
-    
-    # Selection fills
-    formats['prior'] = wb.add_format({
-        'bg_color': '#FFF2CC',
-        'border': 1,
-        'bold': True,
-        'align': 'center'
-    })
-    
-    formats['prior_data'] = wb.add_format({
-        'bg_color': '#FFF2CC',
-        'border': 1,
-        'align': 'right',
-        'num_format': '0.0000'
-    })
-    
-    formats['prior_text'] = wb.add_format({
-        'bg_color': '#FFF2CC',
-        'border': 1,
-        'align': 'left',
-        'text_wrap': True
-    })
-    
-    formats['selection'] = wb.add_format({
-        'bg_color': '#E2EFDA',
-        'border': 1,
-        'bold': True,
-        'align': 'center'
-    })
-    
-    formats['selection_data'] = wb.add_format({
-        'bg_color': '#E2EFDA',
-        'border': 1,
-        'align': 'right',
-        'num_format': '0.0000'
-    })
-    
-    formats['selection_text'] = wb.add_format({
-        'bg_color': '#E2EFDA',
-        'border': 1,
-        'align': 'left',
-        'text_wrap': True
-    })
-    
-    formats['ai'] = wb.add_format({
-        'bg_color': '#DDEBF7',
-        'border': 1,
-        'bold': True,
-        'align': 'center'
-    })
-    
-    formats['ai_data'] = wb.add_format({
-        'bg_color': '#DDEBF7',
-        'border': 1,
-        'align': 'right',
-        'num_format': '0.0000'
-    })
-    
-    formats['ai_text'] = wb.add_format({
-        'bg_color': '#DDEBF7',
-        'border': 1,
-        'align': 'left',
-        'text_wrap': True
-    })
-    
-    formats['user'] = wb.add_format({
-        'bg_color': '#F4B084',
-        'border': 1,
-        'bold': True,
-        'align': 'center'
-    })
-    
-    formats['user_data'] = wb.add_format({
-        'bg_color': '#F4B084',
-        'border': 1,
-        'align': 'right',
-        'num_format': '0.0000'
-    })
-    
-    formats['user_text'] = wb.add_format({
-        'bg_color': '#F4B084',
-        'border': 1,
-        'align': 'left',
-        'text_wrap': True
-    })
-    
-    # Section header
-    formats['section'] = wb.add_format({
-        'bg_color': '#D9E1F2',
-        'border': 1,
-        'align': 'left',
-        'valign': 'vcenter'
-    })
-    
-    return formats
-
 def write_triangle(ws, start_row, title, row_labels, col_labels, data_dict, fmt, number_format="#,##0"):
     """Write a triangle to the worksheet starting at start_row (0-based)."""
     # Create format with specific number format
     data_fmt = fmt['wb'].add_format({
-        'border': 1,
         'align': 'right',
         'valign': 'vcenter',
         'num_format': number_format
@@ -382,20 +236,31 @@ def build_main_sheet(ws, measure, df2, df4, fmt, df_prior=None):
         loss_dict[(str(row['period']), str(row['age']))] = row['value']
     row_ptr, tri_start, tri_end = write_triangle(ws, 0, measure, periods, ages, loss_dict, fmt, "#,##0")
     
-    # 2. Age-to-Age Factors (formulas)
+    # 2. Age-to-Age Factors (formulas with cached values)
     ata_start = row_ptr
     ws.write(ata_start, 0, "Period", fmt['subheader'])
     for c_idx, interval in enumerate(intervals):
         ws.write(ata_start, c_idx + 1, interval, fmt['subheader'])
     ata_start += 1
     
-    # Write ATA formulas
+    # Build LDF lookup dict from df_m for cached values
+    ldf_dict = {}
+    for _, row_data in df_m[df_m['ldf'].notna()].iterrows():
+        key = (str(row_data['period']), str(row_data['interval']))
+        ldf_dict[key] = row_data['ldf']
+    
+    # Write ATA formulas with cached values
     for r_idx, period in enumerate(periods):
         row = ata_start + r_idx
         ws.write(row, 0, period, fmt['label'])
-        for c_idx in range(len(intervals)):
+        for c_idx, interval in enumerate(intervals):
             formula = atoa_formula(row, c_idx, tri_start, ata_start)
-            ws.write_formula(row, c_idx + 1, formula, fmt['data_ldf'])
+            # Get cached LDF value if available
+            cached_ldf = ldf_dict.get((str(period), interval))
+            if cached_ldf is not None:
+                ws.write_formula(row, c_idx + 1, formula, fmt['data_ldf'], cached_ldf)
+            else:
+                ws.write_formula(row, c_idx + 1, formula, fmt['data_ldf'])
     
     ata_end = ata_start + len(periods) - 1
     row_ptr = ata_end + 2
@@ -522,15 +387,14 @@ def build_combined_diagnostics_sheet(ws, diagnostic_cols, df2, df3, fmt):
     row_ptr = 0
     
     for diag_col in diagnostic_cols:
-        # Skip reported_claims - it's redundant
-        if diag_col == 'reported_claims':
+        # Skip redundant/unnecessary diagnostics
+        if diag_col in ('reported_claims', 'incremental_incurred_severity'):
             continue
         
         number_format = DIAG_NUMBER_FORMATS.get(diag_col, "0.0000")
         
         # Create format with specific number format
         diag_data_fmt = fmt['wb'].add_format({
-            'border': 1,
             'align': 'right',
             'valign': 'vcenter',
             'num_format': number_format
@@ -573,19 +437,6 @@ def build_combined_diagnostics_sheet(ws, diagnostic_cols, df2, df3, fmt):
                 for c_idx, age in enumerate(ages):
                     col_l = col_letter(c_idx + 1)
                     formula = f"=IFERROR('Paid Loss'!{col_l}{source_row}/'Incurred Loss'!{col_l}{source_row},\"\")"
-                    ws.write_formula(row_ptr, c_idx + 1, formula, diag_data_fmt)
-                row_ptr += 1
-        elif diag_col == 'incremental_incurred_severity':
-            for period in periods:
-                ws.write(row_ptr, 0, str(period), fmt['label'])
-                source_row = period_to_row[str(period)]
-                for c_idx, age in enumerate(ages):
-                    col_l = col_letter(c_idx + 1)
-                    if c_idx == 0:  # First age column
-                        formula = f"=IFERROR('Incurred Loss'!{col_l}{source_row}/'Reported Count'!{col_l}{source_row},\"\")"
-                    else:  # Incremental
-                        prev_col_l = col_letter(c_idx)
-                        formula = f"=IFERROR(('Incurred Loss'!{col_l}{source_row}-'Incurred Loss'!{prev_col_l}{source_row})/('Reported Count'!{col_l}{source_row}-'Reported Count'!{prev_col_l}{source_row}),\"\")"
                     ws.write_formula(row_ptr, c_idx + 1, formula, diag_data_fmt)
                 row_ptr += 1
         else:
@@ -721,25 +572,61 @@ def export_md_data(measures, df2, df3, df4, exp_md):
         safe_name = measure.lower().replace(' ', '_')
         md_path = Path(SELECTIONS_OUTPUT_PATH) / f"chainladder-context-{safe_name}.md"
         
+        # Triangle data
         tri_sub = df2[(df2['measure'] == measure) & df2['value'].notna()]
         if not tri_sub.empty:
             tri_piv = tri_sub.pivot(index='period', columns='age', values='value')
+            tri_piv = tri_piv.round(0)
             tri_md = df_to_markdown(tri_piv, index=True)
         else:
             tri_md = "No data\n"
         
-        diag_md = df_to_markdown(df3, index=False)
-        avg_md = df_to_markdown(df4[df4['measure'] == measure], index=False)
+        # LDF (age-to-age factors) triangle
+        ldf_sub = df2[(df2['measure'] == measure) & df2['ldf'].notna()]
+        if not ldf_sub.empty:
+            ldf_piv = ldf_sub.pivot(index='period', columns='interval', values='ldf')
+            ldf_md = df_to_markdown(ldf_piv, index=True)
+        else:
+            ldf_md = "No data\n"
         
+        # Diagnostics - create separate triangle for each diagnostic metric
+        diagnostic_cols = [col for col in df3.columns if col not in ['period', 'age']]
+        diagnostics_sections = ""
+        for diag_col in diagnostic_cols:
+            diag_sub = df3[['period', 'age', diag_col]].copy()
+            # Filter out rows where age is NaN
+            diag_sub = diag_sub[diag_sub['age'].notna()]
+            if not diag_sub.empty and diag_sub[diag_col].notna().any():
+                diag_piv = diag_sub.pivot(index='period', columns='age', values=diag_col)
+                diag_label = DIAG_SHEET_LABELS.get(diag_col, diag_col.replace('_', ' ').title())
+                diagnostics_sections += f"### {diag_label}\n"
+                diagnostics_sections += df_to_markdown(diag_piv, index=True) + "\n"
+        
+        if not diagnostics_sections:
+            diagnostics_sections = "No data\n"
+        
+        # Averages - exclude 'measure' column and transpose so intervals are columns
+        avg_sub = df4[df4['measure'] == measure].copy()
+        if not avg_sub.empty:
+            avg_sub = avg_sub.drop(columns=['measure'])
+            # Set interval as index, then transpose
+            avg_sub = avg_sub.set_index('interval').T
+            avg_md = df_to_markdown(avg_sub, index=True)
+        else:
+            avg_md = "No data\n"
+        
+        # Build markdown content
         md_content = f"# Chain Ladder Context: {measure}\n\n"
         md_content += "## Table of Contents\n"
         md_content += "- [Exposure](#exposure)\n"
         md_content += "- [Triangle](#triangle)\n"
+        md_content += "- [Age-to-Age Factors](#age-to-age-factors)\n"
         md_content += "- [Diagnostics](#diagnostics)\n"
         md_content += "- [Averages](#averages)\n\n"
         md_content += "## Exposure\n" + exp_md + "\n"
         md_content += "## Triangle\n" + tri_md + "\n"
-        md_content += "## Diagnostics\n" + diag_md + "\n"
+        md_content += "## Age-to-Age Factors\n" + ldf_md + "\n"
+        md_content += "## Diagnostics\n" + diagnostics_sections + "\n"
         md_content += "## Averages\n" + avg_md + "\n"
         
         with open(md_path, 'w') as f:
@@ -774,9 +661,9 @@ def main():
                 if df3[col].dropna().abs().max() <= 2.0:
                     df3[col] = df3[col].astype(float)
     
-    # Create workbook
-    wb = xlsxwriter.Workbook(output_file)
-    fmt = create_formats(wb)
+    # Create workbook with use_future_functions to handle STDEV.S, AVERAGE, etc. without compatibility warnings
+    wb = xlsxwriter.Workbook(output_file, {'use_future_functions': True})
+    fmt = create_xlsxwriter_formats(wb)
     fmt['wb'] = wb  # Store workbook reference for creating additional formats
     
     raw_measures = df2['measure'].cat.categories.tolist()
@@ -785,6 +672,7 @@ def main():
     if not exp_sub.empty:
         exp_simple = exp_sub.groupby('period', observed=True).agg({'value': 'last'}).reset_index()
         exp_simple.columns = ['Period', 'Exposure']
+        exp_simple['Exposure'] = exp_simple['Exposure'].round(0)
         exp_md = df_to_markdown(exp_simple, index=False)
     else:
         exp_md = "No Exposure data\n"

@@ -32,7 +32,7 @@ from modules.xl_styles import HEADER_FILL, HEADER_FONT, THIN_BORDER
 
 # ── User-configurable properties ─────────────────────────────────────────────
 # Paths from modules/config.py - override here if needed:
-INPUT_COMPLETE_ANALYSIS = config.BASE_DIR + "Analysis - Values Only.xlsx"
+INPUT_COMPLETE_ANALYSIS = config.BASE_DIR + "Analysis.xlsx"
 OUTPUT_REVIEW           = config.BASE_DIR + "Tech Review.xlsx"
 
 IBNR_NEG_TOLERANCE     = -500   # WARN if IBNR < this (small negatives OK from rounding)
@@ -1525,7 +1525,7 @@ def main():
     ck = Checker()
 
     try:
-        wb = load_workbook(INPUT_COMPLETE_ANALYSIS, data_only=True)
+        wb = load_workbook(INPUT_COMPLETE_ANALYSIS, data_only=True, read_only=True)
     except Exception as e:
         ck.fail("1. Structure", "File readable", str(e))
         write_excel_report(ck.results, OUTPUT_REVIEW)

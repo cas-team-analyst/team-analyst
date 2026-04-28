@@ -17,17 +17,12 @@ run-note: When copied to a project, run from the scripts/ directory:
 """
 
 import pandas as pd
-import openpyxl
-from openpyxl.styles import Alignment, Font, PatternFill
-from openpyxl.utils import get_column_letter
+import numpy as np
+import xlsxwriter
 from pathlib import Path
 
 from modules import config
-from modules.xl_styles import (
-    SUBHEADER_FILL, SELECTION_FILL, PRIOR_FILL, AI_FILL, USER_FILL,
-    SUBHEADER_FONT, LABEL_FONT, DATA_FONT,
-    THIN_BORDER, style_header,
-)
+from modules.xl_styles import create_xlsxwriter_formats, COLORS
 from modules.markdown_utils import df_to_markdown
 
 # Paths
@@ -37,10 +32,12 @@ DIAGNOSTICS_PATH = config.PROCESSED_DATA + "3_diagnostics.parquet"
 SELECTIONS_OUTPUT_PATH = config.SELECTIONS
 OUTPUT_FILE_NAME = "Chain Ladder Selections - Tail.xlsx"
 
-# Colors for scenario comparison rows
-GREEN_FILL = PatternFill("solid", fgColor="C6E0B4")   # good scenario
-YELLOW_FILL = PatternFill("solid", fgColor="FFE699")  # marginal scenario
-RED_FILL = PatternFill("solid", fgColor="F4B084")     # poor scenario
+# Colors for scenario comparison rows (xlsxwriter format)
+SCENARIO_COLORS = {
+    'green': '#C6E0B4',   # good scenario
+    'yellow': '#FFE699',  # marginal scenario
+    'red': '#F4B084'      # poor scenario
+}
 
 # Triangle type expectations (for banner notes)
 TRIANGLE_TYPE_NOTES = {
@@ -51,6 +48,15 @@ TRIANGLE_TYPE_NOTES = {
 }
 
 
+def col_letter(col_idx):
+    """Convert 0-based column index to Excel column letter (A, B, C, etc.)"""
+    result = ''
+    while col_idx >= 0:
+        result = chr(col_idx % 26 + ord('A')) + result
+        col_idx = col_idx // 26 - 1
+    return result
+
+
 def get_type_note(measure):
     """Return type-specific note for measure banner."""
     for key, note in TRIANGLE_TYPE_NOTES.items():
@@ -59,23 +65,34 @@ def get_type_note(measure):
     return ''
 
 
-def write_section_header(ws, row, col_span, title, level="section"):
+def write_section_header(ws, row, col_span, title, fmt, level="section"):
     """Write a section header spanning multiple columns."""
-    cell = ws.cell(row=row, column=1, value=title)
-    style_header(cell, level)
-    ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=col_span)
+    format_key = {'header': 'header', 'section': 'section', 'subheader': 'subheader'}.get(level, 'section')
+    header_fmt = fmt.get(format_key, fmt['section'])
+    
+    ws.merge_range(row, 0, row, col_span - 1, title, header_fmt)
     return row + 1
 
 
-def write_banner_section(ws, start_row, measure, df_enhanced, df_diagnostics):
+def write_banner_section(ws, start_row, measure, df_enhanced, df_diagnostics, fmt):
     """Section A: Triangle Type Banner with measure name and key stats."""
-    row = write_section_header(ws, start_row, 12, measure, "header")
+    # Create header format if needed
+    if 'header' not in fmt:
+        fmt['header'] = fmt['wb'].add_format({
+            'bold': True,
+            'bg_color': '#' + COLORS['header_blue'],
+            'font_color': 'FFFFFF',
+            'border': 1,
+            'align': 'center',
+            'valign': 'vcenter'
+        })
+    
+    row = write_section_header(ws, start_row, 12, measure, fmt, "header")
     
     type_note = get_type_note(measure)
     if type_note:
-        cell = ws.cell(row=row, column=1, value=type_note)
-        cell.font = Font(italic=True, size=9)
-        ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=12)
+        note_fmt = fmt['wb'].add_format({'italic': True, 'font_size': 9})
+        ws.merge_range(row, 0, row, 11, type_note, note_fmt)
         row += 1
     
     # Key stats row
@@ -109,23 +126,21 @@ def write_banner_section(ws, start_row, measure, df_enhanced, df_diagnostics):
             f"{last_ldf:.4f}" if last_ldf is not None else 'N/A'
         ]
         
+        label_fmt = fmt['wb'].add_format({'bold': True, 'font_size': 9, 'align': 'right'})
+        value_fmt = fmt['wb'].add_format({'font_size': 9, 'align': 'left'})
+        
         for i, (label, value) in enumerate(zip(stats_labels, stats_values)):
-            col = i * 3 + 1
-            label_cell = ws.cell(row=row, column=col, value=label)
-            label_cell.font = LABEL_FONT
-            label_cell.alignment = Alignment(horizontal="right")
-            
-            value_cell = ws.cell(row=row, column=col+1, value=value)
-            value_cell.font = DATA_FONT
-            value_cell.alignment = Alignment(horizontal="left")
+            col = i * 3
+            ws.write(row, col, label, label_fmt)
+            ws.write(row, col + 1, value, value_fmt)
         
         row += 1
     
     return row + 1
 
 
-def write_observed_factors_section(ws, start_row, measure, df_enhanced):
-    """Section B: Observed Factors Table (triangle + simple avg + CV)."""
+def write_observed_factors_section(ws, start_row, measure, df_enhanced, fmt):
+    """Section B: Observed Factors Table (triangle + formulas for avg + CV with cached values)."""
     df_m = df_enhanced[df_enhanced['measure'] == measure].copy()
     if df_m.empty:
         return start_row
@@ -136,18 +151,20 @@ def write_observed_factors_section(ws, start_row, measure, df_enhanced):
     else:
         ages = sorted([a for a in df_m['age'].unique() if pd.notna(a)], key=lambda x: int(str(x)))
     
-    row = write_section_header(ws, start_row, len(ages) + 1, "Observed Age-to-Age Factors", "section")
+    row = write_section_header(ws, start_row, len(ages) + 1, "Observed Age-to-Age Factors", fmt, "section")
     
-    ws.cell(row=row, column=1, value="Accident Year").border = THIN_BORDER
-    ws.cell(row=row, column=1).font = SUBHEADER_FONT
-    ws.cell(row=row, column=1).fill = SUBHEADER_FILL
-    ws.cell(row=row, column=1).alignment = Alignment(horizontal="center")
+    # Header row
+    ws.write(row, 0, "Accident Year", fmt['subheader'])
     
-    for c_idx, age in enumerate(ages, start=2):
-        cell = ws.cell(row=row, column=c_idx, value=age)
-        style_header(cell, "subheader")
+    for c_idx, age in enumerate(ages, start=1):
+        # Write age as number if numeric to avoid Excel "number formatted as text" warnings
+        if isinstance(age, (int, float, np.integer, np.floating)):
+            ws.write_number(row, c_idx, age, fmt['subheader'])
+        else:
+            ws.write(row, c_idx, age, fmt['subheader'])
     row += 1
     
+    # Build factor dict from source data
     factor_dict = {}
     for _, r in df_m[df_m['ldf'].notna()].iterrows():
         key = (str(r['period']), r['age'])
@@ -155,46 +172,50 @@ def write_observed_factors_section(ws, start_row, measure, df_enhanced):
     
     data_start_row = row
     for period in periods:
-        period_cell = ws.cell(row=row, column=1, value=period)
-        period_cell.font = LABEL_FONT
-        period_cell.alignment = Alignment(horizontal="left")
-        period_cell.border = THIN_BORDER
+        # Write period as number if numeric to avoid Excel warnings
+        if isinstance(period, (int, float, np.integer, np.floating)):
+            ws.write_number(row, 0, period, fmt['label'])
+        else:
+            ws.write(row, 0, period, fmt['label'])
         
-        for c_idx, age in enumerate(ages, start=2):
+        for c_idx, age in enumerate(ages, start=1):
             val = factor_dict.get((str(period), age))
-            cell = ws.cell(row=row, column=c_idx, value=val)
-            cell.font = DATA_FONT
-            cell.alignment = Alignment(horizontal="right")
-            cell.border = THIN_BORDER
             if val is not None:
-                cell.number_format = "0.0000"
+                ws.write(row, c_idx, val, fmt['data_ldf'])
+            else:
+                ws.write(row, c_idx, '', fmt['data'])
         row += 1
     data_end_row = row - 1
     
-    avg_cell = ws.cell(row=row, column=1, value="Average")
-    avg_cell.font = LABEL_FONT
-    avg_cell.border = THIN_BORDER
-    for c_idx, age in enumerate(ages, start=2):
-        col_letter = get_column_letter(c_idx)
-        rng = f"{col_letter}{data_start_row}:{col_letter}{data_end_row}"
-        cell = ws.cell(row=row, column=c_idx, value=f"=IFERROR(AVERAGE({rng}),"")")
-        cell.font = DATA_FONT
-        cell.alignment = Alignment(horizontal="right")
-        cell.border = THIN_BORDER
-        cell.number_format = "0.0000"
+    # Average row with formulas and cached values
+    ws.write(row, 0, "Average", fmt['label'])
+    for c_idx, age in enumerate(ages, start=1):
+        col_ltr = col_letter(c_idx)
+        formula = f"=IFERROR(AVERAGE({col_ltr}{data_start_row+1}:{col_ltr}{data_end_row+1}),\"\")"
+        
+        # Calculate cached value from dataframe
+        age_ldfs = df_m[(df_m['age'] == age) & df_m['ldf'].notna()]['ldf']
+        cached_value = age_ldfs.mean() if not age_ldfs.empty else None
+        
+        ws.write_formula(row, c_idx, formula, fmt['data_ldf'], cached_value)
     row += 1
     
-    cv_cell = ws.cell(row=row, column=1, value="CV")
-    cv_cell.font = LABEL_FONT
-    cv_cell.border = THIN_BORDER
-    for c_idx, age in enumerate(ages, start=2):
-        col_letter = get_column_letter(c_idx)
-        rng = f"{col_letter}{data_start_row}:{col_letter}{data_end_row}"
-        cell = ws.cell(row=row, column=c_idx, value=f"=IFERROR(STDEV.S({rng})/AVERAGE({rng}),"")")
-        cell.font = DATA_FONT
-        cell.alignment = Alignment(horizontal="right")
-        cell.border = THIN_BORDER
-        cell.number_format = "0.0000"
+    # CV row with formulas and cached values
+    ws.write(row, 0, "CV", fmt['label'])
+    for c_idx, age in enumerate(ages, start=1):
+        col_ltr = col_letter(c_idx)
+        formula = f"=IFERROR(STDEV.S({col_ltr}{data_start_row+1}:{col_ltr}{data_end_row+1})/AVERAGE({col_ltr}{data_start_row+1}:{col_ltr}{data_end_row+1}),\"\")"
+        
+        # Calculate cached value from dataframe
+        age_ldfs = df_m[(df_m['age'] == age) & df_m['ldf'].notna()]['ldf']
+        if not age_ldfs.empty and len(age_ldfs) > 1:
+            avg = age_ldfs.mean()
+            std = age_ldfs.std(ddof=1)
+            cached_value = std / avg if avg != 0 else None
+        else:
+            cached_value = None
+        
+        ws.write_formula(row, c_idx, formula, fmt['data_ldf'], cached_value)
     row += 1
     
     return row + 1
@@ -223,24 +244,24 @@ def get_scenario_color(row_data):
     
     # Bondy variants have no R² - always yellow
     if 'bondy' in method.lower():
-        return YELLOW_FILL
+        return SCENARIO_COLORS['yellow']
     
     # Green: high quality scenario
     if (is_monotone and slope_breaks == 0 and 
         r_squared is not None and not pd.isna(r_squared) and r_squared > 0.85 and 
         not gap_flag and materiality_ok):
-        return GREEN_FILL
+        return SCENARIO_COLORS['green']
     
     # Red: poor quality
     if (not is_monotone or slope_breaks > 0 or 
         (r_squared is not None and not pd.isna(r_squared) and r_squared < 0.70) or gap_flag):
-        return RED_FILL
+        return SCENARIO_COLORS['red']
     
     # Yellow: marginal
-    return YELLOW_FILL
+    return SCENARIO_COLORS['yellow']
 
 
-def write_scenario_comparison_section(ws, start_row, measure, df_scenarios):
+def write_scenario_comparison_section(ws, start_row, measure, df_scenarios, fmt):
     """Section C: Scenario Comparison Table with diagnostics."""
     df_m = df_scenarios[df_scenarios['measure'] == measure].copy()
     if df_m.empty:
@@ -252,12 +273,11 @@ def write_scenario_comparison_section(ws, start_row, measure, df_scenarios):
         '% of CDF', 'Materiality OK', '+10% Reserve Delta', '+20% Reserve Delta'
     ]
     
-    row = write_section_header(ws, start_row, len(col_headers), "Scenario Comparison", "section")
+    row = write_section_header(ws, start_row, len(col_headers), "Scenario Comparison", fmt, "section")
     
     # Header row
-    for c_idx, header in enumerate(col_headers, start=1):
-        cell = ws.cell(row=row, column=c_idx, value=header)
-        style_header(cell, "subheader")
+    for c_idx, header in enumerate(col_headers):
+        ws.write(row, c_idx, header, fmt['subheader'])
     row += 1
     
     # Sort scenarios by starting_age then method
@@ -265,7 +285,21 @@ def write_scenario_comparison_section(ws, start_row, measure, df_scenarios):
     
     # Data rows
     for _, scenario in df_m.iterrows():
-        row_fill = get_scenario_color(scenario)
+        row_color = get_scenario_color(scenario)
+        row_fmt = fmt['wb'].add_format({
+            'border': 1,
+            'bg_color': row_color,
+            'align': 'right',
+            'valign': 'vcenter',
+            'font_size': 9
+        })
+        row_fmt_text = fmt['wb'].add_format({
+            'border': 1,
+            'bg_color': row_color,
+            'align': 'left',
+            'valign': 'vcenter',
+            'font_size': 9
+        })
         
         # Helper to safely convert boolean columns (handles pandas NA)
         def safe_bool(val):
@@ -291,144 +325,196 @@ def write_scenario_comparison_section(ws, start_row, measure, df_scenarios):
             scenario.get('sensitivity_plus20_reserve_delta'),
         ]
         
-        for c_idx, val in enumerate(values, start=1):
-            cell = ws.cell(row=row, column=c_idx, value=val)
-            cell.font = DATA_FONT
-            cell.alignment = Alignment(horizontal="right" if isinstance(val, (int, float)) else "left")
-            cell.border = THIN_BORDER
-            cell.fill = row_fill
+        for c_idx, val in enumerate(values):
+            cell_fmt = row_fmt_text if c_idx in [4, 5] else row_fmt  # Method and Params are text
             
             # Number formatting
             if c_idx == 1:  # Starting Age
-                cell.number_format = "0"
+                num_fmt = fmt['wb'].add_format({
+                    'border': 1,
+                    'bg_color': row_color,
+                    'align': 'right',
+                    'num_format': '0'
+                })
+                ws.write(row, c_idx, val, num_fmt)
             elif c_idx == 3:  # CV
                 if val is not None:
-                    cell.number_format = "0.0000"
+                    num_fmt = fmt['wb'].add_format({
+                        'border': 1,
+                        'bg_color': row_color,
+                        'align': 'right',
+                        'num_format': '0.0000'
+                    })
+                    ws.write(row, c_idx, val, num_fmt)
+                else:
+                    ws.write(row, c_idx, '', row_fmt)
             elif c_idx == 7:  # Tail Factor
                 if val is not None:
-                    cell.number_format = "0.0000"
+                    num_fmt = fmt['wb'].add_format({
+                        'border': 1,
+                        'bg_color': row_color,
+                        'align': 'right',
+                        'num_format': '0.0000'
+                    })
+                    ws.write(row, c_idx, val, num_fmt)
+                else:
+                    ws.write(row, c_idx, '', row_fmt)
             elif c_idx in [8, 9, 10]:  # R2, LOO Std Dev, Gap
                 if val is not None:
-                    cell.number_format = "0.0000"
+                    num_fmt = fmt['wb'].add_format({
+                        'border': 1,
+                        'bg_color': row_color,
+                        'align': 'right',
+                        'num_format': '0.0000'
+                    })
+                    ws.write(row, c_idx, val, num_fmt)
+                else:
+                    ws.write(row, c_idx, '', row_fmt)
             elif c_idx == 12:  # % of CDF
                 if val is not None:
-                    cell.number_format = "0.00%"
+                    num_fmt = fmt['wb'].add_format({
+                        'border': 1,
+                        'bg_color': row_color,
+                        'align': 'right',
+                        'num_format': '0.00%'
+                    })
+                    ws.write(row, c_idx, val, num_fmt)
+                else:
+                    ws.write(row, c_idx, '', row_fmt)
             elif c_idx in [14, 15]:  # Reserve deltas
                 if val is not None:
-                    cell.number_format = "#,##0"
+                    num_fmt = fmt['wb'].add_format({
+                        'border': 1,
+                        'bg_color': row_color,
+                        'align': 'right',
+                        'num_format': '#,##0'
+                    })
+                    ws.write(row, c_idx, val, num_fmt)
+                else:
+                    ws.write(row, c_idx, '', row_fmt)
+            else:
+                ws.write(row, c_idx, val, cell_fmt)
         
         row += 1
     
     return row + 1
 
 
-def write_selection_section(ws, start_row, measure, prior_selections=None):
+def write_selection_section(ws, start_row, measure, fmt, prior_selections=None):
     """Section D: Selection Area (prior, rules-based AI, open-ended AI, user selection)."""
-    row = write_section_header(ws, start_row, 6, "Tail Factor Selection", "section")
+    row = write_section_header(ws, start_row, 6, "Tail Factor Selection", fmt, "section")
     
     headers = ['Label', 'Cutoff Age', 'Tail Factor', 'Method', 'Reasoning', 'Additional Notes']
-    for c_idx, header in enumerate(headers, start=1):
-        cell = ws.cell(row=row, column=c_idx, value=header)
-        style_header(cell, "subheader")
+    for c_idx, header in enumerate(headers):
+        ws.write(row, c_idx, header, fmt['subheader'])
     row += 1
     
+    # Prior selection row
     if prior_selections is not None:
         prior_m = prior_selections[prior_selections['measure'] == measure]
         if not prior_m.empty:
-            prior_row = prior_m.iloc[0]
+            prior_row_data = prior_m.iloc[0]
             values = [
                 'Prior Selection',
-                prior_row.get('cutoff_age', ''),
-                prior_row.get('tail_factor', ''),
-                prior_row.get('method', ''),
-                prior_row.get('reasoning', ''),
+                prior_row_data.get('cutoff_age', ''),
+                prior_row_data.get('tail_factor', ''),
+                prior_row_data.get('method', ''),
+                prior_row_data.get('reasoning', ''),
                 ''
             ]
-            for c_idx, val in enumerate(values, start=1):
-                cell = ws.cell(row=row, column=c_idx, value=val)
-                cell.fill = PRIOR_FILL
-                cell.border = THIN_BORDER
-                cell.font = DATA_FONT
-                cell.alignment = Alignment(horizontal="left", wrap_text=True)
-                if c_idx in [2, 3] and val:
-                    cell.number_format = "0.0000" if c_idx == 3 else "0"
             
-            prior_data_row = row
-            user_data_row = row + 7
+            for c_idx, val in enumerate(values):
+                if c_idx == 0:  # Label column
+                    ws.write(row, c_idx, val, fmt['prior'])
+                elif c_idx == 1 and val:  # Cutoff Age
+                    num_fmt = fmt['wb'].add_format({
+                        'bg_color': '#' + COLORS['prior_yellow'],
+                        'border': 1,
+                        'align': 'right',
+                        'num_format': '0'
+                    })
+                    ws.write(row, c_idx, val, num_fmt)
+                elif c_idx == 2 and val:  # Tail Factor
+                    ws.write(row, c_idx, val, fmt['prior_data'])
+                elif c_idx in [3, 4, 5]:  # Text columns
+                    ws.write(row, c_idx, val, fmt['prior_text'])
+                else:
+                    ws.write(row, c_idx, val, fmt['prior'])
+            
+            prior_data_row = row + 1  # xlsxwriter is 0-based, formula needs 1-based
+            user_data_row = row + 8  # Will be 7 rows down after all AI selections
             row += 1
             
-            cell = ws.cell(row=row, column=1, value="Prior Delta")
-            cell.fill = PRIOR_FILL
-            cell.border = THIN_BORDER
-            cell.font = LABEL_FONT
-            for c_idx in range(2, 7):
-                cell = ws.cell(row=row, column=c_idx, value='')
-                cell.fill = PRIOR_FILL
-                cell.border = THIN_BORDER
-                if c_idx == 3:
-                    cell.value = f"=IFERROR(C{user_data_row}-C{prior_data_row}, "")"
-                    cell.number_format = "0.0000"
-            ws.cell(row=row, column=5, value="(current - prior)").font = Font(italic=True, size=8)
+            # Prior Delta row with formula
+            ws.write(row, 0, "Prior Delta", fmt['prior'])
+            for c_idx in range(1, 6):
+                if c_idx == 2:  # Tail Factor delta formula with cached value
+                    formula = f"=IFERROR(C{user_data_row}-C{prior_data_row}, \"\")"
+                    # We don't know user selection yet, so no cached value (will show blank until user fills)
+                    ws.write_formula(row, c_idx, formula, fmt['prior_data'], None)
+                else:
+                    ws.write(row, c_idx, '', fmt['prior'])
+            
+            # Add note in Reasoning column
+            note_fmt = fmt['wb'].add_format({
+                'bg_color': '#' + COLORS['prior_yellow'],
+                'border': 1,
+                'italic': True,
+                'font_size': 8,
+                'align': 'left'
+            })
+            ws.write(row, 4, "(current - prior)", note_fmt)
             row += 1
             
-            row += 1
+            row += 1  # Blank row
     
-    cell = ws.cell(row=row, column=1, value="Rules-Based AI Selection")
-    style_header(cell, "selection")
-    for c_idx in range(2, 7):
-        cell = ws.cell(row=row, column=c_idx, value='')
-        cell.fill = SELECTION_FILL
-        cell.border = THIN_BORDER
-        cell.alignment = Alignment(horizontal="left", wrap_text=True)
+    # Rules-Based AI Selection row
+    ws.write(row, 0, "Rules-Based AI Selection", fmt['selection'])
+    for c_idx in range(1, 6):
+        ws.write(row, c_idx, '', fmt['selection_text'])
     row += 1
     
-    cell = ws.cell(row=row, column=1, value="Open-Ended AI Selection")
-    style_header(cell, "ai")
-    for c_idx in range(2, 7):
-        cell = ws.cell(row=row, column=c_idx, value='')
-        cell.fill = AI_FILL
-        cell.border = THIN_BORDER
-        cell.alignment = Alignment(horizontal="left", wrap_text=True)
+    # Open-Ended AI Selection row
+    ws.write(row, 0, "Open-Ended AI Selection", fmt['ai'])
+    for c_idx in range(1, 6):
+        ws.write(row, c_idx, '', fmt['ai_text'])
     row += 1
     
-    row += 1
+    row += 1  # Blank row
     
-    cell = ws.cell(row=row, column=1, value="User Selection")
-    style_header(cell, "user")
-    for c_idx in range(2, 7):
-        cell = ws.cell(row=row, column=c_idx, value='')
-        cell.fill = USER_FILL
-        cell.border = THIN_BORDER
-        cell.alignment = Alignment(horizontal="left", wrap_text=True)
+    # User Selection row
+    ws.write(row, 0, "User Selection", fmt['user'])
+    for c_idx in range(1, 6):
+        ws.write(row, c_idx, '', fmt['user_text'])
     row += 1
     
     return row + 1
 
 
 
-def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, prior_selections=None):
+def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, fmt, prior_selections=None):
     """Build complete sheet for one measure."""
     row = 1
     
     # Section A: Banner
-    row = write_banner_section(ws, row, measure, df_enhanced, df_diagnostics)
+    row = write_banner_section(ws, row, measure, df_enhanced, df_diagnostics, fmt)
     
     # Section B: Observed Factors
-    row = write_observed_factors_section(ws, row, measure, df_enhanced)
+    row = write_observed_factors_section(ws, row, measure, df_enhanced, fmt)
     
     # Section C: Scenario Comparison
-    row = write_scenario_comparison_section(ws, row, measure, df_scenarios)
+    row = write_scenario_comparison_section(ws, row, measure, df_scenarios, fmt)
     
     # Section D: Selection Area
-    row = write_selection_section(ws, row, measure, prior_selections)
+    row = write_selection_section(ws, row, measure, fmt, prior_selections)
     
-    # Column widths
-    ws.column_dimensions['A'].width = 30
-    ws.column_dimensions['B'].width = 12
-    ws.column_dimensions['C'].width = 12
-    ws.column_dimensions['D'].width = 15
-    ws.column_dimensions['E'].width = 25
-    ws.column_dimensions['F'].width = 30
+    # Column widths (xlsxwriter uses 0-based indexing for columns)
+    ws.set_column(0, 0, 30)  # A: Label
+    ws.set_column(1, 1, 12)  # B: Cutoff Age
+    ws.set_column(2, 2, 12)  # C: Tail Factor
+    ws.set_column(3, 3, 15)  # D: Method
+    ws.set_column(4, 4, 25)  # E: Reasoning
+    ws.set_column(5, 5, 30)  # F: Additional Notes
 
 
 
@@ -496,8 +582,13 @@ def main():
     else:
         print("  No prior tail selections found (optional)")
     
-    wb = openpyxl.Workbook()
-    wb.remove(wb.active)
+    # Create workbook with xlsxwriter
+    wb = xlsxwriter.Workbook(output_file, {
+        'use_future_functions': True,
+        'nan_inf_to_errors': True  # Convert NaN/INF to Excel errors instead of failing
+    })
+    fmt = create_xlsxwriter_formats(wb)
+    fmt['wb'] = wb  # Store reference for dynamic format creation
     
     raw_measures = sorted(df_scenarios['measure'].unique())
     
@@ -507,6 +598,7 @@ def main():
         # Exposure doesn't develop over age, so we take the last value per period
         exp_simple = exp_sub.groupby('period', observed=True).agg({'value': 'last'}).reset_index()
         exp_simple.columns = ['Period', 'Exposure']
+        exp_simple['Exposure'] = exp_simple['Exposure'].round(0)
         exp_md = df_to_markdown(exp_simple, index=False)
     else:
         exp_md = "No Exposure data\n"
@@ -516,11 +608,12 @@ def main():
     print(f"\nCreating sheets for measures: {measures}")
     
     for measure in measures:
-        ws = wb.create_sheet(title=measure[:31])
-        build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, df_prior)
+        # xlsxwriter sheet names limited to 31 chars
+        ws = wb.add_worksheet(measure[:31])
+        build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, fmt, df_prior)
         print(f"  Built sheet: {measure[:31]}")
     
-    wb.save(output_file)
+    wb.close()
     export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, exp_md)
     print(f"\nSaved: {output_file}")
 
