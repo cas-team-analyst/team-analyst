@@ -42,17 +42,27 @@ ws = wb.add_worksheet('Sheet1')
 - ✓ **Faster:** More efficient than openpyxl for creating new files
 
 ### Writing Formulas with Cached Values
+
+**CRITICAL: Never pass `None` as cached_value parameter - it corrupts Excel XML!**
+
 ```python
-# Simple formula with cached value
+# ✓ CORRECT: Simple formula with cached value
 ws.write_formula(2, 1, '=SUM(A1:A10)', fmt['data_num'], 55)
 
-# CV formula with cached value from dataframe
+# ✓ CORRECT: CV formula with cached value from dataframe
 cv_value = df4.loc[df4['metric'] == 'cv_3yr', measure].iloc[0]
 ws.write_formula(row, col, '=IFERROR(STDEV.S(B49:B51)/AVERAGE(B49:B51),"")', fmt['data_ldf'], cv_value)
 
-# ATA formula with cached value from lookup dict
+# ✓ CORRECT: Conditional cached value - only pass if not None
 cached_ldf = ldf_dict.get((str(period), interval))
-ws.write_formula(row, col, f"={col_letter(col-1)}{row-1}/{col_letter(col-1)}{row}", fmt['data_ldf'], cached_ldf)
+if cached_ldf is not None:
+    ws.write_formula(row, col, formula, fmt['data_ldf'], cached_ldf)
+else:
+    ws.write_formula(row, col, formula, fmt['data_ldf'])  # Omit cached_value param
+
+# ❌ WRONG: Never pass None - corrupts Excel XML causing recovery errors
+cached_value = some_dict.get(key)  # Might be None
+ws.write_formula(row, col, formula, fmt['data_ldf'], cached_value)  # BREAKS if None!
 ```
 
 ### Column Letter Helper
@@ -98,6 +108,7 @@ This codebase relies heavily on Excel workbooks not just for displaying outputs,
 
 ## Best Practices
 
+- **NEVER Pass None to write_formula:** Passing `None` as the `cached_value` parameter corrupts Excel XML, causing "Removed Records: Cell information" recovery errors. Either pass a valid value or omit the parameter entirely.
 - **Cache All Formulas:** Always provide cached values when writing formulas. Retrieve cached values from source dataframes (parquet files).
 - **use_future_functions:** Always enable `{'use_future_functions': True}` when creating workbooks to avoid Excel compatibility warnings for STDEV.S, AVERAGE, etc.
 - **Shared Formatting:** Use `create_xlsxwriter_formats()` from `modules/xl_styles.py` for consistent formatting across all workbooks.

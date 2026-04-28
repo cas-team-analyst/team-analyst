@@ -3,6 +3,8 @@
 @./skills/selection-logic/SKILL.md
 @./skills/peer-review/SKILL.md
 
+Use caveman ultra mode unless asked not to.
+
 Start with `/help` for orientation or `/reserving-analysis` for the main workflow.
 
 Skills live in `skills/`. Selector and reference subagent prompts live in `skills/reserving-analysis/agents/`.

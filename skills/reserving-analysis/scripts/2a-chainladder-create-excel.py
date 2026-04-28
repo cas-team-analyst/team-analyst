@@ -24,6 +24,7 @@ from pathlib import Path
 from modules import config
 from modules.markdown_utils import df_to_markdown
 from modules.xl_styles import create_xlsxwriter_formats
+from modules.xl_writers import col_letter, write_triangle_xlsxwriter
 
 # Paths from modules/config.py — override here if needed:
 OUTPUT_PATH = config.PROCESSED_DATA
@@ -54,41 +55,6 @@ DIAG_NUMBER_FORMATS = {
     'incremental_paid_severity': '#,##0',
     'incremental_closure_rate': '0.00%',
 }
-
-def col_letter(col_idx):
-    """Convert 0-based column index to Excel column letter (A, B, C, etc.)"""
-    result = ''
-    while col_idx >= 0:
-        result = chr(col_idx % 26 + ord('A')) + result
-        col_idx = col_idx // 26 - 1
-    return result
-
-def write_triangle(ws, start_row, title, row_labels, col_labels, data_dict, fmt, number_format="#,##0"):
-    """Write a triangle to the worksheet starting at start_row (0-based)."""
-    # Create format with specific number format
-    data_fmt = fmt['wb'].add_format({
-        'align': 'right',
-        'valign': 'vcenter',
-        'num_format': number_format
-    })
-    
-    # Write header row
-    ws.write(start_row, 0, "Period", fmt['subheader'])
-    for c_idx, col in enumerate(col_labels):
-        ws.write(start_row, c_idx + 1, col, fmt['subheader'])
-    
-    # Write data rows
-    data_start_row = start_row + 1
-    for r_idx, row_label in enumerate(row_labels):
-        row = data_start_row + r_idx
-        ws.write(row, 0, row_label, fmt['label'])
-        for c_idx, col in enumerate(col_labels):
-            val = data_dict.get((str(row_label), str(col)))
-            if val is not None:
-                ws.write(row, c_idx + 1, val, data_fmt)
-    
-    data_end_row = data_start_row + len(row_labels) - 1
-    return start_row + len(row_labels) + 2, data_start_row, data_end_row
 
 def write_selections_section(ws, start_row, col_labels, fmt, prior_selections=None, measure=None):
     """Write selection rows for Rules-Based AI, Open-Ended AI, and User."""
@@ -234,7 +200,7 @@ def build_main_sheet(ws, measure, df2, df4, fmt, df_prior=None):
     loss_dict = {}
     for _, row in df_m.iterrows():
         loss_dict[(str(row['period']), str(row['age']))] = row['value']
-    row_ptr, tri_start, tri_end = write_triangle(ws, 0, measure, periods, ages, loss_dict, fmt, "#,##0")
+    row_ptr, tri_start, tri_end = write_triangle_xlsxwriter(ws, 0, periods, ages, loss_dict, fmt, "#,##0")
     
     # 2. Age-to-Age Factors (formulas with cached values)
     ata_start = row_ptr
@@ -387,8 +353,8 @@ def build_combined_diagnostics_sheet(ws, diagnostic_cols, df2, df3, fmt):
     row_ptr = 0
     
     for diag_col in diagnostic_cols:
-        # Skip reported_claims - it's redundant
-        if diag_col == 'reported_claims':
+        # Skip redundant/unnecessary diagnostics
+        if diag_col in ('reported_claims', 'incremental_incurred_severity'):
             continue
         
         number_format = DIAG_NUMBER_FORMATS.get(diag_col, "0.0000")
@@ -462,7 +428,7 @@ def build_combined_diagnostics_sheet(ws, diagnostic_cols, df2, df3, fmt):
         ws.set_column(c_idx, c_idx, 12)
 
 def build_combined_cv_slopes_sheet(ws, measures, df2, df4, fmt):
-    """Build combined CV & Slopes sheet with formulas AND cached values from df4."""
+    """Build combined CV & Slopes sheet with hard-coded values from df4 (no formulas for compatibility)."""
     row_ptr = 0
     
     # LDF data is in rows 28-51 (24 periods) in each measure sheet (1-based Excel rows)
@@ -517,40 +483,12 @@ def build_combined_cv_slopes_sheet(ws, measures, df2, df4, fmt):
             range_start_row_excel = ldf_end_row_excel - n_periods + 1
             
             for c_idx, interval in enumerate(intervals_with_tail):
-                if interval == "Tail":
-                    # Tail column - write value from df4 (no formula)
-                    val_row = df_avg[df_avg['interval'] == interval]
-                    if not val_row.empty and metric in val_row.columns:
-                        val = val_row[metric].iloc[0]
-                        if pd.notna(val):
-                            ws.write(row_ptr, c_idx + 1, val, fmt['data_ldf'])
-                else:
-                    # Regular interval - write formula WITH cached value
-                    col_l = interval_to_col.get(interval)
-                    if col_l:
-                        # Get cached value from df4
-                        val_row = df_avg[df_avg['interval'] == interval]
-                        cached_value = None
-                        if not val_row.empty and metric in val_row.columns:
-                            val = val_row[metric].iloc[0]
-                            if pd.notna(val):
-                                cached_value = val
-                        
-                        # Generate formula
-                        if metric.startswith('cv_'):
-                            formula = f"=IFERROR(STDEV.S('{measure}'!{col_l}{range_start_row_excel}:{col_l}{ldf_end_row_excel})/AVERAGE('{measure}'!{col_l}{range_start_row_excel}:{col_l}{ldf_end_row_excel}),\"\")"
-                        elif metric.startswith('slope_'):
-                            x_array = ",".join(str(i) for i in range(1, n_periods + 1))
-                            formula = f"=IFERROR(SLOPE('{measure}'!{col_l}{range_start_row_excel}:{col_l}{ldf_end_row_excel},{{{x_array}}}),\"\")"
-                        else:
-                            formula = None
-                        
-                        # Write formula with cached value
-                        if formula:
-                            if cached_value is not None:
-                                ws.write_formula(row_ptr, c_idx + 1, formula, fmt['data_ldf'], cached_value)
-                            else:
-                                ws.write_formula(row_ptr, c_idx + 1, formula, fmt['data_ldf'])
+                # Write calculated values from df4 (no formulas - better compatibility)
+                val_row = df_avg[df_avg['interval'] == interval]
+                if not val_row.empty and metric in val_row.columns:
+                    val = val_row[metric].iloc[0]
+                    if pd.notna(val):
+                        ws.write(row_ptr, c_idx + 1, val, fmt['data_ldf'])
             
             row_ptr += 1
         
@@ -661,8 +599,8 @@ def main():
                 if df3[col].dropna().abs().max() <= 2.0:
                     df3[col] = df3[col].astype(float)
     
-    # Create workbook with use_future_functions to handle STDEV.S, AVERAGE, etc. without compatibility warnings
-    wb = xlsxwriter.Workbook(output_file, {'use_future_functions': True})
+    # Create workbook - LET and STDEV.S are now standard Excel 365 functions
+    wb = xlsxwriter.Workbook(output_file)
     fmt = create_xlsxwriter_formats(wb)
     fmt['wb'] = wb  # Store workbook reference for creating additional formats
     
@@ -707,7 +645,7 @@ def main():
     
     wb.close()
     print(f"\nSaved: {output_file}")
-    print("  CV & Slope formulas now display immediately (cached values included)")
+    print("  CV & Slope values hard-coded (no formulas for better compatibility)")
     
     export_md_data(measures, df2, df3, df4, exp_md)
 

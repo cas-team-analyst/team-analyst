@@ -64,6 +64,15 @@ def create_xlsxwriter_formats(workbook):
     """
     formats = {}
     
+    # Header format
+    formats['header'] = workbook.add_format({
+        'bold': True,
+        'bg_color': '#' + COLORS['header_blue'],
+        'font_color': 'FFFFFF',
+        'align': 'center',
+        'valign': 'vcenter'
+    })
+    
     # Base formats
     formats['subheader'] = workbook.add_format({
         'bold': True,
@@ -101,6 +110,13 @@ def create_xlsxwriter_formats(workbook):
         'num_format': '0.00%'
     })
     
+    # Period format - numeric but no comma formatting (General)
+    formats['data_period'] = workbook.add_format({
+        'align': 'right',
+        'valign': 'vcenter',
+        'num_format': '0'
+    })
+    
     # Section header
     formats['section'] = workbook.add_format({
         'bg_color': '#' + COLORS['section_blue'],
@@ -126,6 +142,19 @@ def create_xlsxwriter_formats(workbook):
         'bg_color': '#' + COLORS['prior_yellow'],
         'align': 'left',
         'text_wrap': True
+    })
+    
+    formats['prior_num'] = workbook.add_format({
+        'bg_color': '#' + COLORS['prior_yellow'],
+        'align': 'right',
+        'num_format': '0'
+    })
+    
+    formats['prior_note'] = workbook.add_format({
+        'bg_color': '#' + COLORS['prior_yellow'],
+        'italic': True,
+        'font_size': 8,
+        'align': 'left'
     })
     
     # Current selections (green)

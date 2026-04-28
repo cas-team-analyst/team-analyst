@@ -20,10 +20,12 @@ import pandas as pd
 import numpy as np
 import xlsxwriter
 from pathlib import Path
+from openpyxl import load_workbook
 
 from modules import config
 from modules.xl_styles import create_xlsxwriter_formats, COLORS
 from modules.markdown_utils import df_to_markdown
+from modules.xl_writers import col_letter
 
 # Paths
 TAIL_SCENARIOS_PATH = config.PROCESSED_DATA + "tail-scenarios.parquet"
@@ -31,38 +33,7 @@ ENHANCED_PATH = config.PROCESSED_DATA + "2_enhanced.parquet"
 DIAGNOSTICS_PATH = config.PROCESSED_DATA + "3_diagnostics.parquet"
 SELECTIONS_OUTPUT_PATH = config.SELECTIONS
 OUTPUT_FILE_NAME = "Chain Ladder Selections - Tail.xlsx"
-
-# Colors for scenario comparison rows (xlsxwriter format)
-SCENARIO_COLORS = {
-    'green': '#C6E0B4',   # good scenario
-    'yellow': '#FFE699',  # marginal scenario
-    'red': '#F4B084'      # poor scenario
-}
-
-# Triangle type expectations (for banner notes)
-TRIANGLE_TYPE_NOTES = {
-    'Paid Loss': 'Paid loss tails typically longer than incurred',
-    'Incurred Loss': 'Incurred loss tails typically shorter than paid',
-    'Closed Count': 'Closure tails similar to paid loss',
-    'Reported Count': 'Reported count tails similar to incurred loss',
-}
-
-
-def col_letter(col_idx):
-    """Convert 0-based column index to Excel column letter (A, B, C, etc.)"""
-    result = ''
-    while col_idx >= 0:
-        result = chr(col_idx % 26 + ord('A')) + result
-        col_idx = col_idx // 26 - 1
-    return result
-
-
-def get_type_note(measure):
-    """Return type-specific note for measure banner."""
-    for key, note in TRIANGLE_TYPE_NOTES.items():
-        if key.lower() in measure.lower():
-            return note
-    return ''
+CL_LDF_EXCEL = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
 
 
 def write_section_header(ws, row, col_span, title, fmt, level="section"):
@@ -74,195 +45,209 @@ def write_section_header(ws, row, col_span, title, fmt, level="section"):
     return row + 1
 
 
-def write_banner_section(ws, start_row, measure, df_enhanced, df_diagnostics, fmt):
-    """Section A: Triangle Type Banner with measure name and key stats."""
-    # Create header format if needed
-    if 'header' not in fmt:
-        fmt['header'] = fmt['wb'].add_format({
-            'bold': True,
-            'bg_color': '#' + COLORS['header_blue'],
-            'font_color': 'FFFFFF',
-            'border': 1,
-            'align': 'center',
-            'valign': 'vcenter'
-        })
-    
-    row = write_section_header(ws, start_row, 12, measure, fmt, "header")
-    
-    type_note = get_type_note(measure)
-    if type_note:
-        note_fmt = fmt['wb'].add_format({'italic': True, 'font_size': 9})
-        ws.merge_range(row, 0, row, 11, type_note, note_fmt)
-        row += 1
-    
-    # Key stats row
-    df_m = df_enhanced[df_enhanced['measure'] == measure].copy()
-    if not df_m.empty:
-        max_age = df_m['age'].max()
-        n_ays = df_m['period'].nunique()
-        
-        # Get closure rate from diagnostics at last age if available (diagnostics are shared, no measure filter)
-        closure_pct = None
-        if 'claim_closure_rate' in df_diagnostics.columns:
-            last_age_diag = df_diagnostics[df_diagnostics['age'] == max_age]
-            if not last_age_diag.empty:
-                closure_rate = last_age_diag['claim_closure_rate'].iloc[0]
-                if pd.notna(closure_rate):
-                    closure_pct = closure_rate * 100
-        
-        # Last observed avg LDF
-        last_ldf = None
-        if 'ldf' in df_m.columns:
-            max_interval = df_m['interval'].max()
-            last_ldfs = df_m[df_m['interval'] == max_interval]['ldf'].dropna()
-            if not last_ldfs.empty:
-                last_ldf = last_ldfs.mean()
-        
-        stats_labels = ['Max Observed Age:', 'Accident Years:', 'Closure % at Last Age:', 'Last Observed Avg LDF:']
-        stats_values = [
-            max_age,
-            n_ays,
-            f"{closure_pct:.1f}%" if closure_pct is not None else 'N/A',
-            f"{last_ldf:.4f}" if last_ldf is not None else 'N/A'
-        ]
-        
-        label_fmt = fmt['wb'].add_format({'bold': True, 'font_size': 9, 'align': 'right'})
-        value_fmt = fmt['wb'].add_format({'font_size': 9, 'align': 'left'})
-        
-        for i, (label, value) in enumerate(zip(stats_labels, stats_values)):
-            col = i * 3
-            ws.write(row, col, label, label_fmt)
-            ws.write(row, col + 1, value, value_fmt)
-        
-        row += 1
-    
-    return row + 1
+CL_LDF_EXCEL = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
 
 
-def write_observed_factors_section(ws, start_row, measure, df_enhanced, fmt):
-    """Section B: Observed Factors Table (triangle + formulas for avg + CV with cached values)."""
-    df_m = df_enhanced[df_enhanced['measure'] == measure].copy()
-    if df_m.empty:
-        return start_row
+def find_selected_ldfs_in_cl_excel(cl_excel_path, measure):
+    """
+    Read Chain Ladder Excel to find selected LDFs for a measure.
+    Finds ALL THREE selection rows for cascading formula logic.
     
-    periods = sorted(df_m['period'].unique())
-    if hasattr(df_m['age'], 'cat'):
-        ages = [a for a in df_m['age'].cat.categories if a in df_m['age'].values and pd.notna(a)]
-    else:
-        ages = sorted([a for a in df_m['age'].unique() if pd.notna(a)], key=lambda x: int(str(x)))
+    Returns:
+        {
+            'intervals': {interval: col_idx},
+            'selection_rows': {'user': row, 'rules_based': row, 'open_ended': row},
+            'cached_values': {interval: value}  # Using priority: User > Rules-Based > Open-Ended
+        }
+        or {} if file not found or no selections
+    """
+    path = Path(cl_excel_path)
+    if not path.exists():
+        print(f"  WARNING: {cl_excel_path} not found")
+        return {}
     
-    row = write_section_header(ws, start_row, len(ages) + 1, "Observed Age-to-Age Factors", fmt, "section")
+    try:
+        wb = load_workbook(cl_excel_path, data_only=True)
+        if measure not in wb.sheetnames:
+            print(f"  WARNING: Sheet '{measure}' not found in {cl_excel_path}")
+            return {}
+        
+        ws = wb[measure]
+        
+        # Find ALL THREE selection rows
+        selection_rows = {}
+        selection_labels = {
+            "User Selection": "user",
+            "Rules-Based AI Selection": "rules_based",
+            "Open-Ended AI Selection": "open_ended"
+        }
+        
+        for label, key in selection_labels.items():
+            for row_idx in range(1, ws.max_row + 1):
+                cell_val = ws.cell(row_idx, 1).value
+                if cell_val and str(cell_val).strip() == label:
+                    selection_rows[key] = row_idx
+                    break
+        
+        if not selection_rows:
+            print(f"  WARNING: No selection rows found in {measure} sheet")
+            return {}
+        
+        # Find interval header row by searching backwards from first found selection row
+        first_selection_row = min(selection_rows.values())
+        
+        import re
+        interval_re = re.compile(r'^\d+-\d+$')
+        interval_row = None
+        interval_map = {}  # {interval: col_idx}
+        
+        # Search backwards from first selection row
+        for row_idx in range(first_selection_row - 1, max(1, first_selection_row - 10), -1):
+            row_vals = [ws.cell(row_idx, c).value for c in range(1, ws.max_column + 1)]
+            interval_count = sum(1 for v in row_vals[1:] if v and interval_re.match(str(v).strip()))
+            if interval_count >= 3:
+                interval_row = row_idx
+                for col_idx, val in enumerate(row_vals):
+                    if val and interval_re.match(str(val).strip()):
+                        interval_key = str(val).strip()
+                        interval_map[interval_key] = col_idx + 1  # +1 for 1-based Excel
+                break
+        
+        if not interval_map:
+            print(f"  WARNING: No interval headers found near selection rows in {measure} sheet")
+            return {}
+        
+        # Calculate cached values using priority logic: User > Rules-Based > Open-Ended
+        cached_values = {}
+        for interval, col_idx in interval_map.items():
+            value = None
+            # Check User first
+            if 'user' in selection_rows:
+                value = ws.cell(selection_rows['user'], col_idx).value
+            # Fall back to Rules-Based if User is None
+            if value is None and 'rules_based' in selection_rows:
+                value = ws.cell(selection_rows['rules_based'], col_idx).value
+            # Fall back to Open-Ended if both above are None
+            if value is None and 'open_ended' in selection_rows:
+                value = ws.cell(selection_rows['open_ended'], col_idx).value
+            
+            cached_values[interval] = value
+        
+        return {
+            'intervals': interval_map,
+            'selection_rows': selection_rows,
+            'cached_values': cached_values
+        }
     
-    # Header row
-    ws.write(row, 0, "Accident Year", fmt['subheader'])
+    except Exception as e:
+        print(f"  ERROR reading Chain Ladder Excel: {e}")
+        return {}
+
+
+def write_selected_ldfs_section(ws, start_row, measure, cl_excel_path, output_file_path, fmt):
+    """
+    Write selected LDFs section with cascading cross-workbook formulas.
+    Formulas use priority: User Selection > Rules-Based AI > Open-Ended AI.
     
-    for c_idx, age in enumerate(ages, start=1):
-        # Write age as number if numeric to avoid Excel "number formatted as text" warnings
-        if isinstance(age, (int, float, np.integer, np.floating)):
-            ws.write_number(row, c_idx, age, fmt['subheader'])
+    Returns:
+        next_row (int)
+    """
+    # Find selected LDFs in Chain Ladder Excel
+    ldf_data = find_selected_ldfs_in_cl_excel(cl_excel_path, measure)
+    
+    if not ldf_data:
+        # No selections found - write empty section
+        ws.write(start_row, 0, "Selected LDFs", fmt['subheader'])
+        ws.write(start_row + 1, 0, "(No selections found in Chain Ladder Excel)", fmt['label'])
+        return start_row + 3
+    
+    intervals = ldf_data['intervals']
+    selection_rows = ldf_data['selection_rows']
+    cached_values = ldf_data['cached_values']
+    
+    # Sort intervals by numeric start value
+    def interval_sort_key(interval):
+        try:
+            return int(interval.split('-')[0])
+        except (ValueError, IndexError):
+            return 999
+    
+    sorted_intervals = sorted(intervals.keys(), key=interval_sort_key)
+    
+    # Build absolute path for cross-workbook formula
+    import pathlib
+    base_abs = str(pathlib.Path(output_file_path).parent.resolve())
+    cl_ldf_wb_ref = base_abs + "\\[Chain Ladder Selections - LDFs.xlsx]"
+    
+    # Write header row
+    ws.write(start_row, 0, "Selected LDFs", fmt['subheader'])
+    for c_idx, interval in enumerate(sorted_intervals):
+        ws.write(start_row, c_idx + 1, interval, fmt['subheader'])
+    
+    # Write formula row with cascading IF logic
+    row = start_row + 1
+    ws.write(row, 0, "(User > Rules-Based > Open-Ended)", fmt['label'])
+    
+    for c_idx, interval in enumerate(sorted_intervals):
+        col_idx = intervals[interval]
+        col_ltr = col_letter(col_idx - 1)  # -1 because col_letter is 0-based
+        
+        # Build cascading IF formula: IF(ISBLANK(User), IF(ISBLANK(RulesBased), OpenEnded, RulesBased), User)
+        # Format: ='[workbook.xlsx]SheetName'!CellRef
+        sheet_ref = f"'{cl_ldf_wb_ref}{measure}'"
+        
+        # Build cell references for each selection row
+        user_cell = f"{sheet_ref}!{col_ltr}{selection_rows.get('user', '')}" if 'user' in selection_rows else None
+        rules_cell = f"{sheet_ref}!{col_ltr}{selection_rows.get('rules_based', '')}" if 'rules_based' in selection_rows else None
+        open_cell = f"{sheet_ref}!{col_ltr}{selection_rows.get('open_ended', '')}" if 'open_ended' in selection_rows else None
+        
+        # Build cascading formula based on what rows are available
+        if user_cell and rules_cell and open_cell:
+            # All three present: full cascading logic
+            formula = f"=IF(ISBLANK({user_cell}),IF(ISBLANK({rules_cell}),{open_cell},{rules_cell}),{user_cell})"
+        elif user_cell and rules_cell:
+            # User and Rules-Based only
+            formula = f"=IF(ISBLANK({user_cell}),{rules_cell},{user_cell})"
+        elif user_cell and open_cell:
+            # User and Open-Ended only
+            formula = f"=IF(ISBLANK({user_cell}),{open_cell},{user_cell})"
+        elif user_cell:
+            # User only
+            formula = f"={user_cell}"
+        elif rules_cell:
+            # Rules-Based only
+            formula = f"={rules_cell}"
+        elif open_cell:
+            # Open-Ended only
+            formula = f"={open_cell}"
         else:
-            ws.write(row, c_idx, age, fmt['subheader'])
-    row += 1
-    
-    # Build factor dict from source data
-    factor_dict = {}
-    for _, r in df_m[df_m['ldf'].notna()].iterrows():
-        key = (str(r['period']), r['age'])
-        factor_dict[key] = r['ldf']
-    
-    data_start_row = row
-    for period in periods:
-        # Write period as number if numeric to avoid Excel warnings
-        if isinstance(period, (int, float, np.integer, np.floating)):
-            ws.write_number(row, 0, period, fmt['label'])
+            # Shouldn't happen, but handle gracefully
+            ws.write(row, c_idx + 1, "", fmt['data_ldf'])
+            continue
+        
+        # Get cached value for this interval
+        cached_value = cached_values.get(interval)
+        
+        # Write formula with cached value if not None
+        if cached_value is not None:
+            ws.write_formula(row, c_idx + 1, formula, fmt['data_ldf'], cached_value)
         else:
-            ws.write(row, 0, period, fmt['label'])
-        
-        for c_idx, age in enumerate(ages, start=1):
-            val = factor_dict.get((str(period), age))
-            if val is not None:
-                ws.write(row, c_idx, val, fmt['data_ldf'])
-            else:
-                ws.write(row, c_idx, '', fmt['data'])
-        row += 1
-    data_end_row = row - 1
+            # No cached value yet - write formula without it
+            ws.write_formula(row, c_idx + 1, formula, fmt['data_ldf'])
     
-    # Average row with formulas and cached values
-    ws.write(row, 0, "Average", fmt['label'])
-    for c_idx, age in enumerate(ages, start=1):
-        col_ltr = col_letter(c_idx)
-        formula = f"=IFERROR(AVERAGE({col_ltr}{data_start_row+1}:{col_ltr}{data_end_row+1}),\"\")"
-        
-        # Calculate cached value from dataframe
-        age_ldfs = df_m[(df_m['age'] == age) & df_m['ldf'].notna()]['ldf']
-        cached_value = age_ldfs.mean() if not age_ldfs.empty else None
-        
-        ws.write_formula(row, c_idx, formula, fmt['data_ldf'], cached_value)
-    row += 1
-    
-    # CV row with formulas and cached values
-    ws.write(row, 0, "CV", fmt['label'])
-    for c_idx, age in enumerate(ages, start=1):
-        col_ltr = col_letter(c_idx)
-        formula = f"=IFERROR(STDEV.S({col_ltr}{data_start_row+1}:{col_ltr}{data_end_row+1})/AVERAGE({col_ltr}{data_start_row+1}:{col_ltr}{data_end_row+1}),\"\")"
-        
-        # Calculate cached value from dataframe
-        age_ldfs = df_m[(df_m['age'] == age) & df_m['ldf'].notna()]['ldf']
-        if not age_ldfs.empty and len(age_ldfs) > 1:
-            avg = age_ldfs.mean()
-            std = age_ldfs.std(ddof=1)
-            cached_value = std / avg if avg != 0 else None
-        else:
-            cached_value = None
-        
-        ws.write_formula(row, c_idx, formula, fmt['data_ldf'], cached_value)
-    row += 1
-    
-    return row + 1
+    return row + 2  # Skip blank row
 
 
-def get_scenario_color(row_data):
-    """Determine row color based on scenario quality diagnostics."""
-    # Green if: monotone AND no slope breaks AND good R² AND no gap AND materiality ok
-    # Yellow: marginal (Bondy/Modified Bondy always yellow since no R²)
-    # Red: poor quality
-    
-    # Helper to safely convert boolean (handles pandas NA)
-    def safe_bool(val):
-        if pd.isna(val):
-            return False
-        return bool(val)
-    
-    is_monotone = safe_bool(row_data.get('is_monotone_from_here', False))
-    slope_breaks = row_data.get('slope_sign_changes', 999)
-    if pd.isna(slope_breaks):
-        slope_breaks = 999
-    r_squared = row_data.get('r_squared')
-    gap_flag = safe_bool(row_data.get('gap_flag', True))
-    materiality_ok = safe_bool(row_data.get('materiality_ok', False))
-    method = row_data.get('method', '')
-    
-    # Bondy variants have no R² - always yellow
-    if 'bondy' in method.lower():
-        return SCENARIO_COLORS['yellow']
-    
-    # Green: high quality scenario
-    if (is_monotone and slope_breaks == 0 and 
-        r_squared is not None and not pd.isna(r_squared) and r_squared > 0.85 and 
-        not gap_flag and materiality_ok):
-        return SCENARIO_COLORS['green']
-    
-    # Red: poor quality
-    if (not is_monotone or slope_breaks > 0 or 
-        (r_squared is not None and not pd.isna(r_squared) and r_squared < 0.70) or gap_flag):
-        return SCENARIO_COLORS['red']
-    
-    # Yellow: marginal
-    return SCENARIO_COLORS['yellow']
+def write_observed_factors_section(ws, start_row, measure, cl_excel_path, output_file_path, fmt):
+    """
+    Section B: Selected LDFs from Chain Ladder Excel (cross-workbook formulas).
+    Renamed but kept old function name for compatibility.
+    """
+    return write_selected_ldfs_section(ws, start_row, measure, cl_excel_path, output_file_path, fmt)
 
 
 def write_scenario_comparison_section(ws, start_row, measure, df_scenarios, fmt):
-    """Section C: Scenario Comparison Table with diagnostics."""
+    """Section C: Scenario Comparison Table with all diagnostics (no color formatting)."""
     df_m = df_scenarios[df_scenarios['measure'] == measure].copy()
     if df_m.empty:
         return start_row
@@ -283,30 +268,14 @@ def write_scenario_comparison_section(ws, start_row, measure, df_scenarios, fmt)
     # Sort scenarios by starting_age then method
     df_m = df_m.sort_values(['starting_age', 'method'])
     
-    # Data rows
+    # Helper to safely convert boolean columns (handles pandas NA)
+    def safe_bool(val):
+        if pd.isna(val):
+            return False
+        return bool(val)
+    
+    # Data rows - simple formatting, no colors
     for _, scenario in df_m.iterrows():
-        row_color = get_scenario_color(scenario)
-        row_fmt = fmt['wb'].add_format({
-            'border': 1,
-            'bg_color': row_color,
-            'align': 'right',
-            'valign': 'vcenter',
-            'font_size': 9
-        })
-        row_fmt_text = fmt['wb'].add_format({
-            'border': 1,
-            'bg_color': row_color,
-            'align': 'left',
-            'valign': 'vcenter',
-            'font_size': 9
-        })
-        
-        # Helper to safely convert boolean columns (handles pandas NA)
-        def safe_bool(val):
-            if pd.isna(val):
-                return False
-            return bool(val)
-        
         values = [
             scenario['starting_age'],
             'Y' if safe_bool(scenario.get('is_monotone_from_here', False)) else 'N',
@@ -326,74 +295,30 @@ def write_scenario_comparison_section(ws, start_row, measure, df_scenarios, fmt)
         ]
         
         for c_idx, val in enumerate(values):
-            cell_fmt = row_fmt_text if c_idx in [4, 5] else row_fmt  # Method and Params are text
-            
-            # Number formatting
-            if c_idx == 1:  # Starting Age
-                num_fmt = fmt['wb'].add_format({
-                    'border': 1,
-                    'bg_color': row_color,
-                    'align': 'right',
-                    'num_format': '0'
-                })
-                ws.write(row, c_idx, val, num_fmt)
-            elif c_idx == 3:  # CV
-                if val is not None:
-                    num_fmt = fmt['wb'].add_format({
-                        'border': 1,
-                        'bg_color': row_color,
-                        'align': 'right',
-                        'num_format': '0.0000'
-                    })
-                    ws.write(row, c_idx, val, num_fmt)
-                else:
-                    ws.write(row, c_idx, '', row_fmt)
-            elif c_idx == 7:  # Tail Factor
-                if val is not None:
-                    num_fmt = fmt['wb'].add_format({
-                        'border': 1,
-                        'bg_color': row_color,
-                        'align': 'right',
-                        'num_format': '0.0000'
-                    })
-                    ws.write(row, c_idx, val, num_fmt)
-                else:
-                    ws.write(row, c_idx, '', row_fmt)
-            elif c_idx in [8, 9, 10]:  # R2, LOO Std Dev, Gap
-                if val is not None:
-                    num_fmt = fmt['wb'].add_format({
-                        'border': 1,
-                        'bg_color': row_color,
-                        'align': 'right',
-                        'num_format': '0.0000'
-                    })
-                    ws.write(row, c_idx, val, num_fmt)
-                else:
-                    ws.write(row, c_idx, '', row_fmt)
-            elif c_idx == 12:  # % of CDF
-                if val is not None:
-                    num_fmt = fmt['wb'].add_format({
-                        'border': 1,
-                        'bg_color': row_color,
-                        'align': 'right',
-                        'num_format': '0.00%'
-                    })
-                    ws.write(row, c_idx, val, num_fmt)
-                else:
-                    ws.write(row, c_idx, '', row_fmt)
-            elif c_idx in [14, 15]:  # Reserve deltas
-                if val is not None:
-                    num_fmt = fmt['wb'].add_format({
-                        'border': 1,
-                        'bg_color': row_color,
-                        'align': 'right',
-                        'num_format': '#,##0'
-                    })
-                    ws.write(row, c_idx, val, num_fmt)
-                else:
-                    ws.write(row, c_idx, '', row_fmt)
-            else:
-                ws.write(row, c_idx, val, cell_fmt)
+            # Only write cells with valid data - match 2a pattern
+            if c_idx == 0:  # Starting Age
+                ws.write(row, c_idx, val, fmt['data'])
+            elif c_idx == 2:  # CV
+                if val is not None and pd.notna(val):
+                    ws.write(row, c_idx, val, fmt['data_ldf'])
+            elif c_idx in [4, 5]:  # Method, Params (text)
+                if val:  # Only write non-empty strings
+                    ws.write(row, c_idx, val, fmt['label'])
+            elif c_idx == 6:  # Tail Factor
+                if val is not None and pd.notna(val):
+                    ws.write(row, c_idx, val, fmt['data_ldf'])
+            elif c_idx in [7, 8, 9]:  # R2, LOO Std Dev, Gap to Last
+                if val is not None and pd.notna(val):
+                    ws.write(row, c_idx, val, fmt['data_ldf'])
+            elif c_idx == 11:  # % of CDF
+                if val is not None and pd.notna(val):
+                    ws.write(row, c_idx, val, fmt['data_pct'])
+            elif c_idx in [13, 14]:  # Reserve deltas
+                if val is not None and pd.notna(val):
+                    ws.write(row, c_idx, val, fmt['data_num'])
+            else:  # Monotone (1), Slope Breaks (3), Gap Flag (10), Materiality OK (12)
+                if val is not None and pd.notna(val):
+                    ws.write(row, c_idx, val, fmt['data'])
         
         row += 1
     
@@ -427,13 +352,7 @@ def write_selection_section(ws, start_row, measure, fmt, prior_selections=None):
                 if c_idx == 0:  # Label column
                     ws.write(row, c_idx, val, fmt['prior'])
                 elif c_idx == 1 and val:  # Cutoff Age
-                    num_fmt = fmt['wb'].add_format({
-                        'bg_color': '#' + COLORS['prior_yellow'],
-                        'border': 1,
-                        'align': 'right',
-                        'num_format': '0'
-                    })
-                    ws.write(row, c_idx, val, num_fmt)
+                    ws.write(row, c_idx, val, fmt['prior_num'])
                 elif c_idx == 2 and val:  # Tail Factor
                     ws.write(row, c_idx, val, fmt['prior_data'])
                 elif c_idx in [3, 4, 5]:  # Text columns
@@ -448,22 +367,15 @@ def write_selection_section(ws, start_row, measure, fmt, prior_selections=None):
             # Prior Delta row with formula
             ws.write(row, 0, "Prior Delta", fmt['prior'])
             for c_idx in range(1, 6):
-                if c_idx == 2:  # Tail Factor delta formula with cached value
+                if c_idx == 2:  # Tail Factor delta formula (no cached value - references future user input)
                     formula = f"=IFERROR(C{user_data_row}-C{prior_data_row}, \"\")"
-                    # We don't know user selection yet, so no cached value (will show blank until user fills)
-                    ws.write_formula(row, c_idx, formula, fmt['prior_data'], None)
+                    # Don't pass None as cached_value - corrupts Excel XML. Omit parameter instead.
+                    ws.write_formula(row, c_idx, formula, fmt['prior_data'])
                 else:
                     ws.write(row, c_idx, '', fmt['prior'])
             
             # Add note in Reasoning column
-            note_fmt = fmt['wb'].add_format({
-                'bg_color': '#' + COLORS['prior_yellow'],
-                'border': 1,
-                'italic': True,
-                'font_size': 8,
-                'align': 'left'
-            })
-            ws.write(row, 4, "(current - prior)", note_fmt)
+            ws.write(row, 4, "(current - prior)", fmt['prior_note'])
             row += 1
             
             row += 1  # Blank row
@@ -492,20 +404,18 @@ def write_selection_section(ws, start_row, measure, fmt, prior_selections=None):
 
 
 
-def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, fmt, prior_selections=None):
+def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, fmt, 
+                        cl_excel_path, output_file_path, prior_selections=None):
     """Build complete sheet for one measure."""
-    row = 1
+    row = 0  # xlsxwriter uses 0-based indexing, so row 0 = Excel row 1
     
-    # Section A: Banner
-    row = write_banner_section(ws, row, measure, df_enhanced, df_diagnostics, fmt)
+    # Section A: Selected LDFs from Chain Ladder Excel (cross-workbook formulas)
+    row = write_observed_factors_section(ws, row, measure, cl_excel_path, output_file_path, fmt)
     
-    # Section B: Observed Factors
-    row = write_observed_factors_section(ws, row, measure, df_enhanced, fmt)
-    
-    # Section C: Scenario Comparison
+    # Section B: Scenario Comparison
     row = write_scenario_comparison_section(ws, row, measure, df_scenarios, fmt)
     
-    # Section D: Selection Area
+    # Section C: Selection Area
     row = write_selection_section(ws, row, measure, fmt, prior_selections)
     
     # Column widths (xlsxwriter uses 0-based indexing for columns)
@@ -529,21 +439,40 @@ def export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, exp_md):
         scen_sub = df_scenarios[df_scenarios['measure'] == measure].drop(columns=['measure'], errors='ignore')
         scen_md = df_to_markdown(scen_sub, index=False)
         
-        obs_sub = df_enhanced[df_enhanced['measure'] == measure][['period', 'age', 'ldf']].dropna()
-        if not obs_sub.empty:
-            obs_piv = obs_sub.pivot(index='period', columns='age', values='ldf')
-            obs_md = df_to_markdown(obs_piv, index=True)
+        # Get selected LDFs from Chain Ladder Excel instead of observed factors
+        ldf_data = find_selected_ldfs_in_cl_excel(CL_LDF_EXCEL, measure)
+        if ldf_data and 'intervals' in ldf_data and 'cached_values' in ldf_data:
+            # Sort intervals by numeric start value
+            def interval_sort_key(interval):
+                try:
+                    return int(interval.split('-')[0])
+                except (ValueError, IndexError):
+                    return 999
+            
+            sorted_intervals = sorted(ldf_data['intervals'].keys(), key=interval_sort_key)
+            cached_values = ldf_data['cached_values']
+            
+            # Create markdown table with intervals as columns
+            header = "| Interval | " + " | ".join(sorted_intervals) + " |"
+            separator = "|---|" + "|".join(["---"] * len(sorted_intervals)) + "|"
+            values = "| Selected LDF | " + " | ".join(
+                [f"{cached_values[interval]:.4f}" if cached_values[interval] is not None else "" 
+                 for interval in sorted_intervals]
+            ) + " |"
+            selected_md = header + "\n" + separator + "\n" + values + "\n"
         else:
-            obs_md = "No data\n"
+            selected_md = "(No selected LDFs found in Chain Ladder Excel)\n"
             
         md_content = f"# Tail Context: {measure}\n\n"
         md_content += "## Table of Contents\n"
         md_content += "- [Exposure](#exposure)\n"
         md_content += "- [Scenarios](#scenarios)\n"
-        md_content += "- [Observed Factors](#observed-factors)\n\n"
+        md_content += "- [Selected LDFs](#selected-ldfs)\n\n"
         md_content += "## Exposure\n" + exp_md + "\n"
         md_content += "## Scenarios\n" + scen_md + "\n"
-        md_content += "## Observed Factors\n" + obs_md + "\n"
+        md_content += "## Selected LDFs\n"
+        md_content += "Priority: User Selection > Rules-Based AI > Open-Ended AI\n\n"
+        md_content += selected_md
         
         with open(md_path, 'w') as f:
             f.write(md_content)
@@ -582,13 +511,10 @@ def main():
     else:
         print("  No prior tail selections found (optional)")
     
-    # Create workbook with xlsxwriter
-    wb = xlsxwriter.Workbook(output_file, {
-        'use_future_functions': True,
-        'nan_inf_to_errors': True  # Convert NaN/INF to Excel errors instead of failing
-    })
+    # Create workbook - match 2a script exactly
+    wb = xlsxwriter.Workbook(output_file)
     fmt = create_xlsxwriter_formats(wb)
-    fmt['wb'] = wb  # Store reference for dynamic format creation
+    fmt['wb'] = wb  # Store workbook reference
     
     raw_measures = sorted(df_scenarios['measure'].unique())
     
@@ -610,7 +536,8 @@ def main():
     for measure in measures:
         # xlsxwriter sheet names limited to 31 chars
         ws = wb.add_worksheet(measure[:31])
-        build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, fmt, df_prior)
+        build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, fmt, 
+                          CL_LDF_EXCEL, output_file, df_prior)
         print(f"  Built sheet: {measure[:31]}")
     
     wb.close()

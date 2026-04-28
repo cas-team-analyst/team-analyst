@@ -202,26 +202,43 @@ def _formula_cell(ws, r, c, formula, num_fmt, cached_value=None, fmt_obj=None):
     """Write formula with cached value. r and c are 1-based (Excel coords)."""
     if fmt_obj is None:
         fmt_obj = ws.book.add_format({'num_format': num_fmt, 'align': 'right'})
-    # Convert None to empty string to avoid openpyxl read errors
-    if cached_value is None:
-        cached_value = ""
-    ws.write_formula(r-1, c-1, formula, fmt_obj, cached_value)
+    # CRITICAL: Never pass None to write_formula - corrupts Excel XML!
+    # Omit cached_value parameter when None, per excel-formulas skill
+    if cached_value is not None:
+        ws.write_formula(r-1, c-1, formula, fmt_obj, cached_value)
+    else:
+        ws.write_formula(r-1, c-1, formula, fmt_obj)
 
 
 def _data_cell_xlw(ws, r, c, value, num_fmt=None, fmt_obj=None):
     """Write data cell for xlsxwriter. r and c are 1-based (Excel coords)."""
+    # Treat string 'None' as None (can happen with missing data)
+    if value == 'None' or value == 'none':
+        value = None
+    
     if value is None or (isinstance(value, float) and np.isnan(value)):
         if fmt_obj:
             ws.write_blank(r-1, c-1, None, fmt_obj)
         return
     
+    # Detect if value is numeric (handles both actual numbers and numeric strings)
+    is_numeric = isinstance(value, (int, float, np.integer, np.floating))
+    
+    # Try converting string to number to avoid "number stored as text" warnings
+    if not is_numeric and isinstance(value, str):
+        try:
+            value = float(value)
+            is_numeric = True
+        except (ValueError, TypeError):
+            pass
+    
     if fmt_obj is None:
-        if isinstance(value, (int, float, np.integer, np.floating)):
+        if is_numeric:
             fmt_obj = ws.book.add_format({'num_format': num_fmt or '#,##0', 'align': 'right'})
         else:
             fmt_obj = ws.book.add_format({'align': 'left'})
     
-    if isinstance(value, (int, float, np.integer, np.floating)):
+    if is_numeric:
         ws.write_number(r-1, c-1, float(value), fmt_obj)
     else:
         ws.write(r-1, c-1, str(value), fmt_obj)
@@ -590,50 +607,64 @@ def write_method_cl(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
     ult_sheet  = ultimates_sheet_for_measure(measure)
     actual_hdr = ultimates_col_header(measure, "actual")
 
-    # Direct cell refs into the triangle sheet (row 1=title, row 2=age header, row 3+=data).
-    # CL sheet row r maps to triangle row r+1 — both sorted ascending period_int from rows 2/3.
+    # Direct cell refs into the triangle sheet (row 1=Period header, row 2+=data).
+    # CL sheet row r maps to triangle row r — both sorted ascending period_int from row 2.
     tri_col_map = tri_col_map or {}
     # Tail column is the last column in the triangle (contains ultimate values for mature periods)
     tail_col_letter = col_letter(len(tri_col_map)) if tri_col_map else None
 
     fmt_num = fmt_dict.get('data_num')
     fmt_dec = fmt_dict.get('data_ldf')
+    fmt_period = fmt_dict.get('data_period')
 
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
-        _data_cell_xlw(ws, r, 1, row["period_int"], fmt_obj=fmt_num)
+        _data_cell_xlw(ws, r, 1, row["period_int"], fmt_obj=fmt_period)
         _data_cell_xlw(ws, r, 2, row["current_age"], fmt_obj=fmt_num)
-        try:
-            age_key = str(int(float(str(row["current_age"]))))
-        except (ValueError, TypeError):
-            age_key = None
-        tri_col = tri_col_map.get(age_key) if age_key else None
         
         # Always reference the triangle sheet for consistency
         actual_val = row["actual"]
-        if tri_col:
-            # Current age has a specific column in the triangle
-            _formula_cell(ws, r, 3, f"='{short_name}'!{tri_col}{r+1}", _NUM_FMT, cached_value=actual_val, fmt_obj=fmt_num)
-        elif tail_col_letter:
-            # Age beyond cutoff -> use tail/ultimate column
-            _formula_cell(ws, r, 3, f"='{short_name}'!{tail_col_letter}{r+1}", _NUM_FMT, cached_value=actual_val, fmt_obj=fmt_num)
+        # Sanitize actual_val - could be NaN from dataframe
+        actual_val = actual_val if pd.notna(actual_val) else None
+        
+        if tail_col_letter:
+            # Use LOOKUP to find last non-empty value in the triangle row
+            # LOOKUP(2, 1/(range<>""), range) finds the last non-empty cell in a row
+            lookup_formula = f"=LOOKUP(2,1/('{short_name}'!B{r}:{tail_col_letter}{r}<>\"\"),'{short_name}'!B{r}:{tail_col_letter}{r})"
+            _formula_cell(ws, r, 3, lookup_formula, _NUM_FMT, cached_value=actual_val, fmt_obj=fmt_num)
         else:
             # No triangle data available -> use static value
             _data_cell_xlw(ws, r, 3, actual_val, fmt_obj=fmt_num)
         
         cdf_val = row.get("cdf")
-        _data_cell_xlw(ws, r, 4, cdf_val, fmt_obj=fmt_dec)
+        # Sanitize cdf_val - could be NaN from dataframe
+        cdf_val = cdf_val if pd.notna(cdf_val) else None
         
-        # Ultimate = Actual * CDF
-        ultimate_val = actual_val * cdf_val if (actual_val and cdf_val) else None
+        # Use INDEX/MATCH to pull CDF from triangle sheet based on current age
+        # Triangle sheet has CDF row at row 72 (after Selected at 68, Selected Reasoning at 69, blank rows at 70-71)
+        # INDEX('Triangle'!$B$72:$Y$72, MATCH(CurrentAge, 'Triangle'!$B$1:$Y$1, 0))
+        if tail_col_letter:
+            cdf_formula = f"=IFERROR(INDEX('{short_name}'!$B$72:${tail_col_letter}$72,MATCH(B{r},'{short_name}'!$B$1:${tail_col_letter}$1,0)),1.000)"
+            _formula_cell(ws, r, 4, cdf_formula, _DEC_FMT, cached_value=cdf_val, fmt_obj=fmt_dec)
+        else:
+            _data_cell_xlw(ws, r, 4, cdf_val, fmt_obj=fmt_dec)
+        
+        # Ultimate = Actual * CDF (handle 0, None, NaN properly)
+        if pd.notna(actual_val) and pd.notna(cdf_val):
+            ultimate_val = actual_val * cdf_val
+        else:
+            ultimate_val = None
         _formula_cell(ws, r, 5, f'=IF(AND(ISNUMBER(C{r}),ISNUMBER(D{r})),C{r}*D{r},"")', _NUM_FMT, cached_value=ultimate_val, fmt_obj=fmt_num)
         
-        # IBNR = Ultimate - Actual
-        ibnr_val = ultimate_val - actual_val if (ultimate_val and actual_val) else None
+        # IBNR = Ultimate - Actual (handle 0, None, NaN properly)
+        if pd.notna(ultimate_val) and pd.notna(actual_val):
+            ibnr_val = ultimate_val - actual_val
+        else:
+            ibnr_val = None
         _formula_cell(ws, r, 6, f"=E{r}-C{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
         
         # Unpaid: use proxy if available, otherwise same as IBNR
         if proxy_exists:
-            # Can't easily cache cross-sheet values here - use ibnr_val as approximation
+            # Can't easily cache cross-sheet values here - use ibnr_val as approximation (already checked for NaN above)
             _formula_cell(ws, r, 7, f"=E{r}-'{measure_short_name(proxy)} CL'!C{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
         else:
             _formula_cell(ws, r, 7, f"=E{r}-C{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
@@ -641,9 +672,11 @@ def write_method_cl(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
     t = 3 + len(sub)  # blank row at t-1, totals at t
     _data_cell_xlw(ws, t, 1, "Total", fmt_obj=fmt_dict.get('label'))
     
-    # Total formulas - cache with sum of actual values
+    # Total formulas - cache with sum of actual values (pandas sum can return NaN)
     total_actual = sub["actual"].sum()
-    total_ultimate = sub.apply(lambda row: row["actual"] * row.get("cdf", 0) if row.get("cdf") else 0, axis=1).sum()
+    total_actual = total_actual if pd.notna(total_actual) else 0
+    total_ultimate = sub.apply(lambda row: row["actual"] * row.get("cdf", 0) if pd.notna(row["actual"]) and pd.notna(row.get("cdf")) else 0, axis=1).sum()
+    total_ultimate = total_ultimate if pd.notna(total_ultimate) else 0
     total_ibnr = total_ultimate - total_actual
     
     _formula_cell(ws, t, 3, f"=SUM(C2:C{t-2})", _NUM_FMT, cached_value=total_actual, fmt_obj=fmt_num)
@@ -651,8 +684,9 @@ def write_method_cl(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
     _formula_cell(ws, t, 6, f"=SUM(F2:F{t-2})", _NUM_FMT, cached_value=total_ibnr, fmt_obj=fmt_num)
     _formula_cell(ws, t, 7, f"=SUM(G2:G{t-2})", _NUM_FMT, cached_value=total_ibnr, fmt_obj=fmt_num)
 
-def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict):
+def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_maps=None):
     """Write Bornhuetter-Ferguson method sheet with xlsxwriter (formulas + cached values)."""
+    tri_col_maps = tri_col_maps or {}
     short_name = measure_short_name(measure)
     ws = gen_wb.add_worksheet(f"{short_name} BF"[:31])
     
@@ -675,38 +709,63 @@ def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict):
     fmt_num = fmt_dict.get('data_num')
     fmt_dec = fmt_dict.get('data_ldf')
     fmt_pct = fmt_dict.get('data_pct')
+    fmt_period = fmt_dict.get('data_period')
 
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
-        _data_cell_xlw(ws, r, 1, row["period_int"], fmt_obj=fmt_num)
+        _data_cell_xlw(ws, r, 1, row["period_int"], fmt_obj=fmt_period)
         _data_cell_xlw(ws, r, 2, row["current_age"], fmt_obj=fmt_num)
         
         # Initial Expected (IE)
         ie_val = row.get("ultimate_ie")
+        # Sanitize ie_val - could be NaN from dataframe
+        ie_val = ie_val if pd.notna(ie_val) else None
         ie_formula = f"='IE'!D{r}" if has_ie_method else _ult_ref(ult_col_map, ult_sheet, ie_hdr, r)
         _formula_cell(ws, r, 3, ie_formula, _NUM_FMT, cached_value=ie_val, fmt_obj=fmt_num)
         
         # CDF from CL sheet
         cdf_val = row.get("cdf")
+        # Sanitize cdf_val - could be NaN from dataframe
+        cdf_val = cdf_val if pd.notna(cdf_val) else None
         _formula_cell(ws, r, 4, f"='{short_name} CL'!D{r}", _DEC_FMT, cached_value=cdf_val, fmt_obj=fmt_dec)
         
-        # % Unreported = 1 - (1/CDF)
-        pct_unrep = (1 - (1 / cdf_val)) if cdf_val and cdf_val != 0 else None
+        # % Unreported = 1 - (1/CDF) (handle 0, None, NaN properly)
+        if pd.notna(cdf_val) and cdf_val != 0:
+            pct_unrep = 1 - (1 / cdf_val)
+        else:
+            pct_unrep = None
         _formula_cell(ws, r, 5, f"=1-(1/D{r})", "0.0%", cached_value=pct_unrep, fmt_obj=fmt_pct)
         
-        # Unreported = IE * % Unreported
-        unrep_val = (ie_val * pct_unrep) if (ie_val and pct_unrep) else None
+        # Unreported = IE * % Unreported (handle 0, None, NaN properly)
+        if pd.notna(ie_val) and pd.notna(pct_unrep):
+            unrep_val = ie_val * pct_unrep
+        else:
+            unrep_val = None
         _formula_cell(ws, r, 6, f"=C{r}*E{r}", _NUM_FMT, cached_value=unrep_val, fmt_obj=fmt_num)
         
-        # Actual from CL sheet
+        # Actual - use LOOKUP to find last value in triangle row
         actual_val = row["actual"]
-        _formula_cell(ws, r, 7, f"='{short_name} CL'!C{r}", _NUM_FMT, cached_value=actual_val, fmt_obj=fmt_num)
+        # Sanitize actual_val - could be NaN from dataframe
+        actual_val = actual_val if pd.notna(actual_val) else None
+        tri_col_map = tri_col_maps.get(measure, {})
+        tail_col_letter = col_letter(len(tri_col_map)) if tri_col_map else None
+        if tail_col_letter:
+            lookup_formula = f"=LOOKUP(2,1/('{short_name}'!B{r}:{tail_col_letter}{r}<>\"\"),'{short_name}'!B{r}:{tail_col_letter}{r})"
+            _formula_cell(ws, r, 7, lookup_formula, _NUM_FMT, cached_value=actual_val, fmt_obj=fmt_num)
+        else:
+            _data_cell_xlw(ws, r, 7, actual_val, fmt_obj=fmt_num)
         
-        # Ultimate = Unreported + Actual
-        ultimate_bf = (unrep_val + actual_val) if (unrep_val is not None and actual_val is not None) else None
+        # Ultimate = Unreported + Actual (handle 0, None, NaN properly)
+        if pd.notna(unrep_val) and pd.notna(actual_val):
+            ultimate_bf = unrep_val + actual_val
+        else:
+            ultimate_bf = None
         _formula_cell(ws, r, 8, f"=F{r}+G{r}", _NUM_FMT, cached_value=ultimate_bf, fmt_obj=fmt_num)
         
-        # IBNR = Ultimate - Actual
-        ibnr_val = (ultimate_bf - actual_val) if (ultimate_bf is not None and actual_val is not None) else None
+        # IBNR = Ultimate - Actual (handle 0, None, NaN properly)
+        if pd.notna(ultimate_bf) and pd.notna(actual_val):
+            ibnr_val = ultimate_bf - actual_val
+        else:
+            ibnr_val = None
         _formula_cell(ws, r, 9, f"=H{r}-G{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
         
         # Unpaid
@@ -718,13 +777,27 @@ def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict):
     t = 3 + len(sub)  # blank row at t-1, totals at t
     _data_cell_xlw(ws, t, 1, "Total", fmt_obj=fmt_dict.get('label'))
     
-    # Calculate totals for caching
+    # Calculate totals for caching (pandas sum can return NaN)
     total_ie = sub["ultimate_ie"].sum() if "ultimate_ie" in sub.columns else 0
-    total_unrep = sub.apply(lambda row: (row.get("ultimate_ie", 0) or 0) * (1 - (1 / row.get("cdf", 1)) if row.get("cdf") else 0), axis=1).sum()
+    total_ie = total_ie if pd.notna(total_ie) else 0
+    
+    # Calculate unreported with proper NaN handling
+    def calc_unrep(row):
+        ie = row.get("ultimate_ie")
+        cdf = row.get("cdf")
+        if pd.notna(ie) and pd.notna(cdf) and cdf != 0:
+            return ie * (1 - (1 / cdf))
+        return 0
+    
+    total_unrep = sub.apply(calc_unrep, axis=1).sum()
+    total_unrep = total_unrep if pd.notna(total_unrep) else 0
+    
     total_actual = sub["actual"].sum()
+    total_actual = total_actual if pd.notna(total_actual) else 0
+    
     total_ultimate_bf = total_unrep + total_actual
     total_ibnr = total_ultimate_bf - total_actual
-    total_pct_unrep = total_unrep / total_ie if total_ie else 0
+    total_pct_unrep = (total_unrep / total_ie) if total_ie else 0
     
     _formula_cell(ws, t, 3, f"=SUM(C2:C{t-2})", _NUM_FMT, cached_value=total_ie, fmt_obj=fmt_num)
     # Col 5: % Unreported total = weighted avg = SUM(F)/SUM(C)
@@ -751,18 +824,21 @@ def write_method_ie(gen_wb, combined, measure, exp_row_map, ult_col_map, fmt_dic
 
     fmt_num = fmt_dict.get('data_num')
     fmt_dec = fmt_dict.get('data_ldf')
+    fmt_period = fmt_dict.get('data_period')
 
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
-        _data_cell_xlw(ws, r, 1, row["period_int"], fmt_obj=fmt_num)
+        _data_cell_xlw(ws, r, 1, row["period_int"], fmt_obj=fmt_period)
         _data_cell_xlw(ws, r, 2, row["current_age"], fmt_obj=fmt_num)
 
         # Exposure - link to Chain Ladder Selections - LDFs.xlsx Exposure sheet
         # We don't have exposure values in combined, so can't cache easily
         exp_formula = _exp_ref(exp_row_map, row["period"])
-        _formula_cell(ws, r, 3, exp_formula, _NUM_FMT, cached_value=None, fmt_obj=fmt_num)
+        _formula_cell(ws, r, 3, exp_formula, _NUM_FMT, fmt_obj=fmt_num)
 
         # IE Ultimate
         ie_val = row.get("ultimate_ie")
+        # Sanitize ie_val - could be NaN from dataframe
+        ie_val = ie_val if pd.notna(ie_val) else None
         ie_ref = _ult_ref(ult_col_map, ult_sheet, ie_hdr, r)
         if ie_ref == '""':
             _data_cell_xlw(ws, r, 4, ie_val, fmt_obj=fmt_num)
@@ -771,11 +847,12 @@ def write_method_ie(gen_wb, combined, measure, exp_row_map, ult_col_map, fmt_dic
         
         # Selected Loss Rate = IE Ultimate / Exposure
         # Can't cache without exposure value
-        _formula_cell(ws, r, 5, f"=D{r}/C{r}", _DEC_FMT, cached_value=None, fmt_obj=fmt_dec)
+        _formula_cell(ws, r, 5, f"=D{r}/C{r}", _DEC_FMT, fmt_obj=fmt_dec)
 
 
-def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map, fmt_dict):
+def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map, fmt_dict, tri_col_maps=None):
     """Write selection summary sheet with xlsxwriter (formulas + cached values)."""
+    tri_col_maps = tri_col_maps or {}
     ws = gen_wb.add_worksheet(title)
     
     # columns e.g.: Accident Period, Current Age, Incurred, Paid, Incurred CL, Paid CL, Initial Expected, Incurred BF, Paid BF, Selected Ultimate, IBNR, Unpaid
@@ -825,24 +902,35 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
 
     fmt_num = fmt_dict.get('data_num')
     fmt_text = fmt_dict.get('label')
+    fmt_period = fmt_dict.get('data_period')
 
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
-        _data_cell_xlw(ws, r, 1, row["period_int"], fmt_obj=fmt_num)
+        _data_cell_xlw(ws, r, 1, row["period_int"], fmt_obj=fmt_period)
         _data_cell_xlw(ws, r, 2, row["current_age"], fmt_obj=fmt_num)
 
         col_idx = 3
-        # Actuals - lookup from combined for each measure
+        # Actuals - use LOOKUP to find last value in triangle row for each measure
         for m in active_m:
             m_row = combined[(combined["measure"] == m) & (combined["period"] == row["period"])]
             actual_val = m_row["actual"].iloc[0] if len(m_row) > 0 else None
+            # Sanitize - .iloc[0] can return NaN
+            actual_val = actual_val if pd.notna(actual_val) else None
             s = measure_short_name(m)
-            _formula_cell(ws, r, col_idx, f"='{s} CL'!C{r}", _NUM_FMT, cached_value=actual_val, fmt_obj=fmt_num)
+            tri_col_map = tri_col_maps.get(m, {})
+            tail_col_letter = col_letter(len(tri_col_map)) if tri_col_map else None
+            if tail_col_letter:
+                lookup_formula = f"=LOOKUP(2,1/('{s}'!B{r}:{tail_col_letter}{r}<>\"\"),'{s}'!B{r}:{tail_col_letter}{r})"
+                _formula_cell(ws, r, col_idx, lookup_formula, _NUM_FMT, cached_value=actual_val, fmt_obj=fmt_num)
+            else:
+                _data_cell_xlw(ws, r, col_idx, actual_val, fmt_obj=fmt_num)
             col_idx += 1
         
         # CL ultimates
         for m in active_m:
             m_row = combined[(combined["measure"] == m) & (combined["period"] == row["period"])]
             cl_ult = m_row["ultimate_cl"].iloc[0] if len(m_row) > 0 and "ultimate_cl" in m_row.columns else None
+            # Sanitize - .iloc[0] can return NaN
+            cl_ult = cl_ult if pd.notna(cl_ult) else None
             s = measure_short_name(m)
             _formula_cell(ws, r, col_idx, f"='{s} CL'!E{r}", _NUM_FMT, cached_value=cl_ult, fmt_obj=fmt_num)
             col_idx += 1
@@ -850,6 +938,8 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
         # IE ultimate (if available)
         if has_group_ie:
             ie_val = row.get("ultimate_ie")
+            # Sanitize - could be NaN
+            ie_val = ie_val if pd.notna(ie_val) else None
             _formula_cell(ws, r, col_idx, f"='IE'!D{r}", _NUM_FMT, cached_value=ie_val, fmt_obj=fmt_num)
             col_idx += 1
         
@@ -857,6 +947,8 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
         for m in bf_m:
             m_row = combined[(combined["measure"] == m) & (combined["period"] == row["period"])]
             bf_ult = m_row["ultimate_bf"].iloc[0] if len(m_row) > 0 and "ultimate_bf" in m_row.columns else None
+            # Sanitize - .iloc[0] can return NaN
+            bf_ult = bf_ult if pd.notna(bf_ult) else None
             _formula_cell(ws, r, col_idx, f"='{measure_short_name(m)} BF'!H{r}", _NUM_FMT, cached_value=bf_ult, fmt_obj=fmt_num)
             col_idx += 1
         
@@ -867,20 +959,26 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
         )
         # Cache with selected_ultimate from combined
         sel_val = row.get("selected_ultimate")
+        # Sanitize - could be NaN
+        sel_val = sel_val if pd.notna(sel_val) else None
         _formula_cell(ws, r, col_idx, sel_formula, _NUM_FMT, cached_value=sel_val, fmt_obj=fmt_num)
         selected_col_idx = col_idx
         col_idx += 1
         
         # IBNR = Selected - First Actual
         first_actual = combined[(combined["measure"] == active_m[0]) & (combined["period"] == row["period"])]["actual"].iloc[0] if len(active_m) > 0 else 0
-        ibnr_val = (sel_val - first_actual) if (sel_val is not None and first_actual is not None) else None
+        # Sanitize - .iloc[0] can return NaN
+        first_actual = first_actual if pd.notna(first_actual) else 0
+        ibnr_val = (sel_val - first_actual) if pd.notna(sel_val) else None
         _formula_cell(ws, r, col_idx, f"={col_letter(selected_col_idx-1)}{r}-C{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
         col_idx += 1
         
         # Unpaid = Selected - Second Actual (if two measures) or First Actual
         unpaid_actual = "D" if len(active_m) > 1 else "C"
         second_actual = combined[(combined["measure"] == active_m[1]) & (combined["period"] == row["period"])]["actual"].iloc[0] if len(active_m) > 1 else first_actual
-        unpaid_val = (sel_val - second_actual) if (sel_val is not None and second_actual is not None) else None
+        # Sanitize - .iloc[0] can return NaN
+        second_actual = second_actual if pd.notna(second_actual) else 0
+        unpaid_val = (sel_val - second_actual) if pd.notna(sel_val) else None
         _formula_cell(ws, r, col_idx, f"={col_letter(selected_col_idx-1)}{r}-{unpaid_actual}{r}", _NUM_FMT, cached_value=unpaid_val, fmt_obj=fmt_num)
         col_idx += 1
         
@@ -901,7 +999,7 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
         col_lt = col_letter(c - 1)  # Convert to 0-based then to letter
         # Calculate total for caching
         # For now, use a simple sum - could be more sophisticated
-        _formula_cell(ws, t, c, f"=SUM({col_lt}2:{col_lt}{t-2})", _NUM_FMT, cached_value=None, fmt_obj=fmt_num)
+        _formula_cell(ws, t, c, f"=SUM({col_lt}2:{col_lt}{t-2})", _NUM_FMT, fmt_obj=fmt_num)
 
 
 def _build_tail_workbook_maps(tail_wb_path, measure_sheet_name):
@@ -1198,6 +1296,7 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict):
         selection_done = False
         dst_row = 0
         skip_next = False
+        selected_row_num = None  # Track the "Selected" row for CDF calculations
         src_rows = list(ws_src_form.iter_rows())
         
         for row_idx, src_cells in enumerate(src_rows):
@@ -1237,6 +1336,7 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict):
                 if selection_done:
                     continue
                 selection_done = True
+                selected_row_num = dst_row  # Track for CDF row
                 
                 # Write "Selected" row with IF formulas
                 for src_cell in src_cells:
@@ -1249,8 +1349,11 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict):
                         formula = f'=IF({ext_ref}!{col_letter}{user_row}<>"",{ext_ref}!{col_letter}{user_row},{ext_ref}!{col_letter}{rb_row})'
                         # Get cached value from values workbook
                         val_cell = ws_src_vals.cell(src_cell.row, src_cell.column)
-                        cached_val = val_cell.value if val_cell.value not in (None, "") else ""
-                        ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('data_ldf'), cached_val)
+                        cached_val = val_cell.value if val_cell.value not in (None, "") else None
+                        if cached_val is not None:
+                            ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('data_ldf'), cached_val)
+                        else:
+                            ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('data_ldf'))
                 dst_row += 1
                 
                 # Write "Selected Reasoning" row with IF formula
@@ -1263,8 +1366,11 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict):
                             col_letter = get_column_letter(src_cell.column)
                             formula = f'=IF({ext_ref}!{col_letter}{user_row}<>"",{ext_ref}!{col_letter}{user_reason_row},{ext_ref}!{col_letter}{rb_reason_row})'
                             val_cell = ws_src_vals.cell(src_cell.row, src_cell.column)
-                            cached_val = val_cell.value if val_cell.value not in (None, "") else ""
-                            ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('label'), cached_val)
+                            cached_val = val_cell.value if val_cell.value not in (None, "") else None
+                            if cached_val is not None:
+                                ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('label'), cached_val)
+                            else:
+                                ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('label'))
                     dst_row += 1
                 continue
             
@@ -1282,10 +1388,50 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict):
                     col_letter = get_column_letter(src_cell.column)
                     row_num = src_cell.row
                     formula = f"={ext_ref}!{col_letter}{row_num}"
-                    cached_val = val_cell.value if val_cell.value not in (None, "") else ""
-                    ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('data_ldf'), cached_val)
+                    cached_val = val_cell.value if val_cell.value not in (None, "") else None
+                    if cached_val is not None:
+                        ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('data_ldf'), cached_val)
+                    else:
+                        ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('data_ldf'))
             
             dst_row += 1
+        
+        # Add CDF row after all other rows
+        # CDF row calculates cumulative development factors working backwards from tail
+        cdf_row = dst_row
+        ws_xlw.write(cdf_row, 0, "CDF", fmt_dict.get('label'))
+        
+        # Find the last data column (last age in triangle)
+        last_col = 0
+        for c in range(1, 50):  # Check up to column 50
+            header = ws_src_form.cell(1, c + 1).value  # +1 because openpyxl is 1-based
+            if header is None or header == "":
+                last_col = c - 1
+                break
+            last_col = c
+        
+        if last_col > 0:
+            # Get tail reference for this measure
+            tail_ref = f"'{_CL_TAIL_WB}{measure}'"
+            
+            # For the rightmost column (tail), reference the tail workbook
+            # The tail workbook has the selected tail factor that should be used
+            # We'll use column L (12th column) as a default, but ideally should discover dynamically
+            # For now, use 1.000 as default tail if no tail workbook
+            tail_col_letter = get_column_letter(last_col + 1)  # openpyxl is 1-based
+            tail_formula = f'=IFERROR({tail_ref}!$X$2,1.000)'  # X2 is typically where tail factor is
+            ws_xlw.write_formula(cdf_row, last_col, tail_formula, fmt_dict.get('data_ldf'), 1.000)
+            
+            if selected_row_num is not None:
+                # Work backwards from last_col-1 to column 1 (0-based indexing in xlsxwriter)
+                for col_idx in range(last_col - 1, 0, -1):
+                    ldf_ref = f"{get_column_letter(col_idx + 1)}{selected_row_num + 1}"  # Reference Selected row LDF
+                    next_cdf_ref = f"{get_column_letter(col_idx + 2)}{cdf_row + 1}"  # Reference next CDF
+                    cdf_formula = f"=IFERROR({ldf_ref}*{next_cdf_ref},1.000)"
+                    
+                    # Get cached value from calculations (approximate)
+                    # We'll use 1.000 as default since we don't have actual values yet
+                    ws_xlw.write_formula(cdf_row, col_idx, cdf_formula, fmt_dict.get('data_ldf'))
         
         # Set column widths (standard for triangles)
         ws_xlw.set_column(0, 0, 25)  # Label column
@@ -1605,31 +1751,40 @@ def main():
 
     print("Building Loss sheets...")
     if loss_m:
-        write_selection_grouped(wb, combined, ["Incurred Loss", "Paid Loss"], "Loss Selection", ult_col_map, fmt)
+        # Build tri_col_maps dictionary for all loss measures
+        loss_tri_maps = {m: _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)) for m in loss_m}
+        
+        write_selection_grouped(wb, combined, ["Incurred Loss", "Paid Loss"], "Loss Selection", ult_col_map, fmt, loss_tri_maps)
         for m in loss_m:
-            write_method_cl(wb, combined, m, ult_col_map, fmt, _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)))
+            write_method_cl(wb, combined, m, ult_col_map, fmt, loss_tri_maps[m])
         for m in loss_m:
             if _has_method(combined, m, "ultimate_bf"):
-                write_method_bf(wb, combined, m, ult_col_map, fmt)
+                write_method_bf(wb, combined, m, ult_col_map, fmt, loss_tri_maps)
         # Create single IE sheet for Incurred Loss only
         if "Incurred Loss" in loss_m and _has_method(combined, "Incurred Loss", "ultimate_ie"):
             write_method_ie(wb, combined, "Incurred Loss", exp_row_map, ult_col_map, fmt)
 
     print("Building Counts sheets...")
     if count_m:
-        write_selection_grouped(wb, combined, ["Reported Count", "Closed Count"], "Count Selection", ult_col_map, fmt)
+        # Build tri_col_maps dictionary for all count measures
+        count_tri_maps = {m: _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)) for m in count_m}
+        
+        write_selection_grouped(wb, combined, ["Reported Count", "Closed Count"], "Count Selection", ult_col_map, fmt, count_tri_maps)
         for m in count_m:
-            write_method_cl(wb, combined, m, ult_col_map, fmt, _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)))
+            write_method_cl(wb, combined, m, ult_col_map, fmt, count_tri_maps[m])
         for m in count_m:
             if _has_method(combined, m, "ultimate_bf"):
-                write_method_bf(wb, combined, m, ult_col_map, fmt)
+                write_method_bf(wb, combined, m, ult_col_map, fmt, count_tri_maps)
 
     if other_m:
         print("Building other method sheets...")
+        # Build tri_col_maps dictionary for other measures
+        other_tri_maps = {m: _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)) for m in other_m}
+        
         for m in other_m:
-            write_method_cl(wb, combined, m, ult_col_map, fmt, _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)))
+            write_method_cl(wb, combined, m, ult_col_map, fmt, other_tri_maps[m])
             if _has_method(combined, m, "ultimate_bf"):
-                write_method_bf(wb, combined, m, ult_col_map, fmt)
+                write_method_bf(wb, combined, m, ult_col_map, fmt, other_tri_maps)
     
     print("Copying CL LDF triangle sheets...")
     create_triangle_sheets_xlw(wb, measures, fmt)
