@@ -1,9 +1,0 @@
-[
-  {
-    "measure": "Paid Loss",
-    "cutoff_age": 143,
-    "tail_factor": 1.0039,
-    "method": "bondy",
-    "reasoning": "At age 143, paid development is essentially complete with observed factors tightly clustered near 1.0 from age 143–287. The Bondy method yields 1.0039 with materiality_ok=True and passes the basic monotonicity check given the sparse tail. The gap to last observed (0.0009) is immaterial. While exponential decay methods fit the late-age data with modest R² (0.354), they produce inflated tail factors (1.027–1.041) that exceed the natural pattern of near-unity development in the tail. Bondy is the most defensible conservative choice, anchored in the observed tight factors and materiality constraints. No material justification exists for a larger tail beyond 1.0039."
-  }
-]

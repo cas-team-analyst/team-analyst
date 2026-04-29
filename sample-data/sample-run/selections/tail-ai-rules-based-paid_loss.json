@@ -1,9 +1,0 @@
-[
-  {
-    "measure": "Paid Loss",
-    "cutoff_age": 203,
-    "tail_factor": 1.0039,
-    "method": "bondy",
-    "reasoning": "Paid Loss triangle expects longest tail among dollar measures; however, diagnostics reveal materially immaterial tail development. Starting age 203 selected over age 143: slope_sign_changes reduce from 6 to 3, CV=0.0108 (low), n_factors=7 meeting minimum. Bondy method selected based on materiality anchor: pct_of_cdf=0.058% is well below 0.1% immateriality threshold, indicating tail contributes negligibly to CDF. Gap to last observed factor minimal (gap_flag=False). Curve fits (exp_dev_quick R²=0.354, double_exp LOO std dev=0.0465) lack quality diagnostics and are rejected: exp_dev_quick fails R²>0.85 requirement; double_exp shows unstable LOO performance. McClenahan and modified Bondy variants also rejected—neither improves on immateriality anchor or fit. Skurnick extreme outlier (tail=1.329) inconsistent with observed monotonic decay and rejected. Bondy method (last observed factor=1.0039 at age 203) is appropriate default when immateriality applies, following hierarchy that prioritizes materiality over complex curve fits. Selection ASOP 43 compliant: documented method choice with materiality justification; no curve fit required where tail immaterial."
-  }
-]

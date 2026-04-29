@@ -1,9 +1,0 @@
-[
-  {
-    "measure": "Incurred Loss",
-    "cutoff_age": 203,
-    "tail_factor": 1.0215513506285632,
-    "method": "double_exp",
-    "reasoning": "Incurred Loss triangle expects medium tail, materially longer than Reported Count but shorter than Paid Loss. Starting age 203 selected: monotonicity check fails (slope_sign_changes=5) but improves significantly from age 143 (9 sign changes), CV=0.0112 (excellent), n_factors=7 meeting minimum. Double exponential provides superior fit diagnostics: R²=0.8862 (well above 0.85 threshold), LOO std dev=0.0037 (stable), gap to last observed=3.2e-05 (immaterial, gap_flag=False). Tail materiality ~0.71% of CDF warrants careful method selection; double_exp balances good fit quality with economical tail estimate. Residual analysis shows sparse anomalies without systematic bias. Bondy (tail=1.0119) rejected due to materiality >0.1%; Bondy and modified variants immaterial rationale not applicable. McClenahan trivial tail (1.0) undershoots observed development. Alternative methods (exp_dev_quick R²=0.32, mcclenahan tail=1.0) lack fit quality or economic substance. Selection reflects ASOP 43 requirement for documented method choice and fit validation."
-  }
-]

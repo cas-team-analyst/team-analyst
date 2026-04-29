@@ -1,9 +1,0 @@
-[
-  {
-    "measure": "Reported Count",
-    "cutoff_age": 143,
-    "tail_factor": 1.0,
-    "method": "bondy",
-    "reasoning": "Reported count is a closed triangle with development to unity occurring by the earliest reporting age (23). All observed factors from age 35 onward are at or effectively at 1.0, with only minor noise at early ages. All fitting methods yield tail_factor = 1.0, cv_at_starting_age = 0.0, and is_monotone_from_here = True, confirming complete maturity. Materiality is marked N/A, reflecting the irrelevance of tail selection for this measure. Any tail factor other than 1.0 would be indefensible. Bondy at age 143 is selected by convention; all methods agree on the trivial tail."
-  }
-]

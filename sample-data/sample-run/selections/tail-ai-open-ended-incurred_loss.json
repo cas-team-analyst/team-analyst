@@ -1,9 +1,0 @@
-[
-  {
-    "measure": "Incurred Loss",
-    "cutoff_age": 203,
-    "tail_factor": 1.0216,
-    "method": "double_exp",
-    "reasoning": "Incurred loss exhibits more tail development volatility than paid loss, with observed factors showing modest but non-negligible development beyond age 143. The Double Exponential method at age 203 delivers a tail factor of 1.0216 supported by strong diagnostics: R² = 0.886 (excellent fit to sparse tail), tight LOO stability (std_dev = 0.0037), and minimal gap to last observed (0.000032). Age 203 better captures the lingering development than age 143, where R² drops to 0.332. McClenahan's near-unity estimate at both ages inadequately reflects the observed development intensity. The 1.0216 factor is material (0.71% of CDF) and justified by incurred's characteristic longer tail relative to paid. This selection balances observed development, diagnostic strength, and actuarial reasonableness."
-  }
-]
