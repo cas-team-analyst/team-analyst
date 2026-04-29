@@ -12,10 +12,11 @@ These files can be used with many different agentic tools. For most users, we su
 
 1. Sign up for a Claude Pro account (~$20/month) at https://claude.ai/ and follow installation instructions at https://support.claude.com/en/articles/10065433-installing-claude-desktop
 2. Open Claude Desktop and select "CoWork" on the top left (default is "Chat")
-3. Download `teamanalyst-cowork.zip` from https://github.com/cas-team-analyst/team-analyst/blob/main/plugins/teamanalyst-cowork.zip
-4. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files > Select `teamanalyst-cowork.zip`
-5. Click "New task"
-6. Type "/reserving-analysis" (it will auto-complete and you can press enter to select it) in the chat box and press enter to get started!
+3. Select the "Sonnet" model on the bottom right below the chat widget. Opus will quickly hit limits. Haiku loses focus during long workflows.
+4. Download `teamanalyst-cowork.zip` from https://github.com/cas-team-analyst/team-analyst/blob/main/plugins/teamanalyst-cowork.zip
+5. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files > Select `teamanalyst-cowork.zip`
+6. Click "New task"
+7. Type "/reserving-analysis" (it will auto-complete and you can press enter to select it) in the chat box and press enter to get started!
 
 Want to test the workflow quickly? Sample input data is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data. Provide a file from sample-data to the agent as your input data. A sample workflow run with example output files is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data/sample-run.
 
