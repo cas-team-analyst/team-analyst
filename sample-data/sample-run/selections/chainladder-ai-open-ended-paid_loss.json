@@ -1,140 +1,116 @@
 [
   {
     "interval": "11-23",
-    "selection": 2.5,
-    "reasoning": "Selected 2.50 based on recent year pattern (2019-2023: 2.67, 2.55, 1.99, 2.43, 3.27). Recent years show volatility around 2.5-2.7, but excluding extreme 3.27 outlier from 2023 and 1.79 from 2014, the centroid of 2015-2022 is ~2.5. This represents strong early development typical of this account but acknowledges normalization in recent cohorts.",
-    "measure": "Paid Loss"
+    "selection": 2.4000,
+    "reasoning": "Highly volatile early development (CV_10yr=0.2259). Simple 10yr=2.4862, weighted 10yr=2.4820, exclude high/low 10yr=2.4762. All averages cluster around 2.48. Selected 2.4000 slightly conservative due to: (1) 2024 shows 1.6941 suggesting recent slowdown, (2) slope analysis shows negative 5yr/10yr trend, (3) 2022-2024 trend averaging ~1.5-1.7 suggests development pattern moderating. Conservative selection accounts for possible economic/underwriting changes."
   },
   {
     "interval": "23-35",
-    "selection": 1.38,
-    "reasoning": "Selected 1.38 from robust recent year consensus (2019-2023: 1.75, 1.18, 1.67, 1.06, 1.59). Trimmed average of last 10 years (excluding extremes) centers around 1.35-1.40. This interval shows consistent, credible development with less volatility than 11-23.",
-    "measure": "Paid Loss"
+    "selection": 1.3321,
+    "reasoning": "Moderate variability (CV_10yr=0.1904). Simple 10yr=1.3735, weighted 10yr=1.3913, exclude high/low 10yr=1.3658. Selected 1.3321 (exclude high/low all) recognizing outliers and reflecting conservative trim estimate. Data shows this interval captures key development; trend analysis (slope_10yr=0.0049) shows minimal directional bias."
   },
   {
     "interval": "35-47",
-    "selection": 1.15,
-    "reasoning": "Selected 1.15 from recent period average (2019-2023: 1.18, 1.12, 1.07, 1.19, 1.06). The last decade averages 1.12-1.15 with stable pattern. This interval shows moderate tail development.",
-    "measure": "Paid Loss"
+    "selection": 1.1638,
+    "reasoning": "Low-to-moderate variability (CV_10yr=0.1076). Simple 10yr=1.2026, weighted 10yr=1.2249, exclude high/low 10yr=1.1864. Selected 1.1638 (exclude high/low all) as balanced conservative estimate. Age-to-age factors show range 1.04-1.39 with outliers. Trim removes extremes (2015 at 1.3285, 2019 at 1.1497) for stable middle ground."
   },
   {
     "interval": "47-59",
-    "selection": 1.1,
-    "reasoning": "Selected 1.10 based on 2015-2023 mean of ~1.09-1.12. Recent years show tight clustering: 1.23, 1.01, 1.07, 1.01, 1.07. Reflects modest development at this maturity.",
-    "measure": "Paid Loss"
+    "selection": 1.0987,
+    "reasoning": "Moderate variability (CV_10yr=0.0642). Simple 10yr=1.0882, weighted 10yr=1.0874, exclude high/low 10yr=1.0800. Selected 1.0987 (simple 5yr=1.0924) reflecting recent trend. Development meaningful; 2007 shows 1.1147 (outlier), 2015 shows 1.1059. Selection balances recent data with longer history."
   },
   {
     "interval": "59-71",
-    "selection": 1.06,
-    "reasoning": "Selected 1.06 from recent consensus (2019-2023: 1.22, 1.01, 1.05, 1.07, 1.04). Last decade averages 1.055-1.065. Development continues to slow.",
-    "measure": "Paid Loss"
+    "selection": 1.0618,
+    "reasoning": "Low-moderate variability (CV_10yr=0.0625). Simple 10yr=1.0725, weighted 10yr=1.0861, exclude high/low 10yr=1.0640. Selected 1.0618 (exclude high/low all) as conservative trim. Outliers present (2007 at 1.1938, 2015 at 1.1362). Development moderating; data shows clustering near 1.02-1.07."
   },
   {
     "interval": "71-83",
-    "selection": 1.05,
-    "reasoning": "Selected 1.05 based on recent years (2019-2023: 1.22, 1.05, 1.05, 1.05, 1.04) and broader sample showing range 1.00-1.14. Pattern suggests slight tail development continues.",
-    "measure": "Paid Loss"
+    "selection": 1.0456,
+    "reasoning": "Low variability (CV_10yr=0.0817). Simple 10yr=1.0796, weighted 10yr=1.0846, exclude high/low 10yr=1.0630. Selected 1.0456 (exclude high/low all) recognizing outliers (2007 at 1.0636, 2015 at 1.1275, 2019 at 1.2221). Conservative trim estimate. Meaningful tail development continues."
   },
   {
     "interval": "83-95",
-    "selection": 1.03,
-    "reasoning": "Selected 1.03 from recent mean (2019-2023: 1.05, 1.04, 1.03, 1.04, 1.04). Very stable interval with minimal tail development.",
-    "measure": "Paid Loss"
+    "selection": 1.0203,
+    "reasoning": "Low-moderate variability (CV_10yr=0.0308). Simple 10yr=1.0255, weighted 10yr=1.0256, exclude high/low 10yr=1.0205. Selected 1.0203 (exclude high/low all). Age-to-age factors show range 0.98-1.24 with sparse high observations. Development slowing; approaching practical tail."
   },
   {
     "interval": "95-107",
-    "selection": 1.02,
-    "reasoning": "Selected 1.02 from recent years (2019-2023: 1.04, 1.03, 1.01, 1.03, 1.01). Consistent low development.",
-    "measure": "Paid Loss"
+    "selection": 1.0150,
+    "reasoning": "Very low variability (CV_10yr=0.0238). Simple 10yr=1.0202, weighted 10yr=1.0254, exclude high/low 10yr=1.0150. Selected 1.0150 (exclude high/low all). Minimal, predictable development. Recent years (2020-2024) average 1.0-1.05. Marginal tail development."
   },
   {
     "interval": "107-119",
-    "selection": 1.015,
-    "reasoning": "Selected 1.015 from tight recent range (2019-2023: 1.01, 1.00, 1.01, 1.00, 1.04). Minimal development at advanced maturity.",
-    "measure": "Paid Loss"
+    "selection": 1.0219,
+    "reasoning": "Low variability (CV_10yr=0.0440). Simple 10yr=1.0366, weighted 10yr=1.0547, exclude high/low 10yr=1.0286. Selected 1.0219 (simple 3yr=1.0665, weighted 3yr=1.0982, recent bias toward 1.03-1.10). Moderate tail factor; selection blends recent behavior with conservative estimate."
   },
   {
     "interval": "119-131",
-    "selection": 1.01,
-    "reasoning": "Selected 1.01 from recent cluster (2019-2023: 1.01, 1.01, 1.01, 1.01, 1.04). Very minimal tail development.",
-    "measure": "Paid Loss"
+    "selection": 1.0182,
+    "reasoning": "Low variability (CV_10yr=0.0327). Simple 10yr=1.0266, weighted 10yr=1.0353, exclude high/low 10yr=1.0217. Selected 1.0182 (exclude high/low all). Outlier at 2012 (1.0124, modestly high). Modest tail development; age approaching 10+ years."
   },
   {
     "interval": "131-143",
-    "selection": 1.01,
-    "reasoning": "Selected 1.01 based on recent years averaging near 1.01-1.02 with many factors at exactly 1.00 or very close.",
-    "measure": "Paid Loss"
+    "selection": 1.0173,
+    "reasoning": "Low variability (CV_10yr=0.0201). Simple 10yr=1.0204, weighted 10yr=1.0254, exclude high/low 10yr=1.0184. Selected 1.0173 (exclude high/low all). All methods cluster tightly. Outlier at 2012 (1.0223) modestly high. Stable, marginal development."
   },
   {
     "interval": "143-155",
-    "selection": 1.01,
-    "reasoning": "Selected 1.01 from recent pattern showing development near 1.00-1.01 range.",
-    "measure": "Paid Loss"
+    "selection": 1.0174,
+    "reasoning": "Low variability (CV_10yr=0.0200). Simple 10yr=1.0185, weighted 10yr=1.0215, exclude high/low 10yr=1.0169. Selected 1.0174 (exclude high/low all). Data highly stable with little variation. Marginal tail development continuing."
   },
   {
     "interval": "155-167",
-    "selection": 1.0,
-    "reasoning": "Selected 1.00 as recent years show factors clustering at or very near 1.00, indicating maturity.",
-    "measure": "Paid Loss"
+    "selection": 1.0106,
+    "reasoning": "Very low variability (CV_10yr=0.0116). Simple 10yr=1.0114, weighted 10yr=1.0137, exclude high/low 10yr=1.0087. Selected 1.0106 (exclude high/low all). Minimal development; nearly complete closure by age 155 months (~12.9 years)."
   },
   {
     "interval": "167-179",
-    "selection": 1.0,
-    "reasoning": "Selected 1.00 from consolidated tail factors approaching ultimate.",
-    "measure": "Paid Loss"
+    "selection": 1.0104,
+    "reasoning": "Very low variability (CV_10yr=0.0120). Simple 10yr=1.0114, weighted 10yr=1.0156, exclude high/low 10yr=1.0104. Selected 1.0104 (exclude high/low all). Virtually flat development; consensus from all methods."
   },
   {
     "interval": "179-191",
-    "selection": 1.0,
-    "reasoning": "Selected 1.00 as tail development is minimal.",
-    "measure": "Paid Loss"
+    "selection": 1.0110,
+    "reasoning": "Very low variability (CV_10yr=0.0116). Simple 10yr=1.0120, weighted 10yr=1.0163, exclude high/low 10yr=1.0110. Selected 1.0110 (exclude high/low all). Extremely minor development; data stable across cohorts."
   },
   {
     "interval": "191-203",
-    "selection": 1.0,
-    "reasoning": "Selected 1.00 from tail consolidation.",
-    "measure": "Paid Loss"
+    "selection": 1.0157,
+    "reasoning": "Very low variability (CV_10yr=0.0124). Simple 10yr=1.0158, weighted 10yr=1.0158, exclude high/low 10yr=1.0157. Selected 1.0157 (exclude high/low all). Methods converge; very stable tail factor. Age ~16 years."
   },
   {
     "interval": "203-215",
-    "selection": 1.0,
-    "reasoning": "Selected 1.00 for very long tail, assuming near-ultimate.",
-    "measure": "Paid Loss"
+    "selection": 1.0063,
+    "reasoning": "Very low variability (CV_10yr=0.0108). Simple 10yr=1.0084, weighted 10yr=1.0087, exclude high/low 10yr=1.0063. Selected 1.0063 (exclude high/low all). Marginal development; well into tail period."
   },
   {
     "interval": "215-227",
-    "selection": 1.0,
-    "reasoning": "Selected 1.00 for far tail.",
-    "measure": "Paid Loss"
+    "selection": 1.0054,
+    "reasoning": "Very low variability (CV_10yr=0.0151). Simple 10yr=1.0099, weighted 10yr=1.0130, exclude high/low 10yr=1.0054. Selected 1.0054 (exclude high/low all) as conservative trim reflecting outliers. Minimal development; practical closure imminent."
   },
   {
     "interval": "227-239",
-    "selection": 1.0,
-    "reasoning": "Selected 1.00 for far tail.",
-    "measure": "Paid Loss"
+    "selection": 1.0000,
+    "reasoning": "Very low variability (CV_10yr=0.0054). Simple 10yr=1.0024, weighted 10yr=1.0025, exclude high/low 10yr=1.0000. Selected 1.0000 (exclude high/low all) reflecting flat development and consensus toward unity in deep tail."
   },
   {
     "interval": "239-251",
-    "selection": 1.0,
-    "reasoning": "Selected 1.00 for far tail.",
-    "measure": "Paid Loss"
+    "selection": 1.0037,
+    "reasoning": "Very low variability (CV_10yr=0.0051). Simple 10yr=1.0044, weighted 10yr=1.0054, exclude high/low 10yr=1.0037. Selected 1.0037 (exclude high/low all). Marginal tail development; age ~20 years."
   },
   {
     "interval": "251-263",
-    "selection": 1.0,
-    "reasoning": "Selected 1.00 for far tail.",
-    "measure": "Paid Loss"
+    "selection": 1.0074,
+    "reasoning": "Very low variability (CV_10yr=0.0050). Simple 10yr=1.0057, weighted 10yr=1.0062, exclude high/low 10yr=1.0074. Selected 1.0074 (exclude high/low all). Sparse recent data (2022-2024) shows consistent ~1.006-1.008. Minor tail activity."
   },
   {
     "interval": "263-275",
-    "selection": 1.0,
-    "reasoning": "Selected 1.00 for far tail.",
-    "measure": "Paid Loss"
+    "selection": 1.0076,
+    "reasoning": "Very low variability (CV_10yr=0.0019). Simple 10yr=1.0076, weighted 10yr=1.0074, exclude high/low 10yr=1.0076. Selected 1.0076 (exclude high/low all). Extremely stable; all methods agree closely. Deep tail development."
   },
   {
     "interval": "275-287",
-    "selection": 1.0,
-    "reasoning": "Selected 1.00 for far tail.",
-    "measure": "Paid Loss"
+    "reasoning": "Cutoff at 263: Beyond 263 months (~21+ years), data becomes extremely sparse (2024 only has 1 observation at 1.0039). Tail development is minimal and unreliable for direct selection. Recommend tail curve fitting (exponential decay model) for extrapolation beyond this point rather than factor-based selection."
   }
 ]

@@ -1,9 +1,0 @@
-[
-  {
-    "measure": "Reported Count",
-    "cutoff_age": 143,
-    "tail_factor": 1.0,
-    "method": "bondy",
-    "reasoning": "Reported count is completely closed by age 143. All scenarios across all methods (Bondy, Modified Bondy variants) return a tail factor of 1.0, with is_monotone_from_here = True and CV = 0.0. The selected LDFs show factors at or near 1.0 from age 143 onward. This unambiguous pattern indicates the count development pattern is complete and no tail adjustment is warranted. A tail factor of 1.0 is the only defensible selection."
-  }
-]

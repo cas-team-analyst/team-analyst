@@ -127,6 +127,16 @@ def update_sheet(ws, measure_selections):
 
         col = interval_to_col[interval]
 
+        # Cutoff markers have reasoning but no selection value — write reasoning only
+        if "selection" not in sel:
+            reason_cell = ws.cell(row=reasoning_row, column=col)
+            reason_cell.value = "[CUTOFF] " + sel.get("reasoning", "")
+            reason_cell.fill = SELECTION_FILL
+            reason_cell.font = Font(size=8, italic=True)
+            reason_cell.alignment = Alignment(horizontal="left", wrap_text=True)
+            reason_cell.border = THIN_BORDER
+            continue
+
         # Write selection value (this is rules-based now)
         sel_cell = ws.cell(row=selection_row, column=col)
         sel_cell.value = sel["selection"]
@@ -164,6 +174,16 @@ def update_ai_sheet(ws, measure_selections, interval_to_col):
             continue
 
         col = interval_to_col[interval]
+
+        # Cutoff markers have reasoning but no selection value — write reasoning only
+        if "selection" not in sel:
+            reason_cell = ws.cell(row=ai_reasoning_row, column=col)
+            reason_cell.value = "[CUTOFF] " + sel.get("reasoning", "")
+            reason_cell.fill = AI_FILL
+            reason_cell.font = Font(size=8, italic=True)
+            reason_cell.alignment = Alignment(horizontal="left", wrap_text=True)
+            reason_cell.border = THIN_BORDER
+            continue
 
         sel_cell = ws.cell(row=ai_selection_row, column=col)
         sel_cell.value = sel["selection"]
@@ -281,19 +301,18 @@ def main():
         # Match sheet name to measure (sheet name may be truncated to 31 chars)
         matched = None
         for measure in by_measure:
-            if sheet_name == measure[:31]:
+            if measure[:31] == sheet_name[:31] or sheet_name[:31] in measure[:31]:
                 matched = measure
                 break
-
         if matched:
-            update_sheet(wb[sheet_name], by_measure[matched])
-
-            # Also write AI selections for this measure if available
-            if matched in by_measure_ai:
-                header_row, _, _ = find_selections_section(wb[sheet_name])
-                if header_row:
-                    interval_to_col = get_interval_columns(wb[sheet_name], header_row)
-                    update_ai_sheet(wb[sheet_name], by_measure_ai[matched], interval_to_col)
+            ws = wb[sheet_name]
+            # update_sheet finds header/selection rows internally
+            update_sheet(ws, by_measure[matched])
+            # update_ai_sheet needs interval_to_col — derive from find_selections_section
+            header_row, _, _ = find_selections_section(ws)
+            if header_row and matched in by_measure_ai:
+                interval_to_col = get_interval_columns(ws, header_row)
+                update_ai_sheet(ws, by_measure_ai[matched], interval_to_col)
         else:
             print(f"No selections found for sheet '{sheet_name}' - skipping")
 

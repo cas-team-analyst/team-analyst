@@ -1,9 +1,0 @@
-[
-  {
-    "measure": "Paid Loss",
-    "cutoff_age": 143,
-    "tail_factor": 1.0039,
-    "method": "bondy",
-    "reasoning": "Bondy method at age 143 is selected despite its low CDF coverage (5.8%) because it passes the materiality constraint and reflects the closed nature of this paid triangle. The paid loss has developed significantly faster than incurred—the selected LDFs show rapid convergence to 1.00 by age 203. A tail factor of only 0.39% is appropriate for a line nearing complete development. The low coefficient of variation (0.0182) and minimal slope changes (6) provide stability. While exponential methods offer higher R² (0.190), they produce tail factors above 1.04, which lacks actuarial defensibility for a triangle exhibiting minimal residual development. McClenahan's near-unity result (1.0000) is also defensible but slightly aggressive; Bondy provides a modest buffer consistent with conservative reserving practice."
-  }
-]

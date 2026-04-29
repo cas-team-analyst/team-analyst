@@ -1,9 +1,0 @@
-[
-  {
-    "measure": "Incurred Loss",
-    "cutoff_age": 143,
-    "tail_factor": 1.0250634,
-    "method": "double_exp",
-    "reasoning": "Double exponential method at age 143 provides the strongest balance of fit quality and actuarial defensibility. The R² of 0.334 and LOO standard deviation of 0.00464 demonstrate reasonable curve fit despite complex tail behavior. Coverage of 98.4% of the remaining CDF ensures material tail development is captured. This selection exceeds the conservative Bondy baseline (1.0119, only 47.6% CDF coverage) and captures the non-monotone development pattern evident in the observed age-to-age factors while remaining more parsimonious than alternatives like McClenahan (which underestimates at 1.0000). The modest tail factor of 2.5% reflects an incurred triangle that has substantially closed but retains measurable late development."
-  }
-]

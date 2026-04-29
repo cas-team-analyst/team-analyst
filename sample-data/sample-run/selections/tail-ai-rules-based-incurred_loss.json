@@ -1,9 +1,0 @@
-[
-  {
-    "measure": "Incurred Loss",
-    "cutoff_age": 143,
-    "tail_factor": 1.0119,
-    "method": "bondy",
-    "reasoning": "Incurred loss triangle shows medium-length tail expected (between reported count and paid loss). All starting age candidates exhibit monotonicity violations (slope_sign_changes > 0 at both ages 143 and 203), violating the Starting Point Selection hard requirement. Age 143 selected as it retains more observations (n_factors_in_fit=12 vs 7) and has lower slope_sign_changes relative to age 203. Bondy method applied (last observed LDF of 1.0119) due to lack of stable curve fit. Coefficient of variation acceptable (0.0131 < 0.15). Gap rule satisfied (no gap_flag issues reported). Materiality anchor not explicitly met (materiality_ok=False), but bondy provides simplest conservative baseline without imposing unstable curve structure. Tail factor of 1.0119 represents 0.48% of CDF—immaterial by typical standards. Method selection reflects data volatility constraints rather than optimal fit. McClenahan method rejected despite materiality_ok=True due to immaterial implied tail (1.0 rounded). Exponential and modified bondy variants rejected due to structural breaks in development pattern."
-  }
-]

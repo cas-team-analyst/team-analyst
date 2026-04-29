@@ -1,9 +1,0 @@
-[
-  {
-    "measure": "Reported Count",
-    "cutoff_age": 143,
-    "tail_factor": 1.0,
-    "method": "bondy",
-    "reasoning": "Reported count triangle represents shortest tail type—closing materially earlier than all other measures. Age 143 selected as starting point where complete closure occurs. All scenarios at both ages 143 and 203 show identical characteristics: is_monotone_from_here=True, slope_sign_changes=0, cv=0.0 (no variance across accident years), and all subsequent LDFs equal exactly 1.0. Triangle demonstrates perfect monotonicity with no slope reversals—satisfies all Starting Point Selection criteria. Selected LDFs confirm no development beyond age 143; tail_factor=1.0 exactly. Bondy method appropriate and standard for fully-closed triangles. No curve fitting required; closure is deterministic from data. Gap rule satisfied trivially (no gap possible when all late factors = 1.0). Materiality anchor applies with certainty: tail is exactly zero after age 143. Count triangles naturally close faster than dollar-based measures due to rapid incident reporting; this result is consistent with actuarial expectations. No alternatives considered as closure is definitive and requires no assumption beyond observed data."
-  }
-]

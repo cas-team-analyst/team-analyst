@@ -1,31 +1,31 @@
 # Step 1: Project Setup
 
-- [ ] Orient to the OS Environment following steps in SKILL.md. It is critical to get this set up before continuing. Downstream steps won't work if we lose track of this task.
+- [x] Orient to the OS Environment following steps in SKILL.md. It is critical to get this set up before continuing. Downstream steps won't work if we lose track of this task.
 
-- [ ] Respond to the user with the welcome message from assets and wait for their confirmation.
+- [x] Respond to the user with the welcome message from assets and wait for their confirmation.
 
-- [ ] Present the project-setup-form from assets. Display the form exactly as written. Wait for the user to provide all the fields before proceeding. Do not skip fields or infer missing values.
+- [x] Present the project-setup-form from assets. Display the form exactly as written. Wait for the user to provide all the fields before proceeding. Do not skip fields or infer missing values.
 
-- [ ] Use bash cp to copy PROGRESS.md, REPLICATE.md, and REPORT.md from skill assets into the project folder provided in the setup form. Do NOT read them or write them.
+- [x] Use bash cp to copy PROGRESS.md, REPLICATE.md, and REPORT.md from skill assets into the project folder provided in the setup form. Do NOT read them or write them.
 
-- [ ] Create folders `raw-data/`, `processed-data/`, `selections/`, `scripts/`, and `ultimates/` inside the project folder. The user will have selected their triangle file(s) and project folder via the file picker — use those paths to copy the triangle file(s) into `raw-data/` with bash cp. Do not ask the user to copy files manually.
+- [x] Create folders `raw-data/`, `processed-data/`, `selections/`, `scripts/`, and `ultimates/` inside the project folder. The user will have selected their triangle file(s) and project folder via the file picker — use those paths to copy the triangle file(s) into `raw-data/` with bash cp. Do not ask the user to copy files manually.
 
-- [ ] **Update REPORT.md:**
+- [x] **Update REPORT.md:**
   - Fill in the header fields using the values from the setup plus Prepared by (user name), Draft Date (today).
   - Fill in **Section 1.1 Purpose** with the purpose of this analysis from the setup form (e.g., "quarterly reserve review for internal management").
   - Fill in **Section 1.2 Scope** table with any known info from setup: Segment/LOB, basis (gross/net), currency, geography.
   - Fill in **Section 1.3 Intended Internal Users** with the audience from the setup form.
   - Add a row to **Section 14 Version History**: v0.1, today's date, analyst name, "Initial draft".
 
-- [ ] **Update REPLICATE.md:**
+- [x] **Update REPLICATE.md:**
   - Fill in the Overview section using values from the setup form: Analysis name, Prepared by, Draft Date, etc.
   - Fill in Step 1: List folders created, note interaction mode selected
 
 # Step 2: Exploratory Data Analysis
 
-- [ ] Review the files available using the explore-excel in the reserving-analysis skill scripts. For each file add a file summary subsection to REPORT.md in the data section.
+- [x] Review the files available using the explore-excel in the reserving-analysis skill scripts. For each file add a file summary subsection to REPORT.md in the data section.
 
-- [ ] **Update REPORT.md:**
+- [x] **Update REPORT.md:**
   - Fill in **Section 3.1 Data Used** table: one row per data file (source name, as-of date, notes on format/coverage). Include triangle files and any other inputs.
   - Fill in **Section 3.2 Data Reconciliation**: note whether data was reconciled to a prior valuation or financial system. If no reconciliation was performed, state "Not reconciled - data accepted as provided by [source]."
   - Fill in **Section 3.3 Data Quality Observations**: any outliers, gaps, negative development, coding anomalies, or unusual patterns noticed during exploration. If none observed, state "No material data quality issues observed during initial review."
@@ -38,24 +38,24 @@
 
 - [ ] If you haven't already found prior selections, ask the user if prior LDF selections exist from a previous analysis. If they do, ask where they are located (Excel file, CSV, database, etc.). You will need to modify `read_and_process_prior_selections()` in `1a-load-and-validate.py` to read from that source during data extraction.
 
-- [ ] Ask the user if prior tail factor selections exist from a previous analysis. If they do, ask where they are located and what tail factor was used for each measure. Create a CSV file at `selections/tail-factor-prior.csv` with columns: `measure`, `cutoff_age`, `tail_factor`, `method`, `reasoning`. This will be loaded by `2d-tail-create-excel.py` and shown in the "Prior Selection" row for reference. If no prior tail selections exist, skip this step.
+- [x] Ask the user if prior tail factor selections exist from a previous analysis. If they do, ask where they are located and what tail factor was used for each measure. Create a CSV file at `selections/tail-factor-prior.csv` with columns: `measure`, `cutoff_age`, `tail_factor`, `method`, `reasoning`. This will be loaded by `2d-tail-create-excel.py` and shown in the "Prior Selection" row for reference. If no prior tail selections exist, skip this step.
 
-- [ ] If you haven't already found an input file with Expected Loss Rates (containing period, expected loss rate, and expected frequency), ask the user if this file exists and to place it in the raw-data folder. Without this file, we won't be able to use the Initial Expected or Bornhuetter-Ferguson methods.
+- [x] If you haven't already found an input file with Expected Loss Rates (containing period, expected loss rate, and expected frequency), ask the user if this file exists and to place it in the raw-data folder. Without this file, we won't be able to use the Initial Expected or Bornhuetter-Ferguson methods.
 
-- [ ] If initial expected data is not provided (no expected loss rate/frequency file) but exposure is available, confirm with the user whether to use the fallback approximation for BF expected rate: for each accident year, compute diagonal loss per dollar of exposure, smooth with a 3-year rolling average, and round to 3 decimals. Offer these options explicitly before continuing: (1) use this fallback (this is what `3-ie-ultimates.py` defaults to), (2) use a different approach the user specifies, (3) upload initial expected data in the required format, or (4) skip Initial Expected/BF and continue with Chain Ladder only. Note their response REPORT.md.
+- [x] If initial expected data is not provided (no expected loss rate/frequency file) but exposure is available, confirm with the user whether to use the fallback approximation for BF expected rate: for each accident year, compute diagonal loss per dollar of exposure, smooth with a 3-year rolling average, and round to 3 decimals. Offer these options explicitly before continuing: (1) use this fallback (this is what `3-ie-ultimates.py` defaults to), (2) use a different approach the user specifies, (3) upload initial expected data in the required format, or (4) skip Initial Expected/BF and continue with Chain Ladder only. Note their response REPORT.md.
 
-- [ ] Modify the variables at the top of each script with the appropriate DATA_FILE_PATH, OUTPUT_PATH, and TEMPLATE_PATH.
+- [x] Modify the variables at the top of each script with the appropriate DATA_FILE_PATH, OUTPUT_PATH, and TEMPLATE_PATH.
 
-- [ ] Modify `1a-load-and-validate.py` to accept the format of the data provided by the user. This includes:
+- [x] Modify `1a-load-and-validate.py` to accept the format of the data provided by the user. This includes:
   - Customizing `read_and_process_triangles()` to read triangle data from your source
   - If prior selections exist, customizing `read_and_process_prior_selections()` to read from your source.
   - Run it to verify it works and passes validation. Only mark this step complete once the tests in the script have passed to verify the output is in the necessary format.
 
-- [ ] **Confirm data format with the user.** This step always runs, regardless of interaction mode. Use the data-validation template from assets so every analysis presents data validation the same way. Do not improvise the format, reorder sections, or omit headings — even if a section is short or trivial. Populate every section from the actual processed data. The spot-check triangle should default to Paid Loss; if Paid Loss is not present, use the first loss measure available (Incurred, then Reported). Do not proceed until the user confirms.
+- [x] **Confirm data format with the user.** This step always runs, regardless of interaction mode. Use the data-validation template from assets so every analysis presents data validation the same way. Do not improvise the format, reorder sections, or omit headings — even if a section is short or trivial. Populate every section from the actual processed data. The spot-check triangle should default to Paid Loss; if Paid Loss is not present, use the first loss measure available (Incurred, then Reported). Do not proceed until the user confirms.
 
-- [ ] Report to the user what LDF averages (review `1d-ldf-averages.py`) and metrics will be calculated. _(Pause for Selections only: also ask if they'd like to add others before continuing.)_
+- [x] Report to the user what LDF averages (review `1d-ldf-averages.py`) and metrics will be calculated. _(Pause for Selections only: also ask if they'd like to add others before continuing.)_
 
-- [ ] Run all the other Python scripts to create output in `processed-data/`.
+- [x] Run all the other Python scripts to create output in `processed-data/`.
 
 - [ ] **Update REPORT.md:**
   - Update **Section 3.1 Data Used** table: add rows for triangle types used (paid loss, incurred loss, reported count, closed count, exposure), confirm source file names and as-of dates; note if ELR file is present or absent.
@@ -72,30 +72,30 @@
 
 # Step 4: Chain Ladder LDF Selections
 
-- [ ] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
+- [x] Tell the user: "I'm about to apply the base selection logic framework to make LDF selections. If you'd like to explore these in detail, you can use `/selection-logic` in a separate session or after this analysis is complete — using it here would interrupt the current workflow."
 
-- [ ] Run `2a-chainladder-create-excel.py` to create the LDF selection workbook and export per-measure context files. The script will print the context file paths it creates (e.g., "Exported MD: selections/chainladder-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
+- [x] Run `2a-chainladder-create-excel.py` to create the LDF selection workbook and export per-measure context files. The script will print the context file paths it creates (e.g., "Exported MD: selections/chainladder-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
 
-- [ ] **Invoke the rules-based selector once** for all measures. Call the `selector-chain-ladder-ldf-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+- [x] **Invoke the rules-based selector once** for all measures. Call the `selector-chain-ladder-ldf-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
   - Read each context file
   - Apply the rules-based selection framework to each measure independently
   - Write one JSON file per measure: `selections/chainladder-ai-rules-based-<measure>.json`
   
   Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
-- [ ] **Invoke the open-ended selector once** for all measures. Call the `selector-chain-ladder-ldf-ai-open-ended` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+- [x] **Invoke the open-ended selector once** for all measures. Call the `selector-chain-ladder-ldf-ai-open-ended` subagent and pass the list of context file paths you captured from the script output. The subagent will:
   - Read each context file
   - Apply holistic actuarial judgment (no rigid rules framework) to each measure independently
   - Write one JSON file per measure: `selections/chainladder-ai-open-ended-<measure>.json`
   
   Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
-- [ ] Run `2b-chainladder-update-selections.py` to collect all per-measure JSON files and insert the selections and reasoning into the Excel file. This script will:
+- [x] Run `2b-chainladder-update-selections.py` to collect all per-measure JSON files and insert the selections and reasoning into the Excel file. This script will:
   - Load all `selections/chainladder-ai-rules-based-*.json` files and combine them
   - Load all `selections/chainladder-ai-open-ended-*.json` files and combine them
   - Populate the **Rules-Based AI Selection** row (from rules-based files) and **Open-Ended AI Selection** row (from open-ended files) in each sheet
 
-- [ ] Tell the user where `selections/Chain Ladder Selections - LDFs.xlsx` is located. Explain that both rules-based and open-ended AI selections (purple rows) are visible. The **Rules-Based Selection** row is what gets used for ultimates — the user can override it manually. If the Rules-Based Selection row is left blank, the Open-Ended AI Selection will be used as a fallback.
+- [x] Tell the user where `selections/Chain Ladder Selections - LDFs.xlsx` is located. Explain that both rules-based and open-ended AI selections (purple rows) are visible. The **Rules-Based Selection** row is what gets used for ultimates — the user can override it manually. If the Rules-Based Selection row is left blank, the Open-Ended AI Selection will be used as a fallback.
 
 _(Pause for Selections only):_
 - [ ] Open `selections/Chain Ladder Selections - LDFs.xlsx` for the user. Let them know they can review and override any AI selections. Pause and wait for the user to confirm they are done reviewing before continuing.
@@ -285,24 +285,3 @@ Be explicit and exhaustive. The user should leave this step knowing exactly what
 - [ ] Ask the user if anything is unclear about any of the outputs before the workflow closes.
 
 - [ ] Ask the user if they have any questions about the analysis itself — methodology, selections, assumptions, data quality, results interpretation, or any findings in the technical review. Remind them they can also run `/peer-review` in a separate session for an independent AI review of the analysis.
-
----
-
-## Headline Indications (as of 04/29/2026)
-
-### Loss
-| Item | Amount |
-|---|---|
-| Total Paid to Date | $41,767,854 |
-| Case Reserves | $1,848,541 |
-| Total Incurred | $43,616,395 |
-| IBNR (pure) | $4,721,077 |
-| **Total Unpaid (Case + IBNR)** | **$6,569,618** |
-| **Selected Ultimate** | **$48,337,472** |
-
-### Count
-| Item | Amount |
-|---|---|
-| Total Reported to Date | 9,716 |
-| Selected Ultimate | 9,738 |
-| IBNR Count | 22 |
