@@ -1,6 +1,6 @@
 # Reads projected ultimates, actuary selections, and triangle data to produce
-# Analysis.xlsx — hard-coded values from source data using xlsxwriter for instant display.
-# No formulas - all values computed in Python and written directly.
+# Analysis.xlsx — formulas with cached values using xlsxwriter for instant display.
+# No need for separate values-only version - cached formulas work in Excel AND Python.
 #
 # run-note: Run from the scripts/ directory:
 #     cd scripts/
@@ -69,7 +69,13 @@ INPUT_LDF_AVERAGES  = config.PROCESSED_DATA + "4_ldf_averages.parquet"
 _NUM_FMT = "#,##0"
 _DEC_FMT = "#,##0.000"
 
-# No longer using external workbook formula references - all values hard-coded from source data
+# Excel external reference paths - using absolute paths for reliability
+# (openpyxl doesn't set proper workbook relationships for relative paths to work)
+import pathlib
+_BASE_ABS = str(pathlib.Path(OUTPUT_COMPLETE).parent.resolve())
+_ULT_WB  = _BASE_ABS + "\\selections\\[Ultimates.xlsx]"
+_CL_LDF_WB = _BASE_ABS + "\\selections\\[Chain Ladder Selections - LDFs.xlsx]"
+_CL_TAIL_WB = _BASE_ABS + "\\selections\\[Chain Ladder Selections - Tail.xlsx]"
 
 def load_tail_selections(tail_excel_path):
     """
@@ -193,9 +199,15 @@ def _get_cdf_cell_ref(ws_triangle, target_age):
     return None
 
 def _formula_cell(ws, r, c, formula, num_fmt, cached_value=None, fmt_obj=None):
-    """Write value directly (formulas removed for simplicity). r and c are 1-based (Excel coords)."""
-    # Now just writes the cached value - formula parameter ignored
-    _data_cell_xlw(ws, r, c, cached_value, num_fmt, fmt_obj)
+    """Write formula with cached value. r and c are 1-based (Excel coords)."""
+    if fmt_obj is None:
+        fmt_obj = ws.book.add_format({'num_format': num_fmt, 'align': 'right'})
+    # CRITICAL: Never pass None to write_formula - corrupts Excel XML!
+    # Omit cached_value parameter when None, per excel-formulas skill
+    if cached_value is not None:
+        ws.write_formula(r-1, c-1, formula, fmt_obj, cached_value)
+    else:
+        ws.write_formula(r-1, c-1, formula, fmt_obj)
 
 
 def _data_cell_xlw(ws, r, c, value, num_fmt=None, fmt_obj=None):
@@ -289,36 +301,17 @@ def write_notes_sheet_xlw(ws, sheet_list, fmt_dict):
     ws.freeze_panes(7, 0)  # Freeze at row 8 (1-based)
 
 
-def _ult_ref(ult_col_map, sheet, col_header, row, ult_wb=None):
-    """Return value from Ultimates workbook (not a formula)."""
-    if ult_wb is None:
-        return None
-    col_idx = ult_col_map.get((sheet, col_header))
-    if not col_idx:
-        return None
-    try:
-        ws = ult_wb[sheet]
-        from openpyxl.utils import column_index_from_string
-        col_num = column_index_from_string(col_idx)
-        val = ws.cell(row=row, column=col_num).value
-        return val
-    except:
-        return None
+def _ult_ref(ult_col_map, sheet, col_header, row):
+    col = ult_col_map.get((sheet, col_header))
+    return f"='{_ULT_WB}{sheet}'!{col}{row}" if col else '""'
 
 
-def _exp_ref(exp_row_map, period, cl_ldf_wb=None):
-    """Return exposure value from Chain Ladder Selections workbook (not a formula)."""
-    if cl_ldf_wb is None:
-        return None
+def _exp_ref(exp_row_map, period):
+    """Build formula reference to exposure value in Chain Ladder Selections - LDFs.xlsx."""
     row = exp_row_map.get(str(period))
-    if not row:
-        return None
-    try:
-        ws = cl_ldf_wb['Exposure']
-        val = ws.cell(row=row, column=2).value  # Column B = 2
-        return val
-    except:
-        return None
+    if row:
+        return f"='{_CL_LDF_WB}Exposure'!B{row}"
+    return '""'
 
 
 def _build_cl_ldfs_col_row_maps(wb_cl, measure_sheet_name):
@@ -516,9 +509,9 @@ def _copy_ws_with_ldfs_formulas(ws_src, ws_dst, measure_short_name, cl_ldfs_path
 
 def _add_cdf_formulas_to_triangle(ws):
     """
-    Add CDF row values below Selected Reasoning in the LDF Selections section.
-    CDF values are right-to-left cumulative product of Selected LDF values.
-    Rightmost column equals the Selected tail factor.
+    Add CDF row formulas below Selected Reasoning in the LDF Selections section.
+    CDF formulas multiply Selected LDF by the next CDF to the right (right-to-left cumulative product).
+    Rightmost column references the Selected tail factor.
     """
     selected_row = None
     selected_reasoning_row = None
@@ -548,6 +541,8 @@ def _add_cdf_formulas_to_triangle(ws):
     # If CDF row doesn't exist, create it after Selected Reasoning (or Selected if no reasoning)
     if cdf_row_num is None:
         cdf_row_num = (selected_reasoning_row or selected_row) + 1
+        # Insert a new row by shifting cells down if needed
+        # Actually, if the row exists but is empty, we can just use it
     
     # Set CDF label
     ws.cell(cdf_row_num, 1).value = "CDF"
@@ -561,32 +556,24 @@ def _add_cdf_formulas_to_triangle(ws):
         lbl.fill = copy.copy(ref_cell.fill)
         lbl.alignment = copy.copy(ref_cell.alignment)
     
-    # Read Selected LDF values from right to left and compute CDF
-    # Rightmost column: CDF = Selected tail factor
-    selected_values = []
-    for col in range(2, last_data_col + 1):  # Start from column 2 (B), skip label column
-        val = ws.cell(selected_row, col).value
-        selected_values.append((col, val))
+    # Write CDF formulas from right to left
+    # Rightmost column: reference Selected tail factor
+    tail_col_letter = get_column_letter(last_data_col)
+    tail_cell = ws.cell(cdf_row_num, last_data_col)
+    tail_cell.value = f'={tail_col_letter}{selected_row}'
+    tail_cell.number_format = _DEC_FMT
     
-    # Compute CDF values right-to-left (cumulative product)
-    cdf_values = []
-    cdf_accum = 1.0
-    for col, ldf_val in reversed(selected_values):
-        if ldf_val is not None and isinstance(ldf_val, (int, float)):
-            cdf_accum = ldf_val * cdf_accum
-        cdf_values.append((col, cdf_accum if cdf_accum != 1.0 else ldf_val))
-    
-    cdf_values.reverse()  # Back to left-to-right order
-    
-    # Write CDF values
-    for col, cdf_val in cdf_values:
+    # Other columns: =Selected_LDF * Next_CDF
+    for col in range(last_data_col - 1, 1, -1):
+        col_letter = get_column_letter(col)
+        next_col_letter = get_column_letter(col + 1)
+        
         cell = ws.cell(cdf_row_num, col)
-        if cdf_val is not None:
-            cell.value = cdf_val
-            cell.number_format = _DEC_FMT
-            if ref_cell.has_style:
-                cell.font = copy.copy(ref_cell.font)
-                cell.border = copy.copy(ref_cell.border)
+        cell.value = f'=IFERROR({col_letter}{selected_row}*{next_col_letter}{cdf_row_num},"")'
+        cell.number_format = _DEC_FMT
+        if ref_cell.has_style:
+            cell.font = copy.copy(ref_cell.font)
+            cell.border = copy.copy(ref_cell.border)
 
 
 def _tri_col_map_from_df(triangles_df, measure, max_age=None):
@@ -606,7 +593,7 @@ def _tri_col_map_from_df(triangles_df, measure, max_age=None):
 
 
 def write_method_cl(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_map=None):
-    """Write Chain Ladder method sheet with xlsxwriter (values from source data)."""
+    """Write Chain Ladder method sheet with xlsxwriter (formulas + cached values)."""
     short_name = measure_short_name(measure)
     ws = gen_wb.add_worksheet(f"{short_name} CL"[:31])
     headers = ["Accident Period", "Current Age", short_name, "CDF", "Ultimate", "IBNR", "Unpaid"]
@@ -697,8 +684,8 @@ def write_method_cl(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
     _formula_cell(ws, t, 6, f"=SUM(F2:F{t-2})", _NUM_FMT, cached_value=total_ibnr, fmt_obj=fmt_num)
     _formula_cell(ws, t, 7, f"=SUM(G2:G{t-2})", _NUM_FMT, cached_value=total_ibnr, fmt_obj=fmt_num)
 
-def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_maps=None, ult_wb=None):
-    """Write Bornhuetter-Ferguson method sheet with xlsxwriter (values from source data).""
+def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_maps=None):
+    """Write Bornhuetter-Ferguson method sheet with xlsxwriter (formulas + cached values)."""
     tri_col_maps = tri_col_maps or {}
     short_name = measure_short_name(measure)
     ws = gen_wb.add_worksheet(f"{short_name} BF"[:31])
@@ -732,8 +719,8 @@ def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
         ie_val = row.get("ultimate_ie")
         # Sanitize ie_val - could be NaN from dataframe
         ie_val = ie_val if pd.notna(ie_val) else None
-        # Use pre-computed value from combined dataframe
-        _data_cell_xlw(ws, r, 3, ie_val, fmt_obj=fmt_num)
+        ie_formula = f"='IE'!D{r}" if has_ie_method else _ult_ref(ult_col_map, ult_sheet, ie_hdr, r)
+        _formula_cell(ws, r, 3, ie_formula, _NUM_FMT, cached_value=ie_val, fmt_obj=fmt_num)
         
         # CDF from CL sheet
         cdf_val = row.get("cdf")
@@ -822,8 +809,8 @@ def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
     _formula_cell(ws, t, 10, f"=SUM(J2:J{t-2})", _NUM_FMT, cached_value=total_ibnr, fmt_obj=fmt_num)
 
 
-def write_method_ie(gen_wb, combined, measure, exp_row_map, ult_col_map, fmt_dict, ult_wb=None, cl_ldf_wb=None):
-    """Write Initial Expected method sheet with xlsxwriter (values from source data).""
+def write_method_ie(gen_wb, combined, measure, exp_row_map, ult_col_map, fmt_dict):
+    """Write Initial Expected method sheet with xlsxwriter (formulas + cached values)."""
     short_name = measure_short_name(measure)
     ws = gen_wb.add_worksheet("IE")
     headers = ["Accident Period", "Current Age", "Exposure", "IE Ultimate", "Selected Loss Rate"]
@@ -843,23 +830,24 @@ def write_method_ie(gen_wb, combined, measure, exp_row_map, ult_col_map, fmt_dic
         _data_cell_xlw(ws, r, 1, row["period_int"], fmt_obj=fmt_period)
         _data_cell_xlw(ws, r, 2, row["current_age"], fmt_obj=fmt_num)
 
-        # Exposure - read value from Chain Ladder Selections workbook
-        exp_val = _exp_ref(exp_row_map, row["period"], cl_ldf_wb)
-        _data_cell_xlw(ws, r, 3, exp_val, fmt_obj=fmt_num)
+        # Exposure - link to Chain Ladder Selections - LDFs.xlsx Exposure sheet
+        # We don't have exposure values in combined, so can't cache easily
+        exp_formula = _exp_ref(exp_row_map, row["period"])
+        _formula_cell(ws, r, 3, exp_formula, _NUM_FMT, fmt_obj=fmt_num)
 
-        # IE Ultimate - use pre-computed value from combined dataframe
+        # IE Ultimate
         ie_val = row.get("ultimate_ie")
         # Sanitize ie_val - could be NaN from dataframe
         ie_val = ie_val if pd.notna(ie_val) else None
-        _data_cell_xlw(ws, r, 4, ie_val, fmt_obj=fmt_num)
+        ie_ref = _ult_ref(ult_col_map, ult_sheet, ie_hdr, r)
+        if ie_ref == '""':
+            _data_cell_xlw(ws, r, 4, ie_val, fmt_obj=fmt_num)
+        else:
+            _formula_cell(ws, r, 4, ie_ref, _NUM_FMT, cached_value=ie_val, fmt_obj=fmt_num)
         
         # Selected Loss Rate = IE Ultimate / Exposure
-        exp_val = _exp_ref(exp_row_map, row["period"], cl_ldf_wb)
-        if ie_val and exp_val and pd.notna(ie_val) and pd.notna(exp_val) and exp_val != 0:
-            loss_rate = ie_val / exp_val
-        else:
-            loss_rate = None
-        _data_cell_xlw(ws, r, 5, loss_rate, fmt_obj=fmt_dec)
+        # Can't cache without exposure value
+        _formula_cell(ws, r, 5, f"=D{r}/C{r}", _DEC_FMT, fmt_obj=fmt_dec)
 
 
 def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map, fmt_dict, tri_col_maps=None):
@@ -1722,10 +1710,7 @@ def main():
         for _cell in ult_wb[_sname][1]:
             if _cell.value:
                 ult_col_map[(_sname, str(_cell.value).strip())] = col_letter(_cell.column - 1)  # Convert to xlsxwriter 0-based
-    # Keep ult_wb open for direct value lookups in write functions
-    
-    # Load CL LDF workbook for exposure and LDF lookups
-    cl_ldf_wb = load_workbook(INPUT_CL_EXCEL, data_only=True) if pathlib.Path(INPUT_CL_EXCEL).exists() else None
+    ult_wb.close()
 
     combined, available_methods = load_combined(INPUT_ULTIMATES, sel_lookup)
     reason_lookup = load_selection_reasoning(INPUT_SELECTIONS_EXCEL)
@@ -1774,10 +1759,10 @@ def main():
             write_method_cl(wb, combined, m, ult_col_map, fmt, loss_tri_maps[m])
         for m in loss_m:
             if _has_method(combined, m, "ultimate_bf"):
-                write_method_bf(wb, combined, m, ult_col_map, fmt, loss_tri_maps, ult_wb)
+                write_method_bf(wb, combined, m, ult_col_map, fmt, loss_tri_maps)
         # Create single IE sheet for Incurred Loss only
         if "Incurred Loss" in loss_m and _has_method(combined, "Incurred Loss", "ultimate_ie"):
-            write_method_ie(wb, combined, "Incurred Loss", exp_row_map, ult_col_map, fmt, ult_wb, cl_ldf_wb)
+            write_method_ie(wb, combined, "Incurred Loss", exp_row_map, ult_col_map, fmt)
 
     print("Building Counts sheets...")
     if count_m:
@@ -1789,7 +1774,7 @@ def main():
             write_method_cl(wb, combined, m, ult_col_map, fmt, count_tri_maps[m])
         for m in count_m:
             if _has_method(combined, m, "ultimate_bf"):
-                write_method_bf(wb, combined, m, ult_col_map, fmt, count_tri_maps, ult_wb)
+                write_method_bf(wb, combined, m, ult_col_map, fmt, count_tri_maps)
 
     if other_m:
         print("Building other method sheets...")
@@ -1799,7 +1784,7 @@ def main():
         for m in other_m:
             write_method_cl(wb, combined, m, ult_col_map, fmt, other_tri_maps[m])
             if _has_method(combined, m, "ultimate_bf"):
-                write_method_bf(wb, combined, m, ult_col_map, fmt, other_tri_maps, ult_wb)
+                write_method_bf(wb, combined, m, ult_col_map, fmt, other_tri_maps)
     
     print("Copying CL LDF triangle sheets...")
     create_triangle_sheets_xlw(wb, measures, fmt)
@@ -1834,14 +1819,8 @@ def main():
     ws_notes = wb.add_worksheet("Notes")
     write_notes_sheet_xlw(ws_notes, sheet_list, fmt)
 
-    print("\nSaving Analysis.xlsx with xlsxwriter (values from source data)...")
+    print("\nSaving Analysis.xlsx with xlsxwriter (formulas + cached values)...")
     wb.close()
-    
-    # Close workbooks used for value lookups
-    ult_wb.close()
-    if cl_ldf_wb:
-        cl_ldf_wb.close()
-    
     print(f"  Saved -> {OUTPUT_COMPLETE}")
     print("Done. Formulas display immediately — no need for separate values-only workbook.")
 

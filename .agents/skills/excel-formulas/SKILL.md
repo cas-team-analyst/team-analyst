@@ -5,6 +5,10 @@ description: Guidelines for creating formula-driven Excel workbooks with xlsxwri
 
 # Formula-Driven Excel Workbooks
 
+> **⚠️ NOTE (April 2026):** The formula-based approach described in this skill has been **archived** for the main workflow scripts (2a, 2d, 5a, 6-analysis). These scripts now write hard-coded values from source data for easier maintenance. The formula-based versions are preserved in `.claude/skills/excel-formulas/assets/archived-formula-scripts/` and can be restored if needed. See `ARCHIVE_README.md` in that directory for restoration instructions.
+>
+> This skill remains valid for reference or for creating new formula-based workbooks outside the main workflow.
+
 ## Quick Reference
 
 **Core principle:** Inject live Excel formulas (not hard-coded values) with cached values so workbooks recalculate when actuaries change selections.

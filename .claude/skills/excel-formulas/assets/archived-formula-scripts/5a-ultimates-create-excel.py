@@ -50,7 +50,8 @@ SELECTIONS_OUTPUT_PATH = config.SELECTIONS
 def export_md_data(df_ult, exp_md):
     import pathlib
     # Subagents should use these markdown files as canonical context.
-    # Workbook contains hard-coded values from source data.
+    # Workbook formulas may not be evaluated in headless execution, so markdown
+    # context avoids dependence on stale Excel caches.
     
     # Export Loss category (Incurred + Paid)
     loss_measures = ['Incurred Loss', 'Paid Loss']

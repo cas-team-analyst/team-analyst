@@ -51,7 +51,7 @@ CL_LDF_EXCEL = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
 def find_selected_ldfs_in_cl_excel(cl_excel_path, measure):
     """
     Read Chain Ladder Excel to find selected LDFs for a measure.
-    Finds ALL THREE selection rows for cascaded value priority logic.
+    Finds ALL THREE selection rows for cascading formula logic.
     
     Returns:
         {
@@ -146,8 +146,8 @@ def find_selected_ldfs_in_cl_excel(cl_excel_path, measure):
 
 def write_selected_ldfs_section(ws, start_row, measure, cl_excel_path, output_file_path, fmt):
     """
-    Write selected LDFs section with values from Chain Ladder Excel.
-    Uses cascaded priority: User Selection > Rules-Based AI > Open-Ended AI.
+    Write selected LDFs section with cascading cross-workbook formulas.
+    Formulas use priority: User Selection > Rules-Based AI > Open-Ended AI.
     
     Returns:
         next_row (int)
@@ -174,27 +174,73 @@ def write_selected_ldfs_section(ws, start_row, measure, cl_excel_path, output_fi
     
     sorted_intervals = sorted(intervals.keys(), key=interval_sort_key)
     
+    # Build absolute path for cross-workbook formula
+    import pathlib
+    base_abs = str(pathlib.Path(output_file_path).parent.resolve())
+    cl_ldf_wb_ref = base_abs + "\\[Chain Ladder Selections - LDFs.xlsx]"
+    
     # Write header row
     ws.write(start_row, 0, "Selected LDFs", fmt['subheader'])
     for c_idx, interval in enumerate(sorted_intervals):
         ws.write(start_row, c_idx + 1, interval, fmt['subheader'])
     
-    # Write value row with cascading IF logic
+    # Write formula row with cascading IF logic
     row = start_row + 1
     ws.write(row, 0, "(User > Rules-Based > Open-Ended)", fmt['label'])
     
     for c_idx, interval in enumerate(sorted_intervals):
-        # Write value directly from cached data
+        col_idx = intervals[interval]
+        col_ltr = col_letter(col_idx - 1)  # -1 because col_letter is 0-based
+        
+        # Build cascading IF formula: IF(ISBLANK(User), IF(ISBLANK(RulesBased), OpenEnded, RulesBased), User)
+        # Format: ='[workbook.xlsx]SheetName'!CellRef
+        sheet_ref = f"'{cl_ldf_wb_ref}{measure}'"
+        
+        # Build cell references for each selection row
+        user_cell = f"{sheet_ref}!{col_ltr}{selection_rows.get('user', '')}" if 'user' in selection_rows else None
+        rules_cell = f"{sheet_ref}!{col_ltr}{selection_rows.get('rules_based', '')}" if 'rules_based' in selection_rows else None
+        open_cell = f"{sheet_ref}!{col_ltr}{selection_rows.get('open_ended', '')}" if 'open_ended' in selection_rows else None
+        
+        # Build cascading formula based on what rows are available
+        if user_cell and rules_cell and open_cell:
+            # All three present: full cascading logic
+            formula = f"=IF(ISBLANK({user_cell}),IF(ISBLANK({rules_cell}),{open_cell},{rules_cell}),{user_cell})"
+        elif user_cell and rules_cell:
+            # User and Rules-Based only
+            formula = f"=IF(ISBLANK({user_cell}),{rules_cell},{user_cell})"
+        elif user_cell and open_cell:
+            # User and Open-Ended only
+            formula = f"=IF(ISBLANK({user_cell}),{open_cell},{user_cell})"
+        elif user_cell:
+            # User only
+            formula = f"={user_cell}"
+        elif rules_cell:
+            # Rules-Based only
+            formula = f"={rules_cell}"
+        elif open_cell:
+            # Open-Ended only
+            formula = f"={open_cell}"
+        else:
+            # Shouldn't happen, but handle gracefully
+            ws.write(row, c_idx + 1, "", fmt['data_ldf'])
+            continue
+        
+        # Get cached value for this interval
         cached_value = cached_values.get(interval)
-        if cached_value is not None and pd.notna(cached_value):
-            ws.write(row, c_idx + 1, cached_value, fmt['data_ldf'])
+        
+        # Write formula with cached value if not None
+        if cached_value is not None:
+            ws.write_formula(row, c_idx + 1, formula, fmt['data_ldf'], cached_value)
+        else:
+            # No cached value yet - write formula without it
+            ws.write_formula(row, c_idx + 1, formula, fmt['data_ldf'])
     
     return row + 2  # Skip blank row
 
 
 def write_observed_factors_section(ws, start_row, measure, cl_excel_path, output_file_path, fmt):
     """
-    Section B: Selected LDFs from Chain Ladder Excel (hard-coded values).
+    Section B: Selected LDFs from Chain Ladder Excel (cross-workbook formulas).
     Renamed but kept old function name for compatibility.
     """
     return write_selected_ldfs_section(ws, start_row, measure, cl_excel_path, output_file_path, fmt)
@@ -314,12 +360,19 @@ def write_selection_section(ws, start_row, measure, fmt, prior_selections=None):
                 else:
                     ws.write(row, c_idx, val, fmt['prior'])
             
+            prior_data_row = row + 1  # xlsxwriter is 0-based, formula needs 1-based
+            user_data_row = row + 8  # Will be 7 rows down after all AI selections
             row += 1
             
-            # Prior Delta row (blank - user can calculate manually if needed)
+            # Prior Delta row with formula
             ws.write(row, 0, "Prior Delta", fmt['prior'])
             for c_idx in range(1, 6):
-                ws.write(row, c_idx, '', fmt['prior'])
+                if c_idx == 2:  # Tail Factor delta formula (no cached value - references future user input)
+                    formula = f"=IFERROR(C{user_data_row}-C{prior_data_row}, \"\")"
+                    # Don't pass None as cached_value - corrupts Excel XML. Omit parameter instead.
+                    ws.write_formula(row, c_idx, formula, fmt['prior_data'])
+                else:
+                    ws.write(row, c_idx, '', fmt['prior'])
             
             # Add note in Reasoning column
             ws.write(row, 4, "(current - prior)", fmt['prior_note'])
@@ -356,7 +409,7 @@ def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, 
     """Build complete sheet for one measure."""
     row = 0  # xlsxwriter uses 0-based indexing, so row 0 = Excel row 1
     
-    # Section A: Selected LDFs from Chain Ladder Excel (hard-coded values)
+    # Section A: Selected LDFs from Chain Ladder Excel (cross-workbook formulas)
     row = write_observed_factors_section(ws, row, measure, cl_excel_path, output_file_path, fmt)
     
     # Section B: Scenario Comparison
@@ -377,7 +430,8 @@ def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, 
 
 def export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, exp_md):
     # Subagents should use these markdown files as canonical context.
-    # Workbook contains hard-coded values from source data.
+    # The workbook can include formulas that are not recalculated in headless runs,
+    # which makes direct Excel reads unreliable for selection inputs.
     for measure in measures:
         safe_name = measure.lower().replace(' ', '_')
         md_path = Path(SELECTIONS_OUTPUT_PATH) / f"tail-context-{safe_name}.md"
