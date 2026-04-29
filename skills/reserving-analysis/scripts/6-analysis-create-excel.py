@@ -650,9 +650,10 @@ def write_method_ie(gen_wb, combined, measure, exp_row_map, ult_col_map, fmt_dic
         _data_cell_xlw(ws, r, 5, loss_rate, fmt_obj=fmt_dec)
 
 
-def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map, fmt_dict, tri_col_maps=None):
+def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map, fmt_dict, tri_col_maps=None, exp_map=None):
     """Write selection summary sheet with xlsxwriter (formulas + cached values)."""
     tri_col_maps = tri_col_maps or {}
+    exp_map = exp_map or {}
     ws = gen_wb.add_worksheet(title)
     
     # columns e.g.: Accident Period, Current Age, Incurred, Paid, Incurred CL, Paid CL, Initial Expected, Incurred BF, Paid BF, Selected Ultimate, IBNR, Unpaid
@@ -704,9 +705,21 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
     if has_proxy:
         headers.append("Unpaid")
     headers.append("Selected Reasoning")
+    
+    # Add diagnostic columns based on sheet type
+    is_count_selection = "Count" in title
+    is_loss_selection = "Loss" in title
+    has_exposure = bool(exp_map)
+    
+    if is_loss_selection and has_exposure:
+        headers.append("Ultimate Loss Rate")
+    if is_count_selection:
+        headers.append("Ultimate Severity")
+        if has_exposure:
+            headers.append("Ultimate Frequency")
 
     _write_headers_xlw(ws, headers, fmt_dict)
-    ws.set_column(len(headers)-1, len(headers)-1, 40)  # Reasoning column width
+    ws.set_column(len(headers)-2, len(headers)-2, 40)  # Reasoning column width (now second-to-last or further back)
 
     fmt_num = fmt_dict.get('data_num')
     fmt_text = fmt_dict.get('label')
@@ -782,6 +795,34 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
         # Selected Reasoning → use value from combined data
         reason_val = row.get("selected_reasoning", "")
         _data_cell_xlw(ws, r, col_idx, reason_val, fmt_obj=fmt_text)
+        col_idx += 1
+        
+        # Diagnostic columns
+        period_str = str(row["period"])
+        exposure = exp_map.get(period_str)
+        
+        if is_loss_selection and has_exposure:
+            # Ultimate Loss Rate = Selected Ultimate / Exposure
+            loss_rate = (sel_val / exposure) if pd.notna(sel_val) and pd.notna(exposure) and exposure != 0 else None
+            _data_cell_xlw(ws, r, col_idx, loss_rate, fmt_obj=fmt_dec)
+            col_idx += 1
+        
+        if is_count_selection:
+            # Ultimate Severity = Incurred Ultimate / Reported Ultimate
+            # Need to get Incurred Loss selected ultimate for this period
+            inc_loss_row = combined[(combined["measure"] == "Incurred Loss") & (combined["period"] == row["period"])]
+            inc_ult = inc_loss_row["selected_ultimate"].iloc[0] if len(inc_loss_row) > 0 else None
+            inc_ult = inc_ult if pd.notna(inc_ult) else None
+            
+            severity = (inc_ult / sel_val) if pd.notna(inc_ult) and pd.notna(sel_val) and sel_val != 0 else None
+            _data_cell_xlw(ws, r, col_idx, severity, fmt_obj=fmt_dec)
+            col_idx += 1
+            
+            if has_exposure:
+                # Ultimate Frequency = Selected Ultimate / Exposure
+                frequency = (sel_val / exposure) if pd.notna(sel_val) and pd.notna(exposure) and exposure != 0 else None
+                _data_cell_xlw(ws, r, col_idx, frequency, fmt_obj=fmt_dec)
+                col_idx += 1
 
     # Totals row — calculate totals from dataframe
     n_cols = 2 + len(active_m) * 2 + len(bf_m) + (1 if has_group_ie else 0) + 3
@@ -1505,11 +1546,8 @@ def write_post_method_diagnostics(ws, combined, triangles_df, exp_map, fmt):
         ("Incurred Loss", "INCURRED-TO-ULTIMATE"),
         ("Paid Loss", "PAID-TO-ULTIMATE"),
         ("Reported Count", "REPORTED-TO-ULTIMATE"),
+        ("Closed Count", "CLOSED-TO-ULTIMATE"),
     ]
-    
-    # Add Closed Count only if it exists in the data
-    if "Closed Count" in df['measure'].unique():
-        triangle_diagnostics.append(("Closed Count", "CLOSED-TO-ULTIMATE"))
     
     # X-to-Ultimate triangles
     for measure, label in triangle_diagnostics:
@@ -1549,6 +1587,8 @@ def write_post_method_diagnostics(ws, combined, triangles_df, exp_map, fmt):
     # Average IBNR triangle (if Incurred Loss and Reported Count exist)
     if "Incurred Loss" in df['measure'].unique() and "Reported Count" in df['measure'].unique():
         inc_data = df[df['measure'] == "Incurred Loss"]
+        rep_data = df[df['measure'] == "Reported Count"]
+        closed_data = df[df['measure'] == "Closed Count"] if "Closed Count" in df['measure'].unique() else None
         
         # Write section title
         ws.merge_range(row_ptr, 0, row_ptr, len(ages), "AVERAGE IBNR", fmt['diagnostic_section'])
@@ -1560,28 +1600,54 @@ def write_post_method_diagnostics(ws, combined, triangles_df, exp_map, fmt):
             ws.write(row_ptr, c_idx + 1, int(age) if age.isdigit() else age, fmt['subheader_right'])
         row_ptr += 1
         
-        # Build data dict for incurred
+        # Build data dicts
         inc_dict = {}
         for _, row in inc_data.iterrows():
             inc_dict[(str(row['period']), str(row['age']))] = row['value']
         
-        # Write data rows (Average IBNR = (Ultimate - Incurred) / 1)
+        rep_dict = {}
+        for _, row in rep_data.iterrows():
+            rep_dict[(str(row['period']), str(row['age']))] = row['value']
+        
+        closed_dict = {}
+        if closed_data is not None:
+            for _, row in closed_data.iterrows():
+                closed_dict[(str(row['period']), str(row['age']))] = row['value']
+        
+        # Write data rows (Average IBNR = (Ultimate Loss - Incurred Loss) / (Ultimate Counts - Closed Counts))
         for period in periods:
-            sel_ult = sel_lookup.get((str(period), "Incurred Loss"))
+            sel_ult_loss = sel_lookup.get((str(period), "Incurred Loss"))
+            sel_ult_counts = sel_lookup.get((str(period), "Reported Count"))
             ws.write(row_ptr, 0, _period_int(period), fmt['label'])
             
             for c_idx, age in enumerate(ages):
                 inc_val = inc_dict.get((str(period), age))
-                if inc_val is not None and pd.notna(inc_val) and pd.notna(sel_ult):
-                    avg_ibnr = sel_ult - inc_val
+                rep_val = rep_dict.get((str(period), age))
+                closed_val = closed_dict.get((str(period), age)) if closed_dict else None
+                
+                # Numerator: Ultimate Loss - Incurred Loss
+                numerator = (sel_ult_loss - inc_val) if (pd.notna(sel_ult_loss) and inc_val is not None and pd.notna(inc_val)) else None
+                
+                # Denominator: Ultimate Counts - Closed Counts (or Reported if Closed unavailable)
+                if closed_val is not None and pd.notna(closed_val) and pd.notna(sel_ult_counts):
+                    denominator = sel_ult_counts - closed_val
+                elif rep_val is not None and pd.notna(rep_val) and pd.notna(sel_ult_counts):
+                    denominator = sel_ult_counts - rep_val  # Open counts approximation
+                else:
+                    denominator = None
+                
+                if numerator is not None and denominator is not None and denominator != 0:
+                    avg_ibnr = numerator / denominator
                     ws.write(row_ptr, c_idx + 1, avg_ibnr, fmt['data_num'])
             row_ptr += 1
         
         row_ptr += 1  # Spacing
     
     # Average Unpaid triangle (if Paid Loss exists)
-    if "Paid Loss" in df['measure'].unique() and "Incurred Loss" in df['measure'].unique():
+    if "Paid Loss" in df['measure'].unique() and "Incurred Loss" in df['measure'].unique() and "Reported Count" in df['measure'].unique():
         paid_data = df[df['measure'] == "Paid Loss"]
+        rep_data = df[df['measure'] == "Reported Count"]
+        closed_data = df[df['measure'] == "Closed Count"] if "Closed Count" in df['measure'].unique() else None
         
         # Write section title
         ws.merge_range(row_ptr, 0, row_ptr, len(ages), "AVERAGE UNPAID", fmt['diagnostic_section'])
@@ -1593,20 +1659,44 @@ def write_post_method_diagnostics(ws, combined, triangles_df, exp_map, fmt):
             ws.write(row_ptr, c_idx + 1, int(age) if age.isdigit() else age, fmt['subheader_right'])
         row_ptr += 1
         
-        # Build data dict for paid
+        # Build data dicts
         paid_dict = {}
         for _, row in paid_data.iterrows():
             paid_dict[(str(row['period']), str(row['age']))] = row['value']
         
-        # Write data rows (Average Unpaid = Ultimate - Paid)
+        rep_dict = {}
+        for _, row in rep_data.iterrows():
+            rep_dict[(str(row['period']), str(row['age']))] = row['value']
+        
+        closed_dict = {}
+        if closed_data is not None:
+            for _, row in closed_data.iterrows():
+                closed_dict[(str(row['period']), str(row['age']))] = row['value']
+        
+        # Write data rows (Average Unpaid = (Ultimate Loss - Paid Loss) / (Ultimate Counts - Closed Counts))
         for period in periods:
-            sel_ult = sel_lookup.get((str(period), "Incurred Loss"))
+            sel_ult_loss = sel_lookup.get((str(period), "Incurred Loss"))
+            sel_ult_counts = sel_lookup.get((str(period), "Reported Count"))
             ws.write(row_ptr, 0, _period_int(period), fmt['label'])
             
             for c_idx, age in enumerate(ages):
                 paid_val = paid_dict.get((str(period), age))
-                if paid_val is not None and pd.notna(paid_val) and pd.notna(sel_ult):
-                    avg_unpaid = sel_ult - paid_val
+                rep_val = rep_dict.get((str(period), age))
+                closed_val = closed_dict.get((str(period), age)) if closed_dict else None
+                
+                # Numerator: Ultimate Loss - Paid Loss
+                numerator = (sel_ult_loss - paid_val) if (pd.notna(sel_ult_loss) and paid_val is not None and pd.notna(paid_val)) else None
+                
+                # Denominator: Ultimate Counts - Closed Counts (or Reported if Closed unavailable)
+                if closed_val is not None and pd.notna(closed_val) and pd.notna(sel_ult_counts):
+                    denominator = sel_ult_counts - closed_val
+                elif rep_val is not None and pd.notna(rep_val) and pd.notna(sel_ult_counts):
+                    denominator = sel_ult_counts - rep_val  # Open counts approximation
+                else:
+                    denominator = None
+                
+                if numerator is not None and denominator is not None and denominator != 0:
+                    avg_unpaid = numerator / denominator
                     ws.write(row_ptr, c_idx + 1, avg_unpaid, fmt['data_num'])
             row_ptr += 1
     
@@ -1842,7 +1932,7 @@ def main():
         # Build tri_col_maps dictionary for all loss measures
         loss_tri_maps = {m: _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)) for m in loss_m}
         
-        write_selection_grouped(wb, combined, ["Incurred Loss", "Paid Loss"], "Loss Selection", ult_col_map, fmt, loss_tri_maps)
+        write_selection_grouped(wb, combined, ["Incurred Loss", "Paid Loss"], "Loss Selection", ult_col_map, fmt, loss_tri_maps, exp_map)
         for m in loss_m:
             write_method_cl(wb, combined, m, ult_col_map, fmt, loss_tri_maps[m])
         for m in loss_m:
@@ -1855,7 +1945,7 @@ def main():
         # Build tri_col_maps dictionary for all count measures
         count_tri_maps = {m: _tri_col_map_from_df(triangles_df, m, max_age=tail_cutoff.get(m)) for m in count_m}
         
-        write_selection_grouped(wb, combined, ["Reported Count", "Closed Count"], "Count Selection", ult_col_map, fmt, count_tri_maps)
+        write_selection_grouped(wb, combined, ["Reported Count", "Closed Count"], "Count Selection", ult_col_map, fmt, count_tri_maps, exp_map)
         for m in count_m:
             # Skip Closed CL if no data or all NA
             if m == "Closed Count":
