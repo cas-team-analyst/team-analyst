@@ -381,4 +381,127 @@ export_selections_json(
     selected_df, 
     '../selections/chainladder-incurred_loss.json'
 )
+
+---
+
+## Appendix: Standard Actuarial Formulas
+
+### IBNR Calculations
+
+**Paid CL/BF IBNR:**
+```excel
+= [Ultimate] - [Incurred from Incurred CL]
+```
+
+### LDF Average Formulas
+
+**Simple Average (All Years):**
+```excel
+=LET(range,B30:B52,IFERROR(AVERAGE(range),""))
+```
+
+**Weighted Average (All Years):**
+```excel
+=LET(numrange,FILTER(C3:C26,NOT(C3:C26="")), denrange,FILTER(B3:B26,NOT(C3:C26="")), IFERROR(SUM(numrange)/SUM(denrange),""))
+```
+
+**Exclude High/Low (All Years):**
+```excel
+=LET(range,B30:B52, IFERROR(TRIMMEAN(range,2/COUNT(range)),""))
+```
+
+**Simple Average (5 Year):**
+```excel
+=LET(range,TAKE(FILTER(B30:B52,NOT(B30:B52="")),-5), IF(COUNT(range)<5,"",IFERROR(AVERAGE(range),"")))
+```
+
+**Weighted Average (5 Year):**
+```excel
+=LET(numrange,TAKE(FILTER(C3:C26,NOT(C3:C26="")),-5), denrange,TAKE(FILTER(B3:B26,NOT(C3:C26="")),-5), IF(COUNT(numrange)<5,"",IFERROR(SUM(numrange)/SUM(denrange),"")))
+```
+
+**Exclude High/Low (5 Year):**
+```excel
+=LET(range,TAKE(FILTER(B30:B52,NOT(B30:B52="")),-5), IF(COUNT(range)<5,"",IFERROR(TRIMMEAN(range,2/5),"")))
+```
+
+**Simple Average (3 Year):**
+```excel
+=LET(range,TAKE(FILTER(B30:B52,NOT(B30:B52="")),-3), IF(COUNT(range)<3,"",IFERROR(AVERAGE(range),"")))
+```
+
+**Weighted Average (3 Year):**
+```excel
+=LET(numrange,TAKE(FILTER(C3:C26,NOT(C3:C26="")),-3), denrange,TAKE(FILTER(B3:B26,NOT(C3:C26="")),-3), IF(COUNT(numrange)<3,"",IFERROR(SUM(numrange)/SUM(denrange),"")))
+```
+
+**Exclude High/Low (3 Year):**
+```excel
+=LET(range,TAKE(FILTER(B30:B52,NOT(B30:B52="")),-3), IF(COUNT(range)<3,"",IFERROR(TRIMMEAN(range,2/3),"")))
+```
+
+**Simple Average (10 Year):**
+```excel
+=LET(range,TAKE(FILTER(B30:B52,NOT(B30:B52="")),-10), IF(COUNT(range)<10,"",IFERROR(AVERAGE(range),"")))
+```
+
+**Weighted Average (10 Year):**
+```excel
+=LET(numrange,TAKE(FILTER(C3:C26,NOT(C3:C26="")),-10), denrange,TAKE(FILTER(B3:B26,NOT(C3:C26="")),-10), IF(COUNT(numrange)<10,"",IFERROR(SUM(numrange)/SUM(denrange),"")))
+```
+
+**Exclude High/Low (10 Year):**
+```excel
+=LET(range,TAKE(FILTER(B30:B52,NOT(B30:B52="")),-10), IF(COUNT(range)<10,"",IFERROR(TRIMMEAN(range,2/10),"")))
+```
+
+### Cross-Workbook Diagnostic Formulas
+
+**Paid-to-Ultimate:**
+```excel
+=IFERROR('[Triangle Examples 1.xlsx]Paid 1'!B3/'Loss Selection'!$J2,"")
+```
+
+**Average IBNR:**
+```excel
+=('Loss Selection'!$J2-'[Triangle Examples 1.xlsx]Inc 1'!B3)/('Counts Selection'!$E2-'[Triangle Examples 1.xlsx]Ct 1'!B2)
+```
+
+**Average Unpaid:**
+```excel
+=('Loss Selection'!$J2-'[Triangle Examples 1.xlsx]Paid 1'!B3)/('Counts Selection'!$E2-'[Triangle Examples 1.xlsx]Ct 1'!B2)
+```
+
+### Common Diagnostic Metrics
+
+**Paid Severity:**
+```excel
+= Paid Loss / Reported Counts
+```
+*(Use reported counts when closed counts unavailable)*
+
+**Case Reserves:**
+```excel
+= Incurred Loss - Paid Loss
+```
+
+**Incurred Loss Rate:**
+```excel
+= Incurred Loss / Exposure
+```
+
+**Paid Loss Rate:**
+```excel
+= Paid Loss / Exposure
+```
+
+**Reported Frequency:**
+```excel
+= Reported Counts / Exposure
+```
+
+**Closed Frequency:**
+```excel
+= Closed Counts / Exposure
+```
 ```

@@ -9,68 +9,69 @@ from modules.xl_styles import SUBHEADER_FONT, SUBHEADER_FILL, LABEL_FONT, DATA_F
 
 _SHEET_DESCS_EXACT = {
     "Loss Selection": (
-        "Actuary-selected ultimates for loss measures. Compare CL/BF/IE methods and record final selection.",
+        "Actuary-selected ultimates for loss measures comparing Chain Ladder, Initial Expected, and Bornhuetter-Ferguson methods.",
         "Period · Age · Incurred · Paid · Incurred CL · Paid CL · Incurred BF · Paid BF · Initial Expected · Selected Ultimate · IBNR · Unpaid",
     ),
     "Counts Selection": (
-        "Actuary-selected ultimates for count measures. Compare CL/BF/IE methods and record final selection.",
+        "Actuary-selected ultimates for count measures comparing Chain Ladder, Initial Expected, and Bornhuetter-Ferguson methods.",
         "Period · Age · Reported · Closed · Reported CL · Closed CL · Reported BF · Closed BF · Initial Expected · Selected Ultimate · IBNR · Unpaid",
     ),
+    "Summary Diagnostics": (
+        "Post-selection diagnostic metrics including ultimate severity, loss rate, and frequency.",
+        "Period · Ultimate Severity · Ultimate Loss Rate · Ultimate Frequency",
+    ),
     "Diagnostics": (
-        "Post-selection reasonableness checks. Severity = Ultimate Loss / Ultimate Count. Loss Rate and Frequency require Exposure.",
+        "Post-selection diagnostic metrics including ultimate severity, loss rate, and frequency.",
         "Period · Ultimate Severity · Ultimate Loss Rate · Ultimate Frequency",
     ),
     "Incurred-to-Ult": (
-        "Incurred loss as a percent of selected ultimate by age. Values approach 1.0 as periods mature.",
+        "Incurred loss as percent of selected ultimate by development age.",
         "Period rows · Development age columns",
     ),
     "Paid-to-Ult": (
-        "Paid loss as a percent of selected ultimate by age. Values approach 1.0 as periods mature.",
+        "Paid loss as percent of selected ultimate by development age.",
         "Period rows · Development age columns",
     ),
     "Reported-to-Ult": (
-        "Reported count as a percent of selected ultimate by age. Values approach 1.0 as periods mature.",
+        "Reported count as percent of selected ultimate by development age.",
         "Period rows · Development age columns",
     ),
     "Closed-to-Ult": (
-        "Closed count as a percent of selected ultimate by age. Values approach 1.0 as periods mature.",
+        "Closed count as percent of selected ultimate by development age.",
         "Period rows · Development age columns",
     ),
     "Average IBNR": (
-        "Selected Ultimate minus Incurred at each development age. Shows average reserve need remaining by age.",
+        "Selected ultimate minus incurred at each development age showing average reserve need.",
         "Period rows · Development age columns",
     ),
     "Average Unpaid": (
-        "Selected Ultimate minus Paid at each development age. Shows average unpaid reserve remaining by age.",
+        "Selected ultimate minus paid at each development age showing average unpaid reserve.",
         "Period rows · Development age columns",
     ),
 }
 
 _SHEET_DESCS_SUFFIX = {
     " CL": (
-        "Chain Ladder method results. Ultimate = Actual × CDF. IBNR = Ultimate − Actual. "
-        "Unpaid = Ultimate − latest paid (proxy measure).",
+        "Chain Ladder method results with ultimate, IBNR, and unpaid reserves.",
         "Period · Age · Actual · CDF · Ultimate · IBNR · Unpaid",
     ),
     " BF": (
-        "Bornhuetter-Ferguson method. Blends Initial Expected with emerged experience. "
-        "% Unreported = 1 − 1/CDF. Ultimate = (IE × % Unreported) + Actual.",
-        "Period · Age · Initial Expected · CDF · % Unreported · Unreported · Actual · Ultimate · IBNR · Unpaid",
+        "Bornhuetter-Ferguson method blending Initial Expected with emerged experience.",
+        "Period · Age · Initial Expected · CDF · % Unreported/Unpaid · Unreported/Unpaid · Actual · Ultimate · IBNR · Unpaid",
     ),
     " IE": (
-        "Initial Expected method. Ultimate = Exposure × Selected Loss Rate (ELR). "
-        "ELR back-calculated from IE ultimate and exposure.",
+        "Initial Expected method using exposure and selected loss rate.",
         "Period · Age · Exposure · Selected Loss Rate · IE Ultimate",
     ),
     " - CV & Slopes": (
-        "Coefficient of variation and regression slope statistics for age-to-age factors by development interval.",
+        "Coefficient of variation and regression slopes for age-to-age factors.",
         "Interval columns · CV row · Slope row",
     ),
 }
 
 _SHEET_DESCS_PREFIX = {
     "Diag - ": (
-        "Diagnostic scatter plot data for development pattern review.",
+        "Diagnostic data for development pattern review.",
         "Period · Development age · Age-to-age factor",
     ),
 }
@@ -89,10 +90,10 @@ def _sheet_desc(name):
             return desc
     if name in _TRIANGLE_SHEET_NAMES:
         return (
-            f"{name} development triangle with age-to-age factors, weighted/simple averages, and selected LDFs.",
+            f"{name} development triangle with age-to-age factors, averages, and selected LDFs.",
             "Period rows · Age columns (triangle values) · ATA factor rows · Average rows · LDF Selection row",
         )
-    return ("Analysis results", "")
+    return ("Analysis results.", "")
 
 
 def write_notes_sheet(ws, sheet_list):

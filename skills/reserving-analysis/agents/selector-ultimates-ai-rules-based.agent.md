@@ -22,11 +22,11 @@ For each category (Loss and Count):
 1. Read the category's context file (e.g., `selections/ultimates-context-loss.md`)
 2. Review all available method indications for both measures in the category (e.g., Incurred Loss and Paid Loss for the Loss category)
 3. Work through the **Method Weighting Hierarchy** in priority order
-4. Evaluate method appropriateness against triangle diagnostics per §Method Fitness Screen
-5. Assign weights by period maturity per §Maturity-Based Weighting
+4. Evaluate method appropriateness against triangle diagnostics per Method Fitness Screen
+5. Assign weights by period maturity per Maturity-Based Weighting
 6. Apply diagnostic overrides and reasonability checks
 7. **Choose ONE ultimate per accident year** - selecting the measure (Incurred vs Paid, or Reported vs Closed) and method combination that best represents the expected ultimate based on maturity, data quality, and diagnostics
-8. Anchor to prior ultimate per §Bayesian Anchoring unless a confirmed change justifies movement
+8. Anchor to prior ultimate per Bayesian Anchoring unless a confirmed change justifies movement
 9. **Always return a selection for every period provided**, including the oldest (tail-exposed) year
 10. Write a JSON file for that category with full reasoning
 
@@ -96,7 +96,7 @@ Document every disqualification. A method with partial fitness can still receive
 
 ### 2. Maturity-Based Weighting
 
-Baseline weights by period age. These are starting points; §3 and §4 modify them.
+Baseline weights by period age. These are starting points; Sections 3 and 4 modify them.
 
 | Maturity | Primary (60–100%) | Secondary (0–40%) | Typically Zero |
 |---|---|---|---|

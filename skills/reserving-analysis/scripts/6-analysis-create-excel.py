@@ -192,11 +192,6 @@ def _get_cdf_cell_ref(ws_triangle, target_age):
                 pass
     return None
 
-def _formula_cell(ws, r, c, formula, num_fmt, cached_value=None, fmt_obj=None):
-    """Write value directly (formulas removed for simplicity). r and c are 1-based (Excel coords)."""
-    # Now just writes the cached value - formula parameter ignored
-    _data_cell_xlw(ws, r, c, cached_value, num_fmt, fmt_obj)
-
 
 def _data_cell_xlw(ws, r, c, value, num_fmt=None, fmt_obj=None):
     """Write data cell for xlsxwriter. r and c are 1-based (Excel coords)."""
@@ -242,39 +237,12 @@ def _write_headers_xlw(ws, headers, fmt_dict, col_width=18):
 
 
 def write_notes_sheet_xlw(ws, sheet_list, fmt_dict):
-    """Write Notes sheet with metadata header and table of contents (xlsxwriter version)."""
-    from datetime import datetime
-    
+    """Write Notes sheet with table of contents only."""
     r = 0  # 0-based row for xlsxwriter
     
-    # Title
-    ws.merge_range(r, 0, r, 1, "Reserve Analysis - Complete Analysis", fmt_dict.get('header'))
-    ws.set_row(r, 24)
-    r += 1
-    
-    # Section header
-    ws.merge_range(r, 0, r, 1, "Workbook Information", fmt_dict.get('section') or fmt_dict.get('subheader'))
-    r += 1
-    
-    # Metadata
-    label_fmt = fmt_dict.get('label')
-    for label, value in [
-        ("Created:",     datetime.now().strftime("%B %d, %Y %I:%M %p")),
-        ("Description:", "Complete actuarial reserve analysis combining selections, ultimates, and diagnostics"),
-    ]:
-        ws.write(r, 0, label, label_fmt)
-        ws.write(r, 1, value, label_fmt)
-        r += 1
-    
-    r += 1  # Blank row
-    
-    # Table of Contents header
-    ws.merge_range(r, 0, r, 1, "Table of Contents", fmt_dict.get('section') or fmt_dict.get('subheader'))
-    r += 1
-    
     # Column headers
-    ws.write(r, 0, "Name", fmt_dict.get('subheader'))
-    ws.write(r, 1, "Description", fmt_dict.get('subheader'))
+    ws.write(r, 0, "Sheet", fmt_dict.get('subheader_left'))
+    ws.write(r, 1, "Description", fmt_dict.get('subheader_left'))
     ws.set_column(0, 0, 28)
     ws.set_column(1, 1, 80)
     r += 1
@@ -286,7 +254,7 @@ def write_notes_sheet_xlw(ws, sheet_list, fmt_dict):
         ws.write(r, 1, purpose, data_fmt)
         r += 1
     
-    ws.freeze_panes(7, 0)  # Freeze at row 8 (1-based)
+    ws.freeze_panes(1, 0)  # Freeze header row
 
 
 def _ult_ref(ult_col_map, sheet, col_header, row, ult_wb=None):
@@ -364,230 +332,6 @@ def _build_cl_ldfs_col_row_maps(wb_cl, measure_sheet_name):
     return col_map, user_row, rb_row, user_reason_row, rb_reason_row
 
 
-def _copy_ws_with_ldfs_formulas(ws_src, ws_dst, measure_short_name, cl_ldfs_path):
-    """
-    Copy worksheet writing formulas that link to Chain Ladder Selections - LDFs.xlsx.
-    Selection rows use IF formula: User Selection if not blank, else Rules-Based AI.
-    Data rows reference the source workbook.
-    """
-    # Load source workbook to build maps
-    if not pathlib.Path(cl_ldfs_path).exists():
-        # Fallback to value copy if source doesn't exist
-        _copy_ws_filtered(ws_src, ws_dst, None, None)
-        return
-    
-    wb_cl = load_workbook(cl_ldfs_path, data_only=False)
-    col_map, user_row, rb_row, user_reason_row, rb_reason_row = _build_cl_ldfs_col_row_maps(wb_cl, measure_short_name)
-    wb_cl.close()
-    
-    if not col_map or user_row is None or rb_row is None:
-        # Fallback if structure not found
-        sel_vals = _find_selected_values(ws_src)
-        sel_reason = _find_selected_reasoning(ws_src)
-        _copy_ws_filtered(ws_src, ws_dst, sel_vals, sel_reason)
-        return
-    
-    selection_done = False
-    dst_row = 1
-    # Excel external ref format: '[Workbook.xlsx]SheetName'!CellRef
-    ext_ref = f"'{_CL_LDF_WB}{measure_short_name}'"
-    
-    src_rows = list(ws_src.iter_rows())
-    skip_next = False
-    
-    for row_idx, src_cells in enumerate(src_rows):
-        col1 = src_cells[0].value if src_cells else None
-        
-        # Skip if marked by previous iteration
-        if skip_next:
-            skip_next = False
-            continue
-        
-        # Skip AI option/reasoning rows
-        if col1 in _SKIP_ROW_LABELS:
-            continue
-        
-        # Check if this is a section title row (Age-to-Age Factors, Averages, LDF Selections)
-        is_section_title = (col1 in ("Age-to-Age Factors", "Averages", "LDF Selections") and 
-                           all(c.value in (None, "") for c in src_cells[1:]))
-        
-        # If section title and next row has headers, merge them
-        if is_section_title and row_idx + 1 < len(src_rows):
-            next_row = src_rows[row_idx + 1]
-            next_col1 = next_row[0].value if next_row else None
-            has_headers = next_col1 in (None, "") and any(c.value not in (None, "") for c in next_row[1:])
-            
-            if has_headers:
-                # Write title in col A and headers in cols 2+ on same row
-                for col_idx, src_cell in enumerate(src_cells):
-                    dst_cell = ws_dst.cell(dst_row, col_idx + 1)
-                    if col_idx == 0:
-                        dst_cell.value = col1
-                        if src_cell.has_style:
-                            dst_cell.font = Font(name=src_cell.font.name, size=src_cell.font.size, bold=False)
-                            dst_cell.border = copy.copy(src_cell.border)
-                            dst_cell.fill = copy.copy(src_cell.fill)
-                            dst_cell.alignment = copy.copy(src_cell.alignment)
-                    elif col_idx < len(next_row):
-                        # Take header from next row
-                        next_cell = next_row[col_idx]
-                        dst_cell.value = next_cell.value
-                        if next_cell.has_style:
-                            dst_cell.font = copy.copy(next_cell.font)
-                            dst_cell.border = copy.copy(next_cell.border)
-                            dst_cell.fill = copy.copy(next_cell.fill)
-                            dst_cell.number_format = next_cell.number_format
-                            dst_cell.alignment = copy.copy(next_cell.alignment)
-                dst_row += 1
-                skip_next = True
-                continue
-        
-        # Handle selection rows
-        if col1 in _SELECTION_LABELS:
-            if selection_done:
-                continue
-            selection_done = True
-            
-            # Write "Selected" row with IF formulas
-            for src_cell in src_cells:
-                dst_cell = ws_dst.cell(dst_row, src_cell.column)
-                if src_cell.column == 1:
-                    dst_cell.value = "Selected"
-                else:
-                    # Build IF formula: if User not blank, use User, else use RB-AI
-                    col_letter = get_column_letter(src_cell.column)
-                    formula = f'=IF({ext_ref}!{col_letter}{user_row}<>"",{ext_ref}!{col_letter}{user_row},{ext_ref}!{col_letter}{rb_row})'
-                    dst_cell.value = formula
-                
-                if src_cell.has_style:
-                    dst_cell.font = copy.copy(src_cell.font)
-                    dst_cell.border = copy.copy(src_cell.border)
-                    dst_cell.fill = copy.copy(src_cell.fill)
-                    dst_cell.number_format = src_cell.number_format
-                    dst_cell.alignment = copy.copy(src_cell.alignment)
-            dst_row += 1
-            
-            # Write "Selected Reasoning" row with IF formula
-            if user_reason_row and rb_reason_row:
-                for src_cell in src_cells:
-                    dst_cell = ws_dst.cell(dst_row, src_cell.column)
-                    if src_cell.column == 1:
-                        dst_cell.value = "Selected Reasoning"
-                    else:
-                        col_letter = get_column_letter(src_cell.column)
-                        formula = f'=IF({ext_ref}!{col_letter}{user_row}<>"",{ext_ref}!{col_letter}{user_reason_row},{ext_ref}!{col_letter}{rb_reason_row})'
-                        dst_cell.value = formula
-                    
-                    if src_cell.has_style:
-                        dst_cell.font = copy.copy(src_cell.font)
-                        dst_cell.border = copy.copy(src_cell.border)
-                        dst_cell.fill = copy.copy(src_cell.fill)
-                    dst_cell.number_format = ""
-                    dst_cell.alignment = Alignment(wrap_text=True, horizontal="left", vertical="top")
-                dst_row += 1
-            continue
-        
-        # Copy all other rows with formulas linking to source
-        for src_cell in src_cells:
-            dst_cell = ws_dst.cell(dst_row, src_cell.column)
-            
-            # For data cells (not labels), write formula; for labels, copy value
-            if src_cell.column == 1 or src_cell.value is None or isinstance(src_cell.value, str):
-                dst_cell.value = src_cell.value
-            else:
-                # Reference the source workbook
-                col_letter = get_column_letter(src_cell.column)
-                row_num = src_cells[0].row
-                dst_cell.value = f"={ext_ref}!{col_letter}{row_num}"
-            
-            if src_cell.has_style:
-                # Remove bold from column A cells
-                if src_cell.column == 1:
-                    dst_cell.font = Font(name=src_cell.font.name, size=src_cell.font.size, bold=False)
-                else:
-                    dst_cell.font = copy.copy(src_cell.font)
-                dst_cell.border = copy.copy(src_cell.border)
-                dst_cell.fill = copy.copy(src_cell.fill)
-                dst_cell.number_format = src_cell.number_format
-                dst_cell.alignment = copy.copy(src_cell.alignment)
-        
-        dst_row += 1
-
-
-def _add_cdf_formulas_to_triangle(ws):
-    """
-    Add CDF row values below Selected Reasoning in the LDF Selections section.
-    CDF values are right-to-left cumulative product of Selected LDF values.
-    Rightmost column equals the Selected tail factor.
-    """
-    selected_row = None
-    selected_reasoning_row = None
-    cdf_row_num = None
-    last_data_col = None
-    
-    # Find the Selected row and determine where CDF row should be
-    for row_idx, row_cells in enumerate(ws.iter_rows(), start=1):
-        col1 = row_cells[0].value if row_cells else None
-        
-        if col1 == "Selected":
-            selected_row = row_idx
-            # Find the last column with data
-            for cell in reversed(list(row_cells)):
-                if cell.value not in (None, ""):
-                    last_data_col = cell.column
-                    break
-        elif col1 == "Selected Reasoning":
-            selected_reasoning_row = row_idx
-        elif col1 == "CDF":
-            cdf_row_num = row_idx
-            break
-    
-    if not selected_row or last_data_col is None:
-        return  # No Selected row found
-    
-    # If CDF row doesn't exist, create it after Selected Reasoning (or Selected if no reasoning)
-    if cdf_row_num is None:
-        cdf_row_num = (selected_reasoning_row or selected_row) + 1
-    
-    # Set CDF label
-    ws.cell(cdf_row_num, 1).value = "CDF"
-    
-    # Copy style from Selected row (but remove bold)
-    ref_cell = ws.cell(selected_row, 1)
-    if ref_cell.has_style:
-        lbl = ws.cell(cdf_row_num, 1)
-        lbl.font = Font(name=ref_cell.font.name, size=ref_cell.font.size, bold=False)
-        lbl.border = copy.copy(ref_cell.border)
-        lbl.fill = copy.copy(ref_cell.fill)
-        lbl.alignment = copy.copy(ref_cell.alignment)
-    
-    # Read Selected LDF values from right to left and compute CDF
-    # Rightmost column: CDF = Selected tail factor
-    selected_values = []
-    for col in range(2, last_data_col + 1):  # Start from column 2 (B), skip label column
-        val = ws.cell(selected_row, col).value
-        selected_values.append((col, val))
-    
-    # Compute CDF values right-to-left (cumulative product)
-    cdf_values = []
-    cdf_accum = 1.0
-    for col, ldf_val in reversed(selected_values):
-        if ldf_val is not None and isinstance(ldf_val, (int, float)):
-            cdf_accum = ldf_val * cdf_accum
-        cdf_values.append((col, cdf_accum if cdf_accum != 1.0 else ldf_val))
-    
-    cdf_values.reverse()  # Back to left-to-right order
-    
-    # Write CDF values
-    for col, cdf_val in cdf_values:
-        cell = ws.cell(cdf_row_num, col)
-        if cdf_val is not None:
-            cell.value = cdf_val
-            cell.number_format = _DEC_FMT
-            if ref_cell.has_style:
-                cell.font = copy.copy(ref_cell.font)
-                cell.border = copy.copy(ref_cell.border)
-
 
 def _tri_col_map_from_df(triangles_df, measure, max_age=None):
     """Build {age_str: col_letter} for the triangle sheet from parquet data.
@@ -629,58 +373,54 @@ def write_method_cl(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
     fmt_num = fmt_dict.get('data_num')
     fmt_dec = fmt_dict.get('data_ldf')
     fmt_period = fmt_dict.get('data_period')
+    
+    # For Paid CL: IBNR = Ultimate - Incurred (not Ultimate - Paid)
+    is_paid = measure == "Paid Loss"
 
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
         _data_cell_xlw(ws, r, 1, row["period_int"], fmt_obj=fmt_period)
         _data_cell_xlw(ws, r, 2, row["current_age"], fmt_obj=fmt_num)
         
-        # Always reference the triangle sheet for consistency
         actual_val = row["actual"]
         # Sanitize actual_val - could be NaN from dataframe
         actual_val = actual_val if pd.notna(actual_val) else None
-        
-        if tail_col_letter:
-            # Use LOOKUP to find last non-empty value in the triangle row
-            # LOOKUP(2, 1/(range<>""), range) finds the last non-empty cell in a row
-            lookup_formula = f"=LOOKUP(2,1/('{short_name}'!B{r}:{tail_col_letter}{r}<>\"\"),'{short_name}'!B{r}:{tail_col_letter}{r})"
-            _formula_cell(ws, r, 3, lookup_formula, _NUM_FMT, cached_value=actual_val, fmt_obj=fmt_num)
-        else:
-            # No triangle data available -> use static value
-            _data_cell_xlw(ws, r, 3, actual_val, fmt_obj=fmt_num)
+        _data_cell_xlw(ws, r, 3, actual_val, fmt_obj=fmt_num)
         
         cdf_val = row.get("cdf")
         # Sanitize cdf_val - could be NaN from dataframe
         cdf_val = cdf_val if pd.notna(cdf_val) else None
-        
-        # Use INDEX/MATCH to pull CDF from triangle sheet based on current age
-        # Triangle sheet has CDF row at row 72 (after Selected at 68, Selected Reasoning at 69, blank rows at 70-71)
-        # INDEX('Triangle'!$B$72:$Y$72, MATCH(CurrentAge, 'Triangle'!$B$1:$Y$1, 0))
-        if tail_col_letter:
-            cdf_formula = f"=IFERROR(INDEX('{short_name}'!$B$72:${tail_col_letter}$72,MATCH(B{r},'{short_name}'!$B$1:${tail_col_letter}$1,0)),1.000)"
-            _formula_cell(ws, r, 4, cdf_formula, _DEC_FMT, cached_value=cdf_val, fmt_obj=fmt_dec)
-        else:
-            _data_cell_xlw(ws, r, 4, cdf_val, fmt_obj=fmt_dec)
+        _data_cell_xlw(ws, r, 4, cdf_val, fmt_obj=fmt_dec)
         
         # Ultimate = Actual * CDF (handle 0, None, NaN properly)
         if pd.notna(actual_val) and pd.notna(cdf_val):
             ultimate_val = actual_val * cdf_val
         else:
             ultimate_val = None
-        _formula_cell(ws, r, 5, f'=IF(AND(ISNUMBER(C{r}),ISNUMBER(D{r})),C{r}*D{r},"")', _NUM_FMT, cached_value=ultimate_val, fmt_obj=fmt_num)
+        _data_cell_xlw(ws, r, 5, ultimate_val, fmt_obj=fmt_num)
         
-        # IBNR = Ultimate - Actual (handle 0, None, NaN properly)
-        if pd.notna(ultimate_val) and pd.notna(actual_val):
-            ibnr_val = ultimate_val - actual_val
+        # IBNR calculation
+        if is_paid:
+            # For Paid CL: IBNR = Ultimate - Incurred (from Incurred Loss measure)
+            inc_row = combined[(combined["measure"] == "Incurred Loss") & (combined["period"] == row["period"])]
+            incurred_val = inc_row["actual"].iloc[0] if len(inc_row) > 0 else None
+            incurred_val = incurred_val if pd.notna(incurred_val) else None
+            if pd.notna(ultimate_val) and pd.notna(incurred_val):
+                ibnr_val = ultimate_val - incurred_val
+            else:
+                ibnr_val = None
         else:
-            ibnr_val = None
-        _formula_cell(ws, r, 6, f"=E{r}-C{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
+            # For other CL: IBNR = Ultimate - Actual
+            if pd.notna(ultimate_val) and pd.notna(actual_val):
+                ibnr_val = ultimate_val - actual_val
+            else:
+                ibnr_val = None
+        _data_cell_xlw(ws, r, 6, ibnr_val, fmt_obj=fmt_num)
         
         # Unpaid: use proxy if available, otherwise same as IBNR
         if proxy_exists:
-            # Can't easily cache cross-sheet values here - use ibnr_val as approximation (already checked for NaN above)
-            _formula_cell(ws, r, 7, f"=E{r}-'{measure_short_name(proxy)} CL'!C{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
+            _data_cell_xlw(ws, r, 7, ibnr_val, fmt_obj=fmt_num)
         else:
-            _formula_cell(ws, r, 7, f"=E{r}-C{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
+            _data_cell_xlw(ws, r, 7, ibnr_val, fmt_obj=fmt_num)
 
     t = 3 + len(sub)  # blank row at t-1, totals at t
     _data_cell_xlw(ws, t, 1, "Total", fmt_obj=fmt_dict.get('label'))
@@ -690,22 +430,35 @@ def write_method_cl(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
     total_actual = total_actual if pd.notna(total_actual) else 0
     total_ultimate = sub.apply(lambda row: row["actual"] * row.get("cdf", 0) if pd.notna(row["actual"]) and pd.notna(row.get("cdf")) else 0, axis=1).sum()
     total_ultimate = total_ultimate if pd.notna(total_ultimate) else 0
-    total_ibnr = total_ultimate - total_actual
     
-    _formula_cell(ws, t, 3, f"=SUM(C2:C{t-2})", _NUM_FMT, cached_value=total_actual, fmt_obj=fmt_num)
-    _formula_cell(ws, t, 5, f"=SUM(E2:E{t-2})", _NUM_FMT, cached_value=total_ultimate, fmt_obj=fmt_num)
-    _formula_cell(ws, t, 6, f"=SUM(F2:F{t-2})", _NUM_FMT, cached_value=total_ibnr, fmt_obj=fmt_num)
-    _formula_cell(ws, t, 7, f"=SUM(G2:G{t-2})", _NUM_FMT, cached_value=total_ibnr, fmt_obj=fmt_num)
+    # Total IBNR calculation
+    if is_paid:
+        # For Paid CL: Total IBNR = Total Ultimate - Total Incurred
+        inc_data = combined[combined["measure"] == "Incurred Loss"]
+        total_incurred = inc_data["actual"].sum() if len(inc_data) > 0 else 0
+        total_incurred = total_incurred if pd.notna(total_incurred) else 0
+        total_ibnr = total_ultimate - total_incurred
+    else:
+        # For other CL: Total IBNR = Total Ultimate - Total Actual
+        total_ibnr = total_ultimate - total_actual
+    
+    _data_cell_xlw(ws, t, 3, total_actual, fmt_obj=fmt_num)
+    _data_cell_xlw(ws, t, 5, total_ultimate, fmt_obj=fmt_num)
+    _data_cell_xlw(ws, t, 6, total_ibnr, fmt_obj=fmt_num)
+    _data_cell_xlw(ws, t, 7, total_ibnr, fmt_obj=fmt_num)
 
 def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_maps=None, ult_wb=None):
-    """Write Bornhuetter-Ferguson method sheet with xlsxwriter (values from source data).""
+    """Write Bornhuetter-Ferguson method sheet with xlsxwriter (values from source data)."""
     tri_col_maps = tri_col_maps or {}
     short_name = measure_short_name(measure)
     ws = gen_wb.add_worksheet(f"{short_name} BF"[:31])
     
-    # bf canonical structure: 
-    # Accident Period, Current Age, Initial Expected, CDF, % Unreported, Unreported, Actual, Ultimate, IBNR, Unpaid
-    headers = ["Accident Period", "Current Age", "Initial Expected", "CDF", "% Unreported", "Unreported", short_name, "Ultimate", "IBNR", "Unpaid"]
+    # For Paid BF: % Unpaid, Unpaid. For others: % Unreported, Unreported
+    is_paid = measure == "Paid Loss"
+    pct_label = "% Unpaid" if is_paid else "% Unreported"
+    unpaid_label = "Unpaid" if is_paid else "Unreported"
+    
+    headers = ["Accident Period", "Current Age", "Initial Expected", "CDF", pct_label, unpaid_label, short_name, "Ultimate", "IBNR", "Unpaid"]
     _write_headers_xlw(ws, headers, fmt_dict)
     
     sub = combined[combined["measure"] == measure].copy()
@@ -739,53 +492,58 @@ def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
         cdf_val = row.get("cdf")
         # Sanitize cdf_val - could be NaN from dataframe
         cdf_val = cdf_val if pd.notna(cdf_val) else None
-        _formula_cell(ws, r, 4, f"='{short_name} CL'!D{r}", _DEC_FMT, cached_value=cdf_val, fmt_obj=fmt_dec)
+        _data_cell_xlw(ws, r, 4, cdf_val, fmt_obj=fmt_dec)
         
         # % Unreported = 1 - (1/CDF) (handle 0, None, NaN properly)
         if pd.notna(cdf_val) and cdf_val != 0:
             pct_unrep = 1 - (1 / cdf_val)
         else:
             pct_unrep = None
-        _formula_cell(ws, r, 5, f"=1-(1/D{r})", "0.0%", cached_value=pct_unrep, fmt_obj=fmt_pct)
+        _data_cell_xlw(ws, r, 5, pct_unrep, fmt_obj=fmt_pct)
         
         # Unreported = IE * % Unreported (handle 0, None, NaN properly)
         if pd.notna(ie_val) and pd.notna(pct_unrep):
             unrep_val = ie_val * pct_unrep
         else:
             unrep_val = None
-        _formula_cell(ws, r, 6, f"=C{r}*E{r}", _NUM_FMT, cached_value=unrep_val, fmt_obj=fmt_num)
+        _data_cell_xlw(ws, r, 6, unrep_val, fmt_obj=fmt_num)
         
-        # Actual - use LOOKUP to find last value in triangle row
+        # Actual
         actual_val = row["actual"]
         # Sanitize actual_val - could be NaN from dataframe
         actual_val = actual_val if pd.notna(actual_val) else None
-        tri_col_map = tri_col_maps.get(measure, {})
-        tail_col_letter = col_letter(len(tri_col_map)) if tri_col_map else None
-        if tail_col_letter:
-            lookup_formula = f"=LOOKUP(2,1/('{short_name}'!B{r}:{tail_col_letter}{r}<>\"\"),'{short_name}'!B{r}:{tail_col_letter}{r})"
-            _formula_cell(ws, r, 7, lookup_formula, _NUM_FMT, cached_value=actual_val, fmt_obj=fmt_num)
-        else:
-            _data_cell_xlw(ws, r, 7, actual_val, fmt_obj=fmt_num)
+        _data_cell_xlw(ws, r, 7, actual_val, fmt_obj=fmt_num)
         
         # Ultimate = Unreported + Actual (handle 0, None, NaN properly)
         if pd.notna(unrep_val) and pd.notna(actual_val):
             ultimate_bf = unrep_val + actual_val
         else:
             ultimate_bf = None
-        _formula_cell(ws, r, 8, f"=F{r}+G{r}", _NUM_FMT, cached_value=ultimate_bf, fmt_obj=fmt_num)
+        _data_cell_xlw(ws, r, 8, ultimate_bf, fmt_obj=fmt_num)
         
-        # IBNR = Ultimate - Actual (handle 0, None, NaN properly)
-        if pd.notna(ultimate_bf) and pd.notna(actual_val):
-            ibnr_val = ultimate_bf - actual_val
+        # IBNR calculation
+        if is_paid:
+            # For Paid BF: IBNR = Ultimate - Incurred (from Incurred Loss measure)
+            inc_row = combined[(combined["measure"] == "Incurred Loss") & (combined["period"] == row["period"])]
+            incurred_val = inc_row["actual"].iloc[0] if len(inc_row) > 0 else None
+            incurred_val = incurred_val if pd.notna(incurred_val) else None
+            if pd.notna(ultimate_bf) and pd.notna(incurred_val):
+                ibnr_val = ultimate_bf - incurred_val
+            else:
+                ibnr_val = None
         else:
-            ibnr_val = None
-        _formula_cell(ws, r, 9, f"=H{r}-G{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
+            # For other BF: IBNR = Ultimate - Actual
+            if pd.notna(ultimate_bf) and pd.notna(actual_val):
+                ibnr_val = ultimate_bf - actual_val
+            else:
+                ibnr_val = None
+        _data_cell_xlw(ws, r, 9, ibnr_val, fmt_obj=fmt_num)
         
         # Unpaid
         if proxy_exists:
-            _formula_cell(ws, r, 10, f"=H{r}-'{measure_short_name(proxy)} CL'!C{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
+            _data_cell_xlw(ws, r, 10, ibnr_val, fmt_obj=fmt_num)
         else:
-            _formula_cell(ws, r, 10, f"=H{r}-G{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
+            _data_cell_xlw(ws, r, 10, ibnr_val, fmt_obj=fmt_num)
 
     t = 3 + len(sub)  # blank row at t-1, totals at t
     _data_cell_xlw(ws, t, 1, "Total", fmt_obj=fmt_dict.get('label'))
@@ -809,21 +567,31 @@ def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
     total_actual = total_actual if pd.notna(total_actual) else 0
     
     total_ultimate_bf = total_unrep + total_actual
-    total_ibnr = total_ultimate_bf - total_actual
+    
+    # Total IBNR calculation
+    if is_paid:
+        # For Paid BF: Total IBNR = Total Ultimate - Total Incurred
+        inc_data = combined[combined["measure"] == "Incurred Loss"]
+        total_incurred = inc_data["actual"].sum() if len(inc_data) > 0 else 0
+        total_incurred = total_incurred if pd.notna(total_incurred) else 0
+        total_ibnr = total_ultimate_bf - total_incurred
+    else:
+        # For other BF: Total IBNR = Total Ultimate - Total Actual
+        total_ibnr = total_ultimate_bf - total_actual
+    
     total_pct_unrep = (total_unrep / total_ie) if total_ie else 0
     
-    _formula_cell(ws, t, 3, f"=SUM(C2:C{t-2})", _NUM_FMT, cached_value=total_ie, fmt_obj=fmt_num)
-    # Col 5: % Unreported total = weighted avg = SUM(F)/SUM(C)
-    _formula_cell(ws, t, 5, f"=SUM(F2:F{t-2})/SUM(C2:C{t-2})", "0.0%", cached_value=total_pct_unrep, fmt_obj=fmt_pct)
-    _formula_cell(ws, t, 6, f"=SUM(F2:F{t-2})", _NUM_FMT, cached_value=total_unrep, fmt_obj=fmt_num)
-    _formula_cell(ws, t, 7, f"=SUM(G2:G{t-2})", _NUM_FMT, cached_value=total_actual, fmt_obj=fmt_num)
-    _formula_cell(ws, t, 8, f"=SUM(H2:H{t-2})", _NUM_FMT, cached_value=total_ultimate_bf, fmt_obj=fmt_num)
-    _formula_cell(ws, t, 9, f"=SUM(I2:I{t-2})", _NUM_FMT, cached_value=total_ibnr, fmt_obj=fmt_num)
-    _formula_cell(ws, t, 10, f"=SUM(J2:J{t-2})", _NUM_FMT, cached_value=total_ibnr, fmt_obj=fmt_num)
+    _data_cell_xlw(ws, t, 3, total_ie, fmt_obj=fmt_num)
+    _data_cell_xlw(ws, t, 5, total_pct_unrep, fmt_obj=fmt_pct)
+    _data_cell_xlw(ws, t, 6, total_unrep, fmt_obj=fmt_num)
+    _data_cell_xlw(ws, t, 7, total_actual, fmt_obj=fmt_num)
+    _data_cell_xlw(ws, t, 8, total_ultimate_bf, fmt_obj=fmt_num)
+    _data_cell_xlw(ws, t, 9, total_ibnr, fmt_obj=fmt_num)
+    _data_cell_xlw(ws, t, 10, total_ibnr, fmt_obj=fmt_num)
 
 
 def write_method_ie(gen_wb, combined, measure, exp_row_map, ult_col_map, fmt_dict, ult_wb=None, cl_ldf_wb=None):
-    """Write Initial Expected method sheet with xlsxwriter (values from source data).""
+    """Write Initial Expected method sheet with xlsxwriter (values from source data)."""
     short_name = measure_short_name(measure)
     ws = gen_wb.add_worksheet("IE")
     headers = ["Accident Period", "Current Age", "Exposure", "IE Ultimate", "Selected Loss Rate"]
@@ -888,14 +656,18 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
     bf_m  = [m for m in active_m if _has_method(combined, m, "ultimate_bf")]
     has_group_ie = any(_has_method(combined, m, "ultimate_ie") for m in active_m)
 
-    ult_sheet  = ultimates_sheet_for_measure(active_m[0])
-    ext_ref    = f"'{_ULT_WB}{ult_sheet}'"
-    user_col   = ult_col_map.get((ult_sheet, "User Selection"), "")
-    rb_col     = ult_col_map.get((ult_sheet, "Rules-Based AI Selection"), "")
-    user_r_col = ult_col_map.get((ult_sheet, "User Reasoning"), "")
-    rb_r_col   = ult_col_map.get((ult_sheet, "Rules-Based AI Reasoning"), "")
     ie_measure = next((m for m in active_m if _has_method(combined, m, "ultimate_ie")), active_m[0])
     ie_short   = measure_short_name(ie_measure)
+    
+    # Check if proxy measure exists with actual data for Unpaid column
+    # Unpaid = Selected Ultimate - Proxy Measure Actual
+    # For Incurred Loss: proxy = Paid Loss (always exists)
+    # For Reported Count: proxy = Closed Count (may not exist or may have no data)
+    # If proxy has no data, Unpaid column is omitted (IBNR sufficient)
+    proxy_measure = UNPAID_PROXY.get(main_m)
+    has_proxy = (proxy_measure and 
+                 proxy_measure in combined["measure"].unique() and
+                 combined[combined["measure"] == proxy_measure]["actual"].notna().any())
 
     # Build headers in CL, IE, BF order
     headers = ["Accident Period", "Current Age"]
@@ -907,7 +679,11 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
         headers.append("Initial Expected")
     for m in bf_m:
         headers.append(f"{measure_short_name(m)} BF")
-    headers.extend(["Selected Ultimate", "IBNR", "Unpaid", "Selected Reasoning"])
+    headers.append("Selected Ultimate")
+    headers.append("IBNR")
+    if has_proxy:
+        headers.append("Unpaid")
+    headers.append("Selected Reasoning")
 
     _write_headers_xlw(ws, headers, fmt_dict)
     ws.set_column(len(headers)-1, len(headers)-1, 40)  # Reasoning column width
@@ -915,6 +691,7 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
     fmt_num = fmt_dict.get('data_num')
     fmt_text = fmt_dict.get('label')
     fmt_period = fmt_dict.get('data_period')
+    fmt_dec = fmt_dict.get('data_ldf')  # 4 decimals for IBNR
 
     for r, (_, row) in enumerate(sub.iterrows(), start=2):
         _data_cell_xlw(ws, r, 1, row["period_int"], fmt_obj=fmt_period)
@@ -927,14 +704,7 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
             actual_val = m_row["actual"].iloc[0] if len(m_row) > 0 else None
             # Sanitize - .iloc[0] can return NaN
             actual_val = actual_val if pd.notna(actual_val) else None
-            s = measure_short_name(m)
-            tri_col_map = tri_col_maps.get(m, {})
-            tail_col_letter = col_letter(len(tri_col_map)) if tri_col_map else None
-            if tail_col_letter:
-                lookup_formula = f"=LOOKUP(2,1/('{s}'!B{r}:{tail_col_letter}{r}<>\"\"),'{s}'!B{r}:{tail_col_letter}{r})"
-                _formula_cell(ws, r, col_idx, lookup_formula, _NUM_FMT, cached_value=actual_val, fmt_obj=fmt_num)
-            else:
-                _data_cell_xlw(ws, r, col_idx, actual_val, fmt_obj=fmt_num)
+            _data_cell_xlw(ws, r, col_idx, actual_val, fmt_obj=fmt_num)
             col_idx += 1
         
         # CL ultimates
@@ -943,8 +713,7 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
             cl_ult = m_row["ultimate_cl"].iloc[0] if len(m_row) > 0 and "ultimate_cl" in m_row.columns else None
             # Sanitize - .iloc[0] can return NaN
             cl_ult = cl_ult if pd.notna(cl_ult) else None
-            s = measure_short_name(m)
-            _formula_cell(ws, r, col_idx, f"='{s} CL'!E{r}", _NUM_FMT, cached_value=cl_ult, fmt_obj=fmt_num)
+            _data_cell_xlw(ws, r, col_idx, cl_ult, fmt_obj=fmt_num)
             col_idx += 1
         
         # IE ultimate (if available)
@@ -952,7 +721,7 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
             ie_val = row.get("ultimate_ie")
             # Sanitize - could be NaN
             ie_val = ie_val if pd.notna(ie_val) else None
-            _formula_cell(ws, r, col_idx, f"='IE'!D{r}", _NUM_FMT, cached_value=ie_val, fmt_obj=fmt_num)
+            _data_cell_xlw(ws, r, col_idx, ie_val, fmt_obj=fmt_num)
             col_idx += 1
         
         # BF ultimates
@@ -961,57 +730,94 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
             bf_ult = m_row["ultimate_bf"].iloc[0] if len(m_row) > 0 and "ultimate_bf" in m_row.columns else None
             # Sanitize - .iloc[0] can return NaN
             bf_ult = bf_ult if pd.notna(bf_ult) else None
-            _formula_cell(ws, r, col_idx, f"='{measure_short_name(m)} BF'!H{r}", _NUM_FMT, cached_value=bf_ult, fmt_obj=fmt_num)
+            _data_cell_xlw(ws, r, col_idx, bf_ult, fmt_obj=fmt_num)
             col_idx += 1
         
-        # Selected Ultimate → links Ultimates.xlsx (User Selection, falls back to RB-AI)
-        sel_formula = (
-            f'=IF({ext_ref}!{user_col}{r}<>"",{ext_ref}!{user_col}{r},{ext_ref}!{rb_col}{r})'
-            if user_col and rb_col else '""'
-        )
+        # Selected Ultimate → use value from combined data
         # Cache with selected_ultimate from combined
         sel_val = row.get("selected_ultimate")
         # Sanitize - could be NaN
         sel_val = sel_val if pd.notna(sel_val) else None
-        _formula_cell(ws, r, col_idx, sel_formula, _NUM_FMT, cached_value=sel_val, fmt_obj=fmt_num)
+        _data_cell_xlw(ws, r, col_idx, sel_val, fmt_obj=fmt_num)
         selected_col_idx = col_idx
         col_idx += 1
         
-        # IBNR = Selected - First Actual
-        first_actual = combined[(combined["measure"] == active_m[0]) & (combined["period"] == row["period"])]["actual"].iloc[0] if len(active_m) > 0 else 0
-        # Sanitize - .iloc[0] can return NaN
-        first_actual = first_actual if pd.notna(first_actual) else 0
-        ibnr_val = (sel_val - first_actual) if pd.notna(sel_val) else None
-        _formula_cell(ws, r, col_idx, f"={col_letter(selected_col_idx-1)}{r}-C{r}", _NUM_FMT, cached_value=ibnr_val, fmt_obj=fmt_num)
+        # IBNR = Selected - Main Measure Actual
+        main_actual = combined[(combined["measure"] == main_m) & (combined["period"] == row["period"])]["actual"].iloc[0] if len(combined[(combined["measure"] == main_m) & (combined["period"] == row["period"])]) > 0 else None
+        main_actual = main_actual if pd.notna(main_actual) else None
+        ibnr_val = (sel_val - main_actual) if pd.notna(sel_val) and pd.notna(main_actual) else None
+        _data_cell_xlw(ws, r, col_idx, ibnr_val, fmt_obj=fmt_dec)
         col_idx += 1
         
-        # Unpaid = Selected - Second Actual (if two measures) or First Actual
-        unpaid_actual = "D" if len(active_m) > 1 else "C"
-        second_actual = combined[(combined["measure"] == active_m[1]) & (combined["period"] == row["period"])]["actual"].iloc[0] if len(active_m) > 1 else first_actual
-        # Sanitize - .iloc[0] can return NaN
-        second_actual = second_actual if pd.notna(second_actual) else 0
-        unpaid_val = (sel_val - second_actual) if pd.notna(sel_val) else None
-        _formula_cell(ws, r, col_idx, f"={col_letter(selected_col_idx-1)}{r}-{unpaid_actual}{r}", _NUM_FMT, cached_value=unpaid_val, fmt_obj=fmt_num)
-        col_idx += 1
+        # Unpaid = Selected - Proxy Measure Actual (only if proxy has data)
+        # For counts: if no Closed Count data provided, Unpaid col omitted
+        # For losses: Paid Loss always exists, so Unpaid col always included
+        if has_proxy:
+            proxy_actual = combined[(combined["measure"] == proxy_measure) & (combined["period"] == row["period"])]["actual"].iloc[0] if len(combined[(combined["measure"] == proxy_measure) & (combined["period"] == row["period"])]) > 0 else None
+            proxy_actual = proxy_actual if pd.notna(proxy_actual) else None
+            unpaid_val = (sel_val - proxy_actual) if pd.notna(sel_val) and pd.notna(proxy_actual) else None
+            _data_cell_xlw(ws, r, col_idx, unpaid_val, fmt_obj=fmt_num)
+            col_idx += 1
         
-        # Selected Reasoning → links Ultimates.xlsx (User Reasoning, falls back to RB-AI)
-        reason_formula = (
-            f'=IF({ext_ref}!{user_col}{r}<>"",{ext_ref}!{user_r_col}{r},{ext_ref}!{rb_r_col}{r})'
-            if user_col and user_r_col and rb_r_col else '""'
-        )
+        # Selected Reasoning → use value from combined data
         reason_val = row.get("selected_reasoning", "")
-        _formula_cell(ws, r, col_idx, reason_formula, "@", cached_value=reason_val, fmt_obj=fmt_text)
+        _data_cell_xlw(ws, r, col_idx, reason_val, fmt_obj=fmt_text)
 
-    # Totals row — SUM every numeric column, skip Period and Age
+    # Totals row — calculate totals from dataframe
     n_cols = 2 + len(active_m) * 2 + len(bf_m) + (1 if has_group_ie else 0) + 3
     t = 3 + len(sub)
     _data_cell_xlw(ws, t, 1, "Total", fmt_obj=fmt_dict.get('label'))
     
-    for c in range(3, n_cols + 1):
-        col_lt = col_letter(c - 1)  # Convert to 0-based then to letter
-        # Calculate total for caching
-        # For now, use a simple sum - could be more sophisticated
-        _formula_cell(ws, t, c, f"=SUM({col_lt}2:{col_lt}{t-2})", _NUM_FMT, fmt_obj=fmt_num)
+    # Start at column 3 (actuals for each measure)
+    col_idx = 3
+    for m in active_m:
+        m_data = combined[combined["measure"] == m]
+        total_actual = m_data["actual"].sum() if len(m_data) > 0 else 0
+        _data_cell_xlw(ws, t, col_idx, total_actual if pd.notna(total_actual) else None, fmt_obj=fmt_num)
+        col_idx += 1
+    
+    # CL ultimates for each measure
+    for m in active_m:
+        m_data = combined[combined["measure"] == m]
+        total_cl = m_data["ultimate_cl"].sum() if len(m_data) > 0 and "ultimate_cl" in m_data.columns else 0
+        _data_cell_xlw(ws, t, col_idx, total_cl if pd.notna(total_cl) else None, fmt_obj=fmt_num)
+        col_idx += 1
+    
+    # IE ultimate (if available)
+    if has_group_ie:
+        total_ie = sub["ultimate_ie"].sum() if "ultimate_ie" in sub.columns else 0
+        _data_cell_xlw(ws, t, col_idx, total_ie if pd.notna(total_ie) else None, fmt_obj=fmt_num)
+        col_idx += 1
+    
+    # BF ultimates for each BF measure
+    for m in bf_m:
+        m_data = combined[combined["measure"] == m]
+        total_bf = m_data["ultimate_bf"].sum() if len(m_data) > 0 and "ultimate_bf" in m_data.columns else 0
+        _data_cell_xlw(ws, t, col_idx, total_bf if pd.notna(total_bf) else None, fmt_obj=fmt_num)
+        col_idx += 1
+    
+    # Selected ultimate
+    total_sel = sub["selected_ultimate"].sum() if "selected_ultimate" in sub.columns else 0
+    _data_cell_xlw(ws, t, col_idx, total_sel if pd.notna(total_sel) else None, fmt_obj=fmt_num)
+    col_idx += 1
+    
+    # IBNR total (Selected - Main Measure Actual)
+    main_m_data = combined[combined["measure"] == main_m]
+    total_main_actual = main_m_data["actual"].sum() if len(main_m_data) > 0 else 0
+    total_main_actual = total_main_actual if pd.notna(total_main_actual) else 0
+    total_ibnr = (total_sel - total_main_actual) if pd.notna(total_sel) else None
+    _data_cell_xlw(ws, t, col_idx, total_ibnr, fmt_obj=fmt_dec)
+    col_idx += 1
+    
+    # Unpaid total (only if proxy measure has data)
+    # Flexibility: Count sheets may have no Closed Count data → no Unpaid col
+    if has_proxy:
+        proxy_m_data = combined[combined["measure"] == proxy_measure]
+        total_proxy_actual = proxy_m_data["actual"].sum() if len(proxy_m_data) > 0 else 0
+        total_proxy_actual = total_proxy_actual if pd.notna(total_proxy_actual) else 0
+        total_unpaid = (total_sel - total_proxy_actual) if pd.notna(total_sel) else None
+        _data_cell_xlw(ws, t, col_idx, total_unpaid, fmt_obj=fmt_num)
+        col_idx += 1
 
 
 def _build_tail_workbook_maps(tail_wb_path, measure_sheet_name):
@@ -1280,11 +1086,39 @@ def add_tail_to_triangle_ws(ws, cutoff_age, tail_factor, reasoning=None,
         rc.alignment = Alignment(wrap_text=True, horizontal="left", vertical="top")
 
 
-def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict):
+def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict, tail_map=None, combined_df=None):
     """
     Create triangle sheets with xlsxwriter by reading from Chain Ladder Selections - LDFs.xlsx.
-    Writes formulas with cached values for immediate display.
+    Writes values directly from source workbook.
+    
+    Args:
+        gen_wb: xlsxwriter workbook
+        measures: list of measure names
+        fmt_dict: formatting dictionary
+        tail_map: dict mapping measure to (cutoff_age, tail_factor, reasoning)
+        combined_df: DataFrame with CDF values from projected-ultimates
     """
+    tail_map = tail_map or {}
+    
+    # Build CDF lookup from combined_df: {measure: {current_age: cdf}}
+    cdf_lookup = {}
+    if combined_df is not None:
+        for measure in measures:
+            measure_data = combined_df[combined_df['measure'] == measure].copy()
+            if not measure_data.empty:
+                # Filter out None/'None'/NaN current_age values
+                measure_data = measure_data[
+                    (measure_data['current_age'].notna()) & 
+                    (measure_data['current_age'] != 'None') &
+                    (measure_data['current_age'] != 'none')
+                ]
+                if not measure_data.empty:
+                    # Convert current_age to int
+                    measure_data['age_int'] = measure_data['current_age'].astype(float).astype(int)
+                    cdf_lookup[measure] = dict(zip(
+                        measure_data['age_int'],
+                        measure_data['cdf']
+                    ))
     if not pathlib.Path(INPUT_CL_EXCEL).exists():
         return
     
@@ -1303,45 +1137,65 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict):
         
         # Build column/row maps for selection logic
         col_map, user_row, rb_row, user_reason_row, rb_reason_row = _build_cl_ldfs_col_row_maps(wb_form, measure)
-        ext_ref = f"'{_CL_LDF_WB}{measure}'"
         
         selection_done = False
         dst_row = 0
-        skip_next = False
-        selected_row_num = None  # Track the "Selected" row for CDF calculations
+        selected_row_num = None
+        first_period_seen = False
+        first_blank_after_triangle = False
         src_rows = list(ws_src_form.iter_rows())
         
         for row_idx, src_cells in enumerate(src_rows):
-            if skip_next:
-                skip_next = False
-                continue
-            
             col1 = src_cells[0].value if src_cells else None
             
             # Skip AI option rows
             if col1 in _SKIP_ROW_LABELS:
                 continue
             
-            # Handle section titles (merge with next row headers if applicable)
-            is_section_title = (col1 in ("Age-to-Age Factors", "Averages", "LDF Selections") and 
-                               all(c.value in (None, "") for c in src_cells[1:]))
+            # Detect blank row after triangle data
+            if first_period_seen and (col1 is None or col1 == ""):
+                first_blank_after_triangle = True
+                continue
             
-            if is_section_title and row_idx + 1 < len(src_rows):
-                next_row = src_rows[row_idx + 1]
-                next_col1 = next_row[0].value if next_row else None
-                has_headers = next_col1 in (None, "") and any(c.value not in (None, "") for c in next_row[1:])
-                
-                if has_headers:
-                    # Write title + headers on same row
-                    for col_idx, src_cell in enumerate(src_cells):
-                        if col_idx == 0:
-                            ws_xlw.write(dst_row, col_idx, col1, fmt_dict.get('subheader'))
-                        elif col_idx < len(next_row):
-                            next_cell = next_row[col_idx]
-                            ws_xlw.write(dst_row, col_idx, next_cell.value, fmt_dict.get('subheader'))
+            # Insert section titles when appropriate (with blank row before each section)
+            if col1 == "Period":
+                if not first_period_seen:
+                    # First "Period" = triangle section header (write as-is)
+                    first_period_seen = True
+                elif first_blank_after_triangle:
+                    # Blank row before Age-to-Age Factors section
                     dst_row += 1
-                    skip_next = True
+                    # Second "Period" after blank = Age-to-Age Factors section
+                    ws_xlw.write(dst_row, 0, "Age-to-Age Factors", fmt_dict.get('subheader'))
+                    for col_idx, cell in enumerate(src_cells[1:], start=1):
+                        if cell.value not in (None, ""):
+                            ws_xlw.write(dst_row, col_idx, cell.value, fmt_dict.get('subheader'))
+                    dst_row += 1
                     continue
+            elif col1 == "Metric":
+                # Blank row before Averages section
+                dst_row += 1
+                # Averages section
+                ws_xlw.write(dst_row, 0, "Averages", fmt_dict.get('subheader'))
+                for col_idx, cell in enumerate(src_cells[1:], start=1):
+                    if cell.value not in (None, ""):
+                        ws_xlw.write(dst_row, col_idx, cell.value, fmt_dict.get('subheader'))
+                dst_row += 1
+                continue
+            elif col1 in _SELECTION_LABELS and not selection_done:
+                # Blank row before LDF Selections section
+                dst_row += 1
+                # LDF Selections section
+                ws_xlw.write(dst_row, 0, "LDF Selections", fmt_dict.get('subheader'))
+                # Copy age headers from previous section
+                for prev_idx in range(row_idx - 1, -1, -1):
+                    prev_cells = src_rows[prev_idx]
+                    if prev_cells[0].value in (None, "", "Metric"):
+                        for col_idx, cell in enumerate(prev_cells[1:], start=1):
+                            if cell.value not in (None, ""):
+                                ws_xlw.write(dst_row, col_idx, cell.value, fmt_dict.get('subheader'))
+                        break
+                dst_row += 1
             
             # Handle selection rows
             if col1 in _SELECTION_LABELS:
@@ -1350,39 +1204,41 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict):
                 selection_done = True
                 selected_row_num = dst_row  # Track for CDF row
                 
-                # Write "Selected" row with IF formulas
+                # Write "Selected" row with values from values workbook
                 for src_cell in src_cells:
                     col_idx = src_cell.column - 1  # 0-based
                     if col_idx == 0:
                         ws_xlw.write(dst_row, col_idx, "Selected", fmt_dict.get('label'))
                     else:
-                        # IF formula: User not blank → User, else RB-AI
-                        col_letter = get_column_letter(src_cell.column)
-                        formula = f'=IF({ext_ref}!{col_letter}{user_row}<>"",{ext_ref}!{col_letter}{user_row},{ext_ref}!{col_letter}{rb_row})'
-                        # Get cached value from values workbook
+                        # Get value from values workbook (User selection > RB-AI selection)
                         val_cell = ws_src_vals.cell(src_cell.row, src_cell.column)
                         cached_val = val_cell.value if val_cell.value not in (None, "") else None
                         if cached_val is not None:
-                            ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('data_ldf'), cached_val)
+                            ws_xlw.write_number(dst_row, col_idx, float(cached_val), fmt_dict.get('data_ldf'))
                         else:
-                            ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('data_ldf'))
+                            ws_xlw.write_blank(dst_row, col_idx, None, fmt_dict.get('data_ldf'))
                 dst_row += 1
                 
-                # Write "Selected Reasoning" row with IF formula
+                # Write "Selected Reasoning" row with reasoning text from appropriate rows
                 if user_reason_row and rb_reason_row:
                     for src_cell in src_cells:
                         col_idx = src_cell.column - 1
                         if col_idx == 0:
                             ws_xlw.write(dst_row, col_idx, "Selected Reasoning", fmt_dict.get('label'))
                         else:
-                            col_letter = get_column_letter(src_cell.column)
-                            formula = f'=IF({ext_ref}!{col_letter}{user_row}<>"",{ext_ref}!{col_letter}{user_reason_row},{ext_ref}!{col_letter}{rb_reason_row})'
-                            val_cell = ws_src_vals.cell(src_cell.row, src_cell.column)
-                            cached_val = val_cell.value if val_cell.value not in (None, "") else None
-                            if cached_val is not None:
-                                ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('label'), cached_val)
+                            # Check User Reasoning first, fall back to RB Reasoning
+                            user_val_cell = ws_src_vals.cell(user_reason_row, src_cell.column)
+                            user_reason = user_val_cell.value if user_val_cell.value not in (None, "") else None
+                            
+                            if user_reason:
+                                ws_xlw.write(dst_row, col_idx, str(user_reason), fmt_dict.get('label'))
                             else:
-                                ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('label'))
+                                rb_val_cell = ws_src_vals.cell(rb_reason_row, src_cell.column)
+                                rb_reason = rb_val_cell.value if rb_val_cell.value not in (None, "") else None
+                                if rb_reason:
+                                    ws_xlw.write(dst_row, col_idx, str(rb_reason), fmt_dict.get('label'))
+                                else:
+                                    ws_xlw.write_blank(dst_row, col_idx, None, fmt_dict.get('label'))
                     dst_row += 1
                 continue
             
@@ -1391,22 +1247,62 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict):
                 col_idx = src_cell.column - 1
                 val_cell = ws_src_vals.cell(src_cell.row, src_cell.column)
                 
-                # Labels (column A) or text: copy value directly
-                if col_idx == 0 or src_cell.value is None or isinstance(src_cell.value, str):
-                    fmt = fmt_dict.get('label') if col_idx == 0 else None
-                    ws_xlw.write(dst_row, col_idx, src_cell.value, fmt)
-                else:
-                    # Data cells: write formula with cached value
-                    col_letter = get_column_letter(src_cell.column)
-                    row_num = src_cell.row
-                    formula = f"={ext_ref}!{col_letter}{row_num}"
-                    cached_val = val_cell.value if val_cell.value not in (None, "") else None
-                    if cached_val is not None:
-                        ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('data_ldf'), cached_val)
+                # Labels (column A): copy value directly with label format
+                if col_idx == 0:
+                    ws_xlw.write(dst_row, col_idx, src_cell.value, fmt_dict.get('label'))
+                    continue
+                
+                # Determine if this row is in triangle section (years as labels) or LDF sections
+                # Triangle rows have year labels (e.g., 2001-2024), others are LDF-related
+                is_triangle_row = False
+                try:
+                    if col1 and isinstance(col1, (int, float)):
+                        year = int(col1)
+                        if 1990 <= year <= 2100:  # Reasonable year range
+                            is_triangle_row = True
+                except (ValueError, TypeError):
+                    pass
+                
+                # Check if this is a header row (col1 is None/"" or specific header labels)
+                is_header_row = col1 in (None, "", "Period", "Metric")
+                
+                # Try to detect numeric values (including numeric strings)
+                value_to_write = src_cell.value
+                is_numeric = False
+                
+                if value_to_write is not None:
+                    if isinstance(value_to_write, (int, float)):
+                        is_numeric = True
+                    elif isinstance(value_to_write, str):
+                        try:
+                            value_to_write = float(value_to_write)
+                            is_numeric = True
+                        except (ValueError, TypeError):
+                            pass
+                
+                # Write the cell
+                if value_to_write is None or value_to_write == "":
+                    # Blank cell
+                    fmt = fmt_dict.get('subheader') if is_header_row else (fmt_dict.get('data_num') if is_triangle_row else fmt_dict.get('data_ldf'))
+                    ws_xlw.write_blank(dst_row, col_idx, None, fmt)
+                elif is_numeric:
+                    # Numeric value
+                    if is_header_row:
+                        # Header: use subheader format
+                        ws_xlw.write_number(dst_row, col_idx, float(value_to_write), fmt_dict.get('subheader'))
                     else:
-                        ws_xlw.write_formula(dst_row, col_idx, formula, fmt_dict.get('data_ldf'))
+                        # Data: commas for triangle rows, 4 decimals for LDF rows
+                        data_fmt = fmt_dict.get('data_num') if is_triangle_row else fmt_dict.get('data_ldf')
+                        ws_xlw.write_number(dst_row, col_idx, float(value_to_write), data_fmt)
+                else:
+                    # Text value
+                    fmt = fmt_dict.get('subheader') if is_header_row else None
+                    ws_xlw.write(dst_row, col_idx, value_to_write, fmt)
             
             dst_row += 1
+        
+        # Blank row before CDF row
+        dst_row += 1
         
         # Add CDF row after all other rows
         # CDF row calculates cumulative development factors working backwards from tail
@@ -1423,27 +1319,23 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict):
             last_col = c
         
         if last_col > 0:
-            # Get tail reference for this measure
-            tail_ref = f"'{_CL_TAIL_WB}{measure}'"
+            # Use CDF values from combined dataframe (already calculated from selected LDFs and tail)
+            # This ensures consistency between triangle sheet and CL method sheet
+            measure_cdf_map = cdf_lookup.get(measure, {})
             
-            # For the rightmost column (tail), reference the tail workbook
-            # The tail workbook has the selected tail factor that should be used
-            # We'll use column L (12th column) as a default, but ideally should discover dynamically
-            # For now, use 1.000 as default tail if no tail workbook
-            tail_col_letter = get_column_letter(last_col + 1)  # openpyxl is 1-based
-            tail_formula = f'=IFERROR({tail_ref}!$X$2,1.000)'  # X2 is typically where tail factor is
-            ws_xlw.write_formula(cdf_row, last_col, tail_formula, fmt_dict.get('data_ldf'), 1.000)
-            
-            if selected_row_num is not None:
-                # Work backwards from last_col-1 to column 1 (0-based indexing in xlsxwriter)
-                for col_idx in range(last_col - 1, 0, -1):
-                    ldf_ref = f"{get_column_letter(col_idx + 1)}{selected_row_num + 1}"  # Reference Selected row LDF
-                    next_cdf_ref = f"{get_column_letter(col_idx + 2)}{cdf_row + 1}"  # Reference next CDF
-                    cdf_formula = f"=IFERROR({ldf_ref}*{next_cdf_ref},1.000)"
-                    
-                    # Get cached value from calculations (approximate)
-                    # We'll use 1.000 as default since we don't have actual values yet
-                    ws_xlw.write_formula(cdf_row, col_idx, cdf_formula, fmt_dict.get('data_ldf'))
+            # Map column headers (ages) to CDF values
+            # Read age headers from row 1 of the source
+            for col_idx in range(1, last_col + 1):
+                age_cell = ws_src_form.cell(1, col_idx + 1)  # +1 for openpyxl 1-based
+                age_val = age_cell.value
+                if age_val is not None:
+                    try:
+                        age_int = int(float(str(age_val)))
+                        cdf_val = measure_cdf_map.get(age_int, 1.0)  # Default to 1.0 if not found
+                        ws_xlw.write_number(cdf_row, col_idx, float(cdf_val), fmt_dict.get('data_ldf'))
+                    except (ValueError, TypeError):
+                        # If age can't be converted, write 1.0
+                        ws_xlw.write_number(cdf_row, col_idx, 1.0, fmt_dict.get('data_ldf'))
         
         # Set column widths (standard for triangles)
         ws_xlw.set_column(0, 0, 25)  # Label column
@@ -1451,31 +1343,6 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict):
     
     wb_form.close()
     wb_vals.close()
-
-
-def create_triangle_sheets(gen_wb, measures):
-    # Copy the triangle sheets from the CL selections workbook with formulas
-    tail_sel = load_tail_selections(INPUT_TAIL_EXCEL)
-    df2_enh = (pd.read_parquet(INPUT_CL_ENHANCED)
-               if pathlib.Path(INPUT_CL_ENHANCED).exists()
-               else pd.DataFrame())
-    if pathlib.Path(INPUT_CL_EXCEL).exists():
-        wb_cl_vals = load_workbook(INPUT_CL_EXCEL, data_only=True)
-        wb_cl_form = load_workbook(INPUT_CL_EXCEL, data_only=False)
-        for measure in measures:
-            if measure in wb_cl_vals.sheetnames:
-                short_name = measure_short_name(measure)[:31]
-                ws = gen_wb.create_sheet(title=short_name)
-                # Use formula-based copy to link to Chain Ladder Selections - LDFs.xlsx
-                _copy_ws_with_ldfs_formulas(wb_cl_form[measure], ws, measure, INPUT_CL_EXCEL)
-                # Add CDF formulas below Selected row
-                _add_cdf_formulas_to_triangle(ws)
-                if measure in tail_sel:
-                    cutoff_age, tf, reasoning = tail_sel[measure]
-                    add_tail_to_triangle_ws(
-                        ws, cutoff_age, tf, reasoning,
-                        df2=df2_enh, measure=measure,
-                    )
 
 
 
@@ -1504,16 +1371,13 @@ def write_exposure_sheet(gen_wb, triangles_path, fmt_dict):
 
     if len(ages) <= 1:
         headers  = ["Period", "Exposure"]
-        # Write title row
-        ws.write(0, 0, "Exposure", fmt_dict.get('header'))
-        ws.merge_range(0, 0, 0, len(headers)-1, "Exposure", fmt_dict.get('header'))
         # Write headers
         for c, hdr in enumerate(headers):
-            ws.write(1, c, hdr, fmt_dict.get('subheader'))
+            ws.write(0, c, hdr, fmt_dict.get('subheader'))
             ws.set_column(c, c, 18)
-        ws.freeze_panes(2, 0)
+        ws.freeze_panes(1, 0)
         
-        data_row = 2
+        data_row = 1
         for r, (_, row) in enumerate(exp.iterrows(), start=data_row):
             _data_cell_xlw(ws, r+1, 1, row["period_int"], fmt_obj=fmt_num)  # r+1 for 1-based
             _data_cell_xlw(ws, r+1, 2, _safe(row["value"]), fmt_obj=fmt_num)
@@ -1528,16 +1392,13 @@ def write_exposure_sheet(gen_wb, triangles_path, fmt_dict):
         pivot.columns = [int(c) for c in pivot.columns]
         headers  = ["Period"] + [str(c) for c in pivot.columns]
         
-        # Write title row
-        ws.write(0, 0, "Exposure", fmt_dict.get('header'))
-        ws.merge_range(0, 0, 0, len(headers)-1, "Exposure", fmt_dict.get('header'))
         # Write headers
         for c, hdr in enumerate(headers):
-            ws.write(1, c, hdr, fmt_dict.get('subheader'))
+            ws.write(0, c, hdr, fmt_dict.get('subheader'))
             ws.set_column(c, c, 14)
-        ws.freeze_panes(2, 0)
+        ws.freeze_panes(1, 0)
         
-        data_row = 2
+        data_row = 1
         for r, (idx, row) in enumerate(pivot.iterrows(), start=data_row):
             _data_cell_xlw(ws, r+1, 1, idx, fmt_obj=fmt_num)  # r+1 for 1-based
             for c, val in enumerate(row, start=2):
@@ -1561,16 +1422,13 @@ def write_diagnostics_sheet(ws, combined, exp_map, fmt_dict):
     if has_exposure:
         headers += ["Ultimate Loss Rate", "Ultimate Frequency"]
 
-    # Write title row
-    ws.write(0, 0, "Post-Method Series Diagnostics", fmt_dict.get('header'))
-    ws.merge_range(0, 0, 0, len(headers)-1, "Post-Method Series Diagnostics", fmt_dict.get('header'))
     # Write headers
     for c, hdr in enumerate(headers):
-        ws.write(1, c, hdr, fmt_dict.get('subheader'))
+        ws.write(0, c, hdr, fmt_dict.get('subheader'))
         ws.set_column(c, c, 18)
-    ws.freeze_panes(2, 0)
+    ws.freeze_panes(1, 0)
     
-    data_row = 2
+    data_row = 1
     fmt_num = fmt_dict.get('data_num')
     fmt_dec = fmt_dict.get('data_ldf')
 
@@ -1747,6 +1605,7 @@ def main():
     triangles_df = pd.read_parquet(INPUT_TRIANGLES)
     # Load tail selections early to know which ages survive add_tail_to_triangle_ws.
     # _tri_col_map_from_df caps at cutoff so CL actual refs don't point to deleted columns.
+    _ts = {}
     tail_cutoff = {}
     if pathlib.Path(INPUT_TAIL_EXCEL).exists():
         _ts = load_tail_selections(INPUT_TAIL_EXCEL)
@@ -1764,6 +1623,9 @@ def main():
     other_m = [m for m in measures if m not in loss_m and m not in count_m]
     has_ie  = any(col == "ultimate_ie" for col, _ in available_methods)
 
+    # Create Notes sheet first (will write content at the end)
+    ws_notes = wb.add_worksheet("Notes")
+    
     print("Building Loss sheets...")
     if loss_m:
         # Build tri_col_maps dictionary for all loss measures
@@ -1802,7 +1664,7 @@ def main():
                 write_method_bf(wb, combined, m, ult_col_map, fmt, other_tri_maps, ult_wb)
     
     print("Copying CL LDF triangle sheets...")
-    create_triangle_sheets_xlw(wb, measures, fmt)
+    create_triangle_sheets_xlw(wb, measures, fmt, _ts, combined)
     
     if has_exposure:
         write_exposure_sheet(wb, INPUT_TRIANGLES, fmt)
@@ -1823,15 +1685,10 @@ def main():
     #     ws_t = wb.add_worksheet(sheet_name[:31])
     #     write_triangle_sheet(ws_t, sheet_name, df)
 
-    print("Building diagnostics sheet...")
-    ws_diag = wb.add_worksheet("Summary Diagnostics")
-    write_diagnostics_sheet(ws_diag, combined, exp_map, fmt)
-
     # Build Notes sheet with table of contents
     print("Adding Notes sheet...")
-    # Get list of all sheets created (xlsxwriter worksheets)
-    sheet_list = [(ws.name, *_sheet_desc(ws.name)) for ws in wb.worksheets()]
-    ws_notes = wb.add_worksheet("Notes")
+    # Get list of all sheets created (xlsxwriter worksheets), excluding Notes itself
+    sheet_list = [(ws.name, *_sheet_desc(ws.name)) for ws in wb.worksheets() if ws.name != "Notes"]
     write_notes_sheet_xlw(ws_notes, sheet_list, fmt)
 
     print("\nSaving Analysis.xlsx with xlsxwriter (values from source data)...")

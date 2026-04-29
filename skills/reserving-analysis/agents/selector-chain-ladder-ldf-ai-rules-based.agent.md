@@ -73,7 +73,7 @@ The `reasoning` field format: **Start with the selected LDF value.** Then concis
 | > 0.20 | Exclude top/bottom 2 if 7+ points; otherwise exclude 1 each, flag low-credibility |
 
 - Never exclude >30% of data points. If that much looks anomalous, it may be the new pattern (→ Trending).
-- If outlier is the latest diagonal, apply Latest-Point Outlier (§5) first.
+- If outlier is the latest diagonal, apply Latest-Point Outlier (Section 5) first.
 - Document cause if known (large loss, reserve study, portfolio change).
 
 ### 2. Recency Preference
@@ -93,7 +93,7 @@ The `reasoning` field format: **Start with the selected LDF value.** Then concis
 | Downward | 3–10% | 30–50% |
 | Downward | > 10% | 50–70% |
 
-- Exception: downward + convergence (§8) + paid-to-incurred confirms redundancy → move full distance.
+- Exception: downward + convergence (Section 8) + paid-to-incurred confirms redundancy → move full distance.
 - Strongest at early maturities (12–36mo), relaxed at late maturities (60+mo).
 
 ### 4. Bayesian Anchoring to Prior
@@ -180,7 +180,7 @@ Sub-1.000 paid LDFs always indicate data issues — investigate and correct.
 - Large = >10% of column's incremental development, or removal changes LDF by >5%.
 - Compute LDF with and without. If difference >5%, use ex-large LDF + separate large loss load.
 - Diagnostic signal: `paid_severity_incr` spike with normal `reported_counts` = large loss, not frequency.
-- **Severity vs frequency shock test:** severity shock = losses spike, counts flat (→ treat as large loss / CAT). Frequency shock = counts and losses move proportionally (→ §15 Frequency Shock row, not this section).
+- **Severity vs frequency shock test:** severity shock = losses spike, counts flat (→ treat as large loss / CAT). Frequency shock = counts and losses move proportionally (→ Frequency Shock pattern in Section 14, not this section).
 
 ### 13. Calendar Year Effects
 
@@ -191,13 +191,13 @@ Sub-1.000 paid LDFs always indicate data issues — investigate and correct.
 
 ### 14. Additional Diagnostic Patterns
 
-Apply via the same sequence as §Diagnostic Adjustment Rules (baseline → screen → cross-check → adjust).
+Apply via the same sequence as Diagnostic Adjustment Rules (baseline → screen → cross-check → adjust).
 
 | Pattern | Key Signals | LDF Action |
 |---|---|---|
 | **Catastrophic Claims** | Large incremental loss spike at one origin/development age; severity jump not matched by counts; isolated to 1–2 development ages | Exclude or cap CAT diagonals; use unaffected years; do not let CAT inflate column averages |
 | **Case Reserve Adequacy Change** | Widening paid/incurred gap + rising case-per-open = *increased* adequacy (lower paid / raise incurred LDFs). Narrowing gap + falling case-per-open = *decreased* adequacy (raise paid / lower incurred LDFs) | Adjust per direction above; cross-check with `average_case_reserve` diagnostic |
-| **Bulk Reserve Release or Strengthening** | Incremental incurred spike or drop across *multiple* origins in the same calendar period; case-per-open jumps sharply; distinct from gradual adequacy drift | Exclude impacted diagonals or restate; pairs with §13 calendar year detection |
+| **Bulk Reserve Release or Strengthening** | Incremental incurred spike or drop across *multiple* origins in the same calendar period; case-per-open jumps sharply; distinct from gradual adequacy drift | Exclude impacted diagonals or restate; pairs with Section 13 calendar year detection |
 | **Legislative / Benefit Change** | *Abrupt* severity step-change at the effective date; count/closure shift after law change. (Contrast with inflation: *gradual* drift across calendar years, counts often unaffected.) | Segment pre/post; select from post-change years only |
 | **Reopened Claims** | Late-age count or paid increments spike vs. history | Increase late-age LDFs; extend tail |
 | **Reinsurance Attachment Change** | Severity drops without count change; paid increments shrink on large claims | Lower loss LDFs; adjust severity loading separately |
@@ -214,7 +214,7 @@ Apply via the same sequence as §Diagnostic Adjustment Rules (baseline → scree
 | Slower Reporting + Decreased Settlement | Raise both early and late-age LDFs; extend tail |
 | Growing Book + Faster Reporting | Reduce early LDFs but exposure-adjust for volume; weight recent years |
 | Shrinking Book + Increased Settlement | Shorten tail; reduce credibility weighting on recent small years |
-| Legislative Change + Ongoing Severity Trend | Segment pre/post; within post-period, apply severity trending per §6 |
+| Legislative Change + Ongoing Severity Trend | Segment pre/post; within post-period, apply severity trending per Section 6 |
 
 ---
 

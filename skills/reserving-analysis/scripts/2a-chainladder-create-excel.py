@@ -18,6 +18,7 @@ run-note: When copied to a project, run from the scripts/ directory:
 
 import sys
 import pandas as pd
+import numpy as np
 import xlsxwriter
 from pathlib import Path
 
@@ -48,7 +49,7 @@ DIAG_NUMBER_FORMATS = {
     'reported_claims': '#,##0',
     'incurred_severity': '#,##0',
     'paid_severity': '#,##0',
-    'paid_to_incurred': '0.00%',
+    'paid_to_incurred': '0.0000',
     'open_counts': '#,##0',
     'average_case_reserve': '#,##0',
     'claim_closure_rate': '0.00%',
@@ -59,9 +60,9 @@ DIAG_NUMBER_FORMATS = {
 def write_selections_section(ws, start_row, col_labels, fmt, prior_selections=None, measure=None):
     """Write selection rows for Rules-Based AI, Open-Ended AI, and User."""
     # Header row
-    ws.write(start_row, 0, "", fmt['subheader'])
+    ws.write(start_row, 0, "", fmt['subheader_left'])
     for c_idx, col in enumerate(col_labels):
-        ws.write(start_row, c_idx + 1, col, fmt['subheader'])
+        ws.write(start_row, c_idx + 1, col, fmt['subheader_right'])
     start_row += 1
     
     # Prior selections if available
@@ -169,9 +170,9 @@ def build_main_sheet(ws, measure, df2, df4, fmt, df_prior=None):
     
     # 2. Age-to-Age Factors (direct values from df2)
     ata_start = row_ptr
-    ws.write(ata_start, 0, "Period", fmt['subheader'])
+    ws.write(ata_start, 0, "Period", fmt['subheader_left'])
     for c_idx, interval in enumerate(intervals):
-        ws.write(ata_start, c_idx + 1, interval, fmt['subheader'])
+        ws.write(ata_start, c_idx + 1, interval, fmt['subheader_right'])
     ata_start += 1
     
     # Build LDF lookup dict from df_m
@@ -204,9 +205,9 @@ def build_main_sheet(ws, measure, df2, df4, fmt, df_prior=None):
     intervals_with_tail = intervals + ["Tail"]
     
     avg_start = row_ptr
-    ws.write(avg_start, 0, "Metric", fmt['subheader'])
+    ws.write(avg_start, 0, "Metric", fmt['subheader_left'])
     for c_idx, interval in enumerate(intervals_with_tail):
-        ws.write(avg_start, c_idx + 1, interval, fmt['subheader'])
+        ws.write(avg_start, c_idx + 1, interval, fmt['subheader_right'])
     avg_start += 1
     
     # Write average values directly from df4
@@ -267,12 +268,20 @@ def build_exposure_sheet(ws, df2, fmt):
     exp_simple = exp_sub.sort_values('age_num').groupby('period', observed=True).last().reset_index()
     
     # Write headers
-    ws.write(0, 0, "Period", fmt['subheader'])
-    ws.write(0, 1, "Exposure", fmt['subheader'])
+    ws.write(0, 0, "Period", fmt['subheader_left'])
+    ws.write(0, 1, "Exposure", fmt['subheader_right'])
     
     # Write data
     for r_idx, (_, row) in enumerate(exp_simple.iterrows()):
-        ws.write(r_idx + 1, 0, str(row['period']), fmt['label'])
+        period = row['period']
+        # Write period as number if numeric (try converting strings)
+        if isinstance(period, (int, float, np.integer, np.floating)):
+            ws.write_number(r_idx + 1, 0, float(period), fmt['label'])
+        else:
+            try:
+                ws.write_number(r_idx + 1, 0, float(period), fmt['label'])
+            except (ValueError, TypeError):
+                ws.write(r_idx + 1, 0, str(period), fmt['label'])
         ws.write(r_idx + 1, 1, row['value'], fmt['data_num'])
     
     ws.set_column(0, 0, 22)
@@ -303,13 +312,13 @@ def build_combined_diagnostics_sheet(ws, diagnostic_cols, df2, df3, fmt):
         
         # Write section title
         label = DIAG_SHEET_LABELS.get(diag_col, diag_col.replace('_', ' ').upper())
-        ws.merge_range(row_ptr, 0, row_ptr, len(ages), label, fmt['section'])
+        ws.merge_range(row_ptr, 0, row_ptr, len(ages), label, fmt['diagnostic_section'])
         row_ptr += 1
         
         # Write header row
-        ws.write(row_ptr, 0, "Period", fmt['subheader'])
+        ws.write(row_ptr, 0, "Period", fmt['subheader_left'])
         for c_idx, age in enumerate(ages):
-            ws.write(row_ptr, c_idx + 1, age, fmt['subheader'])
+            ws.write(row_ptr, c_idx + 1, age, fmt['subheader_right'])
         row_ptr += 1
         
         # Write data rows - all values from df3
@@ -348,9 +357,9 @@ def build_combined_cv_slopes_sheet(ws, measures, df2, df4, fmt):
         row_ptr += 1
         
         # Write header row
-        ws.write(row_ptr, 0, "Metric", fmt['subheader'])
+        ws.write(row_ptr, 0, "Metric", fmt['subheader_left'])
         for c_idx, interval in enumerate(intervals_with_tail):
-            ws.write(row_ptr, c_idx + 1, interval, fmt['subheader'])
+            ws.write(row_ptr, c_idx + 1, interval, fmt['subheader_right'])
         row_ptr += 1
         
         # Define metrics

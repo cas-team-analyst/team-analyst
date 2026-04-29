@@ -81,6 +81,20 @@ def create_xlsxwriter_formats(workbook):
         'valign': 'vcenter'
     })
     
+    formats['subheader_right'] = workbook.add_format({
+        'bold': True,
+        'bg_color': '#' + COLORS['data_gray'],
+        'align': 'right',
+        'valign': 'vcenter'
+    })
+    
+    formats['subheader_left'] = workbook.add_format({
+        'bold': True,
+        'bg_color': '#' + COLORS['data_gray'],
+        'align': 'left',
+        'valign': 'vcenter'
+    })
+    
     formats['label'] = workbook.add_format({
         'align': 'left',
         'valign': 'vcenter'
@@ -117,9 +131,17 @@ def create_xlsxwriter_formats(workbook):
         'num_format': '0'
     })
     
-    # Section header
+    # Section header (grey background)
     formats['section'] = workbook.add_format({
-        'bg_color': '#' + COLORS['section_blue'],
+        'bg_color': '#' + COLORS['data_gray'],
+        'align': 'left',
+        'valign': 'vcenter',
+        'bold': True
+    })
+    
+    # Diagnostic section header (grey background)
+    formats['diagnostic_section'] = workbook.add_format({
+        'bg_color': '#' + COLORS['data_gray'],
         'align': 'left',
         'valign': 'vcenter',
         'bold': True
@@ -128,8 +150,8 @@ def create_xlsxwriter_formats(workbook):
     # Prior selections (yellow)
     formats['prior'] = workbook.add_format({
         'bg_color': '#' + COLORS['prior_yellow'],
-        'bold': True,
-        'align': 'center'
+        'align': 'right',
+        'num_format': '#,##0'
     })
     
     formats['prior_data'] = workbook.add_format({
@@ -160,8 +182,8 @@ def create_xlsxwriter_formats(workbook):
     # Current selections (green)
     formats['selection'] = workbook.add_format({
         'bg_color': '#' + COLORS['selection_green'],
-        'bold': True,
-        'align': 'center'
+        'align': 'right',
+        'num_format': '#,##0'
     })
     
     formats['selection_data'] = workbook.add_format({
@@ -179,8 +201,8 @@ def create_xlsxwriter_formats(workbook):
     # AI selections (blue)
     formats['ai'] = workbook.add_format({
         'bg_color': '#' + COLORS['ai_blue'],
-        'bold': True,
-        'align': 'center'
+        'align': 'right',
+        'num_format': '#,##0'
     })
     
     formats['ai_data'] = workbook.add_format({
@@ -198,8 +220,8 @@ def create_xlsxwriter_formats(workbook):
     # User selections (orange)
     formats['user'] = workbook.add_format({
         'bg_color': '#' + COLORS['user_orange'],
-        'bold': True,
-        'align': 'center'
+        'align': 'right',
+        'num_format': '#,##0'
     })
     
     formats['user_data'] = workbook.add_format({

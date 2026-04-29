@@ -37,7 +37,7 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
         - measure: Type of measure (Incurred Loss, Paid Loss, etc.)
         - interval: Development interval (Dev Pd 1-Dev Pd 2, etc.)
         - weighted_all, simple_all, avg_exclude_high_low_all: Averages using all data
-        - weighted_3yr, simple_3yr, avg_exclude_high_low_3yr: Averages using last 3 periods
+        - weighted_3yr, simple_3yr: Averages using last 3 periods
         - weighted_5yr, simple_5yr, avg_exclude_high_low_5yr: Averages using last 5 periods
         - weighted_10yr, simple_10yr, avg_exclude_high_low_10yr: Averages using last 10 periods
         - cv_3yr, cv_5yr, cv_10yr: Coefficient of variation (volatility measure)
@@ -82,7 +82,7 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
         
         # Calculate averages for different time periods
         all_w, all_s, all_ehl = calc_avgs(factors, weights)
-        w3, s3, ehl3 = calc_avgs(factors, weights, 3)
+        w3, s3, _ = calc_avgs(factors, weights, 3)
         w5, s5, ehl5 = calc_avgs(factors, weights, 5)
         w10, s10, ehl10 = calc_avgs(factors, weights, 10)
 
@@ -107,7 +107,7 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
             'cv_3yr': cv_3yr, 'cv_5yr': cv_5yr, 'cv_10yr': cv_10yr,
             'slope_3yr': slope_3yr, 'slope_5yr': slope_5yr, 'slope_10yr': slope_10yr,
             'weighted_all': all_w, 'simple_all': all_s, 'avg_exclude_high_low_all': all_ehl,
-            'weighted_3yr': w3, 'simple_3yr': s3, 'avg_exclude_high_low_3yr': ehl3,
+            'weighted_3yr': w3, 'simple_3yr': s3,
             'weighted_5yr': w5, 'simple_5yr': s5, 'avg_exclude_high_low_5yr': ehl5,
             'weighted_10yr': w10, 'simple_10yr': s10, 'avg_exclude_high_low_10yr': ehl10,
         })
@@ -124,7 +124,7 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     
     # Round all average columns to 4 decimal places
     avg_cols = ['weighted_all', 'simple_all', 'avg_exclude_high_low_all',
-                'weighted_3yr', 'simple_3yr', 'avg_exclude_high_low_3yr',
+                'weighted_3yr', 'simple_3yr',
                 'weighted_5yr', 'simple_5yr', 'avg_exclude_high_low_5yr',
                 'weighted_10yr', 'simple_10yr', 'avg_exclude_high_low_10yr',
                 'cv_3yr', 'cv_5yr', 'cv_10yr',

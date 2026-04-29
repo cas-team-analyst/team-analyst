@@ -131,7 +131,7 @@ Apply these in order for each measure. Each point must be addressed in your reas
 | **R² (late ages only)** | > 0.85 | < 0.75 |
 | **LOO std dev** | Low (< 0.002 for tail ~1.02) | High (> 0.005) indicates AY-sensitivity |
 | **Residuals** | No systematic sign patterns | Systematic + or − trend = wrong curve family |
-| **Gap to last observed** | `gap_flag = False` | `gap_flag = True` (see §7 Gap Rule) |
+| **Gap to last observed** | `gap_flag = False` | `gap_flag = True` (see Section 7 Gap Rule) |
 
 ### 7. Switchover Point (Gap Rule — HARD REQUIREMENT)
 
