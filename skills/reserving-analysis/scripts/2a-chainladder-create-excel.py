@@ -26,36 +26,18 @@ from modules import config
 from modules.markdown_utils import df_to_markdown
 from modules.xl_styles import create_xlsxwriter_formats
 from modules.xl_writers import col_letter, write_triangle_xlsxwriter
+from modules.average_names import pretty_average_name
+from modules.diagnostics_sheet import (
+    DIAG_SHEET_LABELS,
+    DIAG_NUMBER_FORMATS,
+    build_combined_diagnostics_sheet,
+)
 
 # Paths from modules/config.py — override here if needed:
 OUTPUT_PATH = config.PROCESSED_DATA
 SELECTIONS_OUTPUT_PATH = config.SELECTIONS
 METHOD_ID = "chainladder"
 OUTPUT_FILE_NAME = "Chain Ladder Selections - LDFs.xlsx"
-
-DIAG_SHEET_LABELS = {
-    'reported_claims': 'REPORTED CLAIMS',
-    'incurred_severity': 'INCURRED SEVERITY',
-    'paid_severity': 'PAID SEVERITY',
-    'paid_to_incurred': 'PAID TO INCURRED',
-    'open_counts': 'OPEN COUNTS',
-    'average_case_reserve': 'AVERAGE CASE RESERVE',
-    'claim_closure_rate': 'CLAIM CLOSURE RATE',
-    'incremental_paid_severity': 'INCREMENTAL PAID SEVERITY',
-    'incremental_closure_rate': 'INCREMENTAL CLOSURE RATE',
-}
-
-DIAG_NUMBER_FORMATS = {
-    'reported_claims': '#,##0',
-    'incurred_severity': '#,##0',
-    'paid_severity': '#,##0',
-    'paid_to_incurred': '0.0000',
-    'open_counts': '#,##0',
-    'average_case_reserve': '#,##0',
-    'claim_closure_rate': '0.00%',
-    'incremental_paid_severity': '#,##0',
-    'incremental_closure_rate': '0.00%',
-}
 
 def write_selections_section(ws, start_row, col_labels, fmt, prior_selections=None, measure=None):
     """Write selection rows for Rules-Based AI, Open-Ended AI, and User."""
@@ -153,7 +135,8 @@ def _sort_avg_cols(cols):
     return sorted(cols, key=key)
 
 def _avg_display_name(col):
-    return col.replace('avg_exclude_high_low', 'exclude_high_low')
+    """Map average column names to prettier display names."""
+    return pretty_average_name(col)
 
 def build_main_sheet(ws, measure, df2, df4, fmt, df_prior=None):
     """Build the main LDF selection sheet for a measure."""
@@ -311,63 +294,7 @@ def build_combined_diagnostics_sheet(ws, diagnostic_cols, df2, df3, fmt):
         })
         
         # Write section title
-        label = DIAG_SHEET_LABELS.get(diag_col, diag_col.replace('_', ' ').upper())
-        ws.merge_range(row_ptr, 0, row_ptr, len(ages), label, fmt['diagnostic_section'])
-        row_ptr += 1
-        
-        # Write header row
-        ws.write(row_ptr, 0, "Period", fmt['subheader_left'])
-        for c_idx, age in enumerate(ages):
-            ws.write(row_ptr, c_idx + 1, age, fmt['subheader_right'])
-        row_ptr += 1
-        
-        # Write data rows - all values from df3
-        # Build data dict from df3
-        diag_dict = {}
-        for _, row in df3.iterrows():
-            if diag_col in row and pd.notna(row[diag_col]):
-                diag_dict[(str(row['period']), str(row['age']))] = row[diag_col]
-        
-        for period in periods:
-            ws.write(row_ptr, 0, str(period), fmt['label'])
-            for c_idx, age in enumerate(ages):
-                val = diag_dict.get((str(period), age))
-                if val is not None:
-                    ws.write(row_ptr, c_idx + 1, val, diag_data_fmt)
-            row_ptr += 1
-        
-        # Add spacing between sections
-        row_ptr += 1
-    
-    ws.set_column(0, 0, 22)
-    for c_idx in range(1, len(ages) + 1):
-        ws.set_column(c_idx, c_idx, 12)
-
-def build_combined_cv_slopes_sheet(ws, measures, df2, df4, fmt):
-    """Build combined CV & Slopes sheet with hard-coded values from df4 (no formulas for compatibility)."""
-    row_ptr = 0
-    
-    for measure in measures:
-        df_m = df2[df2['measure'] == measure].copy()
-        intervals = [str(i) for i in df_m['interval'].dropna().cat.categories.tolist()]
-        intervals_with_tail = intervals + ["Tail"]
-        
-        # Write section title
-        ws.merge_range(row_ptr, 0, row_ptr, len(intervals_with_tail), measure.upper(), fmt['section'])
-        row_ptr += 1
-        
-        # Write header row
-        ws.write(row_ptr, 0, "Metric", fmt['subheader_left'])
-        for c_idx, interval in enumerate(intervals_with_tail):
-            ws.write(row_ptr, c_idx + 1, interval, fmt['subheader_right'])
-        row_ptr += 1
-        
-        # Define metrics
-        metrics = ['cv_3yr', 'cv_5yr', 'cv_10yr', 'slope_3yr', 'slope_5yr', 'slope_10yr']
-        
-        # Get values from df4
-        df_avg = df4[df4['measure'] == measure].copy()
-        
+        label = DIA
         # Write data rows with values from df4
         for metric in metrics:
             ws.write(row_ptr, 0, metric, fmt['label'])

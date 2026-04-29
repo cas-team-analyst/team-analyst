@@ -41,6 +41,8 @@ from modules.analysis_loaders import (
     load_combined,
     get_exposure,
 )
+from modules.average_names import pretty_average_name
+from modules.diagnostics_sheet import build_combined_diagnostics_sheet
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -65,6 +67,7 @@ INPUT_CL_EXCEL      = config.SELECTIONS  + "Chain Ladder Selections - LDFs.xlsx"
 INPUT_TAIL_EXCEL    = config.SELECTIONS  + "Chain Ladder Selections - Tail.xlsx"
 INPUT_CL_ENHANCED   = config.PROCESSED_DATA + "2_enhanced.parquet"
 INPUT_LDF_AVERAGES  = config.PROCESSED_DATA + "4_ldf_averages.parquet"
+INPUT_DIAGNOSTICS   = config.PROCESSED_DATA + "3_diagnostics.parquet"
 
 _NUM_FMT = "#,##0"
 _DEC_FMT = "#,##0.000"
@@ -453,12 +456,29 @@ def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
     short_name = measure_short_name(measure)
     ws = gen_wb.add_worksheet(f"{short_name} BF"[:31])
     
-    # For Paid BF: % Unpaid, Unpaid. For others: % Unreported, Unreported
+    # Column labels vary by measure type
     is_paid = measure == "Paid Loss"
-    pct_label = "% Unpaid" if is_paid else "% Unreported"
-    unpaid_label = "Unpaid" if is_paid else "Unreported"
+    is_closed = measure == "Closed Count"
+    is_count = "Count" in measure
     
-    headers = ["Accident Period", "Current Age", "Initial Expected", "CDF", pct_label, unpaid_label, short_name, "Ultimate", "IBNR", "Unpaid"]
+    if is_paid:
+        pct_label = "% Unpaid"
+        unrep_label = "Unpaid"
+        actual_label = short_name
+    elif is_closed:
+        pct_label = "% Unpaid"
+        unrep_label = "Unpaid Counts"
+        actual_label = "Closed Counts"
+    elif is_count:  # Reported Count
+        pct_label = "% Unreported"
+        unrep_label = "Unreported Counts"
+        actual_label = "Reported Counts"
+    else:  # Incurred Loss and others
+        pct_label = "% Unreported"
+        unrep_label = "$ Unreported"
+        actual_label = short_name
+    
+    headers = ["Accident Period", "Current Age", "Initial Expected", "CDF", pct_label, unrep_label, actual_label, "Ultimate", "IBNR", "Unpaid"]
     _write_headers_xlw(ws, headers, fmt_dict)
     
     sub = combined[combined["measure"] == measure].copy()
@@ -746,7 +766,7 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
         main_actual = combined[(combined["measure"] == main_m) & (combined["period"] == row["period"])]["actual"].iloc[0] if len(combined[(combined["measure"] == main_m) & (combined["period"] == row["period"])]) > 0 else None
         main_actual = main_actual if pd.notna(main_actual) else None
         ibnr_val = (sel_val - main_actual) if pd.notna(sel_val) and pd.notna(main_actual) else None
-        _data_cell_xlw(ws, r, col_idx, ibnr_val, fmt_obj=fmt_dec)
+        _data_cell_xlw(ws, r, col_idx, ibnr_val, fmt_obj=fmt_num)
         col_idx += 1
         
         # Unpaid = Selected - Proxy Measure Actual (only if proxy has data)
@@ -806,7 +826,7 @@ def write_selection_grouped(gen_wb, combined, measures_group, title, ult_col_map
     total_main_actual = main_m_data["actual"].sum() if len(main_m_data) > 0 else 0
     total_main_actual = total_main_actual if pd.notna(total_main_actual) else 0
     total_ibnr = (total_sel - total_main_actual) if pd.notna(total_sel) else None
-    _data_cell_xlw(ws, t, col_idx, total_ibnr, fmt_obj=fmt_dec)
+    _data_cell_xlw(ws, t, col_idx, total_ibnr, fmt_obj=fmt_num)
     col_idx += 1
     
     # Unpaid total (only if proxy measure has data)
@@ -1143,6 +1163,7 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict, tail_map=None, combin
         selected_row_num = None
         first_period_seen = False
         first_blank_after_triangle = False
+        in_averages_section = False
         src_rows = list(ws_src_form.iter_rows())
         
         for row_idx, src_cells in enumerate(src_rows):
@@ -1175,7 +1196,7 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict, tail_map=None, combin
             elif col1 == "Metric":
                 # Blank row before Averages section
                 dst_row += 1
-                # Averages section
+                in_averages_section = True
                 ws_xlw.write(dst_row, 0, "Averages", fmt_dict.get('subheader'))
                 for col_idx, cell in enumerate(src_cells[1:], start=1):
                     if cell.value not in (None, ""):
@@ -1185,6 +1206,8 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict, tail_map=None, combin
             elif col1 in _SELECTION_LABELS and not selection_done:
                 # Blank row before LDF Selections section
                 dst_row += 1
+                # LDF Selections section
+                in_averages_section = False  # Exiting average
                 # LDF Selections section
                 ws_xlw.write(dst_row, 0, "LDF Selections", fmt_dict.get('subheader'))
                 # Copy age headers from previous section
@@ -1248,8 +1271,12 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict, tail_map=None, combin
                 val_cell = ws_src_vals.cell(src_cell.row, src_cell.column)
                 
                 # Labels (column A): copy value directly with label format
+                # For average rows, map to prettier names
                 if col_idx == 0:
-                    ws_xlw.write(dst_row, col_idx, src_cell.value, fmt_dict.get('label'))
+                    label_text = src_cell.value
+                    if in_averages_section and label_text:
+                        label_text = pretty_average_name(str(label_text))
+                    ws_xlw.write(dst_row, col_idx, label_text, fmt_dict.get('label'))
                     continue
                 
                 # Determine if this row is in triangle section (years as labels) or LDF sections
@@ -1637,9 +1664,7 @@ def main():
         for m in loss_m:
             if _has_method(combined, m, "ultimate_bf"):
                 write_method_bf(wb, combined, m, ult_col_map, fmt, loss_tri_maps, ult_wb)
-        # Create single IE sheet for Incurred Loss only
-        if "Incurred Loss" in loss_m and _has_method(combined, "Incurred Loss", "ultimate_ie"):
-            write_method_ie(wb, combined, "Incurred Loss", exp_row_map, ult_col_map, fmt, ult_wb, cl_ldf_wb)
+        # IE sheet removed - no longer generated
 
     print("Building Counts sheets...")
     if count_m:
@@ -1648,6 +1673,12 @@ def main():
         
         write_selection_grouped(wb, combined, ["Reported Count", "Closed Count"], "Count Selection", ult_col_map, fmt, count_tri_maps)
         for m in count_m:
+            # Skip Closed CL if no data or all NA
+            if m == "Closed Count":
+                m_data = combined[combined["measure"] == m]
+                if m_data.empty or m_data["actual"].isna().all():
+                    print(f"  Skipping {m} CL sheet (no data)")
+                    continue
             write_method_cl(wb, combined, m, ult_col_map, fmt, count_tri_maps[m])
         for m in count_m:
             if _has_method(combined, m, "ultimate_bf"):
@@ -1668,15 +1699,17 @@ def main():
     
     if has_exposure:
         write_exposure_sheet(wb, INPUT_TRIANGLES, fmt)
-    
-    # TODO: These copying functions still use openpyxl - convert in separate step
-    # print("Copying remaining Diag and CV & Slopes sheets...")
-    # if pathlib.Path(INPUT_CL_EXCEL).exists():
-    #     wb_cl_form = load_workbook(INPUT_CL_EXCEL, data_only=False)
-    #     for sname in wb_cl_form.sheetnames:
-    #         if sname in ("Diagnostics", "CV & Slopes"):
-    #             ws = wb.add_worksheet(sname[:31])
-    #             _copy_ws_filtered(wb_cl_form[sname], ws, {}, {})
+    Add Diagnostics sheet
+    if pathlib.Path(INPUT_CL_ENHANCED).exists() and pathlib.Path(INPUT_DIAGNOSTICS).exists():
+        print("Building Diagnostics sheet...")
+        df2 = pd.read_parquet(INPUT_CL_ENHANCED)
+        df3 = pd.read_parquet(INPUT_DIAGNOSTICS)
+        diagnostic_cols = [col for col in df3.columns if col not in ['period', 'age', 'measure']]
+        if diagnostic_cols:
+            # Add 'wb' to fmt dict for diagnostics module
+            fmt['wb'] = wb
+            ws_diag = wb.add_worksheet("Diagnostics")
+            build_combined_diagnostics_sheet(ws_diag, diagnostic_cols, df2, df3, fmtfiltered(wb_cl_form[sname], ws, {}, {})
     #     wb_cl_form.close()
 
     # TODO: Triangle sheet writing - convert in separate step

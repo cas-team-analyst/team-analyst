@@ -692,7 +692,7 @@ def write_method_bf(gen_wb, combined, measure, ult_col_map, fmt_dict, tri_col_ma
     
     # bf canonical structure: 
     # Accident Period, Current Age, Initial Expected, CDF, % Unreported, Unreported, Actual, Ultimate, IBNR, Unpaid
-    headers = ["Accident Period", "Current Age", "Initial Expected", "CDF", "% Unreported", "Unreported", short_name, "Ultimate", "IBNR", "Unpaid"]
+    headers = ["Accident Period", "Current Age", "Initial Expected", "CDF", "% Unreported", "$ Unreported", short_name, "Ultimate", "IBNR", "Unpaid"]
     _write_headers_xlw(ws, headers, fmt_dict)
     
     sub = combined[combined["measure"] == measure].copy()
