@@ -1432,6 +1432,190 @@ def write_exposure_sheet(gen_wb, triangles_path, fmt_dict):
                 _data_cell_xlw(ws, r+1, c, _safe(val), fmt_obj=fmt_num)
 
 
+def write_post_method_diagnostics(ws, combined, triangles_df, exp_map, fmt):
+    """
+    Write post-method diagnostics sheet with:
+    1. Series diagnostics table (Ultimate Severity, Loss Rate, Frequency)
+    2. Triangle diagnostics (X-to-Ultimate ratios and Average IBNR/Unpaid)
+    """
+    # Selected ultimates lookup
+    sel_lookup = {}
+    for _, row in combined.iterrows():
+        sel_lookup[(str(row['period']), row['measure'])] = row['selected_ultimate']
+    
+    # ── Part 1: Series Diagnostics Table ──────────────────────────────────
+    inc = combined[combined["measure"] == "Incurred Loss"].set_index("period")
+    rep = combined[combined["measure"] == "Reported Count"].set_index("period")
+    
+    has_exposure = bool(exp_map)
+    headers = ["Accident Period", "Ultimate Severity"]
+    if has_exposure:
+        headers += ["Ultimate Loss Rate", "Ultimate Frequency"]
+    
+    # Write headers
+    row_ptr = 0
+    for c, hdr in enumerate(headers):
+        ws.write(row_ptr, c, hdr, fmt['subheader'])
+    row_ptr += 1
+    
+    # Set column widths
+    ws.set_column(0, 0, 18)  # Accident Period
+    ws.set_column(1, 1, 20)  # Ultimate Severity
+    if has_exposure:
+        ws.set_column(2, 2, 22)  # Ultimate Loss Rate
+        ws.set_column(3, 3, 22)  # Ultimate Frequency
+    
+    # Write data
+    periods = sorted(inc.index, key=lambda x: (int(x) if str(x).isdigit() else str(x)))
+    for p in periods:
+        if p not in inc.index:
+            continue
+        ult_loss   = inc.loc[p, "selected_ultimate"]
+        ult_counts = rep.loc[p, "selected_ultimate"] if p in rep.index else np.nan
+        exp        = exp_map.get(p, np.nan)
+        
+        def _div(a, b):
+            return a / b if pd.notna(a) and pd.notna(b) and b != 0 else None
+        
+        ws.write(row_ptr, 0, _period_int(p), fmt['label'])
+        ws.write(row_ptr, 1, _div(ult_loss, ult_counts) or '', fmt.get('data_ldf', fmt['data_num']))
+        if has_exposure:
+            ws.write(row_ptr, 2, _div(ult_loss, exp) or '', fmt.get('data_ldf', fmt['data_num']))
+            ws.write(row_ptr, 3, _div(ult_counts, exp) or '', fmt.get('data_ldf', fmt['data_num']))
+        row_ptr += 1
+    
+    # Add spacing
+    row_ptr += 2
+    
+    # ── Part 2: Triangle Diagnostics ──────────────────────────────────────
+    df = triangles_df.copy()
+    
+    # Get periods and ages for structure
+    first_measure_data = df[df['measure'] != 'Exposure']
+    if not first_measure_data.empty:
+        first_measure = first_measure_data['measure'].cat.categories[0]
+        df_m = df[df['measure'] == first_measure].copy()
+        periods = df_m['period'].cat.categories.tolist()
+        ages = [str(a) for a in df_m['age'].cat.categories.tolist()]
+    else:
+        return
+    
+    # Define triangle diagnostics to write
+    triangle_diagnostics = [
+        ("Incurred Loss", "INCURRED-TO-ULTIMATE"),
+        ("Paid Loss", "PAID-TO-ULTIMATE"),
+        ("Reported Count", "REPORTED-TO-ULTIMATE"),
+    ]
+    
+    # Add Closed Count only if it exists in the data
+    if "Closed Count" in df['measure'].unique():
+        triangle_diagnostics.append(("Closed Count", "CLOSED-TO-ULTIMATE"))
+    
+    # X-to-Ultimate triangles
+    for measure, label in triangle_diagnostics:
+        measure_data = df[df['measure'] == measure]
+        if measure_data.empty:
+            continue
+        
+        # Write section title
+        ws.merge_range(row_ptr, 0, row_ptr, len(ages), label, fmt['diagnostic_section'])
+        row_ptr += 1
+        
+        # Write header row
+        ws.write(row_ptr, 0, "Period", fmt['subheader_left'])
+        for c_idx, age in enumerate(ages):
+            ws.write(row_ptr, c_idx + 1, int(age) if age.isdigit() else age, fmt['subheader_right'])
+        row_ptr += 1
+        
+        # Build data dict
+        data_dict = {}
+        for _, row in measure_data.iterrows():
+            data_dict[(str(row['period']), str(row['age']))] = row['value']
+        
+        # Write data rows (X-to-Ultimate ratios)
+        for period in periods:
+            sel_ult = sel_lookup.get((str(period), measure))
+            ws.write(row_ptr, 0, _period_int(period), fmt['label'])
+            
+            for c_idx, age in enumerate(ages):
+                val = data_dict.get((str(period), age))
+                if val is not None and pd.notna(val) and pd.notna(sel_ult) and sel_ult != 0:
+                    ratio = val / sel_ult
+                    ws.write(row_ptr, c_idx + 1, ratio, fmt.get('data_ldf', fmt['data_num']))
+            row_ptr += 1
+        
+        row_ptr += 1  # Spacing between sections
+    
+    # Average IBNR triangle (if Incurred Loss and Reported Count exist)
+    if "Incurred Loss" in df['measure'].unique() and "Reported Count" in df['measure'].unique():
+        inc_data = df[df['measure'] == "Incurred Loss"]
+        
+        # Write section title
+        ws.merge_range(row_ptr, 0, row_ptr, len(ages), "AVERAGE IBNR", fmt['diagnostic_section'])
+        row_ptr += 1
+        
+        # Write header row
+        ws.write(row_ptr, 0, "Period", fmt['subheader_left'])
+        for c_idx, age in enumerate(ages):
+            ws.write(row_ptr, c_idx + 1, int(age) if age.isdigit() else age, fmt['subheader_right'])
+        row_ptr += 1
+        
+        # Build data dict for incurred
+        inc_dict = {}
+        for _, row in inc_data.iterrows():
+            inc_dict[(str(row['period']), str(row['age']))] = row['value']
+        
+        # Write data rows (Average IBNR = (Ultimate - Incurred) / 1)
+        for period in periods:
+            sel_ult = sel_lookup.get((str(period), "Incurred Loss"))
+            ws.write(row_ptr, 0, _period_int(period), fmt['label'])
+            
+            for c_idx, age in enumerate(ages):
+                inc_val = inc_dict.get((str(period), age))
+                if inc_val is not None and pd.notna(inc_val) and pd.notna(sel_ult):
+                    avg_ibnr = sel_ult - inc_val
+                    ws.write(row_ptr, c_idx + 1, avg_ibnr, fmt['data_num'])
+            row_ptr += 1
+        
+        row_ptr += 1  # Spacing
+    
+    # Average Unpaid triangle (if Paid Loss exists)
+    if "Paid Loss" in df['measure'].unique() and "Incurred Loss" in df['measure'].unique():
+        paid_data = df[df['measure'] == "Paid Loss"]
+        
+        # Write section title
+        ws.merge_range(row_ptr, 0, row_ptr, len(ages), "AVERAGE UNPAID", fmt['diagnostic_section'])
+        row_ptr += 1
+        
+        # Write header row
+        ws.write(row_ptr, 0, "Period", fmt['subheader_left'])
+        for c_idx, age in enumerate(ages):
+            ws.write(row_ptr, c_idx + 1, int(age) if age.isdigit() else age, fmt['subheader_right'])
+        row_ptr += 1
+        
+        # Build data dict for paid
+        paid_dict = {}
+        for _, row in paid_data.iterrows():
+            paid_dict[(str(row['period']), str(row['age']))] = row['value']
+        
+        # Write data rows (Average Unpaid = Ultimate - Paid)
+        for period in periods:
+            sel_ult = sel_lookup.get((str(period), "Incurred Loss"))
+            ws.write(row_ptr, 0, _period_int(period), fmt['label'])
+            
+            for c_idx, age in enumerate(ages):
+                paid_val = paid_dict.get((str(period), age))
+                if paid_val is not None and pd.notna(paid_val) and pd.notna(sel_ult):
+                    avg_unpaid = sel_ult - paid_val
+                    ws.write(row_ptr, c_idx + 1, avg_unpaid, fmt['data_num'])
+            row_ptr += 1
+    
+    # Set column widths
+    ws.set_column(0, 0, 22)
+    for c_idx in range(1, len(ages) + 1):
+        ws.set_column(c_idx, c_idx, 12)
+
+
 def write_diagnostics_sheet(ws, combined, exp_map, fmt_dict):
     """
     Write the 'Diagnostics' sheet with xlsxwriter: Ultimate Severity, Loss Rate, Frequency.
@@ -1700,17 +1884,22 @@ def main():
     if has_exposure:
         write_exposure_sheet(wb, INPUT_TRIANGLES, fmt)
     
-    # Add Diagnostics sheet
+    # Add Pre-Method Diagnostics sheet
     if pathlib.Path(INPUT_CL_ENHANCED).exists() and pathlib.Path(INPUT_DIAGNOSTICS).exists():
-        print("Building Diagnostics sheet...")
+        print("Building Pre-Method Diagnostics sheet...")
         df2 = pd.read_parquet(INPUT_CL_ENHANCED)
         df3 = pd.read_parquet(INPUT_DIAGNOSTICS)
         diagnostic_cols = [col for col in df3.columns if col not in ['period', 'age', 'measure']]
         if diagnostic_cols:
             # Add 'wb' to fmt dict for diagnostics module
             fmt['wb'] = wb
-            ws_diag = wb.add_worksheet("Diagnostics")
+            ws_diag = wb.add_worksheet("Pre-Method Diagnostics")
             build_combined_diagnostics_sheet(ws_diag, diagnostic_cols, df2, df3, fmt)
+    
+    # Add Post-Method Diagnostics sheet
+    print("Building Post-Method Diagnostics sheet...")
+    ws_post = wb.add_worksheet("Post-Method Diagnostics")
+    write_post_method_diagnostics(ws_post, combined, triangles_df, exp_map, fmt)
 
     # TODO: Triangle sheet writing - convert in separate step
     # print("Building post-method triangle sheets...")
