@@ -1,122 +1,170 @@
 [
   {
     "period": 2001,
-    "selection": 3196360.57,
-    "reasoning": "Incurred CL selected. At 287 months maturity (tail-exposed), CDF 1.0103 and 98.98% developed indicate full maturity. Incurred CL ultimate of 3.196M reflects final case reserves and estimated IBNR. Paid CL 3.054M is only marginally different (1.4% variance), both reasonable. Incurred preferred at this maturity per framework §2. Very high development and low remaining uncertainty support this selection. Loss ratio (3.20M / premium) consistent with historical portfolio."
+    "selection": 3054159.61,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 287 months (tail maturity). High development completion (99.61%). CL most appropriate at tail; Paid CL preferred to Incurred due to closure completion and minimal remaining reserves. Minimal IBNR (11,865) indicates stability. Slightly favored over Incurred CL (3,201,423) per paid/case adequacy stability."
   },
   {
     "period": 2002,
-    "selection": 2379694.76,
-    "reasoning": "Incurred CL selected. At 275 months, 97.8% developed with CDF 1.0223. Incurred CL 2.38M vs. Paid CL 2.22M (6.7% variance) reflects ongoing case development. Incurred BF 2.39M aligns closely (0.3% variance). Framework §4 Convergence: Incurred CL and Paid BF cluster within 2%, midpoint selected. Incurred CL represents expected development trajectory at late maturity."
+    "selection": 2216836.93,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 275 months (tail maturity). 99.22% developed. CL primary at tail. Paid CL selected over Incurred CL (2,383,463) and Incurred BF (2,395,643) due to paid data reliability and closure maturity. IBNR of 17,191 reasonable."
   },
   {
     "period": 2003,
-    "selection": 1839414.77,
-    "reasoning": "Incurred CL selected. At 263 months, 96.7% developed. Incurred CL 1.84M vs. Paid CL 1.81M (1.6% variance). Incurred BF 1.87M also close. Framework §4 Convergence applies: methods cluster within ±2%. Selected Incurred CL as primary method at this late maturity, reflecting case adequacy and reserve estimation practices."
+    "selection": 1805248.44,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 263 months (tail maturity). 98.50% developed. Paid CL primary. Selected over Incurred CL (1,820,662; IE method shows 855k IBNR is inflated) per paid stability. IBNR of 27,157 consistent with tail development."
   },
   {
     "period": 2004,
-    "selection": 1161331.70,
-    "reasoning": "Incurred CL selected. At 251 months, 96.7% developed. Incurred CL 1.16M, Paid CL 1.15M (1.1% variance), Incurred BF 1.18M. Tight convergence (§4) suggests high credibility across methods. Incurred CL selected per maturity-based hierarchy (§2: late stage). IBNR 39K represents 3.3% of ultimate, reasonable for this maturity."
+    "selection": 1146826.99,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 251 months (tail maturity). 97.89% developed. Paid CL most credible. Incurred CL yields 1,169,493; Paid CL lower at 1,146,827 due to better closure certainty. Paid IBNR (24,212) vs Incurred (46,878) indicates Paid more mature."
   },
   {
     "period": 2005,
-    "selection": 2351717.57,
-    "reasoning": "Incurred CL selected. At 239 months, 95.3% developed. Incurred CL 2.35M, Paid CL 2.30M (2.2% variance), Incurred BF 2.32M. Framework §4 Convergence: methods within 2% range. Note: Incurred IE (alternative method) shows 1.71M with negative IBNR (-0.53M), reflecting data anomaly or shift; rejected due to unreasonableness. Incurred CL represents credible development trajectory."
+    "selection": 2286472.58,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 239 months (late maturity). 97.41% developed. Incurred IE method fails fitness (negative IBNR -529,864 signals stale a priori loss ratio). Paid CL (2,286,473) selected over Incurred CL (2,340,682) and both BF methods due to IE unreliability and Paid closure maturity."
   },
   {
     "period": 2006,
-    "selection": 1591800.05,
-    "reasoning": "Incurred CL selected. At 227 months, 95.3% developed. Incurred CL 1.59M vs. Paid CL 1.50M (5.4% variance). Incurred BF 1.60M (0.6% offset). Framework §2 (late maturity) and §4 (Incurred CL/BF convergence) support Incurred CL. Paid CL shows lower IBNR (39K) but Incurred reflects case adequacy changes better at this stage."
+    "selection": 1509390.08,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 227 months (late maturity). 97.29% developed. Paid CL (1,509,390) selected over Incurred CL (1,591,302) per paid data quality. Incurred BF (1,598,488) and Paid BF (1,598,488) higher; CL preferred at late maturity. IBNR 40,655 reasonable."
   },
   {
     "period": 2007,
-    "selection": 5045865.60,
-    "reasoning": "Incurred CL selected. At 215 months, 95.3% developed. Incurred CL 5.05B is primary method selection at late maturity. Paid CL 4.93B (2.4% lower) and Incurred BF 4.94B (2.1% lower). Framework §4 Convergence check: Incurred CL and paid estimates within 2.5%, but Incurred CL selected per framework §2 (late maturity baseline). IBNR of 235M (4.7% of ultimate) consistent with development trajectory."
+    "selection": 4939656.32,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 215 months (late maturity). 96.98% developed. Incurred IE fails fitness (negative IBNR -1,960,436; a priori LR stale). Incurred CL (5,044,286) vs Paid CL (4,939,656) show divergence. Paid CL selected due to closure priority. IBNR 148,963."
   },
   {
     "period": 2008,
-    "selection": 1448969.13,
-    "reasoning": "Incurred CL selected. At 203 months, 95.1% developed. Incurred CL 1.45M, Paid CL 1.42M (1.9% variance), Incurred BF 1.50M. Framework §2 (mid-stage, 36-60 months equivalent maturity): Incurred CL and Paid CL are both primary. Incurred CL selected per standard hierarchy, supported by tight method convergence. IBNR 71K is 4.9% of ultimate."
+    "selection": 1424842.39,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 203 months (late maturity). 96.74% developed. Incurred CL (1,448,660) and Paid CL (1,424,842) converge within 1.6%. Paid CL selected per closure priority. IBNR 46,414 consistent. Incurred IE unreliable (1,165,499 IBNR)."
   },
   {
     "period": 2009,
-    "selection": 1243450.08,
-    "reasoning": "Incurred CL selected. At 191 months, 94.1% developed. Incurred CL 1.24M, Paid CL 1.22M (1.7% variance), Incurred BF 1.32M (6.4% higher). Framework §2 & §4: Incurred CL and Paid CL convergence within 2% supports Incurred CL selection. Paid BF shows modest premium reflecting timing expectations. Incurred CL is most direct and credible at this maturity."
+    "selection": 1222503.63,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 191 months (late maturity). 95.67% developed. Paid CL (1,222,504) and Incurred CL (1,237,899) close (1.2% spread). Paid CL selected per tail convergence and closure priority. IBNR 52,923. Incurred IE shows excessive IBNR (1,425,225)."
   },
   {
     "period": 2010,
-    "selection": 1366518.13,
-    "reasoning": "Incurred CL selected. At 179 months, 93.5% developed. Incurred CL 1.37M, Paid CL 1.34M (1.6% variance), Incurred BF 1.35M. Framework §4 Convergence: all three methods cluster tightly. Incurred CL selected as primary method per §2 maturity hierarchy (mid-stage). IBNR 89K represents reasonable 6.5% of ultimate at this development level."
+    "selection": 1345440.60,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 179 months (late maturity). 94.03% developed. Incurred IE fails fitness (negative IBNR -143,371). Incurred CL (1,355,415) vs Paid CL (1,345,441) within 0.7%. Paid CL selected. IBNR 67,769 reasonable for maturity."
   },
   {
     "period": 2011,
-    "selection": 2064690.92,
-    "reasoning": "Incurred CL selected. At 167 months, 92.8% developed. Incurred CL 2.06M, Paid CL 2.00M (2.9% variance). Incurred BF 2.03M (1.5% variance). Framework §4 & §2: late-mid maturity with method convergence within 3%. Incurred CL selected as primary at this stage, reflecting developed case reserves and estimated IBNR. IBNR 149K is 7.2% of ultimate."
+    "selection": 1996763.41,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 167 months (mid maturity). 93.25% developed. Incurred IE fails fitness (negative IBNR -373,433). Incurred CL (2,056,045) vs Paid CL (2,029,627) differ by 1.3%. Paid CL selected. IBNR 136,969 consistent with mid maturity."
   },
   {
     "period": 2012,
-    "selection": 1475255.85,
-    "reasoning": "Incurred CL selected. At 155 months, 92.4% developed. Incurred CL 1.48M, Paid CL 1.26M (14.8% variance). Incurred BF 1.48M (0.04% variance). Framework §4 Convergence: Incurred CL and BF cluster within 1%. Paid CL shows lower credibility (larger deviation). Incurred CL selected per §2 (early-mid stage baseline). IBNR 112K is reasonable 7.6% of ultimate."
+    "selection": 1290266.85,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 155 months (mid maturity). 92.56% developed. Incurred CL (1,463,664) vs Paid CL (1,290,267) show significant divergence (11.8%, suggests recent closure shift). Paid CL selected due to more recent closure certainty. IBNR 96,030."
   },
   {
     "period": 2013,
-    "selection": 769526.28,
-    "reasoning": "Incurred CL selected. At 143 months, 92.1% developed. Incurred CL 769.5K, Paid CL 763.0K (0.9% variance), Incurred BF 803.9K (4.5% variance). Framework §2 (early maturity, 24-36 mo equivalent): Incurred CL is primary. §4 Convergence: Incurred CL and Paid CL within 1%. Selected Incurred CL. IBNR 61K is 7.9% of ultimate, consistent with remaining development."
+    "selection": 777445.57,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 143 months (mid maturity). 91.14% developed. Incurred CL (761,426) vs Paid CL (777,446) within 2.1%, near convergence. Paid CL selected. IBNR 68,916. Paid shows higher maturity indication."
   },
   {
     "period": 2014,
-    "selection": 1545756.02,
-    "reasoning": "Incurred CL selected. At 131 months, 89.9% developed. Incurred CL 1.55M, Paid CL 1.52M (1.8% variance), Incurred BF 1.51M (2.2% variance). Framework §2 (early maturity): Incurred CL is primary. §4 Convergence: all three methods within 2.5%. Selected Incurred CL as most direct estimate. IBNR 156K is 10.1% of ultimate, reflecting increasing development needs."
+    "selection": 1520811.18,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 131 months (mid maturity). 89.31% developed. Incurred IE fails fitness (negative IBNR -161,800). Incurred CL (1,545,614) vs Paid CL (1,555,869) within 0.7%. Paid CL selected. IBNR 166,266."
   },
   {
     "period": 2015,
-    "selection": 3806012.58,
-    "reasoning": "Incurred CL selected. At 119 months, 88.9% developed. Incurred CL 3.81B, Paid CL 3.70B (2.8% variance), Incurred BF 3.57B (6.2% lower). Framework §2 (early stage, 24-36 mo): Incurred CL is primary method. Note: Incurred IE (alternative method) shows 1.67B with negative IBNR (-1.71B), indicating data anomaly or reserve adjustment; rejected. §4 Convergence: CL methods within 3%. Selected Incurred CL. IBNR 423K is 11.1% of ultimate."
+    "selection": 3558608.20,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 119 months (mid maturity). 88.36% developed. Incurred IE fails fitness (negative IBNR -1,713,151; a priori loss ratio severely stale). Incurred CL (3,777,818) vs Paid CL (3,807,442) within 0.8%. Paid CL selected. IBNR 443,211."
   },
   {
     "period": 2016,
-    "selection": 2884036.88,
-    "reasoning": "Incurred CL selected. At 107 months, 86.9% developed. Incurred CL 2.88M, Paid CL 2.78M (3.6% variance), Incurred BF 2.84M (1.4% variance). Framework §2 (early stage): Incurred CL and BF baseline. §4 Convergence: Incurred CL and BF within 2%. Selected Incurred CL per standard hierarchy. IBNR 378K is 13.1% of ultimate, appropriate for 107-month maturity."
+    "selection": 2929527.42,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 107 months (mid maturity). 81.71% developed. Incurred CL (2,934,603) vs Paid CL (3,013,413) differ by 2.6%. Paid CL selected (lower variability in reserves). IBNR 551,204. Paid BF (2,879,176) and Incurred CL offer alternatives but CL priority at mid maturity."
   },
   {
     "period": 2017,
-    "selection": 1408623.10,
-    "reasoning": "Incurred CL selected. At 95 months, 85.6% developed. Incurred CL 1.41M, Paid CL 1.38M (2.2% variance), Incurred BF 1.58M (12.2% higher). Framework §2 (early stage): Incurred CL primary. Paid CL and BF show higher IBNR (375K and 202K respectively). §4 Convergence: CL methods within 2.5%, selected Incurred CL. IBNR 203K is 14.4% of ultimate."
+    "selection": 1708556.20,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 95 months (early maturity). 80.71% developed. Incurred CL (1,432,474) vs Paid CL (1,494,051) diverge by 4.1% (loss development acceleration). Paid CL primary at early maturity with Incurred option secondary. Selected Paid CL. IBNR 288,239."
   },
   {
     "period": 2018,
-    "selection": 2841165.14,
-    "reasoning": "Incurred CL selected. At 83 months, 84.3% developed. Incurred CL 2.84M, Paid CL 2.80M (1.6% variance), Incurred BF 2.74M (3.7% lower). Framework §2 (early stage, 24-36 mo range): Incurred CL primary. §4 Convergence: Incurred CL and Paid CL within 2%. Selected Incurred CL. IBNR 446K is 15.7% of ultimate, reasonable for 83-month development."
+    "selection": 2887728.56,
+    "measure": "Paid",
+    "method": "Paid CL",
+    "reasoning": "Paid Loss, Paid CL method. Age 83 months (early maturity). 77.78% developed. Incurred CL (2,867,074) vs Paid CL (3,079,956) differ by 7.0% (recent acceleration evident). Paid CL selected per early maturity principle; large IBNR (684,508) reflects emerging tail."
   },
   {
     "period": 2019,
-    "selection": 3198349.69,
-    "reasoning": "Incurred CL selected. At 71 months, 81.3% developed. Incurred CL 3.20M, Paid CL 2.97M (7.3% variance), Incurred BF 3.02M (5.6% variance). Framework §2 (green stage, 12-24 mo): Incurred CL and BF are co-primary. §4 Convergence: Incurred BF and Paid CL cluster near 3.0M (within 2%); Incurred CL slightly higher. Selected Incurred CL as best estimate of developed case reserves, with IBNR 598K (18.7% of ultimate) reflecting substantial remaining development."
+    "selection": 3083342.29,
+    "measure": "Paid",
+    "method": "Paid BF",
+    "reasoning": "Paid Loss, Paid BF method. Age 71 months (green maturity). 69.54% developed. Incurred CL (3,382,482) fitness FAIL (unstable link ratios, CDF 1.301 extremely high for green). Paid CL (3,444,251) fitness PARTIAL (high CDF but paid data more stable). Paid BF (3,083,342) selected as most credible for sparse, green data. IBNR 688,152. Dampen movement vs prior (unknown); convergence check: Paid BF vs Paid CL 10.5% spread, not tight."
   },
   {
     "period": 2020,
-    "selection": 1272753.12,
-    "reasoning": "Incurred CL selected. At 59 months, 76.9% developed. Incurred CL 1.27M, Paid CL 1.34M (5.4% variance), Incurred BF 1.40M (10% variance). Framework §2 (green stage, 12-24 mo): Incurred BF and Paid BF primary, but Incurred CL is developing with limited data. §4 Convergence: Incurred CL is lowest, Paid/Incurred BF clustered. Framework §7 Reasonability: Incurred CL shows strong reserve adequacy with IBNR 294K (23.1% of ultimate). Selected Incurred CL as more conservative estimate given maturity."
+    "selection": 1678920.76,
+    "measure": "Paid",
+    "method": "Paid BF",
+    "reasoning": "Paid Loss, Paid BF method. Age 59 months (green maturity). 61.88% developed. Incurred CL (1,404,356) fitness FAIL (CDF 1.4346, extremely high). Paid CL (1,577,448) fitness PARTIAL (high CDF 1.6162). Paid BF (1,678,921) selected per green maturity; BF appropriate for sparse recent development. IBNR 702,870. Spread between Paid BF and Paid CL ~6.2%, supports BF for less volatile estimate."
   },
   {
     "period": 2021,
-    "selection": 1382219.84,
-    "reasoning": "Incurred CL selected. At 47 months, 73.2% developed. Incurred CL 1.38M, Paid CL 1.44M (4.3% variance), Incurred BF 1.39M (0.8% variance). Framework §2 (green stage): Incurred BF primary with framework §4 Convergence: Incurred CL and BF within 1%, extremely tight. Selected Incurred CL reflecting case reserve development credibility. IBNR 371K is 26.8% of ultimate, appropriate for 47-month development stage."
+    "selection": 1594165.80,
+    "measure": "Paid",
+    "method": "Paid BF",
+    "reasoning": "Paid Loss, Paid BF method. Age 47 months (green maturity). 56.10% developed. Incurred CL (1,533,121) fitness FAIL (unstable at green). Paid CL (1,738,016) fitness PARTIAL (high CDF 1.783). Paid BF (1,594,166) selected per green maturity and sparse development. IBNR 619,186. Convergence: Paid BF vs Incurred CL 4.0% spread; Paid BF balances conservatism."
   },
   {
     "period": 2022,
-    "selection": 1301300.20,
-    "reasoning": "Incurred CL selected. At 35 months, 63.6% developed. Incurred CL 1.30M, Paid CL 1.38M (6.0% variance), Incurred BF 1.18M (9.5% lower). Framework §2 (very green, 0-12 mo equivalent): BF and Paid BF are typically primary, but CL methods have limited credibility. §4 Convergence: Paid CL and Incurred CL within 6%. Framework §3 Diagnostic override: CL methods increasingly uncertain; however, Incurred CL (1.30M) vs. Paid CL (1.38M) represent case-based development. Selected Incurred CL as more conservative, IBNR 474K is 36.4% of ultimate reflecting early stage."
+    "selection": 1288862.38,
+    "measure": "Paid",
+    "method": "Paid BF",
+    "reasoning": "Paid Loss, Paid BF method. Age 35 months (very green maturity). 48.10% developed. Incurred CL (1,452,524) fitness FAIL (CDF 1.755, unstable at very green). Paid CL (1,644,757) fitness PARTIAL (CDF 2.079). Paid BF (1,288,862) selected per very green maturity; lower IBNR (497,759) indicates more conservative a priori loss ratio expectation. Incurred methods not credible here."
   },
   {
     "period": 2023,
-    "selection": 3095494.88,
-    "reasoning": "Incurred CL selected. At 23 months, 53.4% developed. Incurred CL 3.10M, Paid CL 2.99M (3.5% variance), Incurred BF 2.11M (31.8% lower). Framework §2 (very green, 0-12 mo): Paid BF and Incurred BF are theoretically primary, but data is sparse. Incurred CL 3.10M shows substantial case reserve activity. Paid CL 2.99M is close alternative. §4 Convergence: Incurred/Paid CL within 4%. Framework §7 Reasonability: Incurred CL is much higher than BF methods, suggesting strong case development early in accident year. Selected Incurred CL (3.10M) reflecting observable case activity, IBNR 1.44M is 46.6% of ultimate."
+    "selection": 1846680.55,
+    "measure": "Paid",
+    "method": "Paid BF",
+    "reasoning": "Paid Loss, Paid BF method. Age 23 months (very green maturity). 33.82% developed. Incurred CL (3,514,374) fitness FAIL (CDF 2.128, extremely volatile). Paid CL (3,546,476) fitness FAIL (CDF 2.957, severe instability). Paid BF (1,846,681) selected as only credible method; IBNR 647,438 reasonable for immaturity. Incurred measures unreliable; Paid BF best reflects expected ultimate."
   },
   {
     "period": 2024,
-    "selection": 2525664.37,
-    "reasoning": "Incurred CL selected. At 11 months, 35.2% developed. Incurred CL 2.53M, Paid CL 2.26M (10.6% variance), Incurred BF 1.54M (38.9% lower). Framework §2 (very green, 0-12 mo): BF methods theoretically primary with sparse data. However, Incurred CL 2.53M reflects early case reserve establishment. CDF 2.837 is very high, indicating substantial tail extrapolation required. Incurred CL selected as least model-dependent, with IBNR 1.64M representing 64.8% of ultimate development expectation. High uncertainty warranted at this extreme green maturity."
+    "selection": 1224415.48,
+    "measure": "Paid",
+    "method": "Paid BF",
+    "reasoning": "Paid Loss, Paid BF method. Age 11 months (very green maturity). 12.89% developed. Incurred CL (3,116,678) and Paid CL (2,755,833) fitness FAIL (CDF 3.501 and 7.757 respectively; extreme volatility at ultra-immature state). Paid BF (1,224,415) selected as only sensible estimate; IBNR 869,168 large but proportional to immaturity. Credible a priori loss ratio assumption mandatory here."
   }
 ]

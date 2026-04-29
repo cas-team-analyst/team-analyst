@@ -1,140 +1,140 @@
 [
   {
-    "measure": "Reported Count",
     "interval": "11-23",
-    "selection": 1.1330,
-    "reasoning": "1.1330: CV_5yr=0.0316; CV_3yr=0.0130 (both tight). Exclude-high-low-3yr=1.1414 vs weighted-5yr=1.1180 both stable. 3-yr (1.1330) is at tight convergence. Reported counts are sparse but consistent; no evidence of reporting surge beyond natural first-notification variance. Select 1.1330 (exclude-high-low-3yr-weighted average), balancing recent stability with early-age claim reporting lags."
+    "selection": 1.118,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0316 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "23-35",
-    "selection": 1.0000,
-    "reasoning": "1.0000: CV_5yr=0.0000; all averages converge at 1.0. Reporting plateau reached. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "35-47",
-    "selection": 1.0005,
-    "reasoning": "1.0005: CV_5yr=0.0019; extremely tight. Exclude-high-low-5yr=1.0; weighted-5yr=1.0008. Minimal post-initial-notification reporting. Select 1.0005 (simple average across tight band)."
+    "selection": 1.0008,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0019 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "47-59",
-    "selection": 1.0000,
-    "reasoning": "1.0000: CV_5yr=0.0029; all averages essentially at 1.0. No material reporting development. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0029 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "59-71",
-    "selection": 1.0000,
-    "reasoning": "1.0000: CV_5yr=0.0017; all near 1.0. Select 1.0."
+    "selection": 0.9992,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0017 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "71-83",
-    "selection": 1.0002,
-    "reasoning": "1.0002: CV_5yr=0.0000; all averages at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "83-95",
-    "selection": 1.0000,
-    "reasoning": "1.0000: CV_5yr=0.0019; all averages at 1.0. Select 1.0."
+    "selection": 0.9993,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0019 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "95-107",
-    "selection": 1.0000,
-    "reasoning": "1.0000: CV_5yr=0.0000; plateau. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "107-119",
-    "selection": 1.0000,
-    "reasoning": "1.0000: CV_5yr=0.0052; all near 1.0. Select 1.0."
+    "selection": 0.9977,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0052 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "119-131",
-    "selection": 1.0000,
-    "reasoning": "1.0000: CV_5yr=0.0000; plateau. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "131-143",
-    "selection": 1.0000,
-    "reasoning": "1.0000: CV_5yr=0.0000; all at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "143-155",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All averages at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "155-167",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "167-179",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "179-191",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "191-203",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "203-215",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "215-227",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "227-239",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "239-251",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "251-263",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "263-275",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "Very low variability: CV_5yr=0.0000 well below 0.05. 5-year average is highly credible for stable claim reporting patterns."
   },
   {
-    "measure": "Reported Count",
     "interval": "275-287",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All at 1.0. Select 1.0."
+    "selection": 1.0,
+    "measure": "Reported Count",
+    "reasoning": "5-year volume-weighted average: default for stable reported count development."
   }
 ]

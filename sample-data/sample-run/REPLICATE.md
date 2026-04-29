@@ -7,7 +7,7 @@ This document provides step-by-step instructions to reproduce the analysis resul
 ## Overview
 
 **Analysis:** Sample Run  
-**Valuation Date:** [To be filled in]  
+**Valuation Date:** [To be confirmed from data]  
 **Prepared by:** Bryce  
 **Date:** 04/29/2026
 
@@ -37,15 +37,15 @@ This document provides step-by-step instructions to reproduce the analysis resul
 ## Step 2: Data Intake
 
 **Input files used:**
-- [List each file in raw-data/ with description]
+- `raw-data/Triangle Examples 1.xlsx` — Source triangle file containing Paid Loss (sheet "Paid 1"), Incurred Loss (sheet "Inc 1"), Reported Count (sheet "Ct 1"), and Exposure/Payroll (sheet "Exposure"). WC line, AY 2001–2024, dev ages 11–287 months.
 
 **Scripts run:**
 1. `scripts/1a-load-and-validate.py` — Read raw data and create canonical triangle format
-   - **Customizations made:** [List any modifications to read_and_process_triangles() or other functions]
-   - **Output:** `processed-data/1_triangles.parquet`
+   - **Customizations made:** Implemented `read_triangle_data()` for wide-to-long conversion; handled 2-row header layout (Paid/Incurred) vs. 1-row (Count); classified Ct 1 as Reported Count; exposure loaded via pandas data_only. No outlier exclusions.
+   - **Output:** `processed-data/1_triangles.parquet` (924 rows)
 
 2. `scripts/1b-calculate-ldfs.py` — Add LDFs, incremental values, cumulative data
-   - **Output:** `processed-data/2_enhanced.parquet`
+   - **Output:** `processed-data/2_enhanced.parquet` (828 rows with LDFs)
 
 3. `scripts/1c-diagnostics.py` — Calculate diagnostic triangles (paid-to-incurred, severity, etc.)
    - **Output:** `processed-data/3_diagnostics.parquet`
@@ -53,7 +53,7 @@ This document provides step-by-step instructions to reproduce the analysis resul
 4. `scripts/1d-ldf-averages.py` — Calculate LDF averages (simple, weighted, exclude high/low)
    - **Output:** `processed-data/4_ldf_averages.parquet`
 
-**Data validation:** User confirmed data format on [date]
+**Data validation:** User confirmed data format on 04/29/2026
 
 ---
 
@@ -64,18 +64,14 @@ This document provides step-by-step instructions to reproduce the analysis resul
    - **Output:** `selections/Chain Ladder Selections - LDFs.xlsx`
 
 **AI Selection Process:**
-- Rules-based AI selector reviewed the workbook and made selections → `selections/chainladder-ai-rules-based.json`
-- Open-ended AI selector independently made selections → `selections/chainladder-ai-open-ended.json`
+- Rules-based AI selector made selections for all 3 measures (23 intervals each) → `selections/chainladder-ai-rules-based-incurred_loss.json`, `-paid_loss.json`, `-reported_count.json`
+- Open-ended AI selector independently made selections → `selections/chainladder-ai-open-ended-incurred_loss.json`, `-paid_loss.json`, `-reported_count.json`
 
 2. `scripts/2b-chainladder-update-selections.py` — Insert AI selections into Excel workbook
-   - Populated "Rules-Based AI Selection" rows with values from `chainladder-ai-rules-based.json`
-   - Populated "Open-Ended AI Selection" rows with values from `chainladder-ai-open-ended.json`
+   - Populated "Rules-Based AI Selection" rows (69 selections across 3 measures)
+   - Populated "Open-Ended AI Selection" rows (69 selections across 3 measures)
 
-**USER ACTION - Manual Selections:**
-[If user made manual selections, list them here]
-- **Measure:** [name], **Interval:** [age-age], **Selected LDF:** [value], **Reason:** [explanation]
-- [Additional manual overrides...]
-- **If no manual overrides:** All selections are from the Rules-Based AI Selection row.
+**If no manual overrides:** All selections are from the Rules-Based AI Selection row.
 
 **To replicate:** Extract final LDF selections from the "User Selection" row in `selections/Chain Ladder Selections - LDFs.xlsx`. If blank, use "Rules-Based AI Selection" row. Do not re-run the AI selector.
 
@@ -90,19 +86,12 @@ This document provides step-by-step instructions to reproduce the analysis resul
 2. `scripts/2d-tail-create-excel.py` — Create tail selection workbook
    - **Output:** `selections/Chain Ladder Selections - Tail.xlsx`
 
-**AI Selection Process:**
-- Rules-based AI selector reviewed curve fits and made tail selections → `selections/tail-ai-rules-based.json`
-- Open-ended AI selector independently made tail selections → `selections/tail-ai-open-ended.json`
+**Tail selections (rules-based):** Incurred Loss 1.0119 (Bondy, age 143), Paid Loss 1.0039 (Bondy, age 143), Reported Count 1.0000 (age 143)
+**Tail selections (open-ended):** Incurred Loss 1.0251 (double-exp, age 143), Paid Loss 1.0039 (Bondy, age 143), Reported Count 1.0000 (age 143)
 
-3. `scripts/2e-tail-update-selections.py` — Insert AI selections into Excel workbook
-   - Populated "Rules-Based AI Selection" row with values from `tail-ai-rules-based.json`
-   - Populated "Open-Ended AI Selection" row with values from `tail-ai-open-ended.json`
+3. `scripts/2e-tail-update-selections.py` — Insert AI selections into Excel workbook (3 rules-based + 3 open-ended)
 
-**USER ACTION - Manual Selections:**
-[If user made manual selections, list them here]
-- **Measure:** [name], **Cutoff Age:** [age], **Tail Factor:** [value], **Method:** [curve type], **Reason:** [explanation]
-- [Additional manual overrides...]
-- **If no manual overrides:** All selections are from the Rules-Based AI Selection row.
+**If no manual overrides:** All selections are from the Rules-Based AI Selection row.
 
 **To replicate:** Extract final tail factors from the "User Selection" row in `selections/Chain Ladder Selections - Tail.xlsx`. If blank, use "Rules-Based AI Selection" row. Do not re-run the AI selector.
 
@@ -116,13 +105,13 @@ This document provides step-by-step instructions to reproduce the analysis resul
    - **Reads:** `selections/Chain Ladder Selections - Tail.xlsx` (User Selection → Rules-Based AI → Open-Ended AI)
    - **Output:** `ultimates/projected-ultimates.parquet` (includes ultimate_cl, ibnr_cl columns)
 
-2. `scripts/3-ie-ultimates.py` — Calculate Initial Expected ultimates (if ELR file provided)
-   - **Status:** [Ran / Skipped - reason]
-   - **Output:** Added ultimate_ie column to `ultimates/projected-ultimates.parquet`
+2. `scripts/3-ie-ultimates.py` — Calculate Initial Expected ultimates
+   - **Status:** Ran with fallback ELR (no ELR file provided; used 3-year rolling avg of diagonal loss ÷ payroll)
+   - **Output:** Added `ultimate_ie` column to `ultimates/projected-ultimates.parquet`
 
-3. `scripts/4-bf-ultimates.py` — Calculate Bornhuetter-Ferguson ultimates (if ELR file provided)
-   - **Status:** [Ran / Skipped - reason]
-   - **Output:** Added ultimate_bf column to `ultimates/projected-ultimates.parquet`
+3. `scripts/4-bf-ultimates.py` — Calculate Bornhuetter-Ferguson ultimates
+   - **Status:** Ran (built on CL CDFs + IE a priori rates)
+   - **Output:** Added `ultimate_bf` column to `ultimates/projected-ultimates.parquet`
 
 ---
 
@@ -132,19 +121,12 @@ This document provides step-by-step instructions to reproduce the analysis resul
 1. `scripts/5a-ultimates-create-excel.py` — Create ultimates selection workbook
    - **Output:** `selections/Ultimates.xlsx`
 
-**AI Selection Process:**
-- Rules-based AI selector reviewed method indications and made ultimate selections → `selections/ultimates-ai-rules-based.json`
-- Open-ended AI selector independently made ultimate selections → `selections/ultimates-ai-open-ended.json`
+**Rules-based selections:** Paid CL for Loss AYs 2001–2018; Paid BF for Loss AYs 2019–2024; Reported CL for Count AYs 2001–2023; Reported BF for Count AY 2024.
+**Open-ended selections:** Paid CL uniformly for all Loss AYs; Reported CL uniformly for all Count AYs.
 
-2. `scripts/5b-ultimates-update-selections.py` — Insert AI selections into Excel workbook
-   - Populated "Rules-Based AI Selection" columns with values from `ultimates-ai-rules-based.json`
-   - Populated "Open-Ended AI Selection" columns with values from `ultimates-ai-open-ended.json`
+2. `scripts/5b-ultimates-update-selections.py` — Populated Rules-Based AI and Open-Ended AI columns in Losses and Counts sheets (48 total selections each)
 
-**USER ACTION - Manual Selections:**
-[If user made manual selections, list them here]
-- **Measure:** [name], **Period:** [AY], **Selected Ultimate:** [value], **Reason:** [explanation]
-- [Additional manual overrides...]
-- **If no manual overrides:** All selections are from the Rules-Based AI Selection columns.
+**If no manual overrides:** All selections are from the Rules-Based AI Selection columns.
 
 **To replicate:** Extract final ultimate selections from the "User Selection" column in `selections/Ultimates.xlsx`. If blank, use "Rules-Based AI Selection" column. Do not re-run the AI selector.
 
@@ -154,17 +136,12 @@ This document provides step-by-step instructions to reproduce the analysis resul
 
 **Scripts run:**
 1. `scripts/6-analysis-create-excel.py` — Create consolidated analysis workbook
-   - **Reads:** `ultimates/projected-ultimates.parquet`
-   - **Reads:** `selections/Ultimates.xlsx` (User Selection → Rules-Based AI → Open-Ended AI → JSON → method fallback)
-   - **Output:** 
-     - `selected-ultimates.xlsx`
-     - `post-method-series.xlsx`
-     - `post-method-triangles.xlsx`
-     - `Complete Analysis.xlsx`
+   - **Reads:** `ultimates/projected-ultimates.parquet`, `selections/Ultimates.xlsx`
+   - **Output:** `Analysis.xlsx` (Loss Selection, Count Selection, CL triangle sheets, Diagnostics, Notes)
 
 2. `scripts/7-tech-review.py` — Run technical review checks
-   - **Output:** `tech-review.[format]`
-   - **Issues flagged:** [List any warnings or errors, or "None - all checks passed"]
+   - **Output:** `Tech Review.xlsx`
+   - **Issues flagged:** 1 FAIL (negative IBNR vs. current incurred in AYs 2001, 2002, 2006, 2012); 1 WARN (AY 2007 large-loss outlier); 1 WARN (minor negative count IBNRs within tolerance)
 
 ---
 
@@ -172,12 +149,14 @@ This document provides step-by-step instructions to reproduce the analysis resul
 
 **Primary deliverables:**
 - `REPORT.md` — Actuarial report with methodology, assumptions, results, and diagnostics
-- `Complete Analysis.xlsx` — Consolidated numerical results
+- `Analysis.xlsx` — Consolidated numerical results (Loss/Count selections, CL triangles, diagnostics)
 
 **Supporting files:**
-- `selections/Chain Ladder Selections - LDFs.xlsx` — LDF selections with reasoning
+- `selections/Chain Ladder Selections - LDFs.xlsx` — LDF selections with AI reasoning (rules-based + open-ended)
 - `selections/Chain Ladder Selections - Tail.xlsx` — Tail factor selections with reasoning
-- `selections/Ultimates.xlsx` — Ultimate selections with method indications
+- `selections/Ultimates.xlsx` — Ultimate selections by AY (Losses and Counts sheets)
+- `Tech Review.xlsx` — Automated reasonableness checks output
+- `ultimates/projected-ultimates.parquet` — All method ultimates by period/measure (CL, IE, BF)
 - All scripts in `scripts/` folder can be re-run to reproduce results
 
 ---

@@ -285,3 +285,24 @@ Be explicit and exhaustive. The user should leave this step knowing exactly what
 - [ ] Ask the user if anything is unclear about any of the outputs before the workflow closes.
 
 - [ ] Ask the user if they have any questions about the analysis itself — methodology, selections, assumptions, data quality, results interpretation, or any findings in the technical review. Remind them they can also run `/peer-review` in a separate session for an independent AI review of the analysis.
+
+---
+
+## Headline Indications (as of 04/29/2026)
+
+### Loss
+| Item | Amount |
+|---|---|
+| Total Paid to Date | $41,767,854 |
+| Case Reserves | $1,848,541 |
+| Total Incurred | $43,616,395 |
+| IBNR (pure) | $4,721,077 |
+| **Total Unpaid (Case + IBNR)** | **$6,569,618** |
+| **Selected Ultimate** | **$48,337,472** |
+
+### Count
+| Item | Amount |
+|---|---|
+| Total Reported to Date | 9,716 |
+| Selected Ultimate | 9,738 |
+| IBNR Count | 22 |

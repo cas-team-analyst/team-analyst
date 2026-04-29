@@ -1,140 +1,140 @@
 [
   {
     "interval": "11-23",
-    "selection": 2.4566,
-    "reasoning": "Selected 2.4566, the 10-year weighted average. Paid loss development at 12-24 months is extremely aggressive due to claim settlement timing. The weighted approach (2.4566) provides better stability than simple average (2.4979). CV is high (0.226) but expected given settlement lag dynamics. Recent 3-year average (2.6286) and 5-year (2.6232) show persistent high development. The downward trend in the 3-year slope (0.634 to -0.0604) suggests recent moderation, but 10-year weighting balances this against sustained historical patterns.",
+    "selection": 2.5,
+    "reasoning": "Selected 2.50 based on recent year pattern (2019-2023: 2.67, 2.55, 1.99, 2.43, 3.27). Recent years show volatility around 2.5-2.7, but excluding extreme 3.27 outlier from 2023 and 1.79 from 2014, the centroid of 2015-2022 is ~2.5. This represents strong early development typical of this account but acknowledges normalization in recent cohorts.",
     "measure": "Paid Loss"
   },
   {
     "interval": "23-35",
-    "selection": 1.3437,
-    "reasoning": "Selected 1.3437, the 10-year weighted average. Paid loss development continues significantly but begins to moderate. CV is 0.19, indicating good stability. The weighted approach (1.3437) and simple average (1.3387) align closely. Recent years (2021-2024) show 1.06-1.68, confirming ongoing but variable development. Slope is near zero, indicating stability.",
+    "selection": 1.38,
+    "reasoning": "Selected 1.38 from robust recent year consensus (2019-2023: 1.75, 1.18, 1.67, 1.06, 1.59). Trimmed average of last 10 years (excluding extremes) centers around 1.35-1.40. This interval shows consistent, credible development with less volatility than 11-23.",
     "measure": "Paid Loss"
   },
   {
     "interval": "35-47",
-    "selection": 1.1803,
-    "reasoning": "Selected 1.1803, the 10-year weighted average. Development is substantial but moderating. Stability is good (CV 0.108). The weighted (1.1803) and simple (1.1716) averages align. Recent data (2020-2024) shows consistent 1.06-1.22 range. Development continues but is approaching completion.",
+    "selection": 1.15,
+    "reasoning": "Selected 1.15 from recent period average (2019-2023: 1.18, 1.12, 1.07, 1.19, 1.06). The last decade averages 1.12-1.15 with stable pattern. This interval shows moderate tail development.",
     "measure": "Paid Loss"
   },
   {
     "interval": "47-59",
-    "selection": 1.1038,
-    "reasoning": "Selected 1.1038, the 10-year weighted average. Development is still meaningful but modest at this maturity. CV is low (0.064). Weighted (1.1038) and simple (1.1009) are very close. Recent years cluster around 1.01-1.27, showing some variability that the weight-down average addresses. Development continues steadily.",
+    "selection": 1.1,
+    "reasoning": "Selected 1.10 based on 2015-2023 mean of ~1.09-1.12. Recent years show tight clustering: 1.23, 1.01, 1.07, 1.01, 1.07. Reflects modest development at this maturity.",
     "measure": "Paid Loss"
   },
   {
     "interval": "59-71",
-    "selection": 1.0774,
-    "reasoning": "Selected 1.0774, the 10-year weighted average. Development is slowing. CV is moderate (0.063). Weighted (1.0774) provides stability against outliers. Recent cohorts vary (1.00-1.23), but 10-year history shows sustained development at this pace.",
+    "selection": 1.06,
+    "reasoning": "Selected 1.06 from recent consensus (2019-2023: 1.22, 1.01, 1.05, 1.07, 1.04). Last decade averages 1.055-1.065. Development continues to slow.",
     "measure": "Paid Loss"
   },
   {
     "interval": "71-83",
-    "selection": 1.0591,
-    "reasoning": "Selected 1.0591, the 10-year weighted average. Stability improves (CV 0.082). Weighted (1.0591) and simple (1.0562) are consistent. Development is becoming marginal but still present.",
+    "selection": 1.05,
+    "reasoning": "Selected 1.05 based on recent years (2019-2023: 1.22, 1.05, 1.05, 1.05, 1.04) and broader sample showing range 1.00-1.14. Pattern suggests slight tail development continues.",
     "measure": "Paid Loss"
   },
   {
     "interval": "83-95",
-    "selection": 1.0260,
-    "reasoning": "Selected 1.0260, the 10-year weighted average. Development is minimal. CV is relatively low (0.031). Weighted and simple averages align (1.0260 vs 1.0233). Minor paid claim adjustments at this late stage.",
+    "selection": 1.03,
+    "reasoning": "Selected 1.03 from recent mean (2019-2023: 1.05, 1.04, 1.03, 1.04, 1.04). Very stable interval with minimal tail development.",
     "measure": "Paid Loss"
   },
   {
     "interval": "95-107",
-    "selection": 1.0208,
-    "reasoning": "Selected 1.0208, the 10-year weighted average. Development is sparse but persistent. CV is low (0.024). Weighted (1.0208) and simple (1.0181) are very close.",
+    "selection": 1.02,
+    "reasoning": "Selected 1.02 from recent years (2019-2023: 1.04, 1.03, 1.01, 1.03, 1.01). Consistent low development.",
     "measure": "Paid Loss"
   },
   {
     "interval": "107-119",
-    "selection": 1.0394,
-    "reasoning": "Selected 1.0394, the 10-year weighted average. A modest uptick relative to adjacent intervals (CV 0.044). Weighted (1.0394) balances simple (1.0278) with recent higher development. Limited tail development at this age.",
+    "selection": 1.015,
+    "reasoning": "Selected 1.015 from tight recent range (2019-2023: 1.01, 1.00, 1.01, 1.00, 1.04). Minimal development at advanced maturity.",
     "measure": "Paid Loss"
   },
   {
     "interval": "119-131",
-    "selection": 1.0282,
-    "reasoning": "Selected 1.0282, the 10-year weighted average. Development is minimal but measurable. Weighted (1.0282) provides stability. CV is low (0.033).",
+    "selection": 1.01,
+    "reasoning": "Selected 1.01 from recent cluster (2019-2023: 1.01, 1.01, 1.01, 1.01, 1.04). Very minimal tail development.",
     "measure": "Paid Loss"
   },
   {
     "interval": "131-143",
-    "selection": 1.0226,
-    "reasoning": "Selected 1.0226, the 10-year weighted average. Very minimal development. Weighted (1.0226) and simple (1.0190) are close. CV is 0.020.",
+    "selection": 1.01,
+    "reasoning": "Selected 1.01 based on recent years averaging near 1.01-1.02 with many factors at exactly 1.00 or very close.",
     "measure": "Paid Loss"
   },
   {
     "interval": "143-155",
-    "selection": 1.0211,
-    "reasoning": "Selected 1.0211, the 10-year weighted average. Sparse tail development. CV is low (0.020).",
+    "selection": 1.01,
+    "reasoning": "Selected 1.01 from recent pattern showing development near 1.00-1.01 range.",
     "measure": "Paid Loss"
   },
   {
     "interval": "155-167",
-    "selection": 1.0151,
-    "reasoning": "Selected 1.0151, the 10-year weighted average. Very sparse data at extreme age. CV is 0.012.",
+    "selection": 1.0,
+    "reasoning": "Selected 1.00 as recent years show factors clustering at or very near 1.00, indicating maturity.",
     "measure": "Paid Loss"
   },
   {
     "interval": "167-179",
-    "selection": 1.0156,
-    "reasoning": "Selected 1.0156, the 10-year weighted average. Tail factor with very limited observations.",
+    "selection": 1.0,
+    "reasoning": "Selected 1.00 from consolidated tail factors approaching ultimate.",
     "measure": "Paid Loss"
   },
   {
     "interval": "179-191",
-    "selection": 1.0163,
-    "reasoning": "Selected 1.0163, the 10-year weighted average. Extreme age with minimal data.",
+    "selection": 1.0,
+    "reasoning": "Selected 1.00 as tail development is minimal.",
     "measure": "Paid Loss"
   },
   {
     "interval": "191-203",
-    "selection": 1.0158,
-    "reasoning": "Selected 1.0158, the 10-year weighted average. Very sparse tail observations.",
+    "selection": 1.0,
+    "reasoning": "Selected 1.00 from tail consolidation.",
     "measure": "Paid Loss"
   },
   {
     "interval": "203-215",
-    "selection": 1.0087,
-    "reasoning": "Selected 1.0087, the 10-year weighted average. Minimal tail development.",
+    "selection": 1.0,
+    "reasoning": "Selected 1.00 for very long tail, assuming near-ultimate.",
     "measure": "Paid Loss"
   },
   {
     "interval": "215-227",
-    "selection": 1.0130,
-    "reasoning": "Selected 1.0130, the 10-year weighted average. Tail factor with extremely sparse data.",
+    "selection": 1.0,
+    "reasoning": "Selected 1.00 for far tail.",
     "measure": "Paid Loss"
   },
   {
     "interval": "227-239",
-    "selection": 1.0025,
-    "reasoning": "Selected 1.0025, the 10-year weighted average. Extreme tail development is essentially nil.",
+    "selection": 1.0,
+    "reasoning": "Selected 1.00 for far tail.",
     "measure": "Paid Loss"
   },
   {
     "interval": "239-251",
-    "selection": 1.0054,
-    "reasoning": "Selected 1.0054, the 10-year weighted average. Negligible tail effects.",
+    "selection": 1.0,
+    "reasoning": "Selected 1.00 for far tail.",
     "measure": "Paid Loss"
   },
   {
     "interval": "251-263",
-    "selection": 1.0062,
-    "reasoning": "Selected 1.0062, the 10-year weighted average. Minimal tail development at extreme age.",
+    "selection": 1.0,
+    "reasoning": "Selected 1.00 for far tail.",
     "measure": "Paid Loss"
   },
   {
     "interval": "263-275",
-    "selection": 1.0074,
-    "reasoning": "Selected 1.0074, the 10-year weighted average. Very sparse tail-age data.",
+    "selection": 1.0,
+    "reasoning": "Selected 1.00 for far tail.",
     "measure": "Paid Loss"
   },
   {
     "interval": "275-287",
-    "selection": 1.0039,
-    "reasoning": "Selected 1.0039, the 10-year weighted average. Tail factor at extreme maturity.",
+    "selection": 1.0,
+    "reasoning": "Selected 1.00 for far tail.",
     "measure": "Paid Loss"
   }
 ]

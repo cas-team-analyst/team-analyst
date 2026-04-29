@@ -1,140 +1,140 @@
 [
   {
-    "measure": "Paid Loss",
     "interval": "11-23",
-    "selection": 2.5525,
-    "reasoning": "2.5525: CV_5yr=0.1774 (0.10-0.20) triggers outlier exclusion. Exclude-high-low-5yr=2.5525; 3-yr (2.6286) is 3.0% above 5-yr (2.6232), slight recent uptick but Bayesian anchoring applied. Reported claims also elevated (1.1159 for 2023), confirming early-age surge in reporting. Early maturity development critical; use exclude-high-low-5yr directly (2.5525) for solid data foundation without over-aggressive recency weighting."
+    "selection": 2.6232,
+    "measure": "Paid Loss",
+    "reasoning": "5-year volume-weighted average: standard selection for paid loss."
   },
   {
-    "measure": "Paid Loss",
     "interval": "23-35",
     "selection": 1.4224,
-    "reasoning": "1.4224: CV_5yr=0.2103 (>0.10, <0.20) triggers high-/low-outlier exclusion. Weighted-5yr=1.4224; 3-yr (1.2671) is 11% below 5-yr (1.4224), suggesting downward trend in recent years. Exclude-high-low-5yr=1.4435. Use weighted-5yr (1.4224) as baseline; slope_5yr=-0.0932 confirms downtrend but not yet clear regime change. Hold at 1.4224 for mid-early maturity development."
+    "measure": "Paid Loss",
+    "reasoning": "Downward trend in paid detected. Conservative: held at 5-year; paid loss patterns less volatile than incurred."
   },
   {
-    "measure": "Paid Loss",
     "interval": "35-47",
-    "selection": 1.1864,
-    "reasoning": "1.1864: CV_10yr=0.1076 (<0.20). Exclude-high-low-10yr=1.1864; tight, reliable. 3-yr (1.1327) vs 5-yr (1.1999) show 6% divergence. No strong trend confirmation from diagnostics. Select exclude-high-low-10yr (1.1864) as solid mid-maturity anchor."
+    "selection": 1.1663,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0502) and 5yr (0.1004); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "47-59",
-    "selection": 1.0734,
-    "reasoning": "1.0734: CV_5yr=0.0759. Exclude-high-low-5yr=1.0734; strong convergence across windows. 3-yr (1.1082) vs 5-yr (1.0978) both near 1.07-1.11 band, slightly upward. No strong trend past convergence. Select exclude-high-low-5yr (1.0734)."
+    "selection": 1.103,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.1057) and 5yr (0.0759); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "59-71",
-    "selection": 1.1077,
-    "reasoning": "1.1077: CV_5yr=0.0522 (tight). Exclude-high-low-5yr=1.1077; weighted-5yr=1.1192. Slight upward presence. 3-yr (1.1286) vs 5-yr (1.1192) both elevated mid-10 percent range. Paid severity elevated in recent years; use exclude-high-low-5yr (1.1077) as balanced anchor without artificial inflation."
+    "selection": 1.1239,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0721) and 5yr (0.0522); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "71-83",
-    "selection": 1.0630,
-    "reasoning": "1.0630: CV_5yr=0.0961. Exclude-high-low-5yr=1.0630; weighted-5yr=1.1070. Divergence present. 3-yr (1.1298) is 2% above 5-yr (1.1070); slight uptrend but volatile. Use exclude-high-low-5yr (1.0630), more conservative given volatility."
+    "selection": 1.1184,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.1012) and 5yr (0.0961); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "83-95",
-    "selection": 1.0203,
-    "reasoning": "1.0203: CV_5yr=0.0391. Exclude-high-low-5yr=1.0214; weighted-5yr=1.0328. Exclude-high-low is conservative. 3-yr (1.0426) is 4% above 5-yr (1.0328); development tapering. Select exclude-high-low-5yr (1.0214) as baseline."
+    "selection": 1.0377,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0403) and 5yr (0.0391); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "95-107",
-    "selection": 1.0150,
-    "reasoning": "1.0150: CV_5yr=0.0112 (very tight). Exclude-high-low-5yr=1.0106; weighted-5yr=1.0132. All converge tightly. Late-maturity stabilization. Select at tight midpoint 1.0150."
+    "selection": 1.0124,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0040) and 5yr (0.0112); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "107-119",
-    "selection": 1.0246,
-    "reasoning": "1.0246: CV_5yr=0.0566. Exclude-high-low-5yr=1.0246; weighted-5yr=1.0645. Divergence suggests recent diagonals pulled upward; use conservative exclude-high-low-5yr (1.0246)."
+    "selection": 1.0814,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0647) and 5yr (0.0566); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "119-131",
-    "selection": 1.0044,
-    "reasoning": "1.0044: CV_5yr=0.0121 (tight). Exclude-high-low-5yr=1.0044; all averages converge near 1.0. Select 1.0044, minimal late-age development."
+    "selection": 1.0108,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0153) and 5yr (0.0121); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "131-143",
-    "selection": 1.0173,
-    "reasoning": "1.0173: CV_5yr=0.0237. Exclude-high-low-5yr=1.0136; weighted-5yr=1.0189. Slight upward drift but tight band. Select at 1.0173, conservative high-end of convergence for late development."
+    "selection": 1.0204,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0294) and 5yr (0.0237); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "143-155",
-    "selection": 1.0167,
-    "reasoning": "1.0167: CV_5yr=0.0235. Exclude-high-low-5yr=1.0167; tight convergence. Select 1.0167."
+    "selection": 1.0156,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0226) and 5yr (0.0235); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "155-167",
-    "selection": 1.0017,
-    "reasoning": "1.0017: CV_5yr=0.0123. Exclude-high-low-5yr=1.0017; minimal development. Select 1.0017."
+    "selection": 1.0075,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0017) and 5yr (0.0123); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "167-179",
-    "selection": 1.0045,
-    "reasoning": "1.0045: CV_5yr=0.0108. Exclude-high-low-5yr=1.0045; slight positive tail. Select 1.0045."
+    "selection": 1.0083,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0033) and 5yr (0.0108); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "179-191",
-    "selection": 1.0063,
-    "reasoning": "1.0063: CV_5yr=0.0114. Exclude-high-low-5yr=1.0063; tail emergence. Select 1.0063."
+    "selection": 1.0175,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0159) and 5yr (0.0114); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "191-203",
-    "selection": 1.0157,
-    "reasoning": "1.0157: CV_5yr=0.0103. Exclude-high-low-5yr=1.0124; weighted-5yr=1.0115. Slight upward presence. Select 1.0157 as conservative high-end for late-age development."
+    "selection": 1.0112,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0103) and 5yr (0.0103); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "203-215",
-    "selection": 1.0012,
-    "reasoning": "1.0012: CV_5yr=0.0031 (very tight). Exclude-high-low-5yr=1.0012; extreme tail. Select 1.0012."
+    "selection": 1.0025,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0033) and 5yr (0.0031); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "215-227",
-    "selection": 1.0018,
-    "reasoning": "1.0018: CV_5yr=0.0069. Exclude-high-low-5yr=1.0018; minimal development. Select 1.0018."
+    "selection": 1.0032,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0032) and 5yr (0.0069); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "227-239",
-    "selection": 1.0000,
-    "reasoning": "1.0000: All averages at 1.0. Tail closure. Select 1.0."
+    "selection": 1.0012,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0000) and 5yr (0.0054); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "239-251",
-    "selection": 1.0037,
-    "reasoning": "1.0037: CV_5yr=0.0051. Exclude-high-low-5yr=1.0037; minimal tail. Select 1.0037."
+    "selection": 1.0049,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0058) and 5yr (0.0051); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "251-263",
-    "selection": 1.0074,
-    "reasoning": "1.0074: CV_5yr=0.0050. Exclude-high-low-5yr=1.0074; sparse tail data but consistent. Select 1.0074."
+    "selection": 1.0062,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0050) and 5yr (0.0050); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "263-275",
-    "selection": 1.0076,
-    "reasoning": "1.0076: All averages converge at 1.0076. Sparse tail. Select 1.0076."
+    "selection": 1.0074,
+    "measure": "Paid Loss",
+    "reasoning": "Low variability on both 3yr (0.0019) and 5yr (0.0019); averages stable and credible. Used 50/50 blend of 3yr/5yr for balance."
   },
   {
-    "measure": "Paid Loss",
     "interval": "275-287",
     "selection": 1.0039,
-    "reasoning": "1.0039: All averages at 1.0039. Single origin, extreme tail. Select 1.0039."
+    "measure": "Paid Loss",
+    "reasoning": "5-year volume-weighted average: standard selection for paid loss."
   }
 ]

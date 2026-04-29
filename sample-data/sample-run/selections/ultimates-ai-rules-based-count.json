@@ -2,121 +2,145 @@
   {
     "period": 2001,
     "selection": 700.71,
-    "reasoning": "Reported CL selected. At 287 months maturity, CDF 1.0 and 100% developed indicate full closure. Reported Count ultimate equals actual (700.71). Closed CL would show similar result. Reported Count is simplest, most direct at complete maturity. IBNR 0 is appropriate. No development expected."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 287 months (tail maturity). 100% developed per CL (CDF 1.0, IBNR 0). At tail completion, CL is only appropriate method. IE and BF unnecessary at full development. Closure complete."
   },
   {
     "period": 2002,
     "selection": 651.88,
-    "reasoning": "Reported CL selected. At 275 months, CDF 1.0 and 100% developed. Reported Count actual = ultimate (651.88). Framework §2 maturity-based: tail-stage periods use direct actuals when fully developed. Zero IBNR appropriate at this maturity."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 275 months (tail maturity). 100% developed. CL primary. IE shows 31.28 IBNR indicating a priori count inflated. BF redundant at full maturity. CL reflects actual closure."
   },
   {
     "period": 2003,
     "selection": 551.59,
-    "reasoning": "Reported CL selected. At 263 months, CDF 1.0 and 100% developed. Reported Count 551.59 is fully developed. Framework §2: at tail maturity with complete development, reported actual is ultimate. No further development indicated."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 263 months (tail maturity). 100% developed. CL primary (IBNR 0). IE and BF show divergence (648 and 552 respectively) but CL reflects actual reported at full maturity. No further development expected."
   },
   {
     "period": 2004,
     "selection": 642.65,
-    "reasoning": "Reported CL selected. At 251 months, CDF 1.0 and 100% developed. Reported Count 642.65 represents final count. Framework §2 late maturity: direct reported count is most credible. IBNR 0 reflects complete development."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 251 months (tail maturity). 100% developed. CL (642.65) primary. IE (627.84) and BF (642.65) show IE lower; CL reflects actual reported counts at closure. IBNR 0."
   },
   {
     "period": 2005,
     "selection": 641.33,
-    "reasoning": "Reported CL selected. At 239 months, CDF 1.0 and 100% developed. Reported Count 641.33 is ultimate. Framework §2: tail/late stage fully developed periods use actual reported count. No uncertainty in development."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 239 months (tail maturity). 100% developed. CL (641.33) selected. IE (623.61) lower, BF (641.33) identical. CL reflects actual reported and closed counts. No additional development expected."
   },
   {
     "period": 2006,
     "selection": 497.49,
-    "reasoning": "Reported CL selected. At 227 months, CDF 1.0 and 100% developed. Reported Count 497.49 represents fully closed and reported claims. Framework §2 late maturity: actual reported = ultimate. Zero IBNR."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 227 months (tail maturity). 100% developed. CL (497.49) primary. IE (606.74) inflated by 109, suggesting a priori count excessive. CL most credible for mature reporting."
   },
   {
     "period": 2007,
     "selection": 476.38,
-    "reasoning": "Reported CL selected. At 215 months, CDF 1.0 and 100% developed. Reported Count 476.38 is complete. Framework §2: late-stage fully developed period uses actual count. All claims reported and closed."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 215 months (tail maturity). 100% developed. CL (476.38) reflects actual reported. IE (550.47) inflated by 74, unreliable a priori count. BF identical to CL. CL selected."
   },
   {
     "period": 2008,
     "selection": 328.58,
-    "reasoning": "Reported CL selected. At 203 months, CDF 1.0 and 100% developed. Reported Count 328.58 actual = ultimate. Framework §2 mid-to-late stage: full development achieved. No expected reopens or new reports."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 203 months (late maturity). 100% developed. CL (328.58) primary. IE (444.10) inflated by 115, poor a priori. BF identical to CL. Actual reported at closure is CL."
   },
   {
     "period": 2009,
     "selection": 321.98,
-    "reasoning": "Reported CL selected. At 191 months, CDF 1.0 and 100% developed. Reported Count 321.98 represents final count. Framework §2: complete maturity means actual reported = ultimate. IBNR 0."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 191 months (late maturity). 100% developed. CL (321.98) primary. IE (384.40) inflated by 62, unreliable. BF identical. CL reflects actual maturity."
   },
   {
     "period": 2010,
     "selection": 271.84,
-    "reasoning": "Reported CL selected. At 179 months, CDF 1.0 and 100% developed. Reported Count 271.84 is fully developed ultimate. Framework §2 mid-stage: at full development, reported actual represents ultimate. No additional development expected."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 179 months (late maturity). 100% developed. CL (271.84) primary. IE (314.20) inflated by 42, a priori count overestimate. BF identical. CL most credible."
   },
   {
     "period": 2011,
     "selection": 345.74,
-    "reasoning": "Reported CL selected. At 167 months, CDF 1.0 and 100% developed. Reported Count 345.74 actual = ultimate. Framework §2: all claims reported by this maturity. Final count established."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 167 months (late maturity). 100% developed. CL (345.74) primary. IE (319.33) lower by 26, a priori understated. BF identical. CL reflects actual reported count."
   },
   {
     "period": 2012,
     "selection": 261.28,
-    "reasoning": "Reported CL selected. At 155 months, CDF 1.0 and 100% developed. Reported Count 261.28 represents complete development. Framework §2 early-mid stage: even with moderate maturity, CDF 1.0 indicates all claims reported. Ultimate equals reported actual."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 155 months (late maturity). 100% developed. CL (261.28) primary. IE (298.97) inflated by 37, a priori overstated. BF identical. CL actual reported."
   },
   {
     "period": 2013,
     "selection": 291.63,
-    "reasoning": "Reported CL selected. At 143 months, CDF 1.0 and 100% developed. Reported Count 291.63 is ultimate. Framework §2 early stage: CDF 1.0 indicates complete reporting. No expected IBNR development."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 143 months (mid maturity). 100% developed. CL (291.63) primary. IE (305.75) inflated by 14, minor a priori overstate. BF identical. CL actual reported at closure."
   },
   {
     "period": 2014,
     "selection": 455.26,
-    "reasoning": "Reported CL selected. At 131 months, CDF 1.0 and 100% developed. Reported Count 455.26 is ultimate. Framework §2 early stage: full development achieved (100%). Reported actual = ultimate with zero IBNR."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 131 months (mid maturity). 100% developed. CL (455.26) primary. IE (341.33) significantly lower by 114, a priori count inadequate. BF identical. CL reflects actual reported."
   },
   {
     "period": 2015,
     "selection": 333.86,
-    "reasoning": "Reported CL selected. At 119 months, CDF 1.0 and 100% developed. Reported Count 333.86 is fully developed ultimate. Framework §2 early stage: complete reporting maturity. No additional counts expected to emerge."
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 119 months (mid maturity). 100% developed. CL (333.86) primary. IE (367.36) inflated by 33, a priori overstated. BF identical. CL actual reported at full maturity."
   },
   {
     "period": 2016,
-    "selection": 390.60,
-    "reasoning": "Reported CL selected. At 107 months, CDF 1.0 and 100% developed. Reported Count 390.60 represents ultimate. Framework §2 early stage: CDF 1.0 indicates all counts reported. Actual equals ultimate."
+    "selection": 389.70,
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 107 months (mid maturity). 100.23% developed (CDF 0.9977, minor negative IBNR -0.898 indicates full closure). CL (389.70) primary. IE (401.53) inflated by 10. At practical maturity, CL reflects actual reported/closed."
   },
   {
     "period": 2017,
-    "selection": 310.11,
-    "reasoning": "Reported CL selected. At 95 months, CDF 1.0 and 100% developed. Reported Count 310.11 is ultimate. Framework §2 early stage: full development achieved. IBNR 0 appropriate."
+    "selection": 309.39,
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 95 months (early maturity). 100.23% developed (CDF 0.9977, negative IBNR -0.713 indicates closure complete). CL (309.39) primary. IE (351.80) inflated by 41, a priori overstated. CL reflects actual reported/closed."
   },
   {
     "period": 2018,
-    "selection": 325.94,
-    "reasoning": "Reported CL selected. At 83 months, CDF 1.0 and 100% developed. Reported Count 325.94 equals ultimate. Framework §2 early stage (24-36 mo equivalent): CDF 1.0 indicates complete reporting. Reported actual = ultimate with zero IBNR."
+    "selection": 324.96,
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 83 months (early maturity). 100.30% developed (CDF 0.997, negative IBNR -0.977). CL (324.96) primary. IE (349.53) inflated by 23. CL reflects actual reported/closed counts."
   },
   {
     "period": 2019,
-    "selection": 357.68,
-    "reasoning": "Reported CL selected. At 71 months, CDF 1.0002 and 99.98% developed. Reported CL ultimate 357.68 vs. actual 357.61 shows minimal development (0.07 counts, 0.02% IBNR). Framework §2 green stage: Reported CL is primary. §4 Convergence: all methods cluster within 1% (Reported CL/IE/BF all near 357.7). Selected Reported CL reflecting actual report-based development. Minimal development expected from this point."
+    "selection": 356.54,
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 71 months (green maturity). 100.30% developed (CDF 0.997, negative IBNR -1.072 indicates reporting complete). CL (356.54) primary. IE (337.54) lower by 20, a priori understated. CL reflects actual reported at near-closure."
   },
   {
     "period": 2020,
-    "selection": 370.88,
-    "reasoning": "Reported CL selected. At 59 months, CDF 1.0002 and 99.98% developed. Reported CL ultimate 370.88 shows 0.07 counts development (0.02% IBNR). Framework §2 green stage (12-24 mo): Reported CL primary with minimal reported to closed settlement gap. §4 Convergence: methods within 1%. Selected Reported CL as direct indication of claim emergence. Framework §7 Reasonability: very low IBNR consistent with mature reporting patterns."
+    "selection": 369.40,
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 59 months (green maturity). 100.38% developed (CDF 0.9962, negative IBNR -1.407 indicates reporting complete). CL (369.40) primary. IE (358.12) lower by 12. CL actual reported count at practical maturity."
   },
   {
     "period": 2021,
-    "selection": 329.97,
-    "reasoning": "Reported CL selected. At 47 months, CDF 1.0002 and 99.98% developed. Reported CL ultimate 329.97 shows 0.066 counts development (0.02% IBNR). Framework §2 green stage: Reported CL primary. §4 Convergence: all methods (reported CL, IE, BF) within 1% cluster. Selected Reported CL. Minimal remaining development expected; nearly all claims already reported."
+    "selection": 328.65,
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 47 months (green maturity). 100.38% developed (CDF 0.9962, negative IBNR -1.252). CL (328.65) primary. IE (360.11) inflated by 30. CL reflects actual reported at maturity."
   },
   {
     "period": 2022,
-    "selection": 298.44,
-    "reasoning": "Reported CL selected. At 35 months, CDF 1.0007 and 99.93% developed. Reported CL ultimate 298.44 shows 0.21 counts development (0.07% IBNR). Framework §2 very green (0-12 mo): BF methods theoretically primary, but CDF very close to 1.0. §4 Convergence: Reported CL 298.44 vs. IE 339.98 (13.9% variance) shows some divergence; BF 298.47 clusters with CL (0.01% variance). Selected Reported CL per §2 green stage with CL/BF tight convergence. Minimal IBNR 0.21 reflects high development completion."
+    "selection": 297.34,
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 35 months (very green maturity). 100.30% developed (CDF 0.997, negative IBNR -0.894). CL (297.34) primary. IE (339.98) inflated by 41. CL reflects actual reported; near-complete development."
   },
   {
     "period": 2023,
-    "selection": 305.04,
-    "reasoning": "Reported CL selected. At 23 months, CDF 1.0007 and 99.93% developed. Reported CL ultimate 305.04 shows 0.21 counts development (0.07% IBNR). Framework §2 very green: BF methods theoretically primary with sparse data. However, CDF 1.0007 is very close to 1.0, indicating nearly complete reporting already. Reported CL 305.04 and BF 305.05 converge within 0.01% (framework §4). Selected Reported CL as most direct measure of reported counts. IBNR 0.21 is minimal (0.07% of ultimate)."
+    "selection": 303.91,
+    "method": "Reported CL",
+    "reasoning": "Reported Count, Reported CL method. Age 23 months (very green maturity). 100.30% developed (CDF 0.997, negative IBNR -0.914). CL (303.91) primary. IE (317.43) inflated by 12. CL reflects actual reported count; reporting essentially complete."
   },
   {
     "period": 2024,
-    "selection": 290.25,
-    "reasoning": "Reported CL selected. At 11 months, CDF 1.134 and 88.2% developed. Reported CL ultimate 290.25 shows 34.25 counts development (11.8% IBNR). Framework §2 very green (0-12 mo): BF methods typically primary at extreme immaturity. However, CDF 1.134 is more moderate than loss CDFs (2.84), suggesting count development is following expected trajectory. Reported CL 290.25 vs. Closed CL 290.25 and IE 292.35 are very tightly clustered (within 1%). Framework §4 Convergence applies: all methods within 1%. Selected Reported CL reflecting observable reported counts with reasonable IBNR development expectation of 11.8% remaining. Early emergence suggests expected pattern consistent with portfolio development."
+    "selection": 286.07,
+    "method": "Reported BF",
+    "reasoning": "Reported Count, Reported BF method. Age 11 months (ultra-immature). 89.71% developed (CDF 1.1146). CL (285.35) fitness PARTIAL (CDF 1.1146 unstable at 11 months). Reported BF (286.07) selected for very green maturity with immature development pattern. IBNR 30.07 reasonable. IE shows 36.35 IBNR, inflated. BF appropriate given maturity."
   }
 ]

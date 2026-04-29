@@ -1,8 +1,8 @@
 # Reserving Analysis — Working Draft
 
 **Analysis:** Sample Run
-**Valuation Date:** 11/30/2024 (AY 2024 at 11 months)
-**Draft Version:** v0.1 — Work in Progress
+**Valuation Date:** [To be confirmed from data]
+**Draft Version:** v0.1 — In Progress
 **Prepared by:** Bryce
 **Submitted to:** [Reviewing Actuary Name]
 **Draft Date:** 04/29/2026
@@ -34,11 +34,9 @@
 
 ## 0. Reviewer Quick-Start
 
-*A short orientation so the reviewer can get into the work quickly.*
-
-- **What this analysis covers:** Workers Compensation reserve analysis for AY 2001–2024 using Chain Ladder, BF, and IE methods on Paid Loss, Incurred Loss, and Reported Count triangles. Total selected ultimate: ~$51.2M loss, ~9,751 counts.
-- **What changed since last review (if applicable):** No prior estimate available — first run.
-- **Where I want the most scrutiny:** (1) AY 2007 large-loss treatment, (2) IE/BF ELR quality for immature years 2019-2024, (3) Paid Loss tail factor selection.
+- **What this analysis covers:** Workers Compensation reserve analysis for AYs 2001–2024 (24 accident years), using Chain Ladder and Bornhuetter-Ferguson methods on paid loss, incurred loss, and reported count triangles. Selected ultimate loss = $48.3M; total unpaid = $6.6M.
+- **What changed since last review:** First analysis — no prior estimate available.
+- **Where I want the most scrutiny:** (1) Negative IBNR in 4 mature AYs — implies case redundancy; (2) BF selections for AYs 2019–2024 — thin development, a priori rates are fallback approximations; (3) Paid loss tail factor at 1.0039 — poor exponential curve fit.
 - **Open questions for reviewer:** See Section 11
 
 ---
@@ -46,40 +44,35 @@
 ## 1. Purpose and Scope
 
 ### 1.1 Purpose of the Analysis
-Sample actuarial reserving analysis for a Workers Compensation book using the TeamAnalyst workflow. Methods applied include Chain Ladder, Bornhuetter-Ferguson, and Initial Expected Loss ratio projections across Paid Loss, Incurred Loss, and Reported Count triangles.
+Sample reserving analysis run using the TeamAnalyst plugin workflow to demonstrate end-to-end chain ladder and Bornhuetter-Ferguson reserve estimation.
 
 ### 1.2 Scope
 | Item | Detail |
 |---|---|
-| Segment(s) / LOB | Workers Compensation |
-| Accident / Underwriting years | 2001–2024 |
-| Coverages | Paid Loss, Incurred Loss, Claim Counts |
-| Basis | Not specified (data as provided) |
+| Segment(s) / LOB | Workers Compensation (WC) — clerical, low-hazard |
+| Accident / Underwriting years | 2001–2024 (24 accident years) |
+| Coverages | Paid Loss, Incurred Loss, Reported Count |
+| Basis | Gross (assumed) |
 | Currency | USD |
-| Geography | Not specified |
+| Geography | Not specified in source data |
 
 ### 1.3 Intended Internal Users
-Internal reserving team. This draft is not intended for external distribution in its current form.
+Internal actuarial team. This draft is not intended for external distribution in its current form.
 
 ---
 
 ## 2. Summary of Indications
 
-*Placeholder numbers — subject to review.*
-
-| Segment | Paid to Date | Case | IBNR | Total Unpaid | Ultimate |
+| Segment | Paid to Date | Case Reserves | IBNR | Total Unpaid | Ultimate |
 |---|---|---|---|---|---|
-| Loss (Incurred, all AYs) | 43,616,395 | 1,848,541 | 7,579,576 | 9,428,117 | 51,195,971 |
-| Count (Reported, all AYs) | 9,716 | — | 35 | 35 | 9,751 |
-| **Total** | | | | | |
+| Loss (WC) | $41,767,854 | $1,848,541 | $4,721,077 | $6,569,618 | $48,337,472 |
+| Count (Reported) | 9,716 | — | 22 | 22 | 9,738 |
 
 **Comparison to prior estimate:**
 
-| Segment | Prior Ultimate | Current Ultimate | Change | % |
-|---|---|---|---|---|
-| N/A | — | — | — | — |
+Not applicable — no prior estimate available for comparison.
 
-**Key drivers of change:** Not applicable — no prior estimate available for comparison.
+**Key drivers of change:** Not applicable.
 
 ---
 
@@ -88,29 +81,28 @@ Internal reserving team. This draft is not intended for external distribution in
 ### 3.1 Data Used
 | Data Element | Source | As-of Date | Notes |
 |---|---|---|---|
-| Paid Loss triangles | Triangle Examples 1.xlsx (Paid 1 tab) | 11/30/2024 | AY 2001-2024, 24 dev ages (11-287 mo) |
-| Incurred Loss triangles | Triangle Examples 1.xlsx (Inc 1 tab) | 11/30/2024 | AY 2001-2024, 24 dev ages (11-287 mo) |
-| Claim counts (reported) | Triangle Examples 1.xlsx (Ct 1 tab) | 11/30/2024 | AY 2001-2024, 24 dev ages (11-287 mo) |
-| Payroll / exposure | Triangle Examples 1.xlsx (Exposure tab) | 11/30/2024 | 2001 base $316M, 2% annual growth |
-| Rate change history | N/A | N/A | Not provided |
-| Closed count | N/A | N/A | Not provided |
+| Paid loss triangle | Triangle Examples 1.xlsx / Paid 1 | Latest diagonal: AY 2024 age 11 | 24 AYs (2001–2024), dev ages 11–287 months, 300 data points |
+| Incurred loss triangle | Triangle Examples 1.xlsx / Inc 1 | Latest diagonal: AY 2024 age 11 | 24 AYs (2001–2024), dev ages 11–287 months, 300 data points |
+| Reported count triangle | Triangle Examples 1.xlsx / Ct 1 | Latest diagonal: AY 2024 age 11 | 24 AYs (2001–2024), dev ages 11–287 months, 300 data points |
+| Exposure (payroll) | Triangle Examples 1.xlsx / Exposure | 2024 | Payroll growing at 2% per year from 2001 base of $316M |
+| Expected loss rates | Not provided | N/A | BF/IE will use fallback approximation (diagonal loss ÷ exposure, 3-yr rolling avg) |
+| Prior selections | Not provided | N/A | No prior analysis available |
 
 ### 3.2 Data Reconciliation
-- Not reconciled - data accepted as provided by Triangle Examples 1.xlsx.
+- Not reconciled — data accepted as provided by source file (Triangle Examples 1.xlsx).
 
 ### 3.3 Data Quality Observations
-*Per ASOP No. 23 — flag anything unusual.*
-
-- AY 2007 exhibits notably elevated paid loss development (~$4.8M ultimate vs. peer AYs in the $1M-$2M range), consistent with a large-loss year.
-- Exposure sheet uses Excel formulas (=B2*1.02); values computed programmatically using 2% annual growth from 2001 base.
-- Reported Count triangle classifed as Reported Count per default assumption (counts stabilize quickly at most maturities).
-- No negative development, coding anomalies, or structural breaks identified beyond the AY 2007 outlier.
+- Dev ages are non-standard (11, 23, 35… months — i.e., 12n−1 pattern) but internally consistent across all triangles; no adjustment made.
+- AY 2007 paid loss shows a notable upward spike in mid-development (age 59–95), peaking at $3.15M vs. neighbors in the $1–1.5M range — possible large loss or cat event.
+- AY 2015 paid loss also shows elevated development in the 47–107 month range ($2.1M–$2.9M range vs. cohort average), potentially a second large-loss year.
+- AY 2001 paid loss shows a slight decline from age 71→83 (paid decreased from $2,283,776 to $2,261,773) — minor negative development, not material.
+- No material data quality issues requiring exclusion.
 
 ### 3.4 Data Limitations
-- No closed count data available; closure rate analysis not possible.
-- No expected loss rate file provided; IE and BF methods used fallback approximation (smoothed diagonal loss rate per exposure, 3-year rolling average).
-- No prior year selections available for comparison.
-- Valuation date inferred as 11/30/2024 based on AY 2024 being at 11 months of development.
+- No closed count data — unable to estimate closure rates or calculate closed count CDF.
+- No expected loss rate file provided — Initial Expected method uses fallback approximation (3-year rolling average of diagonal loss per payroll dollar).
+- No prior selections available — no prior LDF benchmark for comparison.
+- Valuation date not explicitly stated in source data; inferred from triangle shape as approximately year-end 2024.
 
 ---
 
@@ -119,15 +111,19 @@ Internal reserving team. This draft is not intended for external distribution in
 ### 4.1 Methods Applied
 | Method | Segments Applied | Why Selected |
 |---|---|---|
-| Incurred LDF (Chain Ladder) | Incurred Loss, AY 2001-2024 | Primary loss method; selected via rules-based framework with AI cross-check |
-| Paid LDF (Chain Ladder) | Paid Loss, AY 2001-2024 | Secondary loss method; cross-check on incurred |
-| Reported LDF (Chain Ladder) | Reported Count, AY 2001-2024 | Count development; essentially complete by 23 months |
-| Initial Expected (IE) | Incurred Loss, Paid Loss, Reported Count | Fallback ELR from smoothed diagonal loss rate; used in BF blending |
-| Bornhuetter-Ferguson | Incurred Loss, Paid Loss, Reported Count | Weighted with CL for immature accident years |
-| Frequency-Severity | N/A | Not applied |
+| Paid CL | Loss — all AYs | Primary selection for mature years (2001–2020); stable development factors, closure-certainty advantage over incurred |
+| Incurred CL | Loss — cross-check only | Used as cross-check; not selected; higher CDF volatility at younger ages |
+| Paid BF | Loss — AYs 2019–2024 | Selected for immature years where CL CDFs are unstable (1.3–7.8×); BF blends prior expectation with emerging paid |
+| Reported CL | Count — AYs 2001–2023 | Count development fully converged at age 11+ for most years; CL captures actual closure |
+| Reported BF | Count — AY 2024 | Age 11 only; 89.7% developed; BF provides stable estimate at extreme immaturity |
+| Initial Expected (IE) | Not selected | Fallback ELR approximation; several AYs produced negative IBNR (stale a priori rates) — used as BF input only |
+| Closed Count CL | Not applicable | No closed count data available |
+| Frequency-Severity | Not applicable | Not implemented in this workflow |
 
 ### 4.2 Method Weighting / Selection Logic
-LDF selections made using a 14-criteria rules-based framework applied independently per measure and interval, with an open-ended AI cross-check. For mature accident years (AY 2001-2015), Incurred Chain Ladder is the primary selection given high percent-developed (>85%). For immature years (AY 2016-2024), BF blends the Chain Ladder indication with the fallback ELR to moderate sensitivity to immature development. Ultimate selections default to Incurred CL per rules-based framework across all 24 accident years.
+LDF selections used the rules-based 14-criteria framework (CV screening, trend detection, outlier exclusion, asymmetric conservatism) applied independently per measure with an open-ended AI cross-check. Tail factors selected via Bondy method at cutoff age 143 for all measures; Reported Count tail = 1.000 (fully developed at 143 months).
+
+Ultimate selections followed a maturity-based hierarchy: Paid CL for years ≥95 months developed; Paid BF for years <72 months. The fallback IE method (3-year rolling average of diagonal loss per payroll) produced negative IBNRs in several accident years (2001, 2002, 2006, 2012) when compared to current incurred — indicating the a priori rates may be optimistic relative to current case reserve levels in those years. This is flagged in Section 11.
 
 ### 4.3 LAE Treatment
 **Not applicable.** This analysis assumes loss triangles include LAE (loss and allocated loss adjustment expense combined), or LAE is not being estimated separately. If LAE needs to be estimated separately, that is outside the scope of this workflow.
@@ -140,13 +136,11 @@ LDF selections made using a 14-criteria rules-based framework applied independen
 ## 5. Key Assumptions
 
 ### 5.1 Development Patterns
-- **Selection basis:** Volume-weighted averages with windows from 3-year to all-year. Rules-based framework selected optimal window per development interval based on stability (CV), volume, and slope diagnostics.
-- **Tail factors:** Incurred Loss = 1.0103 (double exponential decay, cutoff age 203, R²=0.978); Paid Loss = 1.0039 (Bondy, cutoff age 203 — tail immaterial); Reported Count = 1.0000 (Bondy, cutoff age 143 — fully developed).
+- **Selection basis:** Volume-weighted averages with window selection (3-year to all-year) determined per interval by the rules-based framework (CV thresholds, trend detection, outlier exclusion). Asymmetric 40% conservatism applied where downward trends were detected.
+- **Tail:** Bondy method at cutoff age 143 months for Paid Loss (1.0039) and Incurred Loss (1.0119). Reported Count tail = 1.0000 (fully developed at age 143). Exponential decay methods rejected for Paid Loss (R²=0.19, below 0.85 threshold); Skurnick method (1.329) rejected as outlier at age 203.
 
 ### 5.2 Expected Loss Ratios (for B-F and ELR methods)
-| AY | ELR | Basis |
-|---|---|---|
-| | | |
+ELR file not provided. Fallback method used: diagonal incurred loss ÷ payroll exposure, smoothed with a 3-year rolling average. Applied only for BF calculation on immature years (2019–2024) where CL CDFs are unstable. The a priori ELRs are not shown separately; see `ultimates/projected-ultimates.parquet` column `ultimate_ie` for the implied expected ultimates by AY.
 
 ### 5.3 Trend Assumptions
 **Not implemented in this analysis.** The current workflow does not include trend selection or application. Loss development methods (Chain Ladder, BF, IE) rely on historical development patterns without explicit trending adjustments.
@@ -165,7 +159,7 @@ LDF selections made using a 14-criteria rules-based framework applied independen
 **Material assumptions in this analysis:**
 - **LDF selections:** Based on volume-weighted averages with rule-based framework (14 criteria) and AI cross-check. See Section 4.2 and LDF selection workbooks for detailed reasoning.
 - **Tail factors:** Based on curve fitting (Bondy, Exponential Decay, etc.) with leave-one-out validation. See tail selection workbook for detailed reasoning.
-- **Expected loss ratios:** Derived from fallback approximation — diagonal incurred loss per dollar of payroll exposure, smoothed with a 3-year rolling average and applied as the IE a priori rate. See Section 5.2 for detail by accident year.
+- **Expected loss ratios (if used):** [Fill in source if BF/IE methods were used, otherwise note "Not applicable - CL only"]
 
 *Any assumption primarily judgment-driven should be flagged in Section 11.*
 
@@ -175,33 +169,32 @@ LDF selections made using a 14-criteria rules-based framework applied independen
 
 *Detailed exhibits live in the accompanying workbook; summarize selections and rationale here.*
 
-### 6.1 Loss (Incurred + Paid)
-- Selected ultimates: See Ultimates.xlsx Losses sheet and Analysis.xlsx Loss Selection tab
-- Method weighting: Incurred CL selected for all 24 AYs; BF and IE provided cross-checks. Mature years (2001-2015) at 85-99% development; immature years (2016-2024) carry more IBNR uncertainty.
-- Notable judgment calls: AY 2007 elevated development (~$4.8M) absorbed into selections — no separate large-loss adjustment applied.
+### 6.1 Loss (WC — Paid Loss basis)
+- Selected ultimates: See `selections/Ultimates.xlsx`, Losses sheet
+- Method weighting: Paid CL for AYs 2001–2018 (mature, 81–100% developed); Paid BF for AYs 2019–2024 (immature, 12–69% developed)
+- Notable judgment calls: AY 2007 and 2015 show significantly elevated development (large-loss years); both are well-developed (CL applied). Negative IBNR vs. current incurred in AYs 2001, 2002, 2006, 2012 — see Section 11.
 
-### 6.2 Count (Reported)
-- Selected ultimates: See Ultimates.xlsx Counts sheet and Analysis.xlsx Count Selection tab
-- Method weighting: Reported CL selected for all 24 AYs. Count development essentially complete by 35 months; very low IBNR (35 total across all AYs).
-- Notable judgment calls: Slight negative IBNR for 9 accident years (within tolerance) — reflects count triangles plateauing at or slightly above CL ultimate estimate.
+### 6.2 Count (Reported Count basis)
+- Selected ultimates: See `selections/Ultimates.xlsx`, Counts sheet
+- Method weighting: Reported CL for AYs 2001–2023 (count fully converged for nearly all years); Reported BF for AY 2024 (age 11 only)
+- Notable judgment calls: Count development is unusually rapid — most years show 100% development by age 23. Minor negative IBNRs in 15 of 24 AYs (within tolerance, −1 to −2 counts).
 
 ---
 
 ## 7. Diagnostics and Reasonableness Checks
 
-- [x] Loss ratios by AY — Reviewed; reasonable progression. AY 2007 elevated (large-loss year).
-- [x] Frequency / severity trends — Tech review flagged YoY severity spikes in development periods 3, 4, 6 (46%, 103%, 231%); consistent with early accident-year maturation pattern in WC, not an anomaly.
-- [x] Implied paid and reported development — Consistent with LDF selections.
-- [ ] Actual vs. expected emergence — Not applicable; no prior estimate available.
-- [ ] Comparison to independent benchmark — Not performed.
-- [ ] Hindsight test on prior ultimates — Not performed (no prior selections).
-- [x] Ratio of IBNR to case reserves — Total IBNR ($7.6M) vs. case reserves ($1.8M) ratio of ~4:1; consistent with Workers Compensation long-tail pattern.
+- [x] Loss ratios by AY — reasonable progression overall; AY 2007 and 2015 elevated (large-loss years flagged during EDA)
+- [x] Frequency / severity trends — consistent with historical patterns; no systematic severity spikes beyond 2007/2015
+- [x] Implied paid and reported development — patterns consistent with LDF selections
+- [ ] Actual vs. expected emergence since prior review — Not applicable (no prior estimate)
+- [ ] Comparison to independent benchmark — Not performed
+- [ ] Hindsight test on prior ultimates — Not performed (no prior ultimates available)
+- [x] Ratio of IBNR to case reserves — reviewed; IBNR ($4.7M) vs. case ($1.8M) = 2.5× ratio; reasonable for WC with long-tail immature years
 
 **Anomalies to investigate:**
-- Tech review WARN: YoY severity spikes of 46%, 103%, 231% in development periods 3, 4, 6 (incremental, not AY-to-AY — expected in WC maturation)
-- Tech review WARN: Frequency spike >2x median in 5 periods (likely early-stage AYs with partial-year exposure)
-- Tech review WARN: Slight negative IBNR on count for 9 AYs (within rounding tolerance; counts plateau at CDF=1.0)
-- Tech review FAIL on null Selected Ultimate: False positive — affects only blank separator and Total rows, not accident year data rows.
+- **Tech review FAIL:** Negative IBNR (Ultimate < Current Incurred) in AYs 2001, 2002, 2006, 2012 — Paid CL selected ultimate is below current incurred; implies case reserves may be redundant or incurred development reversed. Warrants reviewer scrutiny on case reserve adequacy.
+- **Tech review WARN:** AY 2007 selected ultimate is the outlier at >10× median, driven by known large-loss development in that year ($3.15M paid at age 95 vs. cohort average ~$1.2M). No adjustment made — large loss appears fully developed.
+- **Tech review WARN:** 15 count AYs show minor negative IBNR (−1 to −2 counts); within tolerance; reflects slight reopenings in otherwise fully-developed years.
 
 ---
 
@@ -217,12 +210,10 @@ LDF selections made using a 14-criteria rules-based framework applied independen
 | LDF selections | ± (not tested) | (not tested) |
 
 ### 8.2 Sources of Uncertainty
-*Per ASOP No. 43 — discuss the risks that could cause actuals to differ from estimate.*
-
-- **Process risk:** Workers Compensation inherently long-tail; early-stage accident years (2019-2024) carry substantial IBNR uncertainty given limited development history.
-- **Parameter risk:** Tail factor uncertainty — Paid Loss tail (Bondy 1.0039) was deemed immaterial, but alternative exponential methods ranged up to 1.084; this could shift paid reserve by ~$350K. LDF selection uncertainty greatest at 11-23 month interval (CV ~0.33 for incurred).
-- **Model risk:** CL vs. BF choice for immature years (2020-2024) is a key driver; BF credibility depends heavily on ELR quality, which here is a smoothed approximation rather than a pricing-derived rate.
-- **Systemic risk:** AY 2007 large-loss year not separately estimated; if additional latent claims re-open this could impact ultimate. No explicit IBNR loading for potential large losses in recent years.
+- **Process risk:** Thin data at recent AYs (2021–2024 have only 1–4 development periods); actual emergence could differ materially from BF projections. One additional large-loss year could shift recent-year ultimates significantly.
+- **Parameter risk:** Tail factor uncertainty for Paid Loss — curve fits had poor R² (0.19 for exponential decay); Bondy selected as conservative baseline (1.0039). If true tail is closer to 1.02–1.04, aggregate reserve could increase by $0.4–$0.8M. LDF selections for early intervals (11–35 months) have high CV across years.
+- **Model risk:** CL vs. BF choice for immature years (2019–2024) drives material reserve differences. If CL were applied uniformly, IBNR would be ~$10.9M (Paid CL total) vs. selected $6.6M — a $4.3M upside risk if development accelerates.
+- **Systemic risk:** The a priori ELRs used for BF are based on a fallback rolling average; if underlying loss trends have shifted (e.g., post-COVID claim severity changes), these rates may not be appropriate. No explicit trend adjustment was made.
 
 ---
 
@@ -230,15 +221,16 @@ LDF selections made using a 14-criteria rules-based framework applied independen
 
 | Source | Information Relied Upon |
 |---|---|
-| Triangle Examples 1.xlsx | Paid Loss, Incurred Loss, Reported Count triangles; Payroll exposure |
-| No external sources | All data derived from the single provided input file |
+| Source of Triangle Examples 1.xlsx | Paid loss, incurred loss, reported count triangles and payroll exposure for AYs 2001–2024 |
+
+No external sources or benchmarks relied upon beyond the input data file.
 
 ---
 
 ## 10. Information Date and Subsequent Events
 
-- **Information Date:** November 30, 2024 (inferred — AY 2024 at 11 months of development)
-- **Subsequent events considered:** None known as of 04/29/2026 (analysis run date).
+- **Information Date:** Triangle data through latest diagonal; most recent accident year AY 2024 at age 11 months. Inferred valuation date approximately 12/31/2024.
+- **Subsequent events considered:** None known as of 04/29/2026.
 
 ---
 
@@ -246,16 +238,22 @@ LDF selections made using a 14-criteria rules-based framework applied independen
 
 *The key section — where you flag judgment calls you want a second opinion on.*
 
-1. AY 2007 large-loss year is not separately estimated. The elevated development (~$4.8M ultimate) is absorbed into LDF averages. Should a large-loss exclusion and separate IBNR load be applied for this year?
-2. IE/BF expected loss rates are derived from a smoothed fallback approximation, not from independent pricing data. Do you have a preferred ELR source for these accident years?
-3. Tail factor for Paid Loss (1.0039, Bondy) is based on immateriality. Should a longer tail assumption be considered given WC severity trends?
+1. **Negative IBNR in mature years (AYs 2001, 2002, 2006, 2012):** Selected Paid CL ultimates are below current incurred in these years. This implies the current case reserves are redundant vs. the paid development pattern. Is this consistent with your understanding of case reserve adequacy for this segment?
+
+2. **AY 2007 large-loss year:** Paid development spikes to $3.15M at age 95 — roughly 2.5× neighboring years. The selected ultimate ($3.0M via Paid CL) is fully developed at age 287. Does this match known claim history? Should this be excluded from LDF averages for the adjacent intervals?
+
+3. **AY 2015 elevated development:** Similar elevated pattern through ages 47–107 ($2.1–2.9M). Is this a second large-loss year or a systemic change?
+
+4. **BF a priori rates for 2019–2024:** The fallback rolling-average ELR may not be appropriate if there were exposure or trend changes post-2019. Recommend reviewer confirm these rates are reasonable before finalizing recent-year selections.
+
+5. **Tail factor — Paid Loss at 1.0039:** With poor exponential fit (R²=0.19), this selection relies on Bondy extrapolation. For WC, tail can be material — is 0.39% tail appropriate given the line and risk type?
 
 **Items I'm flagging as low-confidence:**
-- IE/BF ELR for immature AYs (2019-2024) — fallback approximation may not reflect true a priori expectation
-- Paid Loss tail factor — exponential alternatives ranged widely (1.0-1.084); Bondy selected on immateriality grounds
+- AY 2019–2024 ultimate selections (BF-dependent, very thin development)
+- Tail factor for Paid Loss (poor curve fit diagnostics)
 
-**Items I think should be escalated to [Chief Actuary / Committee]:**
-- [ ]
+**Items I think should be escalated:**
+- Resolution of negative IBNR in AYs 2001, 2002, 2006, 2012 before finalizing reserve booking
 
 ---
 
