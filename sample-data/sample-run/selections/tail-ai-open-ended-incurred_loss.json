@@ -1,0 +1,9 @@
+[
+  {
+    "measure": "Incurred Loss",
+    "cutoff_age": 143,
+    "tail_factor": 1.0119,
+    "method": "bondy",
+    "reasoning": "Selected tail factor of 1.0119 reflects modest but measurable continued development in the incurred loss tail. Bondy method provides stable calibration with low coefficient of variation (0.0131) at the starting age and passes materiality screening. While modified Bondy variants (1.0238) offer higher factors, they exceed materiality thresholds and introduce unnecessary conservatism. McClenahan closure (1.0000) understates observable development patterns evidenced in the selected LDFs through age 203, which show continued incremental factors beyond age 143. This selection balances the data's demonstrated tail development against the requirement for defensible, materially sensitive tail assumptions."
+  }
+]

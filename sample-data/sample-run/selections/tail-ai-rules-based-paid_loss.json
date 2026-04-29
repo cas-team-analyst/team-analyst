@@ -1,0 +1,9 @@
+[
+  {
+    "measure": "Paid Loss",
+    "cutoff_age": 203,
+    "tail_factor": 1.0039,
+    "method": "bondy",
+    "reasoning": "Paid loss triangle — expect materially longer tail than incurred loss, longest among dollar measures. Selected starting age 203 with Bondy method. Framework validation: is_monotone_from_here=False at both ages (structural breaks present, slope_sign_changes=6 at age 143, =3 at age 203), but age 203 provides more stability (CV=0.0108, lower than age 143's 0.0182) and meets minimum requirement of >=60 months with n_factors=7. Exponential methods (exp_dev variants) rejected: gap_flag=True at age 143 (gap=0.01085 exceeds 0.005 tolerance) violates Gap Rule hard requirement; double_exp at age 203 shows catastrophic LOO instability (std dev=124.8, indicates severe AY sensitivity). Skurnick R²=0.7953 fails (<0.85 threshold). Bondy (age 203) satisfies: gap_flag=False, materiality_ok=True with tail as percentage of CDF=7.3% (immaterial, <0.1% economic threshold). Last observed LDF at 203-215 is 1.0012; Bondy uses this as tail. Materiality anchor is primary justification: tail impact is economic negligible per ASOP 43. Selection reflects conservative approach with strong materiality backing and clean gap rule satisfaction."
+  }
+]

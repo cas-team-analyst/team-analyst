@@ -1,0 +1,122 @@
+[
+  {
+    "period": 2001,
+    "selection": 700.71,
+    "reasoning": "Reported CL selected. At 287 months maturity, CDF 1.0 and 100% developed indicate full closure. Reported Count ultimate equals actual (700.71). Closed CL would show similar result. Reported Count is simplest, most direct at complete maturity. IBNR 0 is appropriate. No development expected."
+  },
+  {
+    "period": 2002,
+    "selection": 651.88,
+    "reasoning": "Reported CL selected. At 275 months, CDF 1.0 and 100% developed. Reported Count actual = ultimate (651.88). Framework §2 maturity-based: tail-stage periods use direct actuals when fully developed. Zero IBNR appropriate at this maturity."
+  },
+  {
+    "period": 2003,
+    "selection": 551.59,
+    "reasoning": "Reported CL selected. At 263 months, CDF 1.0 and 100% developed. Reported Count 551.59 is fully developed. Framework §2: at tail maturity with complete development, reported actual is ultimate. No further development indicated."
+  },
+  {
+    "period": 2004,
+    "selection": 642.65,
+    "reasoning": "Reported CL selected. At 251 months, CDF 1.0 and 100% developed. Reported Count 642.65 represents final count. Framework §2 late maturity: direct reported count is most credible. IBNR 0 reflects complete development."
+  },
+  {
+    "period": 2005,
+    "selection": 641.33,
+    "reasoning": "Reported CL selected. At 239 months, CDF 1.0 and 100% developed. Reported Count 641.33 is ultimate. Framework §2: tail/late stage fully developed periods use actual reported count. No uncertainty in development."
+  },
+  {
+    "period": 2006,
+    "selection": 497.49,
+    "reasoning": "Reported CL selected. At 227 months, CDF 1.0 and 100% developed. Reported Count 497.49 represents fully closed and reported claims. Framework §2 late maturity: actual reported = ultimate. Zero IBNR."
+  },
+  {
+    "period": 2007,
+    "selection": 476.38,
+    "reasoning": "Reported CL selected. At 215 months, CDF 1.0 and 100% developed. Reported Count 476.38 is complete. Framework §2: late-stage fully developed period uses actual count. All claims reported and closed."
+  },
+  {
+    "period": 2008,
+    "selection": 328.58,
+    "reasoning": "Reported CL selected. At 203 months, CDF 1.0 and 100% developed. Reported Count 328.58 actual = ultimate. Framework §2 mid-to-late stage: full development achieved. No expected reopens or new reports."
+  },
+  {
+    "period": 2009,
+    "selection": 321.98,
+    "reasoning": "Reported CL selected. At 191 months, CDF 1.0 and 100% developed. Reported Count 321.98 represents final count. Framework §2: complete maturity means actual reported = ultimate. IBNR 0."
+  },
+  {
+    "period": 2010,
+    "selection": 271.84,
+    "reasoning": "Reported CL selected. At 179 months, CDF 1.0 and 100% developed. Reported Count 271.84 is fully developed ultimate. Framework §2 mid-stage: at full development, reported actual represents ultimate. No additional development expected."
+  },
+  {
+    "period": 2011,
+    "selection": 345.74,
+    "reasoning": "Reported CL selected. At 167 months, CDF 1.0 and 100% developed. Reported Count 345.74 actual = ultimate. Framework §2: all claims reported by this maturity. Final count established."
+  },
+  {
+    "period": 2012,
+    "selection": 261.28,
+    "reasoning": "Reported CL selected. At 155 months, CDF 1.0 and 100% developed. Reported Count 261.28 represents complete development. Framework §2 early-mid stage: even with moderate maturity, CDF 1.0 indicates all claims reported. Ultimate equals reported actual."
+  },
+  {
+    "period": 2013,
+    "selection": 291.63,
+    "reasoning": "Reported CL selected. At 143 months, CDF 1.0 and 100% developed. Reported Count 291.63 is ultimate. Framework §2 early stage: CDF 1.0 indicates complete reporting. No expected IBNR development."
+  },
+  {
+    "period": 2014,
+    "selection": 455.26,
+    "reasoning": "Reported CL selected. At 131 months, CDF 1.0 and 100% developed. Reported Count 455.26 is ultimate. Framework §2 early stage: full development achieved (100%). Reported actual = ultimate with zero IBNR."
+  },
+  {
+    "period": 2015,
+    "selection": 333.86,
+    "reasoning": "Reported CL selected. At 119 months, CDF 1.0 and 100% developed. Reported Count 333.86 is fully developed ultimate. Framework §2 early stage: complete reporting maturity. No additional counts expected to emerge."
+  },
+  {
+    "period": 2016,
+    "selection": 390.60,
+    "reasoning": "Reported CL selected. At 107 months, CDF 1.0 and 100% developed. Reported Count 390.60 represents ultimate. Framework §2 early stage: CDF 1.0 indicates all counts reported. Actual equals ultimate."
+  },
+  {
+    "period": 2017,
+    "selection": 310.11,
+    "reasoning": "Reported CL selected. At 95 months, CDF 1.0 and 100% developed. Reported Count 310.11 is ultimate. Framework §2 early stage: full development achieved. IBNR 0 appropriate."
+  },
+  {
+    "period": 2018,
+    "selection": 325.94,
+    "reasoning": "Reported CL selected. At 83 months, CDF 1.0 and 100% developed. Reported Count 325.94 equals ultimate. Framework §2 early stage (24-36 mo equivalent): CDF 1.0 indicates complete reporting. Reported actual = ultimate with zero IBNR."
+  },
+  {
+    "period": 2019,
+    "selection": 357.68,
+    "reasoning": "Reported CL selected. At 71 months, CDF 1.0002 and 99.98% developed. Reported CL ultimate 357.68 vs. actual 357.61 shows minimal development (0.07 counts, 0.02% IBNR). Framework §2 green stage: Reported CL is primary. §4 Convergence: all methods cluster within 1% (Reported CL/IE/BF all near 357.7). Selected Reported CL reflecting actual report-based development. Minimal development expected from this point."
+  },
+  {
+    "period": 2020,
+    "selection": 370.88,
+    "reasoning": "Reported CL selected. At 59 months, CDF 1.0002 and 99.98% developed. Reported CL ultimate 370.88 shows 0.07 counts development (0.02% IBNR). Framework §2 green stage (12-24 mo): Reported CL primary with minimal reported to closed settlement gap. §4 Convergence: methods within 1%. Selected Reported CL as direct indication of claim emergence. Framework §7 Reasonability: very low IBNR consistent with mature reporting patterns."
+  },
+  {
+    "period": 2021,
+    "selection": 329.97,
+    "reasoning": "Reported CL selected. At 47 months, CDF 1.0002 and 99.98% developed. Reported CL ultimate 329.97 shows 0.066 counts development (0.02% IBNR). Framework §2 green stage: Reported CL primary. §4 Convergence: all methods (reported CL, IE, BF) within 1% cluster. Selected Reported CL. Minimal remaining development expected; nearly all claims already reported."
+  },
+  {
+    "period": 2022,
+    "selection": 298.44,
+    "reasoning": "Reported CL selected. At 35 months, CDF 1.0007 and 99.93% developed. Reported CL ultimate 298.44 shows 0.21 counts development (0.07% IBNR). Framework §2 very green (0-12 mo): BF methods theoretically primary, but CDF very close to 1.0. §4 Convergence: Reported CL 298.44 vs. IE 339.98 (13.9% variance) shows some divergence; BF 298.47 clusters with CL (0.01% variance). Selected Reported CL per §2 green stage with CL/BF tight convergence. Minimal IBNR 0.21 reflects high development completion."
+  },
+  {
+    "period": 2023,
+    "selection": 305.04,
+    "reasoning": "Reported CL selected. At 23 months, CDF 1.0007 and 99.93% developed. Reported CL ultimate 305.04 shows 0.21 counts development (0.07% IBNR). Framework §2 very green: BF methods theoretically primary with sparse data. However, CDF 1.0007 is very close to 1.0, indicating nearly complete reporting already. Reported CL 305.04 and BF 305.05 converge within 0.01% (framework §4). Selected Reported CL as most direct measure of reported counts. IBNR 0.21 is minimal (0.07% of ultimate)."
+  },
+  {
+    "period": 2024,
+    "selection": 290.25,
+    "reasoning": "Reported CL selected. At 11 months, CDF 1.134 and 88.2% developed. Reported CL ultimate 290.25 shows 34.25 counts development (11.8% IBNR). Framework §2 very green (0-12 mo): BF methods typically primary at extreme immaturity. However, CDF 1.134 is more moderate than loss CDFs (2.84), suggesting count development is following expected trajectory. Reported CL 290.25 vs. Closed CL 290.25 and IE 292.35 are very tightly clustered (within 1%). Framework §4 Convergence applies: all methods within 1%. Selected Reported CL reflecting observable reported counts with reasonable IBNR development expectation of 11.8% remaining. Early emergence suggests expected pattern consistent with portfolio development."
+  }
+]

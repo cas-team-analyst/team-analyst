@@ -1,0 +1,140 @@
+[
+  {
+    "interval": "11-23",
+    "selection": 1.6740,
+    "reasoning": "Selected 1.6740 as a blend of recent 3-year average (1.4891) and full history (1.7435). Recent years show lower development (2022-2024: 1.23-1.69), indicating claim maturation acceleration. The high CV (0.33) and negative slope suggest declining future development. Weighted toward recent experience acknowledging structural changes in the book, but respecting the magnitude of early development observed historically.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "23-35",
+    "selection": 1.1916,
+    "reasoning": "Selected 1.1916, the 10-year average excluding high/low values. This interval shows much more stability (CV 0.18) with a slight downward trend across the decade. The factor is consistent across weighting schemes (simple: 1.1931, weighted: 1.1891). Recent cohorts (2021-2024) cluster tightly around 1.0-1.06, but older cohorts (2007-2018) show 1.14-1.53. Using the exclude high/low average balances historical consistency with recent moderation.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "35-47",
+    "selection": 1.1530,
+    "reasoning": "Selected 1.1530, the 10-year average excluding high/low. The data is stable across all averaging methods (simple: 1.1538, weighted: 1.1530). CV is low at 0.11, indicating reliable development. A slight downward slope (-0.007) suggests marginal future compression, but the 10-year history supports this as a defensible central estimate.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "47-59",
+    "selection": 1.0492,
+    "reasoning": "Selected 1.0492, the 10-year average excluding high/low. Development at this maturity level is stable and modest. CV of 0.047 is low, slopes near zero. The consistency across all methods (simple: 1.0486, weighted: 1.0492) suggests strong convergence. Development is nearing completion.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "59-71",
+    "selection": 1.0569,
+    "reasoning": "Selected 1.0569, the 10-year average excluding high/low. Stability is excellent (CV 0.072). The factor is consistent across 3yr (1.1327), 5yr (1.1002), and 10yr (1.0543) averages, showing convergence to lower values in recent years. A slight negative slope supports this moderate development level.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "71-83",
+    "selection": 1.0372,
+    "reasoning": "Selected 1.0372, the 10-year average excluding high/low. CV is 0.06, indicating stable development. Factor shows consistency across methods. Development is slowing appropriately as claims mature.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "83-95",
+    "selection": 1.0153,
+    "reasoning": "Selected 1.0153, the 10-year average excluding high/low. Very low CV (0.044) indicates excellent stability. Development is becoming minimal. All averaging methods cluster tightly (simple: 1.0209, weighted: 1.0221).",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "95-107",
+    "selection": 1.0152,
+    "reasoning": "Selected 1.0152, the 10-year average excluding high/low. Development is minimal and stable (CV 0.027). The factor is essentially flat across all methods.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "107-119",
+    "selection": 1.0228,
+    "reasoning": "Selected 1.0228, the 10-year average excluding high/low. CV is 0.037, indicating stable but slightly variable development at this maturity. The 3-year average (1.0206) and 5-year average (1.0270) bracket this estimate.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "119-131",
+    "selection": 1.0114,
+    "reasoning": "Selected 1.0114, the 10-year average excluding high/low. Very low CV (0.026) and minimal slope variation. Development is essentially complete but with minor adjustments.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "131-143",
+    "selection": 1.0242,
+    "reasoning": "Selected 1.0242, the 10-year average excluding high/low. Development shows a spike relative to adjacent intervals (CV 0.061). Recent 3-year average (1.0) suggests possible compression, but 10-year history supports this slightly higher factor. This interval shows modest tail effects.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "143-155",
+    "selection": 1.0040,
+    "reasoning": "Selected 1.0040, the 10-year average excluding high/low. CV is very low (0.015). Development is minimal, near-final.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "155-167",
+    "selection": 1.0075,
+    "reasoning": "Selected 1.0075, the 10-year average excluding high/low. Very low CV (0.015), minimal development. All methods cluster tightly.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "167-179",
+    "selection": 1.0060,
+    "reasoning": "Selected 1.0060, the 10-year average excluding high/low. Minimal development with very low CV (0.017). Data is stable and sparse at these late ages.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "179-191",
+    "selection": 1.0114,
+    "reasoning": "Selected 1.0114, the 10-year average excluding high/low. Sparse data at late ages (CV 0.017). Very few observations drive the factor.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "191-203",
+    "selection": 1.0022,
+    "reasoning": "Selected 1.0022, the 10-year average excluding high/low. Minimal development. Data is very sparse at this maturity.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "203-215",
+    "selection": 1.0000,
+    "reasoning": "Selected 1.0000. Development is essentially nil at this extreme age, and many averaging methods return exactly 1.0. Very sparse data.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "215-227",
+    "selection": 1.0000,
+    "reasoning": "Selected 1.0000. Development is undetectable. All averaging methods at this interval converge to 1.0.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "227-239",
+    "selection": 1.0000,
+    "reasoning": "Selected 1.0000. Tail development is static.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "239-251",
+    "selection": 1.0139,
+    "reasoning": "Selected 1.0139, reflecting the 10-year average excluding high/low and alignment with the 3-year average. A small spike relative to adjacent intervals. Sparse late-age data.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "251-263",
+    "selection": 1.0000,
+    "reasoning": "Selected 1.0000. Development is undetectable at extreme age. All averaging methods return 1.0.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "263-275",
+    "selection": 1.0000,
+    "reasoning": "Selected 1.0000. At or beyond tail. No meaningful development.",
+    "measure": "Incurred Loss"
+  },
+  {
+    "interval": "275-287",
+    "selection": 1.0119,
+    "reasoning": "Selected 1.0119, consistent with all averaging methods. Tail-age data with very sparse observations. This factor reflects the limited historical tail observations.",
+    "measure": "Incurred Loss"
+  }
+]

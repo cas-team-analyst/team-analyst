@@ -1,0 +1,9 @@
+[
+  {
+    "measure": "Incurred Loss",
+    "cutoff_age": 203,
+    "tail_factor": 1.0103,
+    "method": "double_exp",
+    "reasoning": "Incurred loss triangle — expect medium tail length, materially shorter than paid loss. Selected starting age 203 with double_exp log-quadratic fit. Framework validation: is_monotone_from_here=False at both ages indicates structural breaks in early tail intervals (slope_sign_changes=6 at age 143, =2 at age 203), but age 203 minimizes this effect and provides excellent fit quality. Double exp fit at age 203: R²=0.9777 (excellent, >0.85), LOO std dev=0.00109 (excellent stability, <0.002), n_factors=7 (adequate), gap_flag=False (gap to last observed=1.27e-05, well within 0.005 tolerance). Gap Rule satisfied (hard requirement). Residuals show scattered, small deviations with no systematic pattern. Tail factor 1.0103 represents approximately 1% tail development. Materiality anchor applies: 55.8% of CDF is material per framework. This selection reflects the observed decay pattern in the incurred loss triangle with appropriate statistical backing."
+  }
+]

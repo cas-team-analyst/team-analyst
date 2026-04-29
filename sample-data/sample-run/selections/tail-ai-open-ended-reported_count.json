@@ -1,0 +1,9 @@
+[
+  {
+    "measure": "Reported Count",
+    "cutoff_age": 143,
+    "tail_factor": 1.0000,
+    "method": "bondy",
+    "reasoning": "Selected tail factor of 1.0000 reflects complete closure of reported count development by age 143. All curve-fitting methods across both starting ages (143 and 203) yield unity factors with zero coefficient of variation and perfect monotonicity from the cutoff forward. The selected LDFs table shows trivial increments beyond age 143, confirming no material tail development remains. This is the most certain tail selection in the portfolio, supported by the data's structural properties and low materiality concern on a count basis."
+  }
+]

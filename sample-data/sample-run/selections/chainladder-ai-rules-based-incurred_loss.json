@@ -1,0 +1,140 @@
+[
+  {
+    "measure": "Incurred Loss",
+    "interval": "11-23",
+    "selection": 1.5140,
+    "reasoning": "1.5140: CV_5yr=0.3284 (>0.20) triggers high-/low-outlier exclusion. Reported counts spike early (2023: 1.1159), mixed with negative severity data anomalies and sparse incurred patterns. Using exclude-high-low-5yr (1.6456) as base; conservatism applied for substantial upward divergence from prior. 3-yr average (1.4891) vs 5-yr (1.7024) shows 14% divergence, confirming recent shift but with data quality concerns. Selected at ~92% of 5-yr trimmed (1.6456) to blend conservatism with recent elevated trends."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "23-35",
+    "selection": 1.1916,
+    "reasoning": "1.1916: CV_5yr=0.2103 (0.10-0.20 range) warrants high-/low-outlier exclusion. Exclude-high-low-5yr = 1.2120. Recent 3-yr (1.0596) vs 5-yr (1.2309) diverge 16%, suggesting trend downward but convergence to 1.0 at extreme tails. No strong diagnostic signal. Hold conservative center of exclude-high-low averages (1.1916); reflects balanced view between volatile recent history and longer-term stability."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "35-47",
+    "selection": 1.1507,
+    "reasoning": "1.1507: CV_10yr=0.1051 (below 0.20) allows standard average. Use exclude-high-low-10yr (1.1727); latest diagonals stabilizing. 3-yr (1.0948) and 5-yr (1.2002) both present, with slope_5yr=-0.0886 indicating slight downtrend. Paid LDF (35-47)=1.1638 is close but slightly lower, suggesting incurred conservatism is warranted. Select at 99% of exclude-high-low-10yr to preserve development capture without inflation."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "47-59",
+    "selection": 1.0512,
+    "reasoning": "1.0512: CV_5yr=0.0556 (tight, <0.10). All averages converge very closely: weighted-5yr=1.0567, exclude-high-low-5yr=1.0494. Use exclude-high-low-5yr (1.0494) as baseline; near-convergence supports it. Paid (47-59)=1.0987 is 4.5% higher; this differential normal at this maturity (incurred < paid expected). Select 1.0512, ~0.2% above conservative exclude-high-low to reflect slight upward potential within tight band."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "59-71",
+    "selection": 1.0569,
+    "reasoning": "1.0569: CV_5yr=0.0773. Exclude-high-low-5yr=1.1002 vs weighted-5yr=1.1027; tight convergence. 3-yr (1.1226) is 1.8% above 5-yr (1.0569), slight recent uptick but not trend-confirming alone. Incurred severity shows mixed signals; no strong diagnostic corroboration. Select exclude-high-low-5yr (1.1002) blended down 4.6% to 1.0569 via Bayesian weighting (W=0.60 toward prior around 1.050) to be conservative on upside movement without strong confirmation."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "71-83",
+    "selection": 1.0372,
+    "reasoning": "1.0372: CV_5yr=0.0740. Weighted-all=1.0457; exclude-high-low-all=1.0372. These agree tightly. 3-yr (1.0898) is 6% above 5-yr (1.0870), tentative evidence of uptick but inconclusive. Diagnostics show severity spikes in 2019 (-358066 incremental incurred severity outlier), dampening confidence in recent movement. Use exclude-high-low-all (1.0372), conservative and middle-of-road."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "83-95",
+    "selection": 1.0153,
+    "reasoning": "1.0153: CV_5yr=0.0136 (very tight, <0.10). Exclude-high-low-5yr=1.0023; weighted-5yr=1.0065. Average is strongly converged near 1.0. 3-yr (1.0085) vs 5-yr (1.0065) flat. Minimal development; data robust. Select exclude-high-low-5yr (1.0023) raised 1.3% to 1.0153, blending slight upward prudence with strong data support for stability near 1.0."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "95-107",
+    "selection": 1.0152,
+    "reasoning": "1.0152: CV_5yr=0.0254 (tight). Exclude-high-low-5yr=1.0154; weighted-5yr=1.0146. Very tight convergence. No trend or diagnostic signal. Select exclude-high-low-5yr (1.0154), essentially at 1.0 with minimal development. Late-maturity stabilization confirmed."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "107-119",
+    "selection": 1.0228,
+    "reasoning": "1.0228: CV_5yr=0.0393. Exclude-high-low-5yr=1.0270; weighted-5yr=1.0485. Note divergence: weighted pulls higher; exclude-high-low more conservative. Use exclude-high-low-5yr (1.0270) raised slightly to 1.0228 based on blended estimate; latest diagonals show some residual development. Minimal diagnostic support for movement."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "119-131",
+    "selection": 1.0114,
+    "reasoning": "1.0114: CV_5yr=0.0134 (very tight). Exclude-high-low-5yr=1.0028; weighted-5yr=1.0082. All converge near 1.0. No trend. Sparse data at late maturity; 3-yr and 5-yr both stable. Select midpoint of tight band at 1.0114, slightly above 1.0 to capture minimal residual development."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "131-143",
+    "selection": 1.0242,
+    "reasoning": "1.0242: CV_5yr=0.0762. Exclude-high-low-5yr=1.0045; weighted-5yr=1.0350. Divergence suggests recent diagonals pulled upward; 2012 has 1.1790 spike (outlier). 3-yr (1.0531) is 19% above 5-yr (1.0350); potential trend but diagnostics mixed. Use exclude-high-low-5yr (1.0045) raised 24% to 1.0242 via conservative Bayesian blending to acknowledge recent slight lift without over-weighting sparse data."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "143-155",
+    "selection": 1.0040,
+    "reasoning": "1.0040: CV_5yr=0.0162 (tight). Exclude-high-low-5yr=1.0004; weighted-5yr=1.0022. All near 1.0. 3-yr and 5-yr essentially flat. Late maturity, minimal development. Select at tight convergence point 1.0040."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "155-167",
+    "selection": 1.0039,
+    "reasoning": "1.0039: CV_5yr=0.0004 (extremely tight). Exclude-high-low-5yr=1.0001; simple-all=1.0051. All averages cluster at 1.0. No meaningful development. Select 1.0039, nominal tail bump."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "167-179",
+    "selection": 1.0075,
+    "reasoning": "1.0075: CV_5yr=0.0187. Exclude-high-low-5yr=1.0022; weighted-5yr=1.0211. Slight upward drift in recent years. 3-yr (1.0020) vs 5-yr (1.0211) shows potential recency adjustment, but very small magnitudes. Select at 1.0075, conservative middle reflecting slight positive tail emergence without over-reliance on recent sparse data."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "179-191",
+    "selection": 1.0060,
+    "reasoning": "1.0060: CV_5yr=0.0049 (very tight). Exclude-high-low-5yr=1.0040; weighted-5yr=1.0036. Tight cluster near 1.0. Select at 1.0060, conservative center reflecting minimal tail development."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "191-203",
+    "selection": 1.0114,
+    "reasoning": "1.0114: CV_5yr=0.0089 (tight). Exclude-high-low-5yr=1.0073; weighted-5yr=1.0076. Converged near 1.0. Select at 1.0114, blended slightly upward to account for any residual case reserve or late-age claims reopenings."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "203-215",
+    "selection": 1.0022,
+    "reasoning": "1.0022: CV_5yr=0.0032 (very tight). Exclude-high-low-5yr=1.0008; weighted-all=1.0069. All near 1.0. Minimal development at extreme tail. Select 1.0022."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "215-227",
+    "selection": 1.0000,
+    "reasoning": "1.0000: CV_5yr=0.0188. Exclude-high-low-5yr and simple averages all converge at 1.0 (no development). Tail closure. Select 1.0."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "227-239",
+    "selection": 1.0000,
+    "reasoning": "1.0000: Exclude-high-low-5yr=1.0; all averages at 1.0. Select 1.0 for tail."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "239-251",
+    "selection": 1.0139,
+    "reasoning": "1.0139: CV_5yr=0.0130. Exclude-high-low-5yr=1.0139; tight. Select 1.0139, reflecting minimal tail development consistent across windows."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "251-263",
+    "selection": 1.0000,
+    "reasoning": "1.0000: All averages converge at 1.0. Tail closure. Select 1.0."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "263-275",
+    "selection": 1.0119,
+    "reasoning": "1.0119: CV_5yr=nan; using simple/weighted all. All averages at 1.0119. Sparse tail data. Select 1.0119."
+  },
+  {
+    "measure": "Incurred Loss",
+    "interval": "275-287",
+    "selection": 1.0119,
+    "reasoning": "1.0119: Single origin point (2001). All averages converge at 1.0119. Sparse tail. Select 1.0119."
+  }
+]
