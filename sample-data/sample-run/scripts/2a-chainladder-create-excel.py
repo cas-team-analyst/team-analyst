@@ -270,57 +270,6 @@ def build_exposure_sheet(ws, df2, fmt):
     ws.set_column(0, 0, 22)
     ws.set_column(1, 1, 18)
 
-def build_combined_diagnostics_sheet(ws, diagnostic_cols, df2, df3, fmt):
-    """Build combined diagnostics sheet with all diagnostic triangles stacked vertically."""
-    first_measure = df2['measure'].cat.categories[0]
-    df_m = df2[df2['measure'] == first_measure].copy()
-    periods = df_m['period'].cat.categories.tolist()
-    ages = [str(a) for a in df_m['age'].cat.categories.tolist()]
-    
-    row_ptr = 0
-    
-    for diag_col in diagnostic_cols:
-        # Skip redundant/unnecessary diagnostics
-        if diag_col in ('reported_claims', 'incremental_incurred_severity'):
-            continue
-        
-        number_format = DIAG_NUMBER_FORMATS.get(diag_col, "0.0000")
-        
-        # Create format with specific number format
-        diag_data_fmt = fmt['wb'].add_format({
-            'align': 'right',
-            'valign': 'vcenter',
-            'num_format': number_format
-        })
-        
-        # Write section title
-        label = DIA
-        # Write data rows with values from df4
-        for metric in metrics:
-            ws.write(row_ptr, 0, metric, fmt['label'])
-            
-            for c_idx, interval in enumerate(intervals_with_tail):
-                # Write calculated values from df4
-                val_row = df_avg[df_avg['interval'] == interval]
-                if not val_row.empty and metric in val_row.columns:
-                    val = val_row[metric].iloc[0]
-                    if pd.notna(val):
-                        ws.write(row_ptr, c_idx + 1, val, fmt['data_ldf'])
-            
-            row_ptr += 1
-        
-        # Add spacing between sections
-        row_ptr += 1
-    
-    ws.set_column(0, 0, 22)
-    if measures:
-        first_measure = measures[0]
-        df_m = df2[df2['measure'] == first_measure].copy()
-        intervals = [str(i) for i in df_m['interval'].dropna().cat.categories.tolist()]
-        intervals_with_tail = intervals + ["Tail"]
-        for c_idx in range(1, len(intervals_with_tail) + 1):
-            ws.set_column(c_idx, c_idx, 12)
-
 def export_md_data(measures, df2, df3, df4, exp_md):
     """Export markdown context files for subagents."""
     for measure in measures:
@@ -455,10 +404,10 @@ def main():
         build_combined_diagnostics_sheet(ws, diagnostic_cols, df2, df3, fmt)
         print("Built combined Diagnostics sheet")
     
-    # Add combined CV & Slopes sheet
-    ws = wb.add_worksheet("CV & Slopes")
-    build_combined_cv_slopes_sheet(ws, measures, df2, df4, fmt)
-    print("Built combined CV & Slopes sheet")
+    # TODO: Add combined CV & Slopes sheet (function needs to be implemented)
+    # ws = wb.add_worksheet("CV & Slopes")
+    # build_combined_cv_slopes_sheet(ws, measures, df2, df4, fmt)
+    # print("Built combined CV & Slopes sheet")
     
     wb.close()
     print(f"\nSaved: {output_file}")

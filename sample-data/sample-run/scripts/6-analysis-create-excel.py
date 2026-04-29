@@ -1699,7 +1699,8 @@ def main():
     
     if has_exposure:
         write_exposure_sheet(wb, INPUT_TRIANGLES, fmt)
-    Add Diagnostics sheet
+    
+    # Add Diagnostics sheet
     if pathlib.Path(INPUT_CL_ENHANCED).exists() and pathlib.Path(INPUT_DIAGNOSTICS).exists():
         print("Building Diagnostics sheet...")
         df2 = pd.read_parquet(INPUT_CL_ENHANCED)
@@ -1709,8 +1710,7 @@ def main():
             # Add 'wb' to fmt dict for diagnostics module
             fmt['wb'] = wb
             ws_diag = wb.add_worksheet("Diagnostics")
-            build_combined_diagnostics_sheet(ws_diag, diagnostic_cols, df2, df3, fmtfiltered(wb_cl_form[sname], ws, {}, {})
-    #     wb_cl_form.close()
+            build_combined_diagnostics_sheet(ws_diag, diagnostic_cols, df2, df3, fmt)
 
     # TODO: Triangle sheet writing - convert in separate step
     # print("Building post-method triangle sheets...")

@@ -51,12 +51,17 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     for measure in df_enhanced['measure'].unique():
         measure_subset = df_enhanced[df_enhanced['measure'] == measure].copy()
         
-        # Group by period and age, taking first value if duplicates
-        grouped = measure_subset.groupby(['period', 'age'], observed=True)['value'].first().reset_index()
-        
-        # Store with standardized key
-        key = measure.lower().replace(' ', '_')
-        measure_dfs[key] = grouped.rename(columns={'value': key})
+        # Exposure is period-level only (age=NaN), handle separately
+        if measure == 'Exposure':
+            # Group by period only for exposure
+            grouped = measure_subset.groupby(['period'], observed=True)['value'].first().reset_index()
+            key = 'exposure'
+            measure_dfs[key] = grouped.rename(columns={'value': key})
+        else:
+            # Group by period and age for triangle measures
+            grouped = measure_subset.groupby(['period', 'age'], observed=True)['value'].first().reset_index()
+            key = measure.lower().replace(' ', '_')
+            measure_dfs[key] = grouped.rename(columns={'value': key})
     
     # Start with base data
     result_df = base_data.copy()
@@ -72,6 +77,11 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
         measure_df = merge_measure(measure_key)
         if measure_df is not None:
             result_df = result_df.merge(measure_df, on=['period', 'age'], how='left')
+    
+    # Exposure is period-level only, so merge on period only
+    exposure_df = merge_measure('exposure')
+    if exposure_df is not None:
+        result_df = result_df.merge(exposure_df, on='period', how='left')
     
     # Calculate cumulative diagnostics (simple operations on columns)
     # Each diagnostic checks for required columns before calculation
@@ -100,6 +110,10 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
             result_df['paid_loss'] / result_df['incurred_loss'].replace(0, np.nan)
         )
     
+    # Case Reserves - requires incurred_loss and paid_loss
+    if 'incurred_loss' in result_df.columns and 'paid_loss' in result_df.columns:
+        result_df['case_reserves'] = result_df['incurred_loss'] - result_df['paid_loss']
+    
     # Open Counts - requires reported_count and closed_count
     if 'reported_count' in result_df.columns and 'closed_count' in result_df.columns:
         result_df['open_counts'] = result_df['reported_count'] - result_df['closed_count']
@@ -121,6 +135,40 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
             0,
             result_df['closed_count'] / result_df['reported_count'].replace(0, np.nan)
         )
+    
+    # Exposure-based diagnostics (only if exposure data exists)
+    if 'exposure' in result_df.columns:
+        # Incurred Loss Rate - incurred per exposure
+        if 'incurred_loss' in result_df.columns:
+            result_df['incurred_loss_rate'] = np.where(
+                result_df['incurred_loss'] == 0,
+                0,
+                result_df['incurred_loss'] / result_df['exposure'].replace(0, np.nan)
+            )
+        
+        # Paid Loss Rate - paid per exposure
+        if 'paid_loss' in result_df.columns:
+            result_df['paid_loss_rate'] = np.where(
+                result_df['paid_loss'] == 0,
+                0,
+                result_df['paid_loss'] / result_df['exposure'].replace(0, np.nan)
+            )
+        
+        # Reported Frequency - reported claims per exposure
+        if 'reported_count' in result_df.columns:
+            result_df['reported_frequency'] = np.where(
+                result_df['reported_count'] == 0,
+                0,
+                result_df['reported_count'] / result_df['exposure'].replace(0, np.nan)
+            )
+        
+        # Closed Frequency - closed claims per exposure
+        if 'closed_count' in result_df.columns:
+            result_df['closed_frequency'] = np.where(
+                result_df['closed_count'] == 0,
+                0,
+                result_df['closed_count'] / result_df['exposure'].replace(0, np.nan)
+            )
     
     # Calculate incremental diagnostics using groupby and shift
     # Sort by period and age to ensure proper ordering for shift operations
@@ -171,7 +219,7 @@ def calculate_diagnostics(df_enhanced: pd.DataFrame) -> pd.DataFrame:
         result_df = result_df.rename(columns={'reported_count': 'reported_claims'})
 
     # Drop the raw measure columns, keep only diagnostics
-    measure_cols = ['incurred_loss', 'paid_loss', 'closed_count']
+    measure_cols = ['incurred_loss', 'paid_loss', 'closed_count', 'exposure']
     result_df = result_df.drop(columns=[col for col in measure_cols if col in result_df.columns])
     
     # Ensure categorical types
