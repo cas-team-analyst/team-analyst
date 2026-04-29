@@ -40,7 +40,6 @@ You are not bound by any rigid decision framework. Use your experience and patte
 ```json
 [
   {
-    "measure": "Incurred Loss",
     "cutoff_age": 96,
     "tail_factor": 1.0210,
     "method": "exp_dev_quick_exact_last",
@@ -49,9 +48,7 @@ You are not bound by any rigid decision framework. Use your experience and patte
 ]
 ```
 
-The `reasoning` field format: **Start with the selected tail factor.** Then concisely explain: why this is appropriate; key diagnostics supporting the choice; comparison to alternative approaches; any notable departures from rules-based selector if relevant. **Do not include the measure name** (already in `measure` field). Focus on result and rationale, not process.
-
-**Important:** Include the `measure` field in the selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
+The `reasoning` field format: **Start with the selected tail factor.** Then concisely explain: why this is appropriate; key diagnostics supporting the choice; comparison to alternative approaches; any notable departures from rules-based selector if relevant. Focus on result and rationale, not process.
 
 **File Output:** For each measure, write your JSON selection to `selections/tail-ai-open-ended-<measure>.json` where `<measure>` is normalized (e.g., `paid_loss`, `incurred_loss`, `reported_count`).
 

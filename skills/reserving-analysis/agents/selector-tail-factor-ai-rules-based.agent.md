@@ -33,7 +33,6 @@ Process each measure independently — do not cross-apply tail factors between m
 ```json
 [
   {
-    "measure": "Incurred Loss",
     "cutoff_age": 84,
     "tail_factor": 1.0230,
     "method": "exp_dev_quick",
@@ -42,9 +41,7 @@ Process each measure independently — do not cross-apply tail factors between m
 ]
 ```
 
-The `reasoning` field format: **Start with the selected tail factor and cutoff age.** Then concisely explain: which curve method was used and why; key diagnostics (R², LOO stability, gap to observed); comparison to alternative methods; any notable considerations. **Do not include the measure name** (already captured in the `measure` field). Focus on the result and supporting diagnostics, not the process. Keep it readable and focused.
-
-**Important:** Include the `measure` field in the selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
+The `reasoning` field format: **Start with the selected tail factor and cutoff age.** Then concisely explain: which curve method was used and why; key diagnostics (R², LOO stability, gap to observed); comparison to alternative methods; any notable considerations. Focus on the result and supporting diagnostics, not the process. Keep it readable and focused.
 
 **File Output:** For each measure, write your JSON selection to `selections/tail-ai-rules-based-<measure>.json` where `<measure>` is normalized (e.g., `paid_loss`, `incurred_loss`, `reported_count`).
 

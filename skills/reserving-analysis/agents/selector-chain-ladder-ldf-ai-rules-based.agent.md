@@ -41,9 +41,7 @@ Multiple columns:
 ]
 ```
 
-The `reasoning` field format: **Start with the selected LDF value.** Then concisely explain: key criteria that support this choice; notable data patterns (trend, outliers, variance); any adjustments applied (Bayesian anchoring, asymmetric conservatism); comparison to prior (if applicable); data quality notes if relevant. **Do not include the measure name** (already captured in the `measure` field). Focus on the result and supporting rationale, not the process of arriving there. Keep it readable and focused.
-
-**Important:** Include the `measure` field in each selection object (e.g., `"measure": "Paid Loss"`). This is required for routing selections to the correct Excel sheet.
+The `reasoning` field format: **Start with the selected LDF value.** Then concisely explain: key criteria that support this choice; notable data patterns (trend, outliers, variance); any adjustments applied (Bayesian anchoring, asymmetric conservatism); comparison to prior (if applicable); data quality notes if relevant. Focus on the result and supporting rationale, not the process of arriving there. Keep it readable and focused.
 
 **File Output:** For each measure, write your JSON selections to `selections/chainladder-ai-rules-based-<measure>.json` where `<measure>` is normalized (e.g., `paid_loss`, `incurred_loss`, `reported_count`).
 
@@ -239,3 +237,42 @@ Apply after setting baseline LDF from core criteria. Sequence: set baseline → 
 | `incr_incurred_severity` | ±10% | >+10%: if paid incr also up → real, select high end. If paid flat → reserving, dampen. >−10%: if closures normal → favorable. If closures low → deferred, don't lower. AY outlier >25% → exclude/cap. |
 | `paid_severity_incr` | ±10% | >+10%: increase paid LDF unless one-time large loss. >−10%: don't decrease, shift development to later columns. 3+ diagonal trend → re-anchor to new-pattern years only. |
 | `incr_closure_rate` | ±2pp | >2pp fast: lower LDF slightly, scrutinize next column. >2pp slow: increase LDF + next 1–2 columns. 3+ diagonal slowdown → extend tail, re-weight to recent. |
+
+---
+
+## Cutoff Age Selection
+
+After selecting LDFs for each interval, you must also determine where to stop (the cutoff age).
+
+**Your task:**
+- Select LDFs for intervals where observed factors are credible
+- Stop at the interval where tail curve should begin
+- **Output format**: Array of selections that stops at the cutoff interval, plus one additional interval with cutoff reasoning only
+- Last selected interval's reasoning should explain the LDF choice (normal reasoning)
+- Next interval (unselected) must explain **why** it's the cutoff
+
+**Cutoff criteria:**
+1. **Monotonic decay** from cutoff onward (`is_monotone_from_cutoff = True`)
+2. **Low variance** at cutoff (CV < 0.15, prefer < 0.10)
+3. **No structural breaks** from cutoff onward (slope_sign_changes = 0)
+4. **Sufficient tail factors** for curve fit (≥ 3-5 intervals remaining after cutoff)
+5. **Type-specific minimum:**
+   - Paid Loss / Closed Count: ≥ 60 months
+   - Incurred Loss / Reported Count: ≥ 48 months
+
+**Example output:**
+```json
+[
+  {"interval": "12-24", "selection": 1.6573, "reasoning": "Weighted 3yr average: most credible balance of recent trend and stability"},
+  {"interval": "24-36", "selection": 1.2341, "reasoning": "Geometric average: CV=0.05, minimal volatility"},
+  ...
+  {"interval": "72-84", "selection": 1.0150, "reasoning": "Last credible LDF: CV=0.08, monotonic, stable pattern"},
+  {"interval": "84-96", "reasoning": "CUTOFF at 84 months: is_monotone_from_here=True, CV beyond this point=0.08, slope_sign_changes=0, 5 factors remaining for curve fit. Rejected 96+ due to CV>0.15 and non-monotonic pattern."}
+]
+```
+
+**Important:** 
+- Last selected interval (e.g., "72-84") has normal LDF + reasoning
+- Next interval (e.g., "84-96") has NO selection value (omit the field or set to null), only cutoff reasoning
+- Array stops after cutoff reasoning interval
+- Cutoff age is inferred from last selected interval end: "72-84" → cutoff = 84 months

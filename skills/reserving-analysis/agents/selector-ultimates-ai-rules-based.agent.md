@@ -51,7 +51,7 @@ Multiple periods:
 ]
 ```
 
-The `reasoning` field format: **Start with the selected ultimate value and which measure was selected (e.g., "Incurred" or "Paid" for Loss category).** Then concisely explain: which method(s) and weights were used; why this measure/method combination is appropriate; maturity considerations; comparison to prior ultimate (if material change); relevant diagnostics (IELR, loss ratio trends); data quality notes if relevant. Focus on the result and supporting rationale, not the process of arriving there. Keep it readable and focused.
+The `reasoning` field format: **Start with the selected ultimate value.** Then concisely explain: which method(s) and weights were used; why this method combination is appropriate; maturity considerations; comparison to prior ultimate (if material change); relevant diagnostics (IELR, loss ratio trends); data quality notes if relevant. Focus on the result and supporting rationale, not the process of arriving there. Keep it readable and focused.
 
 **File Output:** Write two JSON files:
 - `selections/ultimates-ai-rules-based-loss.json` for Loss category selections

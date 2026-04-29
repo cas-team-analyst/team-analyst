@@ -4,7 +4,7 @@ def df_to_markdown(df, index=False):
     if index:
         df = df.reset_index()
     str_df = df.astype(str)
-    headers = list(str_df.columns)
+    headers = [str(col) for col in str_df.columns]
     header_str = "| " + " | ".join(headers) + " |"
     sep_str = "|" + "|".join(["---"] * len(headers)) + "|"
     rows = []

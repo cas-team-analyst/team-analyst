@@ -138,7 +138,7 @@ def update_sheet(ws, measure_selections):
 
         # Write reasoning
         reason_cell = ws.cell(row=reasoning_row, column=col)
-        reason_cell.value = sel["measure"] + (": " + sel["reasoning"] if sel.get("reasoning") else "")
+        reason_cell.value = sel.get("reasoning", "")
         reason_cell.fill = SELECTION_FILL
         reason_cell.font = Font(size=8, italic=True)
         reason_cell.alignment = Alignment(horizontal="left", wrap_text=True)
@@ -185,7 +185,11 @@ def update_ai_sheet(ws, measure_selections, interval_to_col):
 
 
 def load_per_measure_json_files(pattern, selection_type):
-    """Load and combine all per-measure JSON files matching the pattern."""
+    """Load and combine all per-measure JSON files matching the pattern.
+    
+    Extracts measure name from filename (e.g., 'chainladder-ai-rules-based-paid_loss.json' -> 'Paid Loss')
+    and adds it to each selection object.
+    """
     combined = []
     files = glob.glob(pattern)
     
@@ -194,11 +198,24 @@ def load_per_measure_json_files(pattern, selection_type):
     
     for filepath in sorted(files):
         try:
+            # Extract measure from filename: chainladder-ai-rules-based-paid_loss.json -> paid_loss
+            filename = os.path.basename(filepath)
+            # Remove extension
+            name_no_ext = os.path.splitext(filename)[0]
+            # Extract measure part (after last hyphen)
+            parts = name_no_ext.split('-')
+            measure_slug = parts[-1] if parts else ""
+            # Convert slug to display name: paid_loss -> Paid Loss
+            measure = measure_slug.replace('_', ' ').title()
+            
             with open(filepath, 'r') as f:
                 data = json.load(f)
                 # If it's a single object, wrap it in a list
                 if isinstance(data, dict):
                     data = [data]
+                # Add measure field to each selection
+                for sel in data:
+                    sel['measure'] = measure
                 combined.extend(data)
         except Exception as e:
             print(f"  WARNING: Failed to load {filepath}: {e}")
