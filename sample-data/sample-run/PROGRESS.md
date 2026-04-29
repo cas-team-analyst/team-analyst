@@ -219,18 +219,18 @@ _(Pause for Selections only):_
 
 # Step 8: Build Analysis Workbook
 
-- [ ] Copy `scripts/6-create-complete-analysis.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`). Ensure `scripts/modules/` is already in place.
+- [ ] Copy `scripts/6-analysis-create-excel.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`). Ensure `scripts/modules/` is already in place.
 
-- [ ] Run `scripts/6-create-complete-analysis.py` and alert the user of the location and description of the final output files.
+- [ ] Run `scripts/6-analysis-create-excel.py` and alert the user of the location and description of the final output files.
 
 - [ ] **Update REPORT.md:**
-  - Fill in **Section 2** Summary of Indications table: verify the total unpaid reserve, case reserves, and IBNR totals match the final output from `6-create-complete-analysis.py`.
+  - Fill in **Section 2** Summary of Indications table: verify the total unpaid reserve, case reserves, and IBNR totals match the final output from `6-analysis-create-excel.py`.
   - Fill in **Section 0** Reviewer Quick-Start: summarize what the analysis covers (1–2 sentences), what key judgment calls were made, and where reviewer scrutiny is most needed.
   - Update **Section 14** Version History: add a row for the current version with today's date and a summary of changes since v0.1.
   - Fill any other sections to complete the first draft of the report.
 
 - [ ] **Update REPLICATE.md Step 8:**
-  - Document that `6-create-complete-analysis.py` was run
+  - Document that `6-analysis-create-excel.py` was run
   - Note which files it read (projected-ultimates.parquet, Ultimates.xlsx)
   - List the output files created (selected-ultimates.xlsx, post-method-series.xlsx, post-method-triangles.xlsx, complete-analysis.xlsx)
   - Fill in the "Key Outputs" section listing primary deliverables

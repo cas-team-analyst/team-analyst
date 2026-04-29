@@ -153,7 +153,7 @@ This document provides step-by-step instructions to reproduce the analysis resul
 ## Step 7: Final Analysis
 
 **Scripts run:**
-1. `scripts/6-create-complete-analysis.py` — Create consolidated analysis workbook
+1. `scripts/6-analysis-create-excel.py` — Create consolidated analysis workbook
    - **Reads:** `ultimates/projected-ultimates.parquet`
    - **Reads:** `selections/Ultimates.xlsx` (User Selection → Rules-Based AI → Open-Ended AI → JSON → method fallback)
    - **Output:** 

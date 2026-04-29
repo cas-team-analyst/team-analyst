@@ -2,7 +2,7 @@
 # with AI option/reasoning rows filtered out and selection rows collapsed to one "Selected" row.
 #
 # Used by:
-#   6-create-complete-analysis.py  -- CL LDF and Tail sheets
+#   6-analysis-create-excel.py  -- CL LDF and Tail sheets
 #   2a-chainladder-create-excel.py -- chain ladder update scripts (future)
 
 import copy

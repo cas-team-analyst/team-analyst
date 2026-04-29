@@ -26,7 +26,7 @@
   - `4-bf-ultimates.py` — Calculate Bornhuetter-Ferguson ultimates
   - `5a-ultimates-create-excel.py` — Create ultimates selection workbook
   - `5b-ultimates-update-selections.py` — Insert AI ultimate selections into workbook
-  - `6-create-complete-analysis.py` — Create final consolidated output files
+  - `6-analysis-create-excel.py` — Create final consolidated output files
   - `7-tech-review.py` — Run technical reasonableness checks
   - `modules/` — Shared utility functions
 - `selections/Chain Ladder Selections - LDFs.xlsx` — Workbook with age-to-age factors, averages, Rules-Based AI Selection row, Open-Ended AI Selection row, and User Selection row (if manually overridden). This is the record of LDF selections and reasoning (excluding tail).
@@ -44,7 +44,7 @@
 - `selections/ultimates-context-<measure>.md` — Per-measure context files exported by `5a-ultimates-create-excel.py` (used by AI selectors).
 - `ultimates/` — Per-method ultimate outputs from scripts 2f, 3, and 4 (Chain Ladder, Initial Expected, Bornhuetter-Ferguson). Note any methods that were skipped and why.
   - `projected-ultimates.parquet` — Combined output with ultimates from all methods that ran
-- **Final consolidated output files** from `6-create-complete-analysis.py` and `7-tech-review.py` (in main project folder):
+- **Final consolidated output files** from `6-analysis-create-excel.py` and `7-tech-review.py` (in main project folder):
   - `Complete Analysis.xlsx` — Master workbook with all sheets and formulas
   - `Analysis - Values Only.xlsx` — Same content with formulas pre-evaluated
   - `Tech Review.xlsx` — Technical review diagnostics and checks

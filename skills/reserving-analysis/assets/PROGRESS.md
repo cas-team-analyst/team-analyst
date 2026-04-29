@@ -226,12 +226,12 @@ _(Pause for Selections only):_
 
 # Step 8: Build Analysis Workbook
 
-- [ ] Copy `scripts/6-create-complete-analysis.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`). Ensure `scripts/modules/` is already in place.
+- [ ] Copy `scripts/6-analysis-create-excel.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`). Ensure `scripts/modules/` is already in place.
 
-- [ ] Run `scripts/6-create-complete-analysis.py` and alert the user of the location and description of the final output files.
+- [ ] Run `scripts/6-analysis-create-excel.py` and alert the user of the location and description of the final output files.
 
 - [ ] **Update REPORT.md:**
-  - Verify **Section 2 Summary of Indications** table: Confirm the total unpaid reserve, case reserves, and IBNR totals match the final output from `6-create-complete-analysis.py`. Check against the Analysis.xlsx file totals.
+  - Verify **Section 2 Summary of Indications** table: Confirm the total unpaid reserve, case reserves, and IBNR totals match the final output from `6-analysis-create-excel.py`. Check against the Analysis.xlsx file totals.
   - Fill in **Section 0 Reviewer Quick-Start**: Write a brief 1-2 sentence summary of what the analysis covers (e.g., "Workers Compensation reserve analysis for AY 2001-2024 using Chain Ladder and Bornhuetter-Ferguson methods"). List 2-3 key judgment calls made (e.g., "BF selected for AY 2023-2024 due to low maturity"). State where reviewer scrutiny is most needed (e.g., "Recent year ultimate selections", "Tail factor assumptions", "Method divergence for AY 2012").
   - Fill in **Section 9 Reliance on Others** table: List data sources and information relied upon (e.g., "Claims Department - triangle data as of [date]", "Finance - exposure data", etc.). If no external reliance, state "No external sources relied upon beyond internal company data systems."
   - Fill in **Section 10 Information Date**: State the valuation date/as-of date for the analysis. Under "Subsequent events considered", state either "None known as of [draft date]" or describe any events.
@@ -239,7 +239,7 @@ _(Pause for Selections only):_
   - **Final completeness check**: Review all sections and fill any remaining placeholders. For sections that genuinely don't apply (LAE, trending, sensitivity), confirm the "Not implemented" or "Not applicable" text is present. For sections with content, ensure no bracketed placeholders remain.
 
 - [ ] **Update REPLICATE.md Step 8:**
-  - Document that `6-create-complete-analysis.py` was run
+  - Document that `6-analysis-create-excel.py` was run
   - Note which files it read (projected-ultimates.parquet, Ultimates.xlsx)
   - List the output files created (selected-ultimates.xlsx, post-method-series.xlsx, post-method-triangles.xlsx, complete-analysis.xlsx)
   - Fill in the "Key Outputs" section listing primary deliverables
