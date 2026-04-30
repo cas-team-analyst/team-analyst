@@ -37,7 +37,7 @@ description: Actuarial reserving analysis workflow. Use when the user requests r
 **Skill folder structure:**
 - `assets/` - Templates (PROGRESS.md, REPORT.md, REPLICATE.md, welcome message) and selection framework guide
 - `scripts/` - Numbered Python workflow scripts (1a-7) and modules/ subdirectory with shared utilities
-- `agents/` - Selector subagents for LDF, tail factor, and ultimate selections (rules-based and open-ended variants)
+- `agents/` - Selector subagents for LDF, tail curve method, and ultimate selections (rules-based and open-ended variants)
 
 ## Key Principles
 

@@ -12,6 +12,7 @@ COLORS = {
     'ai_blue': 'DDEBF7',
     'user_orange': 'F4B084',
     'data_gray': 'D9D9D9',
+    'label_gray': 'F2F2F2',
 }
 
 # openpyxl styles
@@ -134,6 +135,14 @@ def create_xlsxwriter_formats(workbook):
     # Section header (grey background)
     formats['section'] = workbook.add_format({
         'bg_color': '#' + COLORS['data_gray'],
+        'align': 'left',
+        'valign': 'vcenter',
+        'bold': True
+    })
+    
+    # Label row (lighter grey background)
+    formats['label_row'] = workbook.add_format({
+        'bg_color': '#' + COLORS['label_gray'],
         'align': 'left',
         'valign': 'vcenter',
         'bold': True

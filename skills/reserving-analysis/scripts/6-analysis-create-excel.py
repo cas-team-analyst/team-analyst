@@ -68,72 +68,121 @@ INPUT_TAIL_EXCEL    = config.SELECTIONS  + "Chain Ladder Selections - Tail.xlsx"
 INPUT_CL_ENHANCED   = config.PROCESSED_DATA + "2_enhanced.parquet"
 INPUT_LDF_AVERAGES  = config.PROCESSED_DATA + "4_ldf_averages.parquet"
 INPUT_DIAGNOSTICS   = config.PROCESSED_DATA + "3_diagnostics.parquet"
+INPUT_LDF_CDF_DETAIL = config.PROCESSED_DATA + "ldf-cdf-detail.parquet"  # LDF/CDF data with source tracking from 2f
 
 _NUM_FMT = "#,##0"
 _DEC_FMT = "#,##0.000"
 
 # No longer using external workbook formula references - all values hard-coded from source data
 
+def load_ldf_cdf_detail(detail_path):
+    """
+    Load LDF/CDF detail data from 2f-chainladder-ultimates.py output.
+    Returns {measure: DataFrame} with columns: age, ldf, cdf, source.
+    Returns {} if file absent.
+    """
+    path = pathlib.Path(detail_path)
+    if not path.exists():
+        print(f"  Note: {detail_path} not found -- no LDF/CDF detail loaded")
+        return {}
+    
+    df = pd.read_parquet(detail_path)
+    detail_map = {}
+    
+    for measure in df['measure'].unique():
+        measure_df = df[df['measure'] == measure].copy()
+        detail_map[measure] = measure_df[['age', 'ldf', 'cdf', 'source']].reset_index(drop=True)
+    
+    print(f"  Loaded LDF/CDF detail for {len(detail_map)} measures")
+    return detail_map
+
+
 def load_tail_selections(tail_excel_path):
     """
-    Load tail factor selections from Chain Ladder Selections - Tail.xlsx.
-    Priority: User Selection (if populated) > Rules-Based AI Selection.
-    Returns {measure: (cutoff_age: int, tail_factor: float)}.  Returns {} if file absent.
+    Load tail curve selections (method and reasoning) from Tail Excel file.
+    Priority: User Selection → Rules-Based AI Selection → Open-Ended AI Selection.
+    Returns {measure: {'method': str, 'reasoning': str, 'params': str or None}}.
+    Returns {} if file absent.
     """
     path = pathlib.Path(tail_excel_path)
     if not path.exists():
         print(f"  Note: {tail_excel_path} not found -- no tail selections loaded")
         return {}
-
-    wb = load_workbook(tail_excel_path, data_only=True)
-    tail_map = {}
-
-    for measure in wb.sheetnames:
-        ws = wb[measure]
-        in_tail = False
-        cutoff_col = tail_col = reason_col = None
-        user_entry = rb_entry = None
-
-        for row in ws.iter_rows():
-            col1 = row[0].value if row else None
-            if col1 == "Tail Factor Selection":
-                in_tail = True
+    
+    wb_vals = load_workbook(tail_excel_path, data_only=True)
+    tail_selections = {}
+    
+    for sheet_name in wb_vals.sheetnames:
+        ws = wb_vals[sheet_name]
+        
+        # Find the Tail Curve Selection section
+        in_tail_section = False
+        method_col = reason_col = params_col = None
+        user_row = rb_row = oe_row = None
+        
+        for row_idx, row_cells in enumerate(ws.iter_rows(), start=1):
+            col1 = row_cells[0].value if row_cells else None
+            
+            # Find section header
+            if col1 == "Tail Curve Selection":
+                in_tail_section = True
                 continue
-            if not in_tail:
+            
+            if not in_tail_section:
                 continue
+            
+            # Find column headers (Label, Method, Reasoning, etc.)
             if col1 == "Label":
-                for cell in row:
-                    if cell.value == "Cutoff Age":
-                        cutoff_col = cell.column
-                    elif cell.value == "Tail Factor":
-                        tail_col = cell.column
+                for cell in row_cells:
+                    if cell.value == "Method":
+                        method_col = cell.column
                     elif cell.value == "Reasoning":
                         reason_col = cell.column
+                    elif cell.value == "Parameters":
+                        params_col = cell.column
                 continue
-            if cutoff_col is None or tail_col is None:
+            
+            # Find selection rows
+            if col1 == "User Selection":
+                user_row = row_idx
+            elif col1 == "Rules-Based AI Selection":
+                rb_row = row_idx
+            elif col1 == "Open-Ended AI Selection":
+                oe_row = row_idx
+        
+        # Extract selection data with priority: User → RB → OE
+        selected_method = selected_reasoning = selected_params = None
+        
+        for row_num in [user_row, rb_row, oe_row]:
+            if row_num is None:
                 continue
-            if col1 in ("User Selection", "Rules-Based AI Selection"):
-                cv = row[cutoff_col - 1].value
-                tv = row[tail_col - 1].value
-                rv = row[reason_col - 1].value if reason_col else None
-                if cv is not None and tv is not None:
-                    try:
-                        entry = (int(float(str(cv))), float(str(tv)), rv)
-                        if col1 == "User Selection":
-                            user_entry = entry
-                        elif rb_entry is None:
-                            rb_entry = entry
-                    except (ValueError, TypeError):
-                        pass
-
-        chosen = user_entry if user_entry is not None else rb_entry
-        if chosen:
-            tail_map[measure] = chosen
-
-    wb.close()
-    summary = {m: (v[0], v[1]) for m, v in tail_map.items()}
-    print(f"  Loaded tail selections: {summary}")
-    return tail_map
+            
+            method_val = ws.cell(row_num, method_col).value if method_col else None
+            if method_val and str(method_val).strip():
+                selected_method = str(method_val).strip()
+                if reason_col:
+                    selected_reasoning = ws.cell(row_num, reason_col).value
+                    if selected_reasoning:
+                        selected_reasoning = str(selected_reasoning).strip()
+                if params_col:
+                    selected_params = ws.cell(row_num, params_col).value
+                    if selected_params:
+                        selected_params = str(selected_params).strip()
+                break
+        
+        if selected_method:
+            tail_selections[sheet_name] = {
+                'method': selected_method,
+                'reasoning': selected_reasoning or '',
+                'params': selected_params
+            }
+    
+    wb_vals.close()
+    
+    if tail_selections:
+        print(f"  Loaded tail selections for {len(tail_selections)} measures")
+    
+    return tail_selections
 
 
 def load_exposure_row_map(cl_ldf_excel_path):
@@ -1147,39 +1196,22 @@ def add_tail_to_triangle_ws(ws, cutoff_age, tail_factor, reasoning=None,
         rc.alignment = Alignment(wrap_text=True, horizontal="left", vertical="top")
 
 
-def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict, tail_map=None, combined_df=None):
+def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict, ldf_cdf_detail=None, combined_df=None, tail_selections=None):
     """
     Create triangle sheets with xlsxwriter by reading from Chain Ladder Selections - LDFs.xlsx.
-    Writes values directly from source workbook.
+    Writes values directly from source workbook, then adds LDF/CDF rows with source marking.
     
     Args:
         gen_wb: xlsxwriter workbook
         measures: list of measure names
         fmt_dict: formatting dictionary
-        tail_map: dict mapping measure to (cutoff_age, tail_factor, reasoning)
-        combined_df: DataFrame with CDF values from projected-ultimates
+        ldf_cdf_detail: dict mapping measure to DataFrame with columns: age, ldf, cdf, source
+        combined_df: DataFrame with CDF values from projected-ultimates (not used - CDFs come from detail)
+        tail_selections: dict mapping measure to {'method': str, 'reasoning': str, 'params': str or None}
     """
-    tail_map = tail_map or {}
+    ldf_cdf_detail = ldf_cdf_detail or {}
+    tail_selections = tail_selections or {}
     
-    # Build CDF lookup from combined_df: {measure: {current_age: cdf}}
-    cdf_lookup = {}
-    if combined_df is not None:
-        for measure in measures:
-            measure_data = combined_df[combined_df['measure'] == measure].copy()
-            if not measure_data.empty:
-                # Filter out None/'None'/NaN current_age values
-                measure_data = measure_data[
-                    (measure_data['current_age'].notna()) & 
-                    (measure_data['current_age'] != 'None') &
-                    (measure_data['current_age'] != 'none')
-                ]
-                if not measure_data.empty:
-                    # Convert current_age to int
-                    measure_data['age_int'] = measure_data['current_age'].astype(float).astype(int)
-                    cdf_lookup[measure] = dict(zip(
-                        measure_data['age_int'],
-                        measure_data['cdf']
-                    ))
     if not pathlib.Path(INPUT_CL_EXCEL).exists():
         return
     
@@ -1369,13 +1401,8 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict, tail_map=None, combin
             
             dst_row += 1
         
-        # Blank row before CDF row
+        # Blank row before LDF and CDF rows
         dst_row += 1
-        
-        # Add CDF row after all other rows
-        # CDF row calculates cumulative development factors working backwards from tail
-        cdf_row = dst_row
-        ws_xlw.write(cdf_row, 0, "CDF", fmt_dict.get('label'))
         
         # Find the last data column (last age in triangle)
         last_col = 0
@@ -1386,24 +1413,114 @@ def create_triangle_sheets_xlw(gen_wb, measures, fmt_dict, tail_map=None, combin
                 break
             last_col = c
         
-        if last_col > 0:
-            # Use CDF values from combined dataframe (already calculated from selected LDFs and tail)
-            # This ensures consistency between triangle sheet and CL method sheet
-            measure_cdf_map = cdf_lookup.get(measure, {})
+        # Get LDF/CDF data for this measure from detail file
+        measure_detail = ldf_cdf_detail.get(measure)
+        
+        if measure_detail is not None and not measure_detail.empty:
+            # Add LDF row with source marking (empirical vs fitted)
+            ldf_row = dst_row
+            ws_xlw.write(ldf_row, 0, "LDF", fmt_dict.get('label'))
             
-            # Map column headers (ages) to CDF values
-            # Read age headers from row 1 of the source
+            # Find cutoff age (last empirical age)
+            empirical_ages = measure_detail[measure_detail['source'] == 'empirical']['age'].astype(int).tolist()
+            cutoff_age = max(empirical_ages) if empirical_ages else None
+            
+            # Write LDF values for each age column
             for col_idx in range(1, last_col + 1):
                 age_cell = ws_src_form.cell(1, col_idx + 1)  # +1 for openpyxl 1-based
                 age_val = age_cell.value
                 if age_val is not None:
                     try:
                         age_int = int(float(str(age_val)))
-                        cdf_val = measure_cdf_map.get(age_int, 1.0)  # Default to 1.0 if not found
-                        ws_xlw.write_number(cdf_row, col_idx, float(cdf_val), fmt_dict.get('data_ldf'))
+                        age_row = measure_detail[measure_detail['age'].astype(int) == age_int]
+                        
+                        if not age_row.empty:
+                            ldf_val = age_row.iloc[0]['ldf']
+                            source = age_row.iloc[0]['source']
+                            
+                            # Use different format for fitted LDFs (highlight/italic)
+                            if source == 'fitted' and pd.notna(ldf_val):
+                                fitted_fmt = gen_wb.add_format({
+                                    'num_format': '#,##0.0000',
+                                    'align': 'right',
+                                    'italic': True,
+                                    'bg_color': '#FFF2CC'  # Light yellow background
+                                })
+                                ws_xlw.write_number(ldf_row, col_idx, float(ldf_val), fitted_fmt)
+                            elif pd.notna(ldf_val):
+                                ws_xlw.write_number(ldf_row, col_idx, float(ldf_val), fmt_dict.get('data_ldf'))
+                            else:
+                                ws_xlw.write_blank(ldf_row, col_idx, None, fmt_dict.get('data_ldf'))
+                        else:
+                            ws_xlw.write_blank(ldf_row, col_idx, None, fmt_dict.get('data_ldf'))
                     except (ValueError, TypeError):
-                        # If age can't be converted, write 1.0
-                        ws_xlw.write_number(cdf_row, col_idx, 1.0, fmt_dict.get('data_ldf'))
+                        ws_xlw.write_blank(ldf_row, col_idx, None, fmt_dict.get('data_ldf'))
+            
+            dst_row += 1
+            
+            # Add CDF row
+            cdf_row = dst_row
+            ws_xlw.write(cdf_row, 0, "CDF", fmt_dict.get('label'))
+            
+            # Write CDF values for each age column
+            for col_idx in range(1, last_col + 1):
+                age_cell = ws_src_form.cell(1, col_idx + 1)  # +1 for openpyxl 1-based
+                age_val = age_cell.value
+                if age_val is not None:
+                    try:
+                        age_int = int(float(str(age_val)))
+                        age_row = measure_detail[measure_detail['age'].astype(int) == age_int]
+                        
+                        if not age_row.empty:
+                            cdf_val = age_row.iloc[0]['cdf']
+                            if pd.notna(cdf_val):
+                                ws_xlw.write_number(cdf_row, col_idx, float(cdf_val), fmt_dict.get('data_ldf'))
+                            else:
+                                ws_xlw.write_blank(cdf_row, col_idx, None, fmt_dict.get('data_ldf'))
+                        else:
+                            ws_xlw.write_blank(cdf_row, col_idx, None, fmt_dict.get('data_ldf'))
+                    except (ValueError, TypeError):
+                        ws_xlw.write_blank(cdf_row, col_idx, None, fmt_dict.get('data_ldf'))
+            
+            dst_row += 1
+            
+            # Add blank row before tail selection info
+            dst_row += 1
+            
+            # Add tail method and reasoning if available
+            tail_info = tail_selections.get(measure)
+            if tail_info:
+                # Tail Method row
+                ws_xlw.write(dst_row, 0, "Tail Method", fmt_dict.get('label'))
+                tail_method = tail_info.get('method', '')
+                if tail_method:
+                    ws_xlw.write(dst_row, 1, tail_method, fmt_dict.get('label'))
+                dst_row += 1
+                
+                # Tail Parameters row (if applicable)
+                tail_params = tail_info.get('params')
+                if tail_params and str(tail_params).strip():
+                    ws_xlw.write(dst_row, 0, "Tail Parameters", fmt_dict.get('label'))
+                    ws_xlw.write(dst_row, 1, str(tail_params), fmt_dict.get('label'))
+                    dst_row += 1
+                
+                # Tail Reasoning row
+                tail_reasoning = tail_info.get('reasoning', '')
+                if tail_reasoning:
+                    ws_xlw.write(dst_row, 0, "Tail Reasoning", fmt_dict.get('label'))
+                    # Wrap text for reasoning (can be long)
+                    reasoning_fmt = gen_wb.add_format({
+                        'text_wrap': True,
+                        'align': 'left',
+                        'valign': 'top'
+                    })
+                    ws_xlw.write(dst_row, 1, tail_reasoning, reasoning_fmt)
+                    # Set row height for wrapped text (approximate)
+                    ws_xlw.set_row(dst_row, max(15 * (len(tail_reasoning) // 80 + 1), 30))
+                    # Merge cells across columns for better readability
+                    if last_col > 1:
+                        ws_xlw.merge_range(dst_row, 1, dst_row, min(last_col, 5), tail_reasoning, reasoning_fmt)
+                    dst_row += 1
         
         # Set column widths (standard for triangles)
         ws_xlw.set_column(0, 0, 25)  # Label column
@@ -1904,13 +2021,21 @@ def main():
     
     # We also need triangles_df for diagnostics
     triangles_df = pd.read_parquet(INPUT_TRIANGLES)
-    # Load tail selections early to know which ages survive add_tail_to_triangle_ws.
-    # _tri_col_map_from_df caps at cutoff so CL actual refs don't point to deleted columns.
-    _ts = {}
+    
+    # Load LDF/CDF detail from 2f output (includes empirical + fitted LDFs with source tracking)
+    ldf_cdf_detail = load_ldf_cdf_detail(INPUT_LDF_CDF_DETAIL)
+    
+    # Load tail selections (method and reasoning) from Tail Excel
+    tail_selections = load_tail_selections(INPUT_TAIL_EXCEL)
+    
+    # Build cutoff map from LDF/CDF detail (last empirical age)
     tail_cutoff = {}
-    if pathlib.Path(INPUT_TAIL_EXCEL).exists():
-        _ts = load_tail_selections(INPUT_TAIL_EXCEL)
-        tail_cutoff = {m: info[0] for m, info in _ts.items()}
+    for measure, detail_df in ldf_cdf_detail.items():
+        empirical_rows = detail_df[detail_df['source'] == 'empirical']
+        if not empirical_rows.empty:
+            # Find last empirical age (cutoff is where fitted LDFs start)
+            last_empirical_age = empirical_rows['age'].astype(int).max()
+            tail_cutoff[measure] = last_empirical_age
 
     print(f"Measures: {measures}")
     print(f"Methods: {available_methods}")
@@ -1969,7 +2094,7 @@ def main():
                 write_method_bf(wb, combined, m, ult_col_map, fmt, other_tri_maps, ult_wb)
     
     print("Copying CL LDF triangle sheets...")
-    create_triangle_sheets_xlw(wb, measures, fmt, _ts, combined)
+    create_triangle_sheets_xlw(wb, measures, fmt, ldf_cdf_detail, combined, tail_selections)
     
     if has_exposure:
         write_exposure_sheet(wb, INPUT_TRIANGLES, fmt)

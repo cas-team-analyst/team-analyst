@@ -21,6 +21,20 @@ AVERAGE_DISPLAY_NAMES = {
     'weighted_3yr': 'Weighted Average - 3 Years',
     'weighted_5yr': 'Weighted Average - 5 Years',
     'weighted_10yr': 'Weighted Average - 10 Years',
+    
+    # Min/Max
+    'min_all': 'Min - All Years',
+    'max_all': 'Max - All Years',
+    
+    # Coefficient of Variation
+    'cv_3yr': 'CV - 3 Years',
+    'cv_5yr': 'CV - 5 Years',
+    'cv_10yr': 'CV - 10 Years',
+    
+    # Slope
+    'slope_3yr': 'Slope - 3 Years',
+    'slope_5yr': 'Slope - 5 Years',
+    'slope_10yr': 'Slope - 10 Years',
 }
 
 

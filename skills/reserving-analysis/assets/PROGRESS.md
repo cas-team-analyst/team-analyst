@@ -42,7 +42,21 @@
 
 - [ ] If you haven't already found an input file with Expected Loss Rates (containing period, expected loss rate, and expected frequency), ask the user if this file exists and to place it in the raw-data folder. Without this file, we won't be able to use the Initial Expected or Bornhuetter-Ferguson methods.
 
-- [ ] If initial expected data is not provided (no expected loss rate/frequency file) but exposure is available, confirm with the user whether to use the fallback approximation for BF expected rate: for each accident year, compute diagonal loss per dollar of exposure, smooth with a 3-year rolling average, and round to 3 decimals. Offer these options explicitly before continuing: (1) use this fallback (this is what `3-ie-ultimates.py` defaults to), (2) use a different approach the user specifies, (3) upload initial expected data in the required format, or (4) skip Initial Expected/BF and continue with Chain Ladder only. Note their response REPORT.md.
+- [ ] **ELR Fallback Decision (CRITICAL USER COMMUNICATION):** If initial expected data is not provided (no expected loss rate/frequency file) but exposure is available, **STOP and clearly inform the user:**
+  
+  "**Expected Loss Rate (ELR) file not found.** Initial Expected and Bornhuetter-Ferguson methods require ELR data.
+  
+  **A fallback approximation is available:** For each accident year, I can compute the diagonal actual loss per dollar of exposure, smooth it with a 3-year rolling average, and use that as the expected rate. This is an empirical approximation based on historical loss emergence — it's less forward-looking than a pricing ELR but still provides a reasonable expected baseline for the BF method.
+  
+  **Your options:**
+  1. **Use the fallback** (3-year rolling average of empirical loss rates) — this is what `3-ie-ultimates.py` defaults to
+  2. **Use a different approach** — if you have an alternative source or method, describe it and I'll adjust the script
+  3. **Upload the ELR file** — if you can provide expected loss rate/frequency data in the required format (columns: period, expected_loss_rate, expected_frequency)
+  4. **Skip Initial Expected/BF entirely** — continue with Chain Ladder only
+  
+  Which option would you like to use?"
+  
+  Wait for the user to choose. Note their response in REPORT.md Section 5.2 (Expected Loss Ratios) and Section 5.5 (Assumption Rationale). If they choose option 1, also add to Section 3.4 (Data Limitations): "No ELR file provided - using 3-year rolling average of empirical loss rates as fallback for Initial Expected/BF methods."
 
 - [ ] Modify the variables at the top of each script with the appropriate DATA_FILE_PATH, OUTPUT_PATH, and TEMPLATE_PATH.
 
@@ -115,9 +129,9 @@ _(Pause for Selections only):_
   - **Critical:** If user made manual overrides in the "User Selection" row, list each one with measure, interval, selected LDF, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection row."
   - Add instruction: "To replicate: Extract final selections from User Selection row if present, otherwise use Rules-Based AI Selection row. Do not re-run AI selector."
 
-# Step 5: Chain Ladder Tail Factor Selections
+# Step 5: Chain Ladder Tail Curve Method Selections
 
-- [ ] Tell the user: "I'm about to apply the tail factor selection framework. This uses curve fitting diagnostics (Bondy, Exponential Decay, McClenahan, Skurnick, etc.), leave-one-out testing, and a 15-point decision framework to select tail factors. Tail selections are separate from LDF selections and are used in the Chain Ladder ultimates calculation."
+- [ ] Tell the user: "I'm about to apply the tail curve selection framework. This uses curve fitting diagnostics (Bondy, Exponential Decay, McClenahan, Skurnick, etc.) and leave-one-out testing to select the best curve method for extrapolating development beyond the empirical cutoff age. The LDF agents already selected the cutoff age (where empirical selections end). The tail curve method will be used by the Chain Ladder script to generate fitted LDFs for ages after the cutoff."
 
 - [ ] Run `2c-tail-methods-diagnostics.py` to fit tail curves and generate diagnostics. Debug any errors.
 
@@ -125,7 +139,8 @@ _(Pause for Selections only):_
 
 - [ ] **Invoke the rules-based tail selector once** for all measures. Call the `selector-tail-factor-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
   - Read each context file
-  - Apply the 15-point tail factor decision framework to each measure independently
+  - Apply the tail curve decision framework to each measure independently
+  - Select the best curve METHOD (not tail factor) based on diagnostics
   - Write one JSON file per measure: `selections/tail-ai-rules-based-<measure>.json`
   
   Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
@@ -142,26 +157,32 @@ _(Pause for Selections only):_
   - Load all `selections/tail-ai-open-ended-*.json` files and combine them
   - Populate the **Rules-Based AI Selection** row and **Open-Ended AI Selection** row in each sheet
 
-- [ ] Tell the user where `selections/Chain Ladder Selections - Tail.xlsx` is located. Explain that both rules-based and open-ended AI selections (purple rows) are visible. The **Rules-Based Selection** row is what gets used for ultimates — the user can override it manually. If the Rules-Based Selection row is left blank, the Open-Ended AI Selection will be used as a fallback.
+- [ ] Tell the user where `selections/Chain Ladder Selections - Tail.xlsx` is located. Explain that both rules-based and open-ended AI selections (purple rows) are visible. The **Rules-Based Selection** row shows the selected curve METHOD (e.g., 'bondy', 'exp_dev_quick') — this is what gets used to generate fitted LDFs in the Chain Ladder script. The user can override it manually. If the Rules-Based Selection row is left blank, the Open-Ended AI Selection will be used as a fallback.
 
 _(Pause for Selections only):_
-- [ ] Open `selections/Chain Ladder Selections - Tail.xlsx` for the user. Let them know they can review and override any tail factor selections. Pause and wait for the user to confirm they are done reviewing before continuing.
+- [ ] Open `selections/Chain Ladder Selections - Tail.xlsx` for the user. Let them know they can review and override the tail curve method selections. Pause and wait for the user to confirm they are done reviewing before continuing.
 
 - [ ] **Update REPORT.md:**
-  - Update **Section 5.1 Development Patterns**: Add tail factor details: "Tail factor selected from curve fitting diagnostics. [State which method was selected for each measure - Bondy, Exponential Decay, etc.] with R² values of [X.XX]. Leave-one-out testing showed [describe results]." Reference the tail selection workbook for full diagnostics.
-  - Add to **Section 11 Open Questions** any tail selections flagged as low-confidence or where curve fit diagnostics were poor (R² < 0.85) or where rule-based and AI selections diverged materially.
+  - Update **Section 5.1 Development Patterns**: Add tail curve details: "Tail curve method selected from curve fitting diagnostics. [State which method was selected for each measure - Bondy, Exponential Decay, etc.] with R² values of [X.XX]. Leave-one-out testing showed [describe results]. Fitted LDFs for ages beyond the cutoff are generated using the selected curve method's formula." Reference the tail selection workbook for full diagnostics.
+  - Add to **Section 11 Open Questions** any tail curve selections flagged as low-confidence or where curve fit diagnostics were poor (R² < 0.85) or where rule-based and AI selections diverged materially.
 
 - [ ] **Update REPLICATE.md Step 5:**
   - Document that `2c-tail-methods-diagnostics.py` was run to fit curves and create diagnostics
   - Document that `2d-tail-create-excel.py` created the tail selection workbook
-  - Note that AI selectors made rules-based and open-ended tail selections (JSON files created)
+  - Note that AI selectors made rules-based and open-ended tail curve method selections (JSON files created)
   - Document that `2e-tail-update-selections.py` populated the Excel file with AI selections
-  - **Critical:** If user made manual overrides in the "User Selection" row, list each one with measure, cutoff age, tail factor, method, and reasoning. If no overrides, explicitly state "All selections are from Rules-Based AI Selection row."
-  - Add instruction: "To replicate: Extract final tail factors from User Selection row if present, otherwise use Rules-Based AI Selection row. Do not re-run AI selector."
+  - **Critical:** If user made manual overrides in the "User Selection" row, list each one with measure and selected curve method (e.g., 'bondy', 'exp_dev_quick'). If no overrides, explicitly state "All selections are from Rules-Based AI Selection row."
+  - Add instruction: "To replicate: Extract final tail curve methods from User Selection row if present, otherwise use Rules-Based AI Selection row. Fitted LDFs are generated by `2f-chainladder-ultimates.py` using the selected curve method. Do not re-run AI selector."
 
 # Step 6: Calculate Method Projections
 
-- [ ] Run `2f-chainladder-ultimates.py`, `3-ie-ultimates.py`, and `4-bf-ultimates.py`. Debug any errors that occur. It is normal for IE and BF to get skipped if the user didn't provide the necessary data (exposure, initial expected). Note: `2f-chainladder-ultimates.py` will use tail factors from `selections/Chain Ladder Selections - Tail.xlsx` (priority 1 — user's final selection), falling back to `selections/tail-ai-rules-based.json` (priority 2), then `selections/tail-ai-open-ended.json` (priority 3) if Excel is empty.
+- [ ] Run `2f-chainladder-ultimates.py`, `3-ie-ultimates.py`, and `4-bf-ultimates.py`. Debug any errors that occur. It is normal for IE and BF to get skipped if the user didn't provide the necessary data (exposure, initial expected). Note: `2f-chainladder-ultimates.py` will:
+  1. Read empirical LDF selections from `selections/Chain Ladder Selections - LDFs.xlsx` (up to the cutoff age)
+  2. Read the selected tail curve METHOD from `selections/Chain Ladder Selections - Tail.xlsx` (priority: User Selection → Rules-Based AI → Open-Ended AI)
+  3. Load curve parameters from `processed-data/tail-scenarios.parquet`
+  4. Generate fitted LDFs for ages beyond the cutoff using the selected curve method's formula
+  5. Build complete CDFs by chaining empirical + fitted LDFs
+  6. Calculate Chain Ladder ultimates and save to `ultimates/projected-ultimates.parquet`
 
 - [ ] **Update REPORT.md:**
   - Update **Section 4.1 Methods Applied** table: Confirm which methods actually ran vs. were skipped. If IE or BF were skipped, note why (e.g., "Initial Expected skipped - no expected loss rate file provided"). Update the "Segments Applied" and "Why Selected" columns based on actual execution.

@@ -144,34 +144,35 @@ def intervals_from_starting_age(selections, starting_age):
     return [(r[1], r[2]) for r in result]
 
 
-# ── Starting age candidates ───────────────────────────────────────────────────
-
-def get_starting_age_candidates(selections, measure):
+def get_cutoff_age(selections):
+    """Find the tail cutoff age from the last selected LDF interval."""
     all_ages = get_all_start_ages(selections)
-    n = len(all_ages)
-    if n == 0:
-        return []
+    if not all_ages:
+        return None
+    max_start = max(all_ages)
+    for interval in selections:
+        start, end = parse_interval(interval)
+        if start == max_start:
+            return end
+    return None
 
-    age_min = AGE_MINIMUMS.get(measure, DEFAULT_AGE_MIN)
 
-    def is_valid(age):
-        segs = intervals_from_starting_age(selections, age)
-        return len(segs) >= 3 and age >= age_min
+def get_all_ata_stats(df_enhanced, measure):
+    """Compute min, max, avg, slope, CV over all empirical ATAs for context."""
+    df_m = df_enhanced[df_enhanced['measure'].astype(str) == measure]
+    if df_m.empty:
+        return {'min': None, 'max': None, 'avg': None, 'slope': None, 'cv': None}
+    
+    # We want these stats per interval, or across all intervals?
+    # "we should restate the averages slope and cv as context for sleection (add to excel and md) and also add min/max becuse the fitted values would ideally stauy within the min and max of the age to age factors"
+    # Wait, the min and max of the age-to-age factors.
+    # The LDF selector sees averages for each interval. The tail selector should probably see the min/max of the averages?
+    # Or the min/max of ALL individual ATAs? "min and max of the age to age factors"
+    
+    # Just return overall min/max of the ATAs? Or min/max of the averages?
+    # Usually "min and max of the age to age factors" means the min and max of the *averages* so the fitted curve doesn't go crazy. Let's just calculate the min/max of the weighted averages since that's what's modeled.
+    return {}
 
-    last_half = all_ages[n // 2:]
-    step = math.ceil(n / 5)
-    candidates = last_half[::step][:5]
-    valid = [a for a in candidates if is_valid(a)]
-
-    if len(valid) < 2:
-        first_half = all_ages[:n // 2]
-        for age in reversed(first_half):
-            if is_valid(age) and age not in valid:
-                valid.insert(0, age)
-            if len(valid) >= 2:
-                break
-
-    return sorted(set(valid))
 
 
 # ── WLS curve fitting ─────────────────────────────────────────────────────────
@@ -750,129 +751,163 @@ MEASURE_BANNERS = {
 }
 
 
-def process_measure(measure, selections, df_enhanced, df_triangles):
+def process_measure(measure, selections, df_enhanced, df_averages, df_triangles):
     banner = MEASURE_BANNERS.get(measure, "")
     print(f"\n{'='*60}\nMeasure: {measure}")
     if banner:
         print(f"  [{banner}]")
 
-    starting_ages = get_starting_age_candidates(selections, measure)
-    if not starting_ages:
-        print(f"  WARNING: No valid starting ages for {measure}. Skipping.")
+    cutoff_age = get_cutoff_age(selections)
+    if cutoff_age is None:
+        print(f"  WARNING: No cutoff age found for {measure}. Skipping.")
         return []
-    print(f"  Starting age candidates: {starting_ages}")
+    print(f"  Tail Cutoff inferred from selections: {cutoff_age}")
 
+    # The starting_age for the fit is the earliest selected interval.
+    # The tail factor will represent the development from cutoff_age to ultimate.
+    # But wait, Skurnick needs starting_age = cutoff_age because it fits on incrementals *after* the cutoff.
+    # Actually, the user said: "Only fit the tail curves on the selected LDFs up to the cutoff."
+    
     all_ages = get_all_start_ages(selections)
-    max_age = max(all_ages) if all_ages else 120
+    min_start_age = min(all_ages) if all_ages else 12
+    max_age_in_triangles = df_triangles[df_triangles['measure'].astype(str) == measure]['age'].astype(float).max()
+    max_age = int(max_age_in_triangles) if pd.notna(max_age_in_triangles) else 120
+
+    intervals_fit = sorted([ (parse_interval(k)[0], k, v) for k,v in selections.items() ], key=lambda x: x[0])
+    intervals_str = [(k, v) for _, k, v in intervals_fit]
+    factors = [ldf for _, ldf in intervals_str]
+
+    if len(factors) < 2:
+         print(f"  WARNING: Need at least 2 selected LDFs for {measure}. Skipping.")
+         return []
+
+    # AY weights for WLS and LOO
+    ay_wts = build_ay_weights(df_enhanced, measure, intervals_str)
+    total_wts = aggregate_weights(ay_wts, intervals_str)
+
+    # Starting point diagnostics (shared across methods) - use cutoff_age to evaluate variance at the cutoff
+    sp = starting_point_diagnostics(df_enhanced, measure, min_start_age, selections)
+
+    # Skurnick data - we pass min_start_age because we fit on all data available in the selected range
+    # Or should Skurnick fit on incrementals? Skurnick fits on the oldest AY's incrementals.
+    cum_2d, _ = build_skurnick_array(df_triangles, measure, min_start_age)
+    skurnick_incs, sk_ln_A, sk_ln_r = _skurnick_internals(cum_2d)
+
+    # Get the cutoff interval string
+    cutoff_interval = intervals_fit[-1][1]
+
+    # Calculate min, max empirical ATAs for the cutoff interval
+    df_m = df_enhanced[(df_enhanced['measure'].astype(str) == measure) & (df_enhanced['interval'].astype(str) == cutoff_interval)].dropna(subset=['ldf'])
+    min_ata = float(df_m['ldf'].min()) if len(df_m) > 0 else None
+    max_ata = float(df_m['ldf'].max()) if len(df_m) > 0 else None
+
+    # Get avg, cv, slope from df_averages for the cutoff interval
+    df_a = df_averages[(df_averages['measure'].astype(str) == measure) & (df_averages['interval'].astype(str) == cutoff_interval)]
+    if not df_a.empty:
+        avg_ata   = float(df_a['weighted_all'].iloc[0]) if pd.notna(df_a['weighted_all'].iloc[0]) else None
+        min_ata   = float(df_a['min_all'].iloc[0]) if pd.notna(df_a['min_all'].iloc[0]) else min_ata
+        max_ata   = float(df_a['max_all'].iloc[0]) if pd.notna(df_a['max_all'].iloc[0]) else max_ata
+        cv_ata    = float(df_a['cv_10yr'].iloc[0]) if pd.notna(df_a['cv_10yr'].iloc[0]) else None
+        slope_ata = float(df_a['slope_10yr'].iloc[0]) if pd.notna(df_a['slope_10yr'].iloc[0]) else None
+    else:
+        avg_ata = None
+        cv_ata = None
+        slope_ata = None
+
+    method_results = []
+
+    # Bondy
+    t = tail_bondy(factors)
+    if t:
+        fd = fit_diagnostics_bondy(df_enhanced, measure, min_start_age, selections)
+        method_results.append(('bondy', None, t, fd))
+
+    # Modified Bondy Double Dev
+    t = tail_modified_bondy_double_dev(factors)
+    if t:
+        method_results.append(('modified_bondy_double_dev', None, t, _empty_fit_diag()))
+
+    # Modified Bondy Square Ratio
+    t = tail_modified_bondy_square_ratio(factors)
+    if t:
+        method_results.append(('modified_bondy_square_ratio', None, t, _empty_fit_diag()))
+
+    # Exp Dev Quick
+    t, params = tail_exp_dev_quick(factors, total_wts)
+    if t:
+        fd = fit_diagnostics_exp_dev(factors, total_wts, ay_wts, total_wts, params)
+        method_results.append(('exp_dev_quick', params, t, fd))
+
+    # Exp Dev Quick Exact Last
+    t, params = tail_exp_dev_quick_exact_last(factors, total_wts)
+    if t:
+        fd = fit_diagnostics_exp_dev(factors, total_wts, ay_wts, total_wts, params)
+        method_results.append(('exp_dev_quick_exact_last', params, t, fd))
+
+    # Exp Dev Product
+    t, params = tail_exp_dev_product(factors, total_wts)
+    if t:
+        fd = fit_diagnostics_exp_dev(factors, total_wts, ay_wts, total_wts, params)
+        method_results.append(('exp_dev_product', params, t, fd))
+
+    # Double Exp
+    t, params = tail_double_exp(factors, total_wts)
+    if t:
+        fd = fit_diagnostics_double_exp(factors, total_wts, ay_wts, total_wts, params)
+        method_results.append(('double_exp', params, t, fd))
+
+    # McClenahan
+    t, params = tail_mcclenahan(factors, max_age)
+    if t:
+        method_results.append(('mcclenahan', params, t, _empty_fit_diag()))
+
+    # Skurnick
+    t, params = tail_skurnick(cum_2d)
+    if t:
+        fd = fit_diagnostics_skurnick(skurnick_incs, sk_ln_A, sk_ln_r)
+        method_results.append(('skurnick', params, t, fd))
 
     rows = []
+    for method_key, params, tail_val, fit_diag in method_results:
+        gap, gap_flag = compute_gap(factors, params, method_key)
+        ri = reserve_impact_diagnostics(selections, tail_val, df_triangles, measure)
 
-    for starting_age in starting_ages:
-        intervals_start = intervals_from_starting_age(selections, starting_age)
-        if not intervals_start:
-            continue
-        factors = [ldf for _, ldf in intervals_start]
-
-        # AY weights for WLS and LOO
-        ay_wts = build_ay_weights(df_enhanced, measure, intervals_start)
-        total_wts = aggregate_weights(ay_wts, intervals_start)
-
-        # Starting point diagnostics (shared across methods)
-        sp = starting_point_diagnostics(df_enhanced, measure, starting_age, selections)
-
-        # Skurnick data
-        cum_2d, _ = build_skurnick_array(df_triangles, measure, starting_age)
-        skurnick_incs, sk_ln_A, sk_ln_r = _skurnick_internals(cum_2d)
-
-        method_results = []
-
-        # Bondy
-        t = tail_bondy(factors)
-        if t:
-            fd = fit_diagnostics_bondy(df_enhanced, measure, starting_age, selections)
-            method_results.append(('bondy', None, t, fd))
-
-        # Modified Bondy Double Dev
-        t = tail_modified_bondy_double_dev(factors)
-        if t:
-            method_results.append(('modified_bondy_double_dev', None, t, _empty_fit_diag()))
-
-        # Modified Bondy Square Ratio
-        t = tail_modified_bondy_square_ratio(factors)
-        if t:
-            method_results.append(('modified_bondy_square_ratio', None, t, _empty_fit_diag()))
-
-        # Exp Dev Quick
-        t, params = tail_exp_dev_quick(factors, total_wts)
-        if t:
-            fd = fit_diagnostics_exp_dev(factors, total_wts, ay_wts, total_wts, params)
-            method_results.append(('exp_dev_quick', params, t, fd))
-
-        # Exp Dev Quick Exact Last
-        t, params = tail_exp_dev_quick_exact_last(factors, total_wts)
-        if t:
-            fd = fit_diagnostics_exp_dev(factors, total_wts, ay_wts, total_wts, params)
-            method_results.append(('exp_dev_quick_exact_last', params, t, fd))
-
-        # Exp Dev Product
-        t, params = tail_exp_dev_product(factors, total_wts)
-        if t:
-            fd = fit_diagnostics_exp_dev(factors, total_wts, ay_wts, total_wts, params)
-            method_results.append(('exp_dev_product', params, t, fd))
-
-        # Double Exp
-        t, params = tail_double_exp(factors, total_wts)
-        if t:
-            fd = fit_diagnostics_double_exp(factors, total_wts, ay_wts, total_wts, params)
-            method_results.append(('double_exp', params, t, fd))
-
-        # McClenahan
-        t, params = tail_mcclenahan(factors, max_age)
-        if t:
-            method_results.append(('mcclenahan', params, t, _empty_fit_diag()))
-
-        # Skurnick
-        t, params = tail_skurnick(cum_2d)
-        if t:
-            fd = fit_diagnostics_skurnick(skurnick_incs, sk_ln_A, sk_ln_r)
-            method_results.append(('skurnick', params, t, fd))
-
-        for method_key, params, tail_val, fit_diag in method_results:
-            gap, gap_flag = compute_gap(factors, params, method_key)
-            ri = reserve_impact_diagnostics(selections, tail_val, df_triangles, measure)
-
-            rows.append({
-                'measure': measure,
-                'starting_age': starting_age,
-                'method': method_key,
-                'method_params': json.dumps(
-                    {k: round(v, 8) if isinstance(v, float) else v for k, v in params.items()}
-                    if isinstance(params, dict)
-                    else list(params) if isinstance(params, tuple)
-                    else params
-                ) if params is not None else None,
-                'tail_factor': tail_val,
-                'n_factors_in_fit':      sp['n_factors_in_fit'],
-                'n_ay_contributing':     sp['n_ay_contributing'],
-                'is_monotone_from_here': sp['is_monotone_from_here'],
-                'cv_at_starting_age':    sp['cv_at_starting_age'],
-                'slope_sign_changes':    sp['slope_sign_changes'],
-                'r_squared':             fit_diag['r_squared'],
-                'loo_std_dev':           fit_diag['loo_std_dev'],
-                'loo_min':               fit_diag['loo_min'],
-                'loo_max':               fit_diag['loo_max'],
-                'gap_to_last_observed':  gap,
-                'gap_flag':              gap_flag,
-                'pct_of_cdf':            ri['pct_of_cdf'],
-                'materiality_ok':        ri['materiality_ok'],
-                'sensitivity_plus10_reserve_delta':   ri['sensitivity_plus10_reserve_delta'],
-                'sensitivity_minus10_reserve_delta':  ri['sensitivity_minus10_reserve_delta'],
-                'sensitivity_plus20_reserve_delta':   ri['sensitivity_plus20_reserve_delta'],
-                'sensitivity_minus20_reserve_delta':  ri['sensitivity_minus20_reserve_delta'],
-                'residuals_json':        fit_diag['residuals_json'],
-            })
-            r2_str = f"R²={fit_diag['r_squared']:.3f}" if fit_diag['r_squared'] else "R²=N/A"
-            print(f"  {method_key:35s} | age={starting_age:3d} | tail={tail_val:.4f} | {r2_str}")
+        rows.append({
+            'measure': measure,
+            'starting_age': min_start_age,
+            'cutoff_age': cutoff_age,
+            'method': method_key,
+            'method_params': json.dumps(
+                {k: round(v, 8) if isinstance(v, float) else v for k, v in params.items()}
+                if isinstance(params, dict)
+                else list(params) if isinstance(params, tuple)
+                else params
+            ) if params is not None else None,
+            'tail_factor': tail_val,
+            'n_factors_in_fit':      sp['n_factors_in_fit'],
+            'n_ay_contributing':     sp['n_ay_contributing'],
+            'is_monotone_from_here': sp['is_monotone_from_here'],
+            'cv_at_starting_age':    cv_ata,
+            'slope_sign_changes':    sp['slope_sign_changes'],
+            'min_selected_ldf':      min_ata,
+            'max_selected_ldf':      max_ata,
+            'avg_selected_ldf':      avg_ata,
+            'r_squared':             fit_diag['r_squared'],
+            'loo_std_dev':           fit_diag['loo_std_dev'],
+            'loo_min':               fit_diag['loo_min'],
+            'loo_max':               fit_diag['loo_max'],
+            'gap_to_last_observed':  gap,
+            'gap_flag':              gap_flag,
+            'pct_of_cdf':            ri['pct_of_cdf'],
+            'materiality_ok':        ri['materiality_ok'],
+            'sensitivity_plus10_reserve_delta':   ri['sensitivity_plus10_reserve_delta'],
+            'sensitivity_minus10_reserve_delta':  ri['sensitivity_minus10_reserve_delta'],
+            'sensitivity_plus20_reserve_delta':   ri['sensitivity_plus20_reserve_delta'],
+            'sensitivity_minus20_reserve_delta':  ri['sensitivity_minus20_reserve_delta'],
+            'residuals_json':        fit_diag['residuals_json'],
+        })
+        r2_str = f"R²={fit_diag['r_squared']:.3f}" if fit_diag['r_squared'] else "R²=N/A"
+        print(f"  {method_key:35s} | cutoff={cutoff_age:3d} | tail={tail_val:.4f} | {r2_str}")
 
     return rows
 
@@ -881,6 +916,7 @@ def main():
     print("Loading data...")
     df_triangles = pd.read_parquet(INPUT_TRIANGLES)
     df_enhanced  = pd.read_parquet(INPUT_ENHANCED)
+    df_averages  = pd.read_parquet(INPUT_AVERAGES)
 
     if not Path(INPUT_EXCEL).exists():
         raise FileNotFoundError(
@@ -899,7 +935,7 @@ def main():
             print(f"  ERROR reading selections for {measure}: {e}")
             continue
 
-        rows = process_measure(measure, selections, df_enhanced, df_triangles)
+        rows = process_measure(measure, selections, df_enhanced, df_averages, df_triangles)
         all_rows.extend(rows)
 
     if not all_rows:

@@ -32,7 +32,7 @@ from modules.xl_writers import write_ultimates_sheet_xlw
 
 # Paths from modules/config.py — override here if needed:
 INPUT_ULTIMATES  = config.ULTIMATES + "projected-ultimates.parquet"
-INPUT_TRIANGLES = config.PROCESSED_DATA + "triangles.parquet"
+INPUT_TRIANGLES = config.PROCESSED_DATA + "1_triangles.parquet"  # Triangle data including Exposure measure
 PRIOR_SELECTIONS_RB = config.SELECTIONS + "ultimates-prior.json"             # Optional, priority 1 — set to prior cycle's selected ultimates
 PRIOR_SELECTIONS_OE = config.SELECTIONS + "ultimates-prior-oe.json"          # Optional, priority 2 — fallback prior
 OUTPUT_FILE      = config.SELECTIONS + "Ultimates.xlsx"
@@ -43,6 +43,36 @@ def export_md_data(df_ult, exp_md):
     import pathlib
     # Subagents should use these markdown files as canonical context.
     # Workbook contains hard-coded values from source data.
+    # 
+    # CRITICAL: Include ALL method columns (CL, IE, BF, and their IBNR) so selectors can:
+    # - Compare method indications at each maturity level
+    # - Evaluate IBNR magnitudes and patterns
+    # - Apply maturity-based weighting rules
+    # - Check reasonability (loss ratios, IELR, paid-to-incurred ratios)
+    #
+    # Round appropriately to reduce visual clutter while preserving precision:
+    # - Dollar amounts: nearest whole number
+    # - Percentages (pct_developed): 4 decimals (0.9999)
+    # - CDFs: 4 decimals (1.0035)
+    # - Loss ratios and diagnostics: 4 decimals
+    
+    def round_for_display(df_m):
+        """Round numeric columns for markdown display."""
+        df_display = df_m.copy()
+        
+        # Round dollar amounts to nearest whole number
+        dollar_cols = ['actual', 'ultimate_cl', 'ibnr_cl', 'ultimate_ie', 'ibnr_ie', 'ultimate_bf', 'ibnr_bf']
+        for col in dollar_cols:
+            if col in df_display.columns:
+                df_display[col] = df_display[col].round(0)
+        
+        # Round percentages and ratios to 4 decimals
+        ratio_cols = ['pct_developed', 'cdf']
+        for col in ratio_cols:
+            if col in df_display.columns:
+                df_display[col] = df_display[col].round(4)
+        
+        return df_display
     
     # Export Loss category (Incurred + Paid)
     loss_measures = ['Incurred Loss', 'Paid Loss']
@@ -50,6 +80,13 @@ def export_md_data(df_ult, exp_md):
     for measure in loss_measures:
         df_m = df_ult[df_ult['measure'] == measure].copy()
         if not df_m.empty:
+            # Include ALL method columns for selector context
+            cols_to_keep = ['period', 'current_age', 'actual', 'cdf', 'pct_developed',
+                          'ultimate_cl', 'ibnr_cl', 'ultimate_ie', 'ibnr_ie', 
+                          'ultimate_bf', 'ibnr_bf']
+            available_cols = [c for c in cols_to_keep if c in df_m.columns]
+            df_m = df_m[available_cols]
+            df_m = round_for_display(df_m)
             loss_data.append((measure, df_m))
     
     if loss_data:
@@ -58,11 +95,10 @@ def export_md_data(df_ult, exp_md):
         md_content += "## Table of Contents\n"
         md_content += "- [Exposure](#exposure)\n"
         md_content += "- [Projected Ultimates](#projected-ultimates)\n\n"
-        md_content += "## Exposure\n" + exp_md + "\n"
+        md_content += "## Exposure\n\n" + exp_md + "\n"
         md_content += "## Projected Ultimates\n\n"
         
         for measure, df_m in loss_data:
-            df_m = df_m.drop(columns=['measure'], errors='ignore')
             md_content += f"### {measure}\n\n"
             md_content += df_to_markdown(df_m, index=False) + "\n\n"
         
@@ -79,6 +115,13 @@ def export_md_data(df_ult, exp_md):
         if not df_m.empty:
             if measure == 'Closed Count' and not df_m['actual'].notna().any():
                 continue  # Skip closed count with no actual data
+            # Include ALL method columns for selector context
+            cols_to_keep = ['period', 'current_age', 'actual', 'cdf', 'pct_developed',
+                          'ultimate_cl', 'ibnr_cl', 'ultimate_ie', 'ibnr_ie', 
+                          'ultimate_bf', 'ibnr_bf']
+            available_cols = [c for c in cols_to_keep if c in df_m.columns]
+            df_m = df_m[available_cols]
+            df_m = round_for_display(df_m)
             count_data.append((measure, df_m))
     
     if count_data:
@@ -87,11 +130,10 @@ def export_md_data(df_ult, exp_md):
         md_content += "## Table of Contents\n"
         md_content += "- [Exposure](#exposure)\n"
         md_content += "- [Projected Ultimates](#projected-ultimates)\n\n"
-        md_content += "## Exposure\n" + exp_md + "\n"
+        md_content += "## Exposure\n\n" + exp_md + "\n"
         md_content += "## Projected Ultimates\n\n"
         
         for measure, df_m in count_data:
-            df_m = df_m.drop(columns=['measure'], errors='ignore')
             md_content += f"### {measure}\n\n"
             md_content += df_to_markdown(df_m, index=False) + "\n\n"
         
@@ -179,7 +221,8 @@ def main():
             # Format Exposure as simple 2-column table (period, value)
             # Exposure doesn't develop over age, so we take the last value per period
             exp_simple = exp_sub.groupby('period', observed=True).agg({'value': 'last'}).reset_index()
-            exp_simple.columns = ['Period', 'Exposure']
+            exp_simple['value'] = exp_simple['value'].round(0)  # Round to whole numbers
+            exp_simple.columns = ['period', 'exposure']
             exp_md = df_to_markdown(exp_simple, index=False)
     except Exception:
         pass

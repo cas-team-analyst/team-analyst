@@ -317,11 +317,21 @@ if __name__ == "__main__":
         print(f"\nReading expected rates from: {INPUT_EXPECTED_RATES}")
         df_expected_rates = pd.read_parquet(INPUT_EXPECTED_RATES)
     else:
+        print("\n" + "=" * 80)
+        print("EXPECTED LOSS RATE (ELR) FILE NOT PROVIDED")
+        print("=" * 80)
         if INPUT_EXPECTED_RATES is None:
-            print("\nINPUT_EXPECTED_RATES is set to None. Using fallback expected-rate method.")
+            print("INPUT_EXPECTED_RATES is set to None.")
         else:
-            print(f"\nExpected rates file not found: {INPUT_EXPECTED_RATES}")
-            print("Using fallback expected-rate method.")
+            print(f"Expected rates file not found: {INPUT_EXPECTED_RATES}")
+        print("\nUSING FALLBACK APPROXIMATION:")
+        print("  - For each accident year, compute diagonal actual loss per dollar of exposure")
+        print("  - Smooth with a 3-year rolling average")
+        print("  - Round to 3 decimals")
+        print("\nThis is an EMPIRICAL APPROXIMATION based on historical loss emergence.")
+        print("It is less forward-looking than a pricing ELR but provides a reasonable")
+        print("expected baseline for Initial Expected and Bornhuetter-Ferguson methods.")
+        print("=" * 80 + "\n")
         df_expected_rates = build_fallback_expected_rates(diagonal, exposure_dict)
 
     # Compute initial expected ultimates

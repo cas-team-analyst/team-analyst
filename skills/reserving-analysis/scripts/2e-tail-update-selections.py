@@ -17,16 +17,18 @@ import json
 import os
 import glob
 import openpyxl
+import pandas as pd
 from openpyxl.styles import Alignment, Font, PatternFill
 
 from modules import config
 from modules.xl_styles import SELECTION_FILL, AI_FILL, USER_FILL, LABEL_FONT, DATA_FONT, THIN_BORDER
 
 # Paths from modules/config.py — override here if needed:
-METHOD_ID = "tail"
+METHOD_ID = "tail-curve"
 SELECTIONS_PATTERN    = config.SELECTIONS + f"{METHOD_ID}-ai-rules-based-*.json"
 AI_SELECTIONS_PATTERN = config.SELECTIONS + f"{METHOD_ID}-ai-open-ended-*.json"
 EXCEL_FILE            = config.SELECTIONS + "Chain Ladder Selections - Tail.xlsx"
+DIAGNOSTICS_FILE      = config.PROCESSED_DATA + "tail-scenarios.parquet"
 
 
 def find_selection_rows(ws):
@@ -64,7 +66,7 @@ def has_existing_rules_selection(ws):
     if rules_row is None:
         return False
     for cell in ws[rules_row]:
-        if cell.column > 1 and cell.value not in (None, ""):
+        if cell.column > 1 and cell.value not in (None, ""):  # col > 1 = skip Label
             return True
     return False
 
@@ -87,14 +89,12 @@ def update_rules_based_selection(ws, selection):
         print(f"  WARNING: Could not find 'Rules-Based AI Selection' row in sheet '{ws.title}'")
         return False
     
-    # Column mapping (based on Section D in 2d-tail-create-excel.py)
-    # ['Label', 'Cutoff Age', 'Tail Factor', 'Method', 'Reasoning', 'Additional Notes']
+    # Column mapping (based on Section C in 2d-tail-create-excel.py)
+    # ['Label', 'Method', 'Reasoning', 'Additional Notes']
     col_map = {
-        'cutoff_age': 2,
-        'tail_factor': 3,
-        'method': 4,
-        'reasoning': 5,
-        'additional_notes': 6
+        'method': 2,
+        'reasoning': 3,
+        'additional_notes': 4
     }
     
     # Write values
@@ -106,14 +106,6 @@ def update_rules_based_selection(ws, selection):
         cell.border = THIN_BORDER
         cell.font = DATA_FONT
         cell.alignment = Alignment(horizontal="left", wrap_text=True)
-        
-        # Number formatting
-        if field == 'cutoff_age' and value:
-            cell.number_format = "0"
-            cell.alignment = Alignment(horizontal="right")
-        elif field == 'tail_factor' and value:
-            cell.number_format = "0.0000"
-            cell.alignment = Alignment(horizontal="right")
     
     return True
 
@@ -127,11 +119,9 @@ def update_ai_selection(ws, selection):
     
     # Column mapping
     col_map = {
-        'cutoff_age': 2,
-        'tail_factor': 3,
-        'method': 4,
-        'reasoning': 5,
-        'additional_notes': 6
+        'method': 2,
+        'reasoning': 3,
+        'additional_notes': 4
     }
     
     # Write values
@@ -143,14 +133,6 @@ def update_ai_selection(ws, selection):
         cell.border = THIN_BORDER
         cell.font = DATA_FONT
         cell.alignment = Alignment(horizontal="left", wrap_text=True)
-        
-        # Number formatting
-        if field == 'cutoff_age' and value:
-            cell.number_format = "0"
-            cell.alignment = Alignment(horizontal="right")
-        elif field == 'tail_factor' and value:
-            cell.number_format = "0.0000"
-            cell.alignment = Alignment(horizontal="right")
     
     return True
 
@@ -169,7 +151,7 @@ def load_per_measure_json_files(pattern, selection_type):
     
     for filepath in sorted(files):
         try:
-            # Extract measure from filename: tail-ai-rules-based-paid_loss.json -> paid_loss
+            # Extract measure from filename: tail-curve-ai-rules-based-paid_loss.json -> paid_loss
             filename = os.path.basename(filepath)
             # Remove extension
             name_no_ext = os.path.splitext(filename)[0]
@@ -211,6 +193,22 @@ def main():
     if not ai_selections:
         print(f"No open-ended AI selections found matching pattern: {AI_SELECTIONS_PATTERN} (optional)")
 
+    # Load diagnostics to lookup tail factors
+    try:
+        df_scenarios = pd.read_parquet(DIAGNOSTICS_FILE)
+    except Exception as e:
+        print(f"Warning: Could not load diagnostics to lookup tail factors: {e}")
+        df_scenarios = None
+
+    def lookup_tail_factor(measure, method, selection):
+        if 'tail_factor' in selection and pd.notna(selection['tail_factor']):
+            return
+        if df_scenarios is not None and method:
+            mask = (df_scenarios['measure'] == measure) & (df_scenarios['method'] == method)
+            if not mask.empty and mask.any():
+                tf = df_scenarios[mask]['tail_factor'].iloc[0]
+                selection['tail_factor'] = float(tf) if pd.notna(tf) else ''
+
     # Check if Excel file exists
     if not os.path.exists(EXCEL_FILE):
         print(f"Excel file not found: {EXCEL_FILE}")
@@ -247,11 +245,13 @@ def main():
     by_measure = {}
     for sel in selections:
         m = sel["measure"]
+        lookup_tail_factor(m, sel.get('method'), sel)
         by_measure[m] = sel
 
     by_measure_ai = {}
     for sel in ai_selections:
         m = sel["measure"]
+        lookup_tail_factor(m, sel.get('method'), sel)
         by_measure_ai[m] = sel
 
     updated_count = 0

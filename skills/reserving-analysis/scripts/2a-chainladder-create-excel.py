@@ -153,7 +153,7 @@ def build_main_sheet(ws, measure, df2, df4, fmt, df_prior=None):
     
     # 2. Age-to-Age Factors (direct values from df2)
     ata_start = row_ptr
-    ws.write(ata_start, 0, "Period", fmt['subheader_left'])
+    ws.write(ata_start, 0, "Age-to-Age Factors", fmt['subheader_left'])
     for c_idx, interval in enumerate(intervals):
         ws.write(ata_start, c_idx + 1, interval, fmt['subheader_right'])
     ata_start += 1

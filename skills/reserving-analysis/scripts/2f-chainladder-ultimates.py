@@ -97,9 +97,9 @@ def get_tail(selections: dict) -> float:
     return float(selections.get('Tail', selections.get('tail', 1.0)))
 
 
-def read_tail_from_excel(excel_path: str, measure: str) -> float:
+def read_tail_method_from_excel(excel_path: str, measure: str) -> str:
     """
-    Read tail factor from the Tail selections Excel file for a specific measure.
+    Read selected tail curve METHOD from the Tail selections Excel file for a specific measure.
     Priority: 'User Selection' row → 'Rules-Based AI Selection' row → 'Open-Ended AI Selection' row.
     Returns None if file doesn't exist or no selection found.
     """
@@ -111,19 +111,127 @@ def read_tail_from_excel(excel_path: str, measure: str) -> float:
         # Read the measure sheet
         df = pd.read_excel(excel_path, sheet_name=measure[:31], engine='openpyxl', engine_kwargs={'data_only': True})
         
-        # Look for selection rows (tail factor is in column 3)
+        # Look for selection rows (method is in column B, index 1)
         for label in ("User Selection", "Rules-Based AI Selection", "Open-Ended AI Selection"):
             for idx, row in df.iterrows():
                 if str(row.iloc[0]).strip() == label:
-                    tail_val = row.iloc[2]  # Column C (index 2) is Tail Factor
-                    if pd.notna(tail_val):
-                        try:
-                            return float(tail_val)
-                        except (ValueError, TypeError):
-                            pass
+                    method_val = row.iloc[1]  # Column B (index 1) is Method
+                    if pd.notna(method_val) and str(method_val).strip():
+                        return str(method_val).strip()
         return None
     except Exception as e:
         return None
+
+
+def read_cutoff_from_selections(selections: dict, ages: list) -> int:
+    """
+    Find the cutoff age from LDF selections dict.
+    The cutoff is the ending age of the last selected interval.
+    Returns the cutoff age or None if no selections found.
+    """
+    if not selections:
+        return None
+    
+    # Find the last interval that has a selection
+    last_interval = None
+    for i in range(len(ages) - 2, -1, -1):
+        interval = f"{ages[i]}-{ages[i+1]}"
+        if interval in selections and pd.notna(selections[interval]):
+            last_interval = interval
+            break
+    
+    if last_interval is None:
+        return None
+    
+    # Extract ending age from interval (e.g., "120-132" -> 132)
+    try:
+        return int(last_interval.split('-')[1])
+    except (ValueError, IndexError):
+        return None
+
+
+def generate_fitted_ldfs(method: str, method_params_json: str, cutoff_age: int, ages: list, 
+                         last_empirical_ldf: float = 1.0) -> dict:
+    """
+    Generate fitted LDFs for intervals after the cutoff using the selected tail curve method.
+    
+    Args:
+        method: Selected tail curve method name (e.g., 'bondy', 'exp_dev_quick')
+        method_params_json: JSON string of method parameters
+        cutoff_age: Age at which empirical selections end
+        ages: List of all ages
+        last_empirical_ldf: The last empirical LDF before cutoff (for Bondy method)
+    
+    Returns:
+        dict mapping interval -> fitted LDF for intervals after cutoff
+    """
+    import json
+    import numpy as np
+    
+    fitted_ldfs = {}
+    
+    # Parse method params
+    params = None
+    if method_params_json:
+        try:
+            params = json.loads(method_params_json)
+        except:
+            pass
+    
+    # Find index of cutoff age
+    try:
+        cutoff_idx = ages.index(str(cutoff_age))
+    except ValueError:
+        return fitted_ldfs
+    
+    # Generate LDFs for intervals after cutoff
+    for i in range(cutoff_idx, len(ages) - 1):
+        interval = f"{ages[i]}-{ages[i+1]}"
+        
+        if method == 'bondy':
+            # Bondy: repeat last empirical LDF
+            fitted_ldfs[interval] = last_empirical_ldf
+        
+        elif method.startswith('modified_bondy'):
+            # Modified Bondy variants: apply modification to last empirical LDF
+            if 'double_dev' in method:
+                # 1 + 2*(last_ldf - 1)
+                fitted_ldfs[interval] = 1.0 + 2.0 * (last_empirical_ldf - 1.0)
+            elif 'square_ratio' in method:
+                # last_ldf^2
+                fitted_ldfs[interval] = last_empirical_ldf ** 2
+            else:
+                fitted_ldfs[interval] = last_empirical_ldf
+        
+        elif method.startswith('exp_dev'):
+            # Exponential decay: LDF = 1 + D * r^t
+            if params and isinstance(params, list) and len(params) >= 2:
+                D, r = params[0], params[1]
+                t = i  # Use interval index as t
+                dev = D * (r ** t)
+                fitted_ldfs[interval] = 1.0 + dev
+        
+        elif method == 'double_exp':
+            # Double exponential: LDF = 1 + exp(b0 + b1*t + b2*t^2)
+            if params and isinstance(params, list) and len(params) >= 3:
+                b0, b1, b2 = params[0], params[1], params[2]
+                t = i
+                dev = np.exp(b0 + b1 * t + b2 * (t ** 2))
+                fitted_ldfs[interval] = 1.0 + dev
+        
+        elif method == 'mcclenahan':
+            # McClenahan: use 1.0 (closed-form doesn't produce interval LDFs easily)
+            fitted_ldfs[interval] = 1.0
+        
+        elif method == 'skurnick':
+            # Skurnick: use 1.0 (complex incremental model)
+            fitted_ldfs[interval] = 1.0
+        
+        else:
+            # Unknown method: use 1.0
+            fitted_ldfs[interval] = 1.0
+    
+    return fitted_ldfs
 
 
 def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:
@@ -171,55 +279,96 @@ def read_selections_from_excel(excel_path: str, measure: str, ages: list) -> dic
         return {}
 
 
-def build_cdfs(selections: dict, ages: list, measure: str, tail_override: float = None) -> pd.DataFrame:
+def build_cdfs(selections: dict, ages: list, measure: str, tail_scenarios_df: pd.DataFrame = None, 
+                tail_method: str = None) -> pd.DataFrame:
     """
-    Convert selected LDFs (including tail if present) into cumulative CDFs per age.
+    Convert selected LDFs into cumulative CDFs per age.
+    Uses empirical LDFs up to cutoff, then fitted LDFs from tail curve after cutoff.
     
     Args:
-        selections: Dictionary mapping interval to selected LDF
+        selections: Dictionary mapping interval to selected empirical LDF
         ages: List of ordered age values
         measure: Measure name
-        tail_override: If provided, use this tail factor instead of reading from selections dict
+        tail_scenarios_df: DataFrame with tail scenarios (optional)
+        tail_method: Selected tail curve method (optional)
     
     Returns:
-        DataFrame with columns: measure, age, cdf, pct_developed
+        DataFrame with columns: measure, age, cdf, pct_developed, ldf, source
     """
     if not selections:
-        return pd.DataFrame(columns=['measure', 'age', 'cdf', 'pct_developed'])
+        return pd.DataFrame(columns=['measure', 'age', 'cdf', 'pct_developed', 'ldf', 'source'])
     
-    # Create interval labels from ages
-    intervals = {f"{ages[i]}-{ages[i+1]}": i for i in range(len(ages) - 1)}
+    # Find cutoff age
+    cutoff_age = read_cutoff_from_selections(selections, ages)
     
-    # Get tail factor
-    if tail_override is not None:
-        tail = tail_override
-    else:
-        tail = get_tail(selections)
+    # Get fitted LDFs for intervals after cutoff
+    fitted_ldfs = {}
+    if cutoff_age and tail_method and tail_scenarios_df is not None:
+        # Find the scenario row for this method + measure
+        scenario_row = tail_scenarios_df[
+            (tail_scenarios_df['measure'] == measure) & 
+            (tail_scenarios_df['method'] == tail_method)
+        ]
+        
+        if not scenario_row.empty:
+            method_params_json = scenario_row.iloc[0]['method_params']
+            
+            # Find last empirical LDF (LDF immediately before cutoff)
+            last_empirical_ldf = 1.0
+            for i in range(len(ages) - 2, -1, -1):
+                interval = f"{ages[i]}-{ages[i+1]}"
+                if interval in selections and pd.notna(selections[interval]):
+                    last_empirical_ldf = selections[interval]
+                    break
+            
+            fitted_ldfs = generate_fitted_ldfs(tail_method, method_params_json, cutoff_age, ages, last_empirical_ldf)
+            if fitted_ldfs:
+                print(f"    Generated {len(fitted_ldfs)} fitted LDFs after cutoff age {cutoff_age} (last empirical LDF={last_empirical_ldf:.4f})")
     
-    # Build CDFs from oldest to youngest
-    # Start with tail at the oldest age
-    cdfs = {ages[-1]: tail}
+    # Merge empirical and fitted LDFs
+    all_ldfs = {}
+    sources = {}
+    
+    for i in range(len(ages) - 1):
+        interval = f"{ages[i]}-{ages[i+1]}"
+        
+        if interval in selections and pd.notna(selections[interval]):
+            all_ldfs[interval] = selections[interval]
+            sources[interval] = 'empirical'
+        elif interval in fitted_ldfs:
+            all_ldfs[interval] = fitted_ldfs[interval]
+            sources[interval] = 'fitted'
+        else:
+            all_ldfs[interval] = 1.0
+            sources[interval] = 'default'
+    
+    # Build CDFs by chaining LDFs from oldest to youngest
+    # Start with CDF = 1.0 at the oldest age
+    cdfs = {ages[-1]: 1.0}
+    ldf_at_age = {ages[-1]: None}
+    source_at_age = {ages[-1]: None}
     
     # Work backwards through the ages
     for i in range(len(ages) - 2, -1, -1):
         interval = f"{ages[i]}-{ages[i+1]}"
-        ldf = selections.get(interval, np.nan)
+        ldf = all_ldfs.get(interval, 1.0)
+        source = sources.get(interval, 'default')
         
-        if pd.notna(ldf):
-            cdfs[ages[i]] = ldf * cdfs[ages[i + 1]]
-        else:
-            # Interval not in selections (e.g. no observable development at that maturity).
-            # Assume LDF = 1.0 so the CDF chain is not broken.
-            cdfs[ages[i]] = cdfs[ages[i + 1]]
+        cdfs[ages[i]] = ldf * cdfs[ages[i + 1]]
+        ldf_at_age[ages[i]] = ldf
+        source_at_age[ages[i]] = source
     
     # Convert to DataFrame
     rows = []
-    for age, cdf in cdfs.items():
+    for age in ages:
+        cdf = cdfs.get(age, np.nan)
         rows.append({
             'measure': measure,
             'age': age,
             'cdf': cdf,
-            'pct_developed': 1.0 / cdf if (pd.notna(cdf) and cdf > 0) else np.nan
+            'pct_developed': 1.0 / cdf if (pd.notna(cdf) and cdf > 0) else np.nan,
+            'ldf': ldf_at_age.get(age),
+            'source': source_at_age.get(age)
         })
     
     return pd.DataFrame(rows)
@@ -298,19 +447,29 @@ if __name__ == "__main__":
     
     print(f"\nReading LDF selections from: {INPUT_SELECTIONS_EXCEL}")
     
-    # Try to read tail factors from separate Tail Excel file first
-    tail_factors = {}  # {measure: tail_factor}
+    # Load tail scenarios for curve fitting
+    tail_scenarios_path = Path(config.PROCESSED_DATA + "tail-scenarios.parquet")
+    tail_scenarios_df = None
+    if tail_scenarios_path.exists():
+        tail_scenarios_df = pd.read_parquet(tail_scenarios_path)
+        print(f"Loaded {len(tail_scenarios_df)} tail scenarios from: {tail_scenarios_path}")
+    else:
+        print(f"Note: Tail scenarios file not found: {tail_scenarios_path}")
+        print("  Fitted LDFs after cutoff will not be generated")
+    
+    # Read tail method selections from Tail Excel
+    tail_methods = {}  # {measure: method}
     tail_path = Path(INPUT_TAIL_EXCEL)
     if tail_path.exists():
-        print(f"Reading tail factors from: {INPUT_TAIL_EXCEL}")
+        print(f"Reading tail curve methods from: {INPUT_TAIL_EXCEL}")
         for measure in measures:
-            tail = read_tail_from_excel(str(tail_path), measure)
-            if tail is not None:
-                tail_factors[measure] = tail
-                print(f"  Found tail factor for {measure}: {tail:.4f}")
+            method = read_tail_method_from_excel(str(tail_path), measure)
+            if method:
+                tail_methods[measure] = method
+                print(f"  {measure}: {method}")
     else:
         print(f"Note: Tail selections file not found: {INPUT_TAIL_EXCEL}")
-        print("  Will use 'Tail' column from LDF selections if present")
+        print("  CDFs will be built from empirical LDFs only (no fitted tail curves)")
     
     # Read selections for each measure and build CDFs
     all_cdfs = []
@@ -319,9 +478,8 @@ if __name__ == "__main__":
         selections = read_selections_from_excel(str(selections_path), measure, ages)
         
         if selections:
-            # Use tail from Tail Excel if available, otherwise from LDF selections
-            tail_override = tail_factors.get(measure)
-            cdf_df = build_cdfs(selections, ages, measure, tail_override)
+            tail_method = tail_methods.get(measure)
+            cdf_df = build_cdfs(selections, ages, measure, tail_scenarios_df, tail_method)
             all_cdfs.append(cdf_df)
         else:
             print(f"  Skipping {measure} (no valid selections found)")
@@ -334,6 +492,20 @@ if __name__ == "__main__":
     # Combine all CDFs
     combined_cdfs = pd.concat(all_cdfs, ignore_index=True)
     print(f"\nBuilt CDFs for {len(combined_cdfs)} measure × age combinations")
+    
+    # Save LDF/CDF detail data for use by downstream scripts (e.g., 6-analysis-create-excel.py)
+    # This includes empirical LDFs, fitted LDFs, and source tracking
+    detail_output_dir = Path(config.PROCESSED_DATA)
+    detail_output_dir.mkdir(parents=True, exist_ok=True)
+    detail_parquet = detail_output_dir / "ldf-cdf-detail.parquet"
+    detail_csv = detail_output_dir / "ldf-cdf-detail.csv"
+    combined_cdfs.to_parquet(detail_parquet, index=False)
+    combined_cdfs.to_csv(detail_csv, index=False)
+    print(f"\nSaved LDF/CDF detail data:")
+    print(f"  Parquet: {detail_parquet}")
+    print(f"  CSV: {detail_csv}")
+    print(f"  Columns: {combined_cdfs.columns.tolist()}")
+    print(f"  Sources: {combined_cdfs['source'].value_counts().to_dict()}")
     
     # Project ultimates
     print("\nProjecting Chain Ladder ultimates...")

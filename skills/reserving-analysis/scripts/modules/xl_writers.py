@@ -186,18 +186,33 @@ def write_ultimates_sheet_xlw(wb, ws, df_ult, df_prior, category, measures):
     df_combined = None
     for m, df_m in measure_dfs.items():
         short = measure_short[m]
-        df_subset = df_m[['period', 'current_age', 'actual', 'ultimate_cl', 'ultimate_ie', 'ultimate_bf']].copy()
-        df_subset = df_subset.rename(columns={
+        # Build column list dynamically - only include columns that exist
+        base_cols = ['period', 'current_age', 'actual', 'ultimate_cl']
+        optional_cols = ['ultimate_ie', 'ultimate_bf']
+        cols_to_extract = base_cols + [c for c in optional_cols if c in df_m.columns]
+        
+        df_subset = df_m[cols_to_extract].copy()
+        rename_dict = {
             'actual': f'{short.lower()}_actual',
             'ultimate_cl': f'{short.lower()}_cl',
-            'ultimate_ie': f'{short.lower()}_ie_temp',  # Temp name - will consolidate
-            'ultimate_bf': f'{short.lower()}_bf',
-        })
+        }
+        if 'ultimate_ie' in df_subset.columns:
+            rename_dict['ultimate_ie'] = f'{short.lower()}_ie_temp'  # Temp name - will consolidate
+        if 'ultimate_bf' in df_subset.columns:
+            rename_dict['ultimate_bf'] = f'{short.lower()}_bf'
+        
+        df_subset = df_subset.rename(columns=rename_dict)
         
         if df_combined is None:
             df_combined = df_subset
         else:
-            df_combined = df_combined.merge(df_subset[['period', f'{short.lower()}_actual', f'{short.lower()}_cl', f'{short.lower()}_ie_temp', f'{short.lower()}_bf']], on='period', how='outer')
+            # Build merge column list dynamically
+            merge_cols = ['period', f'{short.lower()}_actual', f'{short.lower()}_cl']
+            if f'{short.lower()}_ie_temp' in df_subset.columns:
+                merge_cols.append(f'{short.lower()}_ie_temp')
+            if f'{short.lower()}_bf' in df_subset.columns:
+                merge_cols.append(f'{short.lower()}_bf')
+            df_combined = df_combined.merge(df_subset[merge_cols], on='period', how='outer')
     
     # Consolidate IE columns - take first non-null IE value across all measures
     # (IE is typically the same for all measures in a category)
@@ -211,6 +226,11 @@ def write_ultimates_sheet_xlw(wb, ws, df_ult, df_prior, category, measures):
     # Check if we have prior data for this category
     has_prior_data = df_prior is not None and category in df_prior.get('category', df_prior.get('measure', pd.Series())).values
     
+    # Check if we have IE or BF data
+    has_ie_data = 'ie' in df_combined.columns and df_combined['ie'].notna().any()
+    bf_cols = [c for c in df_combined.columns if c.endswith('_bf')]
+    has_bf_data = any(df_combined[c].notna().any() for c in bf_cols) if bf_cols else False
+    
     # Build headers
     headers = ["Accident Period", "Current Age"]
     
@@ -222,12 +242,14 @@ def write_ultimates_sheet_xlw(wb, ws, df_ult, df_prior, category, measures):
     for m in measure_dfs.keys():
         headers.append(f"{measure_short[m]} CL")
     
-    # Add ONE Initial Expected column
-    headers.append("Initial Expected")
+    # Add ONE Initial Expected column (only if IE data exists)
+    if has_ie_data:
+        headers.append("Initial Expected")
     
-    # Add BF columns
-    for m in measure_dfs.keys():
-        headers.append(f"{measure_short[m]} BF")
+    # Add BF columns (only if BF data exists)
+    if has_bf_data:
+        for m in measure_dfs.keys():
+            headers.append(f"{measure_short[m]} BF")
     
     # Add Prior columns (conditional)
     if has_prior_data:
@@ -325,21 +347,23 @@ def write_ultimates_sheet_xlw(wb, ws, df_ult, df_prior, category, measures):
             ws.write(r_idx, col_idx, val, fmt['data_num'])
             col_idx += 1
         
-        # Write ONE IE column
-        val = row.get('ie')
-        if pd.isna(val):
-            val = ""
-        ws.write(r_idx, col_idx, val, fmt['data_num'])
-        col_idx += 1
-        
-        # Write BF columns
-        for m in measure_dfs.keys():
-            short = measure_short[m].lower()
-            val = row.get(f'{short}_bf')
+        # Write ONE IE column (only if IE data exists)
+        if has_ie_data:
+            val = row.get('ie')
             if pd.isna(val):
                 val = ""
             ws.write(r_idx, col_idx, val, fmt['data_num'])
             col_idx += 1
+        
+        # Write BF columns (only if BF data exists)
+        if has_bf_data:
+            for m in measure_dfs.keys():
+                short = measure_short[m].lower()
+                val = row.get(f'{short}_bf')
+                if pd.isna(val):
+                    val = ""
+                ws.write(r_idx, col_idx, val, fmt['data_num'])
+                col_idx += 1
         
         # Prior (only if prior data available)
         if has_prior_data:
