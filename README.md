@@ -15,10 +15,14 @@ These files can be used with many different agentic tools. For most users, we su
 3. Select the "Sonnet" model on the bottom right below the chat widget. Opus will quickly hit limits. Haiku loses focus during long workflows.
 4. Download `teamanalyst-cowork.zip` from https://github.com/cas-team-analyst/team-analyst/blob/main/plugins/teamanalyst-cowork.zip
 5. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files > Select `teamanalyst-cowork.zip`
-6. Click "New task"
-7. Type "/reserving-analysis" (it will auto-complete and you can press enter to select it) in the chat box and press enter to get started!
+6. Prepare your data. At least one loss or claim count triangle is required. Optionally, you can also provide exposures, prior selections, and initial expected loss rate and/or frequency. You can also download a file from https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data to use.
 
-Want to test the workflow quickly? Sample input data is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data. Provide a file from sample-data to the agent as your input data. A sample workflow run with example output files is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data/sample-run.
+Now you are ready to run the workflow! It may take 20-40 minutes to complete the workflow, so you may want to wait until you have about 40 minutes of free time.
+
+If you want to just see what the output looks like, a sample workflow run with example output files is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data/sample-run.
+
+7. Open Claude Desktop in CoWork mode and click "New task"
+8. Type "/reserving-analysis" (it will auto-complete and you can press enter to select it) in the chat box and press enter to get started!
 
 ## This Repository
 
