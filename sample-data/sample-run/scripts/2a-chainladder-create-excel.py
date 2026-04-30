@@ -270,7 +270,7 @@ def build_exposure_sheet(ws, df2, fmt):
     ws.set_column(0, 0, 22)
     ws.set_column(1, 1, 18)
 
-def export_md_data(measures, df2, df3, df4, exp_md):
+def export_md_data(measures, df2, df3, df4, exp_md, prior_selections=None):
     """Export markdown context files for subagents."""
     for measure in measures:
         safe_name = measure.lower().replace(' ', '_')
@@ -319,14 +319,43 @@ def export_md_data(measures, df2, df3, df4, exp_md):
         else:
             avg_md = "No data\n"
         
+        # Prior selections section
+        prior_md = ""
+        if prior_selections is not None:
+            prior_m = prior_selections[prior_selections['measure'] == measure]
+            if not prior_m.empty:
+                # Prior selections are stored as JSON in 'selections' column with interval keys
+                prior_row = prior_m.iloc[0]
+                import json
+                if 'selections' in prior_row and prior_row['selections']:
+                    try:
+                        prior_dict = json.loads(prior_row['selections']) if isinstance(prior_row['selections'], str) else prior_row['selections']
+                        prior_md = "## Prior Selections\n\n"
+                        prior_md += "| Interval | LDF | Reasoning |\n"
+                        prior_md += "|---|---|---|\n"
+                        for interval, data in sorted(prior_dict.items()):
+                            ldf_val = data.get('selection', 'N/A')
+                            reasoning = data.get('reasoning', '')[:80] + "..." if len(data.get('reasoning', '')) > 80 else data.get('reasoning', '')
+                            prior_md += f"| {interval} | {ldf_val} | {reasoning} |\n"
+                        prior_md += "\n"
+                    except (json.JSONDecodeError, TypeError):
+                        pass
+        
+        if not prior_md:
+            prior_md = "## Prior Selections\n\nNo prior LDF selections found for this analysis.\n\n"
+        
         # Build markdown content
         md_content = f"# Chain Ladder Context: {measure}\n\n"
         md_content += "## Table of Contents\n"
+        if prior_md:
+            md_content += "- [Prior Selections](#prior-selections)\n"
         md_content += "- [Exposure](#exposure)\n"
         md_content += "- [Triangle](#triangle)\n"
         md_content += "- [Age-to-Age Factors](#age-to-age-factors)\n"
         md_content += "- [Diagnostics](#diagnostics)\n"
         md_content += "- [Averages](#averages)\n\n"
+        if prior_md:
+            md_content += prior_md
         md_content += "## Exposure\n" + exp_md + "\n"
         md_content += "## Triangle\n" + tri_md + "\n"
         md_content += "## Age-to-Age Factors\n" + ldf_md + "\n"

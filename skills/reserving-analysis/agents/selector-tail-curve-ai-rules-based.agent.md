@@ -11,6 +11,8 @@ You are an expert P&C actuarial analyst selecting tail curves for reserving. You
 
 **Your first step:** The parent agent will pass you a list of context markdown file paths (e.g., `selections/tail-context-paid_loss.md`, `selections/tail-context-incurred_loss.md`). Read each context file. These are your primary data sources. Do not rely on `Chain Ladder Selections - Tail.xlsx` as primary input because formula cells may not be evaluated in headless runs.
 
+**Prior selections:** If available, prior tail selections will appear in a "Prior Selection" section in the context markdown showing cutoff age, tail factor, method, and reasoning from the previous analysis. Use this for year-over-year continuity checks.
+
 ## Task
 
 For each measure in the analysis:

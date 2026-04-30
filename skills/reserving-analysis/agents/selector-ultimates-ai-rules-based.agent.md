@@ -15,6 +15,8 @@ The parent agent will provide you with two context file paths: one for Loss, one
 
 **Your first step:** The parent agent will pass you a list of context markdown file paths (e.g., `selections/ultimates-context-loss.md`, `selections/ultimates-context-count.md`). Read each context file. These are your primary data sources. Do not rely on `Ultimates.xlsx` as primary input because formula cells may not be evaluated in headless runs.
 
+**Prior selections:** If available, prior ultimate selections will appear in a "Prior Selections" section in the context markdown showing selected ultimates by period with measure, method, and reasoning from the previous analysis. Use this for year-over-year continuity checks and Bayesian anchoring.
+
 ## Task
 
 For each category (Loss and Count):

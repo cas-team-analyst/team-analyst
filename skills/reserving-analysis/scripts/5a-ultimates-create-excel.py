@@ -39,7 +39,7 @@ OUTPUT_FILE      = config.SELECTIONS + "Ultimates.xlsx"
 SELECTIONS_OUTPUT_PATH = config.SELECTIONS
 
 
-def export_md_data(df_ult, exp_md):
+def export_md_data(df_ult, exp_md, prior_selections=None):
     import pathlib
     # Subagents should use these markdown files as canonical context.
     # Workbook contains hard-coded values from source data.
@@ -93,8 +93,32 @@ def export_md_data(df_ult, exp_md):
         md_path = pathlib.Path(SELECTIONS_OUTPUT_PATH) / "ultimates-context-loss.md"
         md_content = "# Ultimates Context: Loss\n\n"
         md_content += "## Table of Contents\n"
+        
+        # Add prior selections section if available
+        prior_md = ""
+        if prior_selections is not None:
+            prior_loss = prior_selections[prior_selections['category'] == 'loss']
+            if not prior_loss.empty:
+                prior_md = "## Prior Selections\n\n"
+                prior_md += "| Period | Selected Ultimate | Measure | Method | Reasoning |\n"
+                prior_md += "|---|---|---|---|---|\n"
+                for _, row in prior_loss.iterrows():
+                    period = row.get('period', 'N/A')
+                    ultimate = row.get('selected_ultimate', 'N/A')
+                    measure = row.get('selected_measure', 'N/A')
+                    method = row.get('selected_method', 'N/A')
+                    reasoning = str(row.get('reasoning', ''))[:80] + "..." if len(str(row.get('reasoning', ''))) > 80 else row.get('reasoning', '')
+                    prior_md += f"| {period} | {ultimate} | {measure} | {method} | {reasoning} |\n"
+                prior_md += "\n"
+        
+        if not prior_md:
+            prior_md = "## Prior Selections\n\nNo prior selections found for this analysis.\n\n"
+        
+        if prior_md:
+            md_content += "- [Prior Selections](#prior-selections)\n"
         md_content += "- [Exposure](#exposure)\n"
         md_content += "- [Projected Ultimates](#projected-ultimates)\n\n"
+        md_content += prior_md
         md_content += "## Exposure\n\n" + exp_md + "\n"
         md_content += "## Projected Ultimates\n\n"
         
@@ -128,8 +152,32 @@ def export_md_data(df_ult, exp_md):
         md_path = pathlib.Path(SELECTIONS_OUTPUT_PATH) / "ultimates-context-count.md"
         md_content = "# Ultimates Context: Count\n\n"
         md_content += "## Table of Contents\n"
+        
+        # Add prior selections section if available
+        prior_md = ""
+        if prior_selections is not None:
+            prior_count = prior_selections[prior_selections['category'] == 'count']
+            if not prior_count.empty:
+                prior_md = "## Prior Selections\n\n"
+                prior_md += "| Period | Selected Ultimate | Measure | Method | Reasoning |\n"
+                prior_md += "|---|---|---|---|---|\n"
+                for _, row in prior_count.iterrows():
+                    period = row.get('period', 'N/A')
+                    ultimate = row.get('selected_ultimate', 'N/A')
+                    measure = row.get('selected_measure', 'N/A')
+                    method = row.get('selected_method', 'N/A')
+                    reasoning = str(row.get('reasoning', ''))[:80] + "..." if len(str(row.get('reasoning', ''))) > 80 else row.get('reasoning', '')
+                    prior_md += f"| {period} | {ultimate} | {measure} | {method} | {reasoning} |\n"
+                prior_md += "\n"
+        
+        if not prior_md:
+            prior_md = "## Prior Selections\n\nNo prior selections found for this analysis.\n\n"
+        
+        if prior_md:
+            md_content += "- [Prior Selections](#prior-selections)\n"
         md_content += "- [Exposure](#exposure)\n"
         md_content += "- [Projected Ultimates](#projected-ultimates)\n\n"
+        md_content += prior_md
         md_content += "## Exposure\n\n" + exp_md + "\n"
         md_content += "## Projected Ultimates\n\n"
         
@@ -227,7 +275,7 @@ def main():
     except Exception:
         pass
         
-    export_md_data(df_ult, exp_md)
+    export_md_data(df_ult, exp_md, df_prior)
 
 
 if __name__ == "__main__":

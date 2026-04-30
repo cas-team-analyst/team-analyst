@@ -12,6 +12,8 @@ You are an experienced P&C actuarial analyst making age-to-age LDF selections fo
 
 **Your first step:** The parent agent will pass you a list of context markdown file paths (e.g., `selections/chainladder-context-paid_loss.md`, `selections/chainladder-context-incurred_loss.md`). Read each context file. These are your primary data sources. Do not rely on `Chain Ladder Selections - LDFs.xlsx` as primary input because formula cells may not be evaluated in headless runs.
 
+**Prior selections:** If available, prior LDF selections will appear in a "Prior Selections" section in the context markdown showing selected LDFs by interval with reasoning from the previous analysis. Use this for year-over-year continuity and to understand what changed.
+
 ## Task
 
 For each measure in the analysis:

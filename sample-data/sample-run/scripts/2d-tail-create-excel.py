@@ -541,7 +541,7 @@ def build_measure_sheet(ws, measure, df_scenarios, df_enhanced, df_diagnostics, 
 
 
 
-def export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, df_ldf_averages, exp_md):
+def export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, df_ldf_averages, exp_md, prior_selections=None):
     """
     Export markdown context files for tail curve selection.
     
@@ -690,13 +690,34 @@ def export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, df_ldf_a
         else:
             ata_md = "No empirical ATAs found\n"
             
+        # Prior selections section
+        prior_md = ""
+        if prior_selections is not None:
+            prior_m = prior_selections[prior_selections['measure'] == measure]
+            if not prior_m.empty:
+                prior_row = prior_m.iloc[0]
+                prior_md = "## Prior Selection\n\n"
+                prior_md += "| Field | Value |\n"
+                prior_md += "|---|---|\n"
+                prior_md += f"| Cutoff Age | {prior_row.get('cutoff_age', 'N/A')} |\n"
+                prior_md += f"| Tail Factor | {prior_row.get('tail_factor', 'N/A')} |\n"
+                prior_md += f"| Method | {prior_row.get('method', 'N/A')} |\n"
+                prior_md += f"| Reasoning | {prior_row.get('reasoning', 'N/A')} |\n\n"
+        
+        if not prior_md:
+            prior_md = "## Prior Selection\n\nNo prior tail selections found for this analysis.\n\n"
+        
         md_content = f"# Tail Context: {measure}\n\n"
         md_content += "## Table of Contents\n"
+        if prior_md:
+            md_content += "- [Prior Selection](#prior-selection)\n"
         md_content += "- [Exposure](#exposure)\n"
         md_content += "- [Averages](#averages)\n"
         md_content += "- [Selected LDFs](#selected-ldfs)\n"
         md_content += "- [Empirical Age-to-Age Factors](#empirical-age-to-age-factors)\n"
         md_content += "- [Curves](#curves)\n\n"
+        if prior_md:
+            md_content += prior_md
         md_content += "## Exposure\n" + exp_md + "\n"
         md_content += "## Averages\n"
         md_content += "Averages, min/max, CVs, and slopes for each interval (mirrors Excel averages section).\n\n"
@@ -777,7 +798,7 @@ def main():
         print(f"  Built sheet: {measure[:31]}")
     
     wb.close()
-    export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, df_ldf_averages, exp_md)
+    export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, df_ldf_averages, exp_md, df_prior)
     print(f"\nSaved: {output_file}")
 
 
