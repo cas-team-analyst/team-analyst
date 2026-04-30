@@ -1,0 +1,116 @@
+[
+  {
+    "interval": "11-23",
+    "selection": 1.1330,
+    "reasoning": "3-year avg_exclude_high_low (CV=0.013, very low). Convergence override applies: all 3-year, 5-year, and 10-year averages extremely tight at 1.1041-1.1330. Weighted 3-yr=1.1330, simple 3-yr=1.1330, identical. Use 3-year (tighter recent history) given near-zero CV and perfect convergence. Reported counts show new claims activity (13% increase in early months)."
+  },
+  {
+    "interval": "23-35",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages within ±0.007 at 1.0000-1.0037. CV_3yr=0.0, CV_5yr=0.0. Perfect convergence override: select at convergence midpoint. Workers comp reported count development flat after 23-35 months; nearly all diagonals show 1.0. Slope all zero."
+  },
+  {
+    "interval": "35-47",
+    "selection": 1.0004,
+    "reasoning": "Convergence: all averages 1.0000-1.0009. CV_3yr=0.0, CV_5yr=0.0019. Convergence override applies. Min=0.9979, max=1.0045 show minimal variance. Select 1.0004 as midpoint; reported counts essentially fully matured by 35-47 months."
+  },
+  {
+    "interval": "47-59",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages converge at 0.9999-1.0014. CV_3yr=0.0024, CV_5yr=0.0029 (near-zero). Perfect convergence at 1.0000. Min=0.9952, max=1.0041 show trivial variation. Select 1.0000 as convergence midpoint."
+  },
+  {
+    "interval": "59-71",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 0.9987-1.0019. CV_3yr=0.0021, CV_5yr=0.0017. Tight convergence at 1.0000. Slope all near zero. Minimal reported count development expected; select 1.0000."
+  },
+  {
+    "interval": "71-83",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0000-1.0015. CV_3yr=0.0, CV_5yr=0.0. Perfect convergence; all diagonals essentially 1.0. Min=1.0, max=1.0251. Select 1.0000 as convergence. Reported counts fully mature."
+  },
+  {
+    "interval": "83-95",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 0.9986-1.0000. CV_3yr=0.0024, CV_5yr=0.0019. Convergence override; select 1.0000. Slope near zero. Reported counts approaching final levels; minimal reopenings expected at this maturity."
+  },
+  {
+    "interval": "95-107",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 0.9999-1.0000. CV_3yr=0.0, CV_5yr=0.0. Perfect convergence; all observations at 1.0 (min=1.0, max=1.0). Select 1.0000."
+  },
+  {
+    "interval": "107-119",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 0.9961-0.9977. CV_3yr=0.0068, CV_5yr=0.0052 (slightly elevated but still near-zero). Convergence at ~0.9970-1.0000. Slight downward trend (slope_5yr=-0.0023) indicates minimal closure or data rounding. Select 1.0000 for conservatism in tail."
+  },
+  {
+    "interval": "119-131",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages exactly 1.0. CV_3yr=0.0, CV_5yr=0.0. Perfect convergence override; select 1.0000. Slope zero. All diagonals show 1.0 exactly; reported counts static."
+  },
+  {
+    "interval": "131-143",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0. CV_3yr=0.0, CV_5yr=0.0. Perfect convergence; select 1.0000. All diagonals 1.0."
+  },
+  {
+    "interval": "143-155",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0. CV_3yr=0.0, CV_5yr=0.0. All diagonals 1.0. Perfect convergence override; select 1.0000."
+  },
+  {
+    "interval": "155-167",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0. CV_3yr=0.0, CV_5yr=0.0. All data points exactly 1.0. Select 1.0000. Reported count maturity complete."
+  },
+  {
+    "interval": "167-179",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0. CV_3yr=0.0, CV_5yr=0.0. All observations 1.0. Select 1.0000."
+  },
+  {
+    "interval": "179-191",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0. CV_3yr=0.0, CV_5yr=0.0. All diagonals 1.0; reported counts fully reported and closed. Select 1.0000."
+  },
+  {
+    "interval": "191-203",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0. CV_3yr=0.0, CV_5yr=0.0. All values 1.0. Select 1.0000."
+  },
+  {
+    "interval": "203-215",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0. CV_3yr=0.0, CV_5yr=0.0. All observations 1.0. Select 1.0000."
+  },
+  {
+    "interval": "215-227",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0. CV_3yr=0.0, CV_5yr=0.0. All data 1.0. Select 1.0000. Reported count tail complete."
+  },
+  {
+    "interval": "227-239",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0. CV_3yr=0.0, CV_5yr=0.0. All diagonals 1.0. Select 1.0000."
+  },
+  {
+    "interval": "239-251",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0. CV_3yr=0.0, CV_5yr=0.0. All data 1.0. Select 1.0000."
+  },
+  {
+    "interval": "251-263",
+    "selection": 1.0000,
+    "reasoning": "Convergence: all averages 1.0. CV_3yr=0.0, CV_5yr=0.0. All observations 1.0. Select 1.0000."
+  },
+  {
+    "interval": "263-275",
+    "selection": 1.0000,
+    "reasoning": "All averages exactly 1.0. CV_3yr=0.0, CV_5yr=0.0. Reported count triangle fully matured; no further development expected. Last explicit selection 1.0000."
+  },
+  {
+    "interval": "275-287",
+    "reasoning": "CUTOFF at 275 months: CV=NaN indicates insufficient data (likely <2 observations). Reported count triangle complete by 251-263 months. All intervals from 11-23 through 263-275 months show reported count finalization (1.0). Tail curve not needed; reported counts are fully developed and reported by 263 months. Apply 1.0 for any remaining tail months as implied assumption."
+  }
+]

@@ -1,0 +1,111 @@
+[
+  {
+    "interval": "11-23",
+    "selection": 1.6456,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.3284, high volatility). Outliers present: max=2.757, min=1.0888. Exclude top/bottom per protocol for CV>0.20. 5-yr trim (1.6456) < 5-yr weighted (1.7024), suggesting recent large variance. Early maturity incurred development typically lower than paid; compare paid 2.5525 vs incurred 1.6456 (60% lower, expected). Use 5-yr trim with downward asymmetric conservatism applied implicitly."
+  },
+  {
+    "interval": "23-35",
+    "selection": 1.2120,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.2103). Outlier handling: max=1.5473, min=0.8692. Exclude 1 high, 1 low per protocol. Trim=1.2120 balances: 3-yr=1.0596 (recent slowdown), 5-yr weighted=1.2575 (older data influence). Diagnostic: paid_to_incurred ratio rising gradually, case reserves stabilizing. Select 5-yr trim (1.2120) for baseline; reflects developing incurred position."
+  },
+  {
+    "interval": "35-47",
+    "selection": 1.1724,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.1316). Moderate volatility. Trim=1.1724, simple=1.1874, weighted=1.2002. Convergence present but wide: 10yr trim=1.1727 nearly matches 5yr. 3yr trend downward (1.0798) suggests case reserve influence or slower settlement. Diagnostic: check paid (1.1437) vs incurred; paid < incurred as expected in early development. Select 1.1724 for conservative early-maturity incurred."
+  },
+  {
+    "interval": "47-59",
+    "selection": 1.0494,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0556). Tight convergence: 5yr trim=1.0494, 10yr trim=1.0491, within ±0.1%. All high/low exclusions minimal (max=1.1423, min=0.9077). Slope_5yr=-0.0277 (gentle decline). Early-to-mid transition; incurred still developing but slower. Select 1.0494."
+  },
+  {
+    "interval": "59-71",
+    "selection": 1.1002,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0773). Moderate CV triggers caution. Trim=1.1002, simple=1.1071, weighted=1.1027. 5-yr vs 3-yr divergence: 5yr=1.1002, 3yr=1.1226, ~2% apart. Trend signal: slope_5yr=0.0153 (upward), slope_3yr=0.0447 (accelerating). Case reserve diagnostic likely supporting modest LDF increase. Select 1.1002 with monitoring for severity trends."
+  },
+  {
+    "interval": "71-83",
+    "selection": 1.0980,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0740). Trend check: slope_5yr=0.0123 (weak), slope_3yr=-0.0505 (negative). Averages: trim=1.0980, simple=1.0836, weighted=1.0870. 3-yr (1.1022) vs 5-yr (1.0980) show modest acceleration downward recently. Bayesian anchoring to 5-yr trim: 1.0980, reflecting settled incurred position near paid convergence."
+  },
+  {
+    "interval": "83-95",
+    "selection": 1.0023,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0136, very low). Tight convergence: trim=1.0023, weighted=1.0065, simple=1.0076. Slope near zero. Mid-to-late maturity; incurred and paid converge. Many diagonals show min=0.9816, max=1.1441, but recent values 1.00-1.01. Select 1.0023 for low late-stage incurred development."
+  },
+  {
+    "interval": "95-107",
+    "selection": 1.0154,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0254). Slight elevation vs prior. Trim=1.0154, weighted=1.0146, simple=1.0207. Slope_5yr=-0.0108 (slight decline). Mid-maturity 95-107 months; sparse recent data. Use 5-yr trim; incurred reserve releases moderately. Select 1.0154."
+  },
+  {
+    "interval": "107-119",
+    "selection": 1.0270,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0393). Moderate CV with upward signal. Trim=1.0270, weighted=1.0485, simple=1.0354. Divergence: 5-yr (1.0270) vs 3-yr (1.0389) +1% recent uptick. Slope_5yr=0.0149 (positive). Case reserve emergence likely; select 5-yr trim (1.0270) with acknowledgment of recent strength."
+  },
+  {
+    "interval": "119-131",
+    "selection": 1.0028,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0134, tight). Convergence: trim=1.0028, weighted=1.0082, simple=1.0059. Slope_5yr=-0.0044 (flat). 3-yr (1.0002) much lower, suggesting recent favorable development or closure slowdown. Use 5-yr trim (1.0028) for baseline; sparse data caution increases at this maturity."
+  },
+  {
+    "interval": "131-143",
+    "selection": 1.0045,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0762, elevated for this range). Indicates outlier variability: max=1.1790, min=0.9887. Exclude 1 high, 1 low. Trim=1.0045 vs weighted=1.0350, significant difference. Recent 3-yr (1.0586) higher. Slope_5yr=0.0152 (positive trend). At 131-143 months, incurred development slowing; select 1.0045 for conservatism."
+  },
+  {
+    "interval": "143-155",
+    "selection": 1.0004,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0162, low). Extreme convergence zone: trim=1.0004, weighted=1.0022, simple=1.0033. Slope near zero. Late maturity; minimal incremental incurred expected. Select 1.0004, essentially 1.0 for practical purposes."
+  },
+  {
+    "interval": "155-167",
+    "selection": 1.0001,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0004, near-zero). All averages 1.00-1.0030. Slope zero. Tail zone; incurred claims essentially final. Select 1.0001."
+  },
+  {
+    "interval": "167-179",
+    "selection": 1.0022,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0187). Slight elevation from prior; trim=1.0022, weighted=1.0211, simple=1.0100. Older data (10-yr) shows 1.0167; recent 3-yr very close to trim at 1.0020. Tail factor; minimal recent incurred activity. Select 1.0022."
+  },
+  {
+    "interval": "179-191",
+    "selection": 1.0040,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0049). Trim=1.0040, weighted=1.0036, simple=1.0047. All tight within ±0.1%. Slope_5yr=-0.0021 (flat). Sparse tail; select 1.0040."
+  },
+  {
+    "interval": "191-203",
+    "selection": 1.0073,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0089). Trim=1.0073, weighted=1.0076, simple=1.0086. Slight uptick vs prior. Very sparse (2-3 diagonals). Slope=0.0030 (weak positive). Select 1.0073 as upper end of tight tail band."
+  },
+  {
+    "interval": "203-215",
+    "selection": 1.0008,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0032, very low). Trim=1.0008, all others 1.0020-1.0069. Slope=0.0012 (flat). Ultra-sparse tail (1-2 recent data points). Select 1.0008 for conservative tail LDF."
+  },
+  {
+    "interval": "215-227",
+    "selection": 1.0000,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0, zero variance). All averages exactly 1.0 or within 0.0001. At 215-227 months (19 years), incurred claims fully closed. Select 1.0000."
+  },
+  {
+    "interval": "227-239",
+    "selection": 1.0000,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0188). Averages: trim=1.0000, weighted=1.0089, simple=1.0085. Min=1.0, max=1.0424. Sparse (2 diagonals). Select 1.0000 as most credible tail assumption; incurred tail effectively settled."
+  },
+  {
+    "interval": "239-251",
+    "selection": 1.0000,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0130). All recent diagonals show 1.0 or marginal variation (max=1.0234). Extreme sparsity (1-2 diagonals). Select 1.0000 for tail."
+  },
+  {
+    "interval": "251-263",
+    "selection": 1.0139,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0178). Final tail observations: trim=1.0139, weighted=1.0174, simple=1.0166. All recent values cluster 1.01-1.02. Sparse but consistent signal. Select 1.0139 as final LDF before curve fit; tail completion."
+  },
+  {
+    "interval": "263-275",
+    "reasoning": "CUTOFF at 263 months: CV=0.0, indicating only 1 data point or identical values. Incurred triangle complete by 263 months. Beyond this, apply tail curve (constant 1.0 or minimal decay). No explicit LDF selected; tail initiated."
+  }
+]

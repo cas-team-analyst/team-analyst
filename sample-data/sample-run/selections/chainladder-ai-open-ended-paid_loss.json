@@ -1,0 +1,96 @@
+[
+  {
+    "interval": "11-23",
+    "selection": 2.43,
+    "reasoning": "Early reported claim development. Range 1.74-3.32 with CV 25%. Used weighted_all average of 2.46, moderately discounted to 2.43 to balance recent years (which show 2.4-2.6 range) and recognize some volatility. Strong claims activity in first year post-occurrence."
+  },
+  {
+    "interval": "23-35",
+    "selection": 1.34,
+    "reasoning": "Post-initial growth phase. Range 1.06-1.75 with CV 25%. Weighted_all 1.34 selected. Recent periods (2018-2022) show 1.06-1.48, consistent with long-term average. Reflects ongoing development but at decelerating rate."
+  },
+  {
+    "interval": "35-47",
+    "selection": 1.17,
+    "reasoning": "Development moderating significantly. CV 5% indicates solid stability. Range 1.01-1.47, weighted_all 1.18. Selected 1.17 to reflect recent experience (2018-2022 avg ~1.18) and tight distribution of factors."
+  },
+  {
+    "interval": "47-59",
+    "selection": 1.10,
+    "reasoning": "Continuing moderate development. CV 11%, weighted_all 1.10. Range 1.01-1.23. Consistent historical performance. Recent years show 1.01-1.21, supporting baseline selection."
+  },
+  {
+    "interval": "59-71",
+    "selection": 1.07,
+    "reasoning": "Development entering mid-tail region. CV 7%, weighted_all 1.08. Range 0.997-1.21. Recent 5-year average 1.12 vs. all-years 1.08; selected 1.07 to be slightly conservative and reflect long-term pattern."
+  },
+  {
+    "interval": "71-83",
+    "selection": 1.06,
+    "reasoning": "Continued slow development. CV 10%, weighted_all 1.06. Range 0.99-1.29. Slight upward bias in recent years (1.08-1.13); selection reflects broader historical credibility over shorter windows."
+  },
+  {
+    "interval": "83-95",
+    "selection": 1.025,
+    "reasoning": "Development becoming very slow. CV 4% shows strong consistency. Weighted_all 1.026, selected 1.025. Range 1.00-1.09. Factors tightly distributed around 1.025-1.03, indicating stable late-term development."
+  },
+  {
+    "interval": "95-107",
+    "selection": 1.020,
+    "reasoning": "Minimal development. CV 0.4%, weighted_all 1.021. Range 0.99-1.08. Exceptional stability; all but one year within 1.01-1.03. Selected 1.020 to reflect consensus."
+  },
+  {
+    "interval": "107-119",
+    "selection": 1.039,
+    "reasoning": "Late-stage development resuming slightly. CV 6.5%, weighted_all 1.039. Recent experience shows higher factors (1.06-1.14 in 2015-2016); selected weighted average to reflect credible late development."
+  },
+  {
+    "interval": "119-131",
+    "selection": 1.028,
+    "reasoning": "Stabilizing in mid-tail. CV 1.5%, weighted_all 1.028. Very tight distribution, all years 1.00-1.09. Strong consensus supports selection of weighted average."
+  },
+  {
+    "interval": "131-143",
+    "selection": 1.022,
+    "reasoning": "Continued modest development. CV 3%, weighted_all 1.023. Range 1.00-1.06. Recent years 2015-2022 show 1.00-1.06, consistent with long-term weighted average."
+  },
+  {
+    "interval": "143-155",
+    "selection": 1.021,
+    "reasoning": "Development slowing further. CV 2.3%, weighted_all 1.021. Range 1.0-1.05. Very tight consistency across years indicates credible baseline."
+  },
+  {
+    "interval": "155-167",
+    "selection": 1.015,
+    "reasoning": "Late-tail development tightening. CV 0.2%, weighted_all 1.015. Remarkable stability; almost all periods 1.0-1.03. Selected to reflect consensus of tight range."
+  },
+  {
+    "interval": "167-179",
+    "selection": 1.015,
+    "reasoning": "Sustained modest development. CV 0.3%, weighted_all 1.016. Range 1.0-1.03. Consistent with prior interval; supports selection of 1.015 for tail smoothing."
+  },
+  {
+    "interval": "179-191",
+    "selection": 1.016,
+    "reasoning": "Tail development pattern established. CV 1.6%, weighted_all 1.016. Range 1.0-1.03. Selected to reflect conservative tail estimate while respecting observed factors."
+  },
+  {
+    "interval": "191-203",
+    "selection": 1.016,
+    "reasoning": "Very late development. CV 1%, weighted_all 1.016. Range 1.0-1.03. Consistent with 179-191 interval. High stability indicates reliable selection."
+  },
+  {
+    "interval": "203-215",
+    "selection": 1.009,
+    "reasoning": "Extreme tail. CV 0.3%, weighted_all 1.009. Most periods at 1.0 with occasional modest factors. Minimal development expected."
+  },
+  {
+    "interval": "215-227",
+    "selection": 1.013,
+    "reasoning": "Tail region with sparse data. CV 3.2%, weighted_all 1.013. Recent years show 1.0 or very close; selected 1.013 as conservative continuation of observed pattern."
+  },
+  {
+    "interval": "227-239",
+    "reasoning": "Cutoff: Beyond 227 months (18.9 years), data becomes too sparse for credible direct LDF selection. Minimum observation count insufficient; tail curve fitting more appropriate than age-to-age factor extrapolation. Recommend curve-based ultimate projection from this point forward."
+  }
+]

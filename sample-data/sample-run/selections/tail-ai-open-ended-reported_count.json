@@ -1,0 +1,6 @@
+[
+  {
+    "method": "exp_dev_quick",
+    "reasoning": "Exponential decay with tail factor 1.0 selected for reported count triangle, which exhibits near-complete closure by age 23 months. Diagnostics: R² = 1.0 and LOO std dev = 0.0 confirm perfect fit to the highly converged selected LDFs (all = 1.0 from 23+ months onward). Early development isolated to 11-23 months (CV = 0.013) reflects claim notification lag; all subsequent intervals converge to flat (CV < 0.004 across mid and deep tail). Materiality check passed. All parametric curves yield tail_factor ~= 1.0 given the near-flat input; exponential form with perfect diagnostics is defensible and transparent. Bondy variants lack diagnostic output (NaN). Skurnick R² = 0.070 and tail_factor = 2.628 are inappropriate for a closed triangle. Selection reflects actuarial reality: reported count development is rapid early (claims notification) and effectively complete by 23 months in WC; tail risk is immaterial."
+  }
+]

@@ -1,0 +1,111 @@
+[
+  {
+    "interval": "11-23",
+    "selection": 2.5525,
+    "reasoning": "Exclude high/low from 5-year (CV=0.1774, within 0.10-0.20 range). 5-year avg_exclude_high_low=2.5525 balances outlier risk (max=3.3152, min=1.7371) with recent volatility (3-year=2.6286, 5-year=2.5525). Early maturity: apply downward asymmetric conservatism to 5-year avg, move 40% of gap to prior (implicit baseline 2.60). Selection 2.5525 is closest match without excessive recent outlier influence."
+  },
+  {
+    "interval": "23-35",
+    "selection": 1.4224,
+    "reasoning": "5-year volume-weighted average (CV=0.2103, within exclusion zone). High CV triggers outlier analysis: max=1.7497, min=1.0595. Weighted 5-year (1.4224) balances volume exposure better than simple average (1.4280). Recent 3-year (1.3021) shows acceleration downward, but 5-year weighted captures stability. Apply Bayesian anchoring with 50% credibility on recent trend."
+  },
+  {
+    "interval": "35-47",
+    "selection": 1.1437,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.1004, outlier caution applied). Exclude single high/low per protocol. Max=1.4653 shows outlier influence; trimmed average 1.1437 removes this. Recent trend 3-year (1.1244) very close, within ±2% confirms convergence. Hold at 1.1437 for early-maturity stability."
+  },
+  {
+    "interval": "47-59",
+    "selection": 1.0734,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0759, below 0.10 threshold). Averages converge: 5-yr excl h/l=1.0734, 10-yr excl h/l=1.0800, within ±1%. No evidence of trending. Simple average 1.0924 vs trimmed 1.0734; trimmed is more credible given max=1.2312. Select 1.0734."
+  },
+  {
+    "interval": "59-71",
+    "selection": 1.1077,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0522). Convergence check: 5-yr excl h/l=1.1077, 10-yr excl h/l=1.0640 diverge by >3%, indicating recent uptick. 3-year=1.1264 > 5-year, 3yr vs 5yr divergence ~3.5% triggers use of 5-year (1.1077) with downward caution. Data quality: slope_5yr=0.0158 (modest positive trend), slope_3yr=0.0539 (stronger). Mix signals; hold 5-year."
+  },
+  {
+    "interval": "71-83",
+    "selection": 1.1033,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0961, within caution range but trending evaluation needed). Slope_3yr=-0.04, slope_5yr=0.0287 indicate oscillation around trend. Incurred severity diagnostic shows rising (+2-5% p.a. trend), consistent with modest LDF increase. Select trimmed 5-year (1.1033) for conservatism; paid severity growth supports this."
+  },
+  {
+    "interval": "83-95",
+    "selection": 1.0214,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0391, low volatility). Tight convergence: weighted_5yr=1.0328, 10yr=1.0205, within ±1%. Trimmed 5-yr (1.0214) is midpoint of convergence band. No outliers (max=1.0911, min=1.0). Maturity 83-95 months: use standard 5-year average."
+  },
+  {
+    "interval": "95-107",
+    "selection": 1.0106,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0112, very tight). All averages cluster: 5-yr simple=1.0130, 5-yr trim=1.0106, within ±0.2%. Convergence override applies; select at lower end (1.0106) for conservatism, reflecting mid-maturity behavior where paid stabilizes."
+  },
+  {
+    "interval": "107-119",
+    "selection": 1.0246,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0566). Slope_5yr=0.0317 (positive) indicates modest trend. Paid_severity diagnostic and paid_to_incurred behavior support stable mid-range development. 5-yr trim (1.0246) > 10-yr (1.0286), but 3-yr high (1.0665) suggests recent environment shift upward. Blend 75% 5yr + 25% 3yr effect: ~1.032. Conservative selection 1.0246."
+  },
+  {
+    "interval": "119-131",
+    "selection": 1.0044,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0121, convergence zone). All averages within ±1%: weighted_5yr=1.0083, simple_5yr=1.0086, trim_5yr=1.0044. Lower end of tight band selected for mature development. Minimal slope (0.0009) confirms stability."
+  },
+  {
+    "interval": "131-143",
+    "selection": 1.0136,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0237). Slight elevation vs prior columns. Slope_5yr=-0.0005 (flat), slope_3yr=-0.0051 (slight decline). 5-yr trim=1.0136 vs 10yr=1.0184; 3yr=1.0220. Recent uptick in 3yr suggests case reserve movement or severity increase. Select 1.0136 for baseline, monitoring case reserve behavior."
+  },
+  {
+    "interval": "143-155",
+    "selection": 1.0017,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0235). Very low LDFs indicate tail approach. 5-yr trim=1.0017, simple=1.0068, within convergence. Slope_5yr=-0.0052 confirms modest decline toward 1.0. At 143-155 months (late maturity), apply sparse-data caution: limit to 5-year, weight toward lower end. Select 1.0017."
+  },
+  {
+    "interval": "155-167",
+    "selection": 1.0045,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0108, tight). Converged: all averages 1.0045-1.0143. Slope flat. This interval shows monotonic decay beginning; LDFs stabilizing near 1.0. Select convergence midpoint (1.0045) for tail stability."
+  },
+  {
+    "interval": "167-179",
+    "selection": 1.0063,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0114). Convergence: 5yr trim=1.0063, all within ±1%. Slope_5yr=-0.0022 confirms gentle decline. At 167-179 months, continuing late-stage development; CVs remain low. Select 1.0063."
+  },
+  {
+    "interval": "179-191",
+    "selection": 1.0124,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0103). Slight uptick vs prior, 5yr trim=1.0124 > previous. Slope_5yr=0.0040 (positive). Incurred severity may show case strengthening. All 5-year averages (weighted, simple, trim) converge within ±1% at 1.0063-1.0156. Select 1.0124 as midpoint."
+  },
+  {
+    "interval": "191-203",
+    "selection": 1.0012,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0031, very low). Tight convergence: trim=1.0012, weighted=1.0021, simple=1.0023. Slope_5yr=0.0040 minimal positive. Late tail development; sparse data caution applies (very few recent diagonals). Select 1.0012 as lower bound of tight cluster."
+  },
+  {
+    "interval": "203-215",
+    "selection": 1.0018,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0069, low). Averages cluster: trim=1.0018, weighted=1.0047, simple=1.0043. Slope negative (-0.0021). Late-maturity sparse data zone; most diagonal diagonals have <5 points. Use 5-year trim (1.0012) conservatively, though recent (2-3 years) show 1.0018-1.0054 range. Select 1.0018."
+  },
+  {
+    "interval": "215-227",
+    "selection": 1.0000,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0054). Lowest values in tail approach; trim=1.0000, weighted=1.0025. Many diagonals converge to exactly 1.0 (min=1.0, max=1.0121). At 215-227 months (19 years), very limited development expected. Select 1.0000 reflecting paid claims closure."
+  },
+  {
+    "interval": "227-239",
+    "selection": 1.0037,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0054, essentially flat). All averages 1.0 or near-1.0. Trim=1.0000, weighted=1.0054. Sparse recent data (3-4 diagonals only). Select 1.0037 (simple 5yr) as slight hedge for ongoing development in sparse tail."
+  },
+  {
+    "interval": "239-251",
+    "selection": 1.0074,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0050). Very sparse tail data; only 2-3 diagonals. Averages: trim=1.0074, simple=1.0057, weighted=1.0062. Slope_5yr=-0.0032 (flat). Select 1.0074 as upper bound to reflect uncertainty in ultra-sparse data; tail factor stabilizes here."
+  },
+  {
+    "interval": "251-263",
+    "selection": 1.0076,
+    "reasoning": "5-year avg_exclude_high_low (CV=0.0019, near-zero variance). Extremely sparse: only 2 recent diagonals. All averages 1.0074-1.0076. Slope zero. This is the effective cutoff for credible paid LDF selection; beyond this, curve fitting is required. Select 1.0076 as final explicit selection."
+  },
+  {
+    "interval": "263-275",
+    "reasoning": "CUTOFF at 263 months: Only 1-2 final diagonals with LDF data (cv=0.0019, essentially zero). Beyond this point, CV=NaN indicates insufficient data. Tail curve should begin here with standard tail assumptions (e.g., exponential decay or constant LDF 1.00). Paid triangle shows complete development by 250+ months; ultimate factors applied via tail curve. No explicit LDF selected; curve fitting initiated."
+  }
+]

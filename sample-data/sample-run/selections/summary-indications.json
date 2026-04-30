@@ -1,0 +1,22 @@
+{
+  "Loss": {
+    "paid_or_reported_actual": 41767854.34,
+    "primary_actual": 43616394.86,
+    "case_reserves": 1848540.52,
+    "ibnr": 3200946.14,
+    "total_unpaid": 5049486.66,
+    "selected_ultimate": 46817341.0,
+    "primary_measure": "Incurred Loss",
+    "category_sheet": "Losses"
+  },
+  "Count": {
+    "paid_or_reported_actual": 9716.21,
+    "primary_actual": 9716.21,
+    "case_reserves": null,
+    "ibnr": 35.79,
+    "total_unpaid": 35.79,
+    "selected_ultimate": 9752.0,
+    "primary_measure": "Reported Count",
+    "category_sheet": "Counts"
+  }
+}

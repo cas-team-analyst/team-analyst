@@ -1,0 +1,96 @@
+[
+  {
+    "interval": "11-23",
+    "selection": 1.65,
+    "reasoning": "Early case reserve development dominates. Range 1.09-2.76 with CV 16%. Weighted_all 1.61; 3-year weighted 1.49 shows recent moderation. Selected 1.65 to balance broader history (which reflects typical WC case reserve emergence) with recent experience showing slightly lower factors."
+  },
+  {
+    "interval": "23-35",
+    "selection": 1.19,
+    "reasoning": "Major development phase continuing. Range 0.87-1.55 with CV 13%. Weighted_all 1.19. Recent 5-year average 1.26 vs. all-years 1.19; selected weighted_all to reflect broader credibility and avoid over-weighting recent favorable development."
+  },
+  {
+    "interval": "35-47",
+    "selection": 1.15,
+    "reasoning": "Development entering sustained mode. CV 5.7%, range 0.98-1.39. Weighted_all 1.15. Recent years show 1.07-1.39 with good consistency. Selected baseline weighted average to reflect stable pattern."
+  },
+  {
+    "interval": "47-59",
+    "selection": 1.05,
+    "reasoning": "Development moderating. CV 3.6%, range 0.91-1.14. Weighted_all 1.049. Recent experience clustered 1.02-1.06. Selected 1.05 reflecting both weighted average and recent consistency."
+  },
+  {
+    "interval": "59-71",
+    "selection": 1.07,
+    "reasoning": "Elevated development continues. CV 9.3%, range 0.99-1.22. Weighted_all 1.074. More volatility than adjacent intervals; 5-year weighted 1.10 vs. all-years 1.07. Selected weighted_all to balance recent upside with longer-term pattern."
+  },
+  {
+    "interval": "71-83",
+    "selection": 1.05,
+    "reasoning": "Moderating development. CV 6%, range 0.97-1.15. Weighted_all 1.046. Recent 3-year average 1.09 vs. all-years 1.05; selected weighted_all to reflect broader experience and avoid over-reactivity to recent small-sample results."
+  },
+  {
+    "interval": "83-95",
+    "selection": 1.018,
+    "reasoning": "Development becoming minimal. CV 1.6%, range 0.98-1.14. Weighted_all 1.022. Recent years show tighter 1.00-1.03. Selected 1.018 as conservative midpoint reflecting increasing stability."
+  },
+  {
+    "interval": "95-107",
+    "selection": 1.018,
+    "reasoning": "Tail development stabilizing. CV 2.2%, range 0.995-1.072. Weighted_all 1.019. Selected 1.018 for consistency with 83-95 interval and reflecting very tight recent experience."
+  },
+  {
+    "interval": "107-119",
+    "selection": 1.037,
+    "reasoning": "Late-stage development spike. CV 4.9%, range 0.991-1.102. Weighted_all 1.037. Recent 5-year weighted 1.049 shows sustained elevation. Selected weighted average to capture credible late development."
+  },
+  {
+    "interval": "119-131",
+    "selection": 1.017,
+    "reasoning": "Returning to baseline. CV 0.7%, range 0.993-1.083. Weighted_all 1.017. Extremely tight distribution despite spike in prior interval. Selected weighted average reflecting strong consistency."
+  },
+  {
+    "interval": "131-143",
+    "selection": 1.033,
+    "reasoning": "Modest development continues. CV 9.8%, range 0.99-1.18. More volatile than adjacent intervals. Weighted_all 1.033. 3-year weighted 1.053 vs. all-years 1.033; selected all-years to reflect broader credibility given high CV."
+  },
+  {
+    "interval": "143-155",
+    "selection": 1.005,
+    "reasoning": "Tail development minimal. CV 0.08%, range 0.985-1.030. Exceptional stability. Weighted_all 1.0053. Selected 1.005 reflecting consensus of very tight data."
+  },
+  {
+    "interval": "155-167",
+    "selection": 1.005,
+    "reasoning": "Sustaining tail baseline. CV 0.01%, range 0.982-1.040. Remarkable consistency. Weighted_all 1.0054. Selected 1.005 to maintain smooth tail progression."
+  },
+  {
+    "interval": "167-179",
+    "selection": 1.017,
+    "reasoning": "Late-stage development resuming. CV 0.28%, range 1.0-1.044. Weighted_all 1.017. More development than adjacent 143-167 region; recent experience 1.0-1.044 supports selection."
+  },
+  {
+    "interval": "179-191",
+    "selection": 1.011,
+    "reasoning": "Tail development modest. CV 0.28%, range 1.0-1.053. Weighted_all 1.012. Recent years show factors at 1.0-1.03. Selected 1.011 reflecting conservative tail estimate."
+  },
+  {
+    "interval": "191-203",
+    "selection": 1.015,
+    "reasoning": "Late-tail development. CV 1%, range 1.0-1.053. Weighted_all 1.015. Selected to reflect observed pattern and maintain tail smoothing."
+  },
+  {
+    "interval": "203-215",
+    "selection": 1.007,
+    "reasoning": "Extreme tail with minimal data. CV 0.37%, range 1.0-1.031. Most periods at 1.0. Selected 1.007 as conservative continuation respecting sparse observations."
+  },
+  {
+    "interval": "215-227",
+    "selection": 1.004,
+    "reasoning": "Very late tail. CV 0%, weighted_all 1.0045. All observations at or near 1.0. Selected 1.004 reflecting consensus of minimal development."
+  },
+  {
+    "interval": "227-239",
+    "reasoning": "Cutoff: Beyond 227 months (18.9 years), sample size becomes inadequate for reliable age-to-age estimation. Observed factors mostly 1.0; tail curve methodology more appropriate than individual factor selection for remaining development."
+  }
+]

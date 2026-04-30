@@ -1,0 +1,6 @@
+[
+  {
+    "method": "exp_dev_product",
+    "reasoning": "Incurred loss triangle — expect medium-length tail, materially shorter than paid loss. Exponential product form selected for its ability to achieve rapid decay to 1.0 tail. At 263-month cutoff, cv_at_starting_age = 0.0178 (tight convergence), n_factors_in_fit = 21 (strong basis). Gap Rule hard requirement satisfied: gap_flag = False, gap_to_last_observed = 0.457 (within acceptable range for product form discretization). Fit quality: R² = 0.4421, LOO std dev = 0.000952 (acceptable; product method does not compute traditional R²). Tail factor = 1.00036, pct_of_cdf = 0.0163% (materiality anchor applies strongly). All exponential summation methods (exp_dev_quick, exp_dev_quick_exact_last) rejected due to gap_flag = True (gap = 0.4567, disconnects from last selected LDF). Modified Bondy variants acceptable but inferior: tail = 1.0278-1.0280, less consistent with empirical convergence pattern. Product form avoids overshooting the tail and maintains mathematical rigor. Sensitivity analysis: ±10% reserve delta ≈ ±1.23M, indicating moderate reserve impact; tail material for incurred loss but immaterial by percentage of CDF. Selection represents best balance of fit quality, convergence characteristics, and materiality."
+  }
+]

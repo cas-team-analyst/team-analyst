@@ -1,0 +1,6 @@
+[
+  {
+    "method": "exp_dev_product",
+    "reasoning": "Exponential decay with tail factor 1.0023 selected for the mature Workers Compensation paid loss triangle. Diagnostics support: R² = 0.646 indicates solid fit to observed decay pattern; LOO std dev = 0.0020 demonstrates excellent cross-validation stability with tight residuals. The smooth exponential form appropriately captures the pattern of diminishing development rates in the mid-tail (35-71 months, CV converging to 0.06), transitioning to near-flat deep tail (83+ months). Materiality check passed; tail factor yields ~0.04% of ultimate. Alternative exp_dev_quick_exact_last (tail_factor=1.91) produces excessive reserve impact (8.49% of CDF) and is overconservative. Bondy variants lack diagnostic transparency. Selection defends against both understating late IBNR and avoiding implausible tail stretch."
+  }
+]

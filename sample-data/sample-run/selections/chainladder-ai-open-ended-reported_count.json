@@ -1,0 +1,96 @@
+[
+  {
+    "interval": "11-23",
+    "selection": 1.065,
+    "reasoning": "Initial claim reporting. Range 1.0-1.143 with CV 1.3%. Weighted_all 1.062. Recent 5-year weighted 1.118 shows slightly elevated reporting; selected 1.065 to balance recent experience with longer-term baseline and reflect typical WC early-period claim discovery."
+  },
+  {
+    "interval": "23-35",
+    "selection": 1.003,
+    "reasoning": "Reporting near completion. CV essentially 0%, weighted_all 1.003. All factors within 0.998-1.005. Exceptional stability and minimal development after 23 months, reflecting rapid WC claim reporting patterns."
+  },
+  {
+    "interval": "35-47",
+    "selection": 1.0004,
+    "reasoning": "Count stabilized. CV 0%, weighted_all 1.0004. All factors 1.0 or near 1.0. Minimal reported claim count development. Factors essentially flat; essentially no further reported count emergence expected."
+  },
+  {
+    "interval": "47-59",
+    "selection": 1.0,
+    "reasoning": "No material development. CV 0.2%, range 0.995-1.004. All factors at or below 1.0 in recent years. Selected 1.0 reflecting flat development and minimal volatility."
+  },
+  {
+    "interval": "59-71",
+    "selection": 1.0,
+    "reasoning": "Count development ceased. CV 0.2%, range 0.996-1.027. Weighted_all 1.002. Recent years show 1.0 or below. Selected 1.0 reflecting expected count stabilization at 4+ years development."
+  },
+  {
+    "interval": "71-83",
+    "selection": 1.0,
+    "reasoning": "Tail count near stability. CV 0%, weighted_all 1.0024. All factors at 1.0. No further development expected. Selected 1.0 for tail consistency."
+  },
+  {
+    "interval": "83-95",
+    "selection": 1.0,
+    "reasoning": "Minimal tail development. CV 0.2%, weighted_all 0.9998. Factors range 0.996-1.0. Selected 1.0 reflecting complete count stabilization."
+  },
+  {
+    "interval": "95-107",
+    "selection": 1.0,
+    "reasoning": "Count completely stable. CV 0%, all factors 1.0. No development. Selected 1.0 reflecting zero reported count emergence at this stage."
+  },
+  {
+    "interval": "107-119",
+    "selection": 1.0,
+    "reasoning": "Extended tail, no count change. CV 0.37%, range 0.988-1.0. Weighted_all 0.9994. Selected 1.0 reflecting flat development profile."
+  },
+  {
+    "interval": "119-131",
+    "selection": 1.0,
+    "reasoning": "Deep tail, zero development. CV 0%, all factors 1.0. No further reported count emergence. Selected 1.0 with confidence."
+  },
+  {
+    "interval": "131-143",
+    "selection": 1.0,
+    "reasoning": "Very late tail. CV 0%, all 1.0. Count development complete well before this interval. Selected 1.0."
+  },
+  {
+    "interval": "143-155",
+    "selection": 1.0,
+    "reasoning": "Extreme late tail. CV 0%, all 1.0. No further reported count development at 11+ years. Selected 1.0."
+  },
+  {
+    "interval": "155-167",
+    "selection": 1.0,
+    "reasoning": "Beyond typical development window. CV 0%, all 1.0. Selected 1.0 with high confidence."
+  },
+  {
+    "interval": "167-179",
+    "selection": 1.0,
+    "reasoning": "Extended maturity. CV 0%, all 1.0. Selected 1.0 reflecting complete count stabilization."
+  },
+  {
+    "interval": "179-191",
+    "selection": 1.0,
+    "reasoning": "Very extended tail. CV 0%, all 1.0. No reported count emergence. Selected 1.0."
+  },
+  {
+    "interval": "191-203",
+    "selection": 1.0,
+    "reasoning": "Mature claims. CV 0%, all 1.0. Selected 1.0 reflecting long-term count stabilization."
+  },
+  {
+    "interval": "203-215",
+    "selection": 1.0,
+    "reasoning": "Deep maturity. CV 0%, all 1.0. Selected 1.0 reflecting no further reported count change."
+  },
+  {
+    "interval": "215-227",
+    "selection": 1.0,
+    "reasoning": "Extended development window. CV 0%, all 1.0. Selected 1.0 with certainty for this mature age range."
+  },
+  {
+    "interval": "227-239",
+    "reasoning": "Cutoff: Beyond 227 months (18.9 years), reported count development is complete. All observed factors are 1.0; tail methodology unnecessary. Count LDFs should remain at 1.0 for all remaining ages through ultimate."
+  }
+]
