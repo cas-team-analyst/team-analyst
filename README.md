@@ -53,8 +53,9 @@ The primary end-user entry points are:
 
 ## Advanced
 
-See `guides/` for more information for advanced users looking to build on this work.
+See the [Executive Summary](https://github.com/cas-team-analyst/team-analyst/tree/main/guides/EXECUTIVE_SUMMARY.md) for a more detailed overview. 
 
+See [guides](https://github.com/cas-team-analyst/team-analyst/tree/main/guides) for more information for advanced users looking to build on this work.
 Contributions via GitHub Issues and Pull Requests are welcome!
 
 ## Other Tools
