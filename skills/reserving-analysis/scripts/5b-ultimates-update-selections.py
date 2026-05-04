@@ -141,6 +141,21 @@ def main():
     except FileNotFoundError:
         print(f"Excel file not found: {EXCEL_FILE}")
         return
+    
+    # Check for existing AI selections before overwriting
+    for sheet_name in ['Losses', 'Counts']:
+        if sheet_name in wb.sheetnames:
+            ws = wb[sheet_name]
+            col_map = build_column_map(ws, header_row=1)
+            rb_col = col_map.get("Rules-Based AI Selection")
+            if rb_col:
+                has_existing = any(
+                    ws.cell(row=r, column=rb_col).value not in (None, "")
+                    for r in range(2, ws.max_row + 1)
+                    if ws.cell(row=r, column=1).value
+                )
+                if has_existing:
+                    raise ValueError(f"Sheet '{sheet_name}' already has Rules-Based AI selections. Clear manually before re-running.")
         
     total_updates_rb = 0
     total_updates_oe = 0

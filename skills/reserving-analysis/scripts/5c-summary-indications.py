@@ -247,7 +247,6 @@ def main():
         
         print(f"| Loss (WC) | {loss_paid} | {loss_case} | {loss_ibnr} | {loss_unpaid} | {loss_ult} |")
         print(f"| Count (Reported) | {count_reported} | {count_case} | {count_ibnr} | {count_unpaid} | {count_ult} |")
-        print(f"| **Total (Loss)** | **{loss_paid}** | **{loss_case}** | **{loss_ibnr}** | **{loss_unpaid}** | **{loss_ult}** |")
         
         if abs(count['ibnr']) < 0.5:
             print()

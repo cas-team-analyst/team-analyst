@@ -324,22 +324,14 @@ def export_md_data(measures, df2, df3, df4, exp_md, prior_selections=None):
         if prior_selections is not None:
             prior_m = prior_selections[prior_selections['measure'] == measure]
             if not prior_m.empty:
-                # Prior selections are stored as JSON in 'selections' column with interval keys
-                prior_row = prior_m.iloc[0]
-                import json
-                if 'selections' in prior_row and prior_row['selections']:
-                    try:
-                        prior_dict = json.loads(prior_row['selections']) if isinstance(prior_row['selections'], str) else prior_row['selections']
-                        prior_md = "## Prior Selections\n\n"
-                        prior_md += "| Interval | LDF | Reasoning |\n"
-                        prior_md += "|---|---|---|\n"
-                        for interval, data in sorted(prior_dict.items()):
-                            ldf_val = data.get('selection', 'N/A')
-                            reasoning = data.get('reasoning', '')[:80] + "..." if len(data.get('reasoning', '')) > 80 else data.get('reasoning', '')
-                            prior_md += f"| {interval} | {ldf_val} | {reasoning} |\n"
-                        prior_md += "\n"
-                    except (json.JSONDecodeError, TypeError):
-                        pass
+                prior_md = "## Prior Selections\n\n"
+                prior_md += "| Interval | LDF | Reasoning |\n"
+                prior_md += "|---|---|---|\n"
+                for _, row in prior_m.iterrows():
+                    reasoning = str(row.get('reasoning', ''))
+                    truncated = reasoning[:80] + "..." if len(reasoning) > 80 else reasoning
+                    prior_md += f"| {row['interval']} | {row['selection']:.4f} | {truncated} |\n"
+                prior_md += "\n"
         
         if not prior_md:
             prior_md = "## Prior Selections\n\nNo prior LDF selections found for this analysis.\n\n"

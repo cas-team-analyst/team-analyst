@@ -1,7 +1,5 @@
 # Step 1: Project Setup
 
-- [ ] Orient to the OS Environment following steps in SKILL.md. It is critical to get this set up before continuing. Downstream steps won't work if we lose track of this task.
-
 - [ ] Respond to the user with the welcome message from assets and wait for their confirmation.
 
 - [ ] Present the project-setup-form from assets. Display the form exactly as written. Wait for the user to provide all the fields before proceeding. Do not skip fields or infer missing values.
@@ -32,7 +30,7 @@
 
 # Step 3: Data Intake
 
-- [ ] Use bash cp to copy all the numbered scripts and the modules folder from the reserving-analysis skill scripts folder to `scripts/` in the working directory. Do NOT regenerate. Ensure copied files are writable (use chmod +w if needed) since you will edit them to track progress.
+- [ ] Use bash cp to copy all the numbered scripts and the modules folder from the reserving-analysis skill scripts folder to `scripts/` in the working directory. Do NOT regenerate.
 
 - [ ] Based on available data, determine which triangles we will use to come up with Ultimates estimates using the Chain Ladder method: Paid Losses, Incurred Losses, Reported Claims, Closed Claims, etc.
 
@@ -137,24 +135,24 @@ _(Pause for Selections only):_
 
 - [ ] Run `2d-tail-create-excel.py` to create `selections/Chain Ladder Selections - Tail.xlsx` with curve fit results and diagnostics. If prior tail selections exist (`selections/tail-factor-prior.csv`), they will be included in a "Prior Selection" row for reference. The script will print the context file paths it creates (e.g., "  Exported MD: selections/tail-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
 
-- [ ] **Invoke the rules-based tail selector once** for all measures. Call the `selector-tail-factor-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+- [ ] **Invoke the rules-based tail selector once** for all measures. Call the `selector-tail-curve-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
   - Read each context file
   - Apply the tail curve decision framework to each measure independently
   - Select the best curve METHOD (not tail factor) based on diagnostics
-  - Write one JSON file per measure: `selections/tail-ai-rules-based-<measure>.json`
+  - Write one JSON file per measure: `selections/tail-curve-ai-rules-based-<measure>.json`
   
   Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
-- [ ] **Invoke the open-ended tail selector once** for all measures. Call the `selector-tail-factor-ai-open-ended` subagent and pass the list of context file paths you captured from the script output. The subagent will:
+- [ ] **Invoke the open-ended tail selector once** for all measures. Call the `selector-tail-curve-ai-open-ended` subagent and pass the list of context file paths you captured from the script output. The subagent will:
   - Read each context file
   - Apply holistic actuarial judgment (no rigid rules framework) to each measure independently
-  - Write one JSON file per measure: `selections/tail-ai-open-ended-<measure>.json`
+  - Write one JSON file per measure: `selections/tail-curve-ai-open-ended-<measure>.json`
   
   Verify that one JSON file was created for each measure. **Do NOT read the context files yourself** — the subagent will read them. **Do NOT read the JSON responses** — only verify the files were created.
 
 - [ ] Run `2e-tail-update-selections.py` to collect all per-measure JSON files and insert the selections into the Excel file. This script will:
-  - Load all `selections/tail-ai-rules-based-*.json` files and combine them
-  - Load all `selections/tail-ai-open-ended-*.json` files and combine them
+  - Load all `selections/tail-curve-ai-rules-based-*.json` files and combine them
+  - Load all `selections/tail-curve-ai-open-ended-*.json` files and combine them
   - Populate the **Rules-Based AI Selection** row and **Open-Ended AI Selection** row in each sheet
 
 - [ ] Tell the user where `selections/Chain Ladder Selections - Tail.xlsx` is located. Explain that both rules-based and open-ended AI selections (purple rows) are visible. The **Rules-Based Selection** row shows the selected curve METHOD (e.g., 'bondy', 'exp_dev_quick') — this is what gets used to generate fitted LDFs in the Chain Ladder script. The user can override it manually. If the Rules-Based Selection row is left blank, the Open-Ended AI Selection will be used as a fallback.
@@ -197,8 +195,6 @@ _(Pause for Selections only):_
 
 # Step 7: Ultimate Selections
 
-- [ ] Copy `scripts/5a-ultimates-create-excel.py` and `scripts/5b-ultimates-update-selections.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`, don't rewrite them yourself). Ensure `scripts/modules/` is already in place (copied in Step 3).
-
 - [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export category context files. The script will create two sheets: **Losses** (combining Incurred and Paid) and **Counts** (combining Reported and Closed). It will print the context file paths it creates (e.g., "  Exported MD: selections/ultimates-context-loss.md", "  Exported MD: selections/ultimates-context-count.md"). **Capture the list of context file paths** from the script output.
 
 - [ ] **Invoke the rules-based ultimates selector once** for both categories. Call the `selector-ultimates-ai-rules-based` subagent and pass the list of context file paths you captured from the script output. The subagent will:
@@ -227,7 +223,9 @@ _(Pause for Selections only):_
 _(Pause for Selections only):_
 - [ ] Open `selections/Ultimates.xlsx` for the user. Let them know they can review and override any AI ultimate selections. Pause and wait for the user to confirm they are done reviewing before continuing.
 
-- [ ] **Update PROGRESS.md with headline indications:** After ultimate selections are complete, add a "Headline Indications" section showing: total unpaid reserve, case reserves, and IBNR from `selections/Ultimates.xlsx`. Use totals from the selected ultimates.
+- [ ] Run `scripts/5c-summary-indications.py` to compute headline indications from the selected ultimates. This script reads `selections/Ultimates.xlsx` and outputs a formatted markdown table with total unpaid reserve, case reserves, and IBNR.
+
+- [ ] **Update PROGRESS.md with headline indications:** Copy the markdown table output from `5c-summary-indications.py` into a "Headline Indications" section in PROGRESS.md.
 
 - [ ] **Update REPORT.md:**
   - Fill in **Section 2 Summary of Indications** table: Extract total unpaid reserve, case reserves, and IBNR from the selected ultimates in `selections/Ultimates.xlsx`. Sum across all accident years. If multiple segments/categories exist, create one row per category (Loss, Count) showing totals.
@@ -247,8 +245,6 @@ _(Pause for Selections only):_
 
 # Step 8: Build Analysis Workbook
 
-- [ ] Copy `scripts/6-analysis-create-excel.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`). Ensure `scripts/modules/` is already in place.
-
 - [ ] Run `scripts/6-analysis-create-excel.py` and alert the user of the location and description of the final output files.
 
 - [ ] **Update REPORT.md:**
@@ -266,8 +262,6 @@ _(Pause for Selections only):_
   - Fill in the "Key Outputs" section listing primary deliverables
 
 # Step 9: Technical Review & Peer Review
-
-- [ ] Copy `scripts/7-tech-review.py` from the reserving-analysis skill scripts folder into the project `scripts/` folder (use `cp` or `mv`). Ensure `scripts/modules/` is already in place.
 
 - [ ] Run `scripts/7-tech-review.py` and alert the user of the results and where the output is saved to.
 

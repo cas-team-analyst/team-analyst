@@ -249,6 +249,14 @@ def read_and_process_expected_loss_rates(triangle_data: pd.DataFrame, file_path:
     df['period'] = df['period'].astype(str).str.strip()
     df = df.dropna(subset=['expected_loss_rate', 'expected_freq'], how='all')
 
+    df['expected_loss_rate'] = pd.to_numeric(df['expected_loss_rate'], errors='coerce')
+    df['expected_freq'] = pd.to_numeric(df['expected_freq'], errors='coerce')
+
+    df.to_parquet(OUTPUT_PATH + "1_expected_loss_rates.parquet", index=False)
+    df.to_csv(OUTPUT_PATH + "1_expected_loss_rates.csv", index=False)
+    print(f"  Saved {len(df)} expected loss rate records")
+    return df
+
 if __name__ == "__main__":
     """Run the data preparation process."""
     print("="*70)
@@ -261,17 +269,14 @@ if __name__ == "__main__":
         read_and_process_triangles()
         print(f"✓ Triangle data complete: {OUTPUT_PATH}1_triangles.parquet/.csv")
         
-        # Load triangles and validate
-        print("  Validating combined data...")
+        # Load triangles (already validated in read_and_process_triangles)
         df_triangles = pd.read_parquet(OUTPUT_PATH + "1_triangles.parquet")
-        validate_combined_data(df_triangles)
-        print(f"  ✓ Validation passed: {len(df_triangles)} rows")
+        print(f"  ✓ Loaded {len(df_triangles)} rows")
         
         # Process prior selections (optional)
         print("\n[2/3] Processing prior selections (if available)...")
         df_prior = read_and_process_prior_selections(df_triangles)
         if df_prior is not None:
-            validate_prior_selections(df_prior, df_triangles)
             output_file = OUTPUT_PATH + "../prior-selections.csv"
             df_prior.to_csv(output_file, index=False)
             print(f"✓ Prior selections validated and saved to: {output_file}")

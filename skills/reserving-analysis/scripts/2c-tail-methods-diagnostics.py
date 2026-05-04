@@ -157,24 +157,6 @@ def get_cutoff_age(selections):
     return None
 
 
-def get_all_ata_stats(df_enhanced, measure):
-    """Compute min, max, avg, slope, CV over all empirical ATAs for context."""
-    df_m = df_enhanced[df_enhanced['measure'].astype(str) == measure]
-    if df_m.empty:
-        return {'min': None, 'max': None, 'avg': None, 'slope': None, 'cv': None}
-    
-    # We want these stats per interval, or across all intervals?
-    # "we should restate the averages slope and cv as context for sleection (add to excel and md) and also add min/max becuse the fitted values would ideally stauy within the min and max of the age to age factors"
-    # Wait, the min and max of the age-to-age factors.
-    # The LDF selector sees averages for each interval. The tail selector should probably see the min/max of the averages?
-    # Or the min/max of ALL individual ATAs? "min and max of the age to age factors"
-    
-    # Just return overall min/max of the ATAs? Or min/max of the averages?
-    # Usually "min and max of the age to age factors" means the min and max of the *averages* so the fitted curve doesn't go crazy. Let's just calculate the min/max of the weighted averages since that's what's modeled.
-    return {}
-
-
-
 # ── WLS curve fitting ─────────────────────────────────────────────────────────
 
 def _wls_linear(t_vals, y_vals, weights):

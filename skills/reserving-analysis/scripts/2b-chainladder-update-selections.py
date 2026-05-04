@@ -301,7 +301,7 @@ def main():
         # Match sheet name to measure (sheet name may be truncated to 31 chars)
         matched = None
         for measure in by_measure:
-            if measure[:31] == sheet_name[:31] or sheet_name[:31] in measure[:31]:
+            if measure[:31] == sheet_name[:31]:
                 matched = measure
                 break
         if matched:

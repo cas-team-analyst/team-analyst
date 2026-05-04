@@ -47,9 +47,6 @@ def write_section_header(ws, row, col_span, title, fmt, level="section"):
     return row + 1
 
 
-CL_LDF_EXCEL = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
-
-
 def find_selected_ldfs_in_cl_excel(cl_excel_path, measure):
     """
     Read Chain Ladder Excel to find selected LDFs and reasoning for a measure.
