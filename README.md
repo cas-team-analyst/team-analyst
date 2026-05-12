@@ -10,7 +10,7 @@ The project is a collection of Markdown files and Python scripts that agentic to
 
 These files can be used with many different agentic tools. For most users, we suggest Claude CoWork:
 
-_The video from our CAS presentation can be found at https://www.youtube.com/watch?v=8JZz2zYrim0. It is an edited screen recording of the plugin setup and workflow in Claude CoWork. It does not have audio but will give you feel for the workflow.
+_The video from our CAS presentation can be found at https://www.youtube.com/watch?v=8JZz2zYrim0. It is an edited screen recording of the plugin setup and workflow in Claude CoWork. It does not have audio but will give you feel for the workflow._
 
 1. Sign up for a Claude Pro account (~$20/month) at https://claude.ai/ and follow installation instructions at https://support.claude.com/en/articles/10065433-installing-claude-desktop
 2. Open Claude Desktop and select "CoWork" on the top left (default is "Chat")
