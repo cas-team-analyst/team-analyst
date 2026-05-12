@@ -1,6 +1,6 @@
 # Step 1: Project Setup
 
-- [ ] Respond to the user with the welcome message from assets and wait for their confirmation.
+- [ ] Respond to the user with the welcome message from assets/welcome-message.md and wait for their confirmation.
 
 - [ ] Present the project-setup-form from assets. Display the form exactly as written. Wait for the user to provide all the fields before proceeding. Do not skip fields or infer missing values.
 

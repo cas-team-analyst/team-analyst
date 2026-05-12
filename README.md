@@ -13,9 +13,11 @@ _These files can be downloaded via `git clone` or Code (green button at the top 
 
 ## Quick Start
 
-These files can be used with many different agentic tools. For most users, we suggest Claude Cowork:
+These files can be used with many different agentic tools. For most users, we suggest Claude Cowork. 
 
-_The video from our CAS presentation can be found at https://www.youtube.com/watch?v=8JZz2zYrim0. It is an edited screen recording of the plugin setup and workflow in Claude Cowork. It does not have audio but will give you feel for the workflow._
+_Instructions for other tools can be found [here](#installation-for-other-agentic-tools)._
+
+_The video from our CAS presentation can be found at https://www.youtube.com/watch?v=8JZz2zYrim0. It is an edited screen recording of the plugin setup and workflow in Claude Cowork. It does not have audio but will give you a feel for the workflow._
 
 1. Sign up for a Claude Pro account (~$20/month) at https://claude.ai/ and follow installation instructions at https://support.claude.com/en/articles/10065433-installing-claude-desktop
 2. Open Claude Desktop and select "Cowork" on the top left (default is "Chat")
@@ -49,13 +51,23 @@ See [guides](https://github.com/cas-team-analyst/team-analyst/tree/main/guides) 
 
 # Make a Contribution
 
-The CAS has generously funded this program. Now it is up to the community to expand and maintain it. Contributions via GitHub Issues and Pull Requests are welcome!
+The CAS has generously funded this program. Now it is up to the community to expand and maintain it. 
 
-For an introduction to collaborating on GitHub, we recommend this tutorial on Git and GitHub: https://www.w3schools.com/git/default.asp
+Contributions are welcome via [Issues](https://github.com/cas-team-analyst/team-analyst/issues) (the community may both add and resolve them) and [Pull Requests](https://github.com/cas-team-analyst/team-analyst/pulls).
+
+For an introduction to collaborating on GitHub, we recommend this tutorial on Git and GitHub: https://www.w3schools.com/git/default.asp.
+
+Please keep in mind that our team is small and is not compensated for any work we do to support the project post release.
+- Do not submit a Pull Request until you are familiar with the project (see [How It Works](#how-it-works)) and have spent time using it, have carefully considered the implications of your change, and have thoroughly tested the change. 
+- Do not submit an issue until you have tried fixes and confirmed it is an issue with this repository and not your agentic tooling. 
+- Please be patient with us, we will respond when the time becomes available to do so.
+
+This is to protect our time and limit it to reviewing high quality contributions, and to protect the users of this repository from unexpected bugs. 
 
 
 ## Repository Layout
 
+- `README.md` this document, with introduction info and links for more detail.
 - `skills/` the TeamAnalyst skills, each with its own `SKILL.md` plus `assets/` and `scripts/`
 - `skills/reserving-analysis/agents/` custom selection subagents
 - `.claude-plugin/` Claude marketplace plugin and metadata
@@ -64,14 +76,17 @@ For an introduction to collaborating on GitHub, we recommend this tutorial on Gi
 - `plugins/` generated plugin artifacts for download
 - `sample-data/` example input data and a sample run with representative outputs
 - `guides/` supplementary notes for developers and advanced users and the [Executive Summary](https://github.com/cas-team-analyst/team-analyst/tree/main/guides/EXECUTIVE_SUMMARY.md)  providing more detail and context
-- `AGENTS.md` and `CLAUDE.md` instructions for AI agents working on this repository (not the workflow itself)
+- `AGENTS.md, CLAUDE.md, .claude/, .agents/` instructions for AI agents working on this repository (not the workflow itself)
+-  folders contain skills for AI 
 
 
 ## How It Works
 
 For readers who want to understand how TeamAnalyst works under the hood, the following files and folders offer the most insight into the workflow design, decision logic, and practical implementation:
 
-**Core Workflow Specifications**
+**Core Workflow**
+
+These files control the workflow and provide resources the agent can use to complete it.
 
 - [Reserving Analysis Agent Skill](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/reserving-analysis/SKILL.md) — Guardrails and context for getting the agent started on a reserving analysis. Establishes file handling principles, script execution rules, and communication standards. The actual step-by-step workflow is defined in PROGRESS.md.
 
@@ -81,9 +96,11 @@ For readers who want to understand how TeamAnalyst works under the hood, the fol
 
 - [Peer Review Agent Skill](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/peer-review/SKILL.md) — Guardrails and context for conducting peer reviews. Defines advisory-only principles, ASOP grounding, and materiality-first review approach. The actual review output is captured in PEER_REVIEW.md.
 
-**Selection Logic Frameworks**
+- [Other Assets](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/reserving-analysis/assets) templates for replication, report, user interface forms and messages, etc.
 
-The rules-based selector agent specifications show how actuarial judgment is encoded into structured decision frameworks that the AI interprets:
+**Selection Logic**
+
+Instructions that rules-based (as opposed to open-ended) selector subagents use to make selections.
 
 - [LDF Rules-Based Selector](https://github.com/cas-team-analyst/team-analyst/blob/main/skills/reserving-analysis/agents/selector-chain-ladder-ldf-ai-rules-based.agent.md) — Decision framework for development factor selections, including 14 selection criteria and 10 diagnostic adjustment rules.
 
@@ -93,17 +110,15 @@ The rules-based selector agent specifications show how actuarial judgment is enc
 
 **Sample Workflow Run**
 
-The sample-run folder contains a complete example of what TeamAnalyst produces from start to finish:
+Explore these files to understand what the final output looks like.
 
-- [Draft Report](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/REPORT.md) — The draft analysis report generated by the workflow, demonstrating the documentation structure and narrative that TeamAnalyst produces.
+- [Analysis](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/Analysis.xlsx) — The draft analysis excel file generated by the workflow.
 
-- [Draft Analysis](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/Analysis.xlsx) — The draft analysis excel file generated by the workflow.
-
-- [Replication Instructions](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/REPLICATE.md) — Complete reproducibility log documenting all input files, scripts run, customizations made, and manual selections applied. Enables a reviewer to reproduce the analysis results without AI assistance by following the documented steps exactly.
+- [Report](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/REPORT.md) — The draft analysis report generated by the workflow, demonstrating the documentation structure and narrative that TeamAnalyst produces.
 
 - [Peer Review Output](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/PEER_REVIEW.md) — The structured peer review evaluation of the completed analysis, showing how the tool identifies strengths, weaknesses, and areas requiring additional attention.
 
-These files provide the clearest view into how TeamAnalyst works in practice and how the balance between deterministic processing and AI assistance is achieved.
+- [Replication](https://github.com/cas-team-analyst/team-analyst/blob/main/sample-data/sample-run/REPLICATE.md) — Complete reproducibility log documenting all input files, scripts run, customizations made, and manual selections applied. Enables a reviewer to reproduce the analysis results without AI assistance by following the documented steps exactly.
 
 
 # Additional Resources
@@ -117,7 +132,7 @@ For more detailed information on specific aspects of TeamAnalyst, refer to the f
 - **[Developer Notes](https://github.com/cas-team-analyst/team-analyst/blob/main/guides/DEVELOPER_NOTES.md)** — Testing strategies and guidelines for developers working on TeamAnalyst skills. Includes git workflow recommendations, branch testing approaches, and links to helpful resources like Anthropic's guide to building skills for Claude Code.
 
 
-## Installation for Other Agentic Tools
+# Installation for Other Agentic Tools
 
 | Agent | Install |
 |-------|---------|
