@@ -1,27 +1,48 @@
 # AI Data Privacy Guide for Actuarial Professionals
 
-> **The short version:** Your data is only protected if you are using AI through a business API or enterprise plan. Consumer accounts — even paid ones like Claude Pro or ChatGPT Plus — may use your conversations to train future models unless you actively opt out. This guide explains what that means for you and how to stay protected.
+## Navigation
+
+**[TLDR](#tldr)** | **[Why This Matters](#why-this-matters-for-actuaries)** | **[Consumer vs Enterprise](#the-critical-distinction-consumer-vs-enterpriseapi)** | **[Provider Policies](#provider-by-provider-policy-summary)** | **[How to Protect Yourself](#how-to-protect-yourself-five-rules)** | **[FAQ](#faq)** | **[Local AI](#running-ai-on-your-own-machine)** | **[Quick Reference](#quick-reference-card)**
+
+---
+
+## TLDR
+
+1. **Consumer accounts train by default** — ChatGPT, Claude, and Gemini (including paid Pro/Plus) use your conversations for training unless you opt out.
+
+2. **Opt out in seconds:**
+   - **ChatGPT:** Settings → Data Controls → disable "Improve the model for everyone"
+   - **Claude:** Settings → Privacy → disable "Improve Claude for everyone"  
+   - **Gemini:** Google Account → Data & Privacy → disable "Gemini Apps Activity"
+
+3. **Enterprise/API tiers protected by default** — All major providers contractually exclude business data from training.
+
+4. **Complete privacy: Run locally** — **[Ollama](https://ollama.com)** runs AI entirely on your hardware. Nothing leaves your machine. Handles actuarial workflows, document analysis, coding. See [local AI section](#running-ai-on-your-own-machine).
+
+5. **Settings aren't retroactive** — Configure before sharing proprietary data.
+
+**Bottom line:** Choose enterprise for auto-protection, configure consumer settings, or use Ollama for offline control.
 
 ---
 
 ## Why this matters for actuaries
 
-Actuarial work involves proprietary pricing models, client loss data, reserving judgments, and competitive methodologies. If that information enters an AI provider's training pipeline, it could — in theory — influence how future models respond to similar queries, potentially benefiting competitors or eroding the value of your expertise.
+Actuarial work involves proprietary pricing models, client data, reserving judgments, and competitive methodologies. If this enters an AI training pipeline, future models could theoretically respond to similar queries in ways that benefit competitors.
 
-The good news: every major AI provider offers a protected path. The risk only materialises when professionals use the **wrong tier** of a product, often unknowingly.
+**Every major provider offers data protection — you control which path you use.** Risk arises from: (1) using the wrong tier, or (2) not configuring consumer privacy settings. Both are preventable.
 
 ---
 
 ## The critical distinction: consumer vs. enterprise/API
 
-AI providers run two fundamentally different systems under the same brand name.
+Same brand, different defaults:
 
-| Tier | Examples | Training risk |
-|---|---|---|
-| **Consumer** | ChatGPT Free/Plus/Pro, Claude Free/Pro/Max, Gemini (web) | Moderate to high — training on by default in most cases |
-| **API / Enterprise** | OpenAI API, Claude for Work/Enterprise, Google Vertex AI, Azure OpenAI, Microsoft 365 Copilot | Low — contractually excluded from training by default |
+| Tier | Examples | Default | Can opt out? |
+|---|---|---|---|
+| **Consumer** | ChatGPT Free/Plus/Pro, Claude Free/Pro/Max, Gemini (web) | Training ON | ✓ Manual opt-out available |
+| **API / Enterprise** | OpenAI API, Claude for Work/Enterprise, Google Vertex AI, Azure OpenAI, M365 Copilot | No training | N/A — protected |
 
-> **Important:** Paying for a "Pro" or "Plus" subscription does **not** give you enterprise-grade data protection. Claude Pro and ChatGPT Plus are consumer products. Only API and enterprise plans carry contractual training exclusions.
+> **Key:** Every provider offers no-training. Enterprise/API gives it by default. Consumer requires configuration. Paid "Pro/Plus" subscriptions don't automatically protect data.
 
 ---
 
@@ -29,11 +50,11 @@ AI providers run two fundamentally different systems under the same brand name.
 
 ### OpenAI / ChatGPT
 
-**Consumer accounts (Free, Plus, Pro):**
-By default, conversations may be used to train models. Users can opt out via **Settings → Data Controls → Improve the model for everyone**, but this must be done manually and is not retroactive.
+**Consumer (Free, Plus, Pro):**
+Training enabled by default. **Disable:** Settings → Data Controls → "Improve the model for everyone" (toggle off). Use **Temporary Chat** for one-off private conversations.
 
-**API and enterprise accounts (ChatGPT Business, Enterprise):**
-Data is not used for training by default. OpenAI also offers a **Zero Data Retention (ZDR)** option for API customers, under which no prompts or responses are stored at all.
+**API/Enterprise (ChatGPT Business, Enterprise):**
+No training by default. **Zero Data Retention (ZDR)** option available — nothing stored.
 
 - [OpenAI data training policy](https://openai.com/policies/how-your-data-is-used-to-improve-model-performance/)
 - [OpenAI enterprise privacy](https://openai.com/enterprise-privacy/)
@@ -42,11 +63,11 @@ Data is not used for training by default. OpenAI also offers a **Zero Data Reten
 
 ### Anthropic / Claude
 
-**Consumer accounts (Free, Pro, Max):**
-In September 2025, Anthropic updated its consumer terms. Users who opted in (or did not opt out by the deadline) now have conversations retained for up to **5 years** and used for model training. Users who opted out retain the previous 30-day retention with no training use. You can check and change your setting at any time: **Claude.ai → Settings → Privacy → "Improve Claude for everyone"**.
+**Consumer (Free, Pro, Max):**
+September 2025 update: opted-in users have 5-year retention and training. **Disable anytime:** Claude.ai → Settings → Privacy → "Improve Claude for everyone" (toggle off). Disabled = 30-day retention, no training. **Incognito Chat** never stores or trains, regardless of settings.
 
-**API and enterprise accounts (Claude for Work, Team, Enterprise, Amazon Bedrock, Google Vertex AI):**
-Explicitly excluded from the 2025 policy change. No training on commercial customer data. This is governed by Anthropic's Commercial Terms, not the consumer privacy policy.
+**API/Enterprise (Claude for Work, Team, Enterprise, Bedrock, Vertex AI):**
+No training on commercial data. Governed by Commercial Terms.
 
 - [Anthropic consumer terms update (August 2025)](https://www.anthropic.com/news/updates-to-our-consumer-terms)
 - [Anthropic privacy centre — model training](https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training)
@@ -56,13 +77,11 @@ Explicitly excluded from the 2025 policy change. No training on commercial custo
 
 ### Google Gemini
 
-**Consumer accounts (Gemini.google.com):**
-Google states that Gemini interactions may be used to improve its products and services, including AI models. Opt-out mechanisms exist but are not prominently surfaced. Consumer Gemini is the highest-risk tier among the major providers.
+**Consumer (Gemini.google.com):**
+May be used for training. **Disable:** Google Account → Data & Privacy → Gemini Apps Activity (toggle off). Note: also disables conversation history. Less visible than other providers, but effective.
 
-To disable: **Gemini App Activity** must be turned off in your Google Account settings. Note that doing so also disables conversation history.
-
-**Enterprise accounts (Google Workspace with Gemini, Vertex AI):**
-Google contractually guarantees that data processed through Vertex AI is not used to train foundation models. Gemini Enterprise, announced October 2025, carries the same no-training guarantee for business data.
+**Enterprise (Google Workspace with Gemini, Vertex AI):**
+Contractual no-training guarantee for business data.
 
 - [Google Gemini Apps Privacy Hub](https://support.google.com/gemini/answer/13594961)
 - [Google Cloud / Vertex AI data governance](https://cloud.google.com/vertex-ai/docs/general/data-governance)
@@ -71,11 +90,11 @@ Google contractually guarantees that data processed through Vertex AI is not use
 
 ### Microsoft Copilot / Azure OpenAI
 
-**Consumer Copilot:**
-The consumer version of Microsoft Copilot (copilot.microsoft.com) has weaker defaults than the enterprise version. Avoid using it for work involving sensitive actuarial data.
+**Consumer (copilot.microsoft.com):**
+Weaker defaults. **Review:** account.microsoft.com → Privacy → Activity data. Less transparent than competitors. Prefer enterprise for sensitive work.
 
-**Microsoft 365 Copilot and Azure OpenAI Service:**
-Both products default to enterprise-grade privacy. Microsoft does not use M365 Copilot conversations or Azure OpenAI prompts to train foundation models. Azure OpenAI also inherits Microsoft's compliance certifications (SOC 2, ISO 27001, HIPAA, FedRAMP).
+**M365 Copilot / Azure OpenAI:**
+Enterprise-grade privacy. No training on user data. Azure OpenAI: SOC 2, ISO 27001, HIPAA, FedRAMP certified.
 
 - [Microsoft Copilot data privacy](https://privacy.microsoft.com/en-us/privacystatement)
 - [Azure OpenAI data, privacy, and security](https://learn.microsoft.com/en-us/legal/cognitive-services/openai/data-privacy)
@@ -84,86 +103,87 @@ Both products default to enterprise-grade privacy. Microsoft does not use M365 C
 
 ## How to protect yourself: five rules
 
-### 1. Always use the API or enterprise tier
-If your organisation is providing you with an AI tool, confirm it is built on an API or enterprise plan — not a shared consumer account. Ask your tool provider directly. A legitimate business tool will be able to confirm this.
+### 1. Configure privacy settings immediately
+If using consumer accounts professionally:
 
-### 2. Never paste proprietary data in raw form
-Anonymise or abstract sensitive inputs before querying any AI tool, regardless of tier:
+- **ChatGPT:** Settings → Data Controls → disable "Improve the model for everyone"
+- **Claude:** Settings → Privacy → disable "Improve Claude for everyone"
+- **Gemini:** Google Account → Data & Privacy → disable "Gemini Apps Activity"
+- **Microsoft Copilot:** Microsoft Account → Privacy → review Activity data
+
+Settings protect future conversations only, not past ones.
+
+### 2. Prefer API/enterprise for organizational use
+Confirm organizational tools use API or enterprise plans — they default to no-training. Ask your provider directly.
+
+### 3. Anonymize proprietary data
+Abstract sensitive inputs regardless of tier:
 
 | Instead of... | Use... |
 |---|---|
-| Actual loss ratios or claims figures | Normalised or placeholder values (e.g. "Loss ratio = X%") |
-| Client names or policy numbers | "Client A", "Portfolio 1" |
-| Proprietary pricing model logic | A structural description of the approach |
+| Actual loss ratios/claims | "Loss ratio = X%" |
+| Client names/policy numbers | "Client A", "Portfolio 1" |
+| Proprietary pricing logic | Structural description |
 
-The AI almost never needs real numbers to help with methodology.
+AI rarely needs real numbers for methodology.
 
-### 3. Opt out on any consumer account you use personally
-If you use ChatGPT, Claude, or Gemini through a personal or consumer account for any professional purpose:
+### 4. Treat outputs as drafts
+Your judgment is irreplaceable. AI assists with structure and calculation — actuarial sign-off stays human.
 
-- **ChatGPT:** Settings → Data Controls → turn off "Improve the model for everyone"
-- **Claude:** Settings → Privacy → turn off "Improve Claude for everyone"
-- **Gemini:** Google Account → Data & Privacy → turn off Gemini Apps Activity
-
-Remember: opt-out is **not retroactive**. It only applies to conversations after the setting is changed.
-
-### 4. Treat AI outputs as drafts, not conclusions
-Your professional judgement is the protection that cannot be trained away. An AI can assist with structure, language, and calculation — but actuarial sign-off must remain human. This is also good regulatory practice under most actuarial standards of practice.
-
-### 5. For the highest-sensitivity work, request zero-data-retention
-OpenAI's ZDR API option means no prompts or responses are stored after the request completes. Similar arrangements are available at the enterprise level from other providers. If your organisation handles particularly sensitive client data, ask whether a ZDR agreement is in place.
+### 5. For highest sensitivity, use zero-retention
+OpenAI ZDR: nothing stored. Claude Incognito: nothing stored. Ask your provider about similar options.
 
 ---
 
-## Frequently asked questions
+## FAQ
 
-**Q: Can an AI model actually learn my proprietary methods and use them to replace me?**
+**Q: Can AI learn my proprietary methods and replace me?**
 
-Training on conversational data teaches a model how to *communicate* — not how to replicate your specific judgement, experience, or professional accountability. Your expertise is not just the facts you know; it is how you weigh uncertainty, interpret ambiguous data, and take responsibility for a conclusion. That is not what training pipelines capture.
+Training teaches models to communicate, not replicate your judgment, experience, or accountability. Your expertise is how you weigh uncertainty and take responsibility — training doesn't capture that.
 
 **Q: I use ChatGPT Plus for work. Am I exposed?**
 
-Possibly. ChatGPT Plus is a consumer product. Unless you have disabled the training setting in your account, conversations may be used to improve OpenAI's models. You should opt out immediately, and avoid inputting anything proprietary until you have confirmed the setting has changed.
+Only if you haven't changed settings. Go to Settings → Data Controls → disable "Improve the model for everyone" now. Use Temporary Chat for immediate privacy.
 
-**Q: Does using a VPN or incognito mode change anything?**
+**Q: Does VPN or incognito mode help?**
 
-No. Data handling is governed by your account terms, not your network connection.
+No. Data handling follows account terms, not network setup.
 
-**Q: What if I use a free trial of an enterprise product?**
+**Q: What about free trials of enterprise products?**
 
-Enterprise trial accounts typically inherit the enterprise data terms. Confirm with the provider before inputting sensitive data.
+Typically inherit enterprise terms. Confirm before inputting sensitive data.
 
-**Q: Are there AI providers that never train on any user data?**
+**Q: Any providers that never train on user data?**
 
-Several enterprise and on-premises options (such as Aleph Alpha's sovereign cloud deployments, or self-hosted open-weight models like Llama) can be configured to never send data to a third party at all. These are more complex to deploy but offer the strongest possible data isolation. Speak to your IT or compliance team if this level of control is required.
+Enterprise/on-premises options (Aleph Alpha sovereign cloud, self-hosted Llama) can be configured for complete isolation. More complex but strongest protection. Consult IT/compliance.
 
 ---
 
-## The nuclear option: running AI entirely on your own machine
+## Running AI on your own machine
 
-If the idea of any data leaving your organisation is unacceptable — even through a contractually protected API — there is a third path: running an open-weight language model locally, on hardware you control. No network calls. No third-party servers. No training implications whatsoever. This approach has matured significantly in 2025–2026 and is now practical for most professional workstations.
+For absolute data control: run open-weight models locally. No network calls, no third-party servers, no training. Practical for most workstations as of 2026.
 
-### What this means in practice
+### What this means
 
-Tools like **[Ollama](https://ollama.com)** let you download and run open-weight AI models directly on a laptop or server. The model runs on your machine, inference happens locally, and nothing is transmitted anywhere. It is the AI equivalent of running software you have installed — the vendor has no visibility into how you use it after download.
+**[Ollama](https://ollama.com)** runs AI models on your laptop/server. Model downloads once, runs locally, transmits nothing. Like installed software — vendor has no visibility after download.
 
-As of 2026, Ollama also supports the **Claude Code** command-line tool natively. Claude Code is Anthropic's agentic coding and analysis tool; when pointed at a local Ollama instance rather than Anthropic's API, it runs entirely offline using an open-weight model. This means you get a capable agentic workflow — file reading, multi-step reasoning, tool use — with zero data leaving your machine.
+Ollama supports **Claude Code** natively (2026). Point Claude Code at local Ollama instead of Anthropic's API — full agentic workflow (file reading, reasoning, tool use) with zero cloud dependency.
 
-- [Ollama official site](https://ollama.com)
-- [Ollama + Claude Code integration docs](https://docs.ollama.com/integrations/claude-code)
-- [Claude Code overview](https://code.claude.com/docs/en/overview)
+- [Ollama](https://ollama.com)
+- [Ollama + Claude Code](https://docs.ollama.com/integrations/claude-code)
+- [Claude Code](https://code.claude.com/docs/en/overview)
 
-### How to set it up
+### Setup
 
-The setup is simpler than it sounds. Once Ollama is installed, a single command launches Claude Code pointed at your local model:
+Once Ollama is installed:
 
 ```bash
 ollama launch claude --model qwen3.5
 ```
 
-Ollama handles the API translation automatically — Claude Code expects Anthropic's message format, and since Ollama v0.14, Ollama speaks it natively. No proxy or adapter is needed.
+Ollama handles API translation — Claude Code works natively (Ollama v0.14+).
 
-For teams that want to configure this manually (for example, to lock it into a specific model), the environment variables approach also works:
+Manual config (optional):
 
 ```bash
 export ANTHROPIC_BASE_URL="http://localhost:11434"
@@ -171,73 +191,39 @@ export ANTHROPIC_AUTH_TOKEN="ollama"
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
-To verify the setup is truly offline, disconnect from the internet and run a prompt. If you get a response, no cloud connection is involved.
+Verify offline: disconnect internet, run prompt. Response = no cloud.
 
-### Choosing a model
+### Model selection
 
-Not all open-weight models are equal. For professional analytical work, model choice matters. Here is a practical guide by hardware tier:
-
-| Your hardware | Recommended model | Notes |
+| Hardware | Model | Notes |
 |---|---|---|
-| 8 GB RAM | `qwen3.5:9b` or `llama3.2:3b` | Usable but slower; avoid complex multi-step tasks |
-| 16 GB RAM | `qwen3.5:27b` or `phi-4:14b` | Good balance of quality and speed; suitable for document analysis |
-| 32 GB RAM / Apple Silicon M-series | `qwen3.5:27b` or `llama3.3:70b` | Strong quality; M-series unified memory handles larger models well |
-| Workstation with dedicated GPU (24 GB+ VRAM) | `qwen3.5:27b` or `qwen3-coder` | Best local quality; comparable to mid-tier cloud models on many tasks |
+| 8 GB RAM | `qwen3.5:9b`, `llama3.2:3b` | Slow, avoid complex tasks |
+| 16 GB RAM | `qwen3.5:27b`, `phi-4:14b` | Good balance, handles document analysis |
+| 32 GB / M-series | `qwen3.5:27b`, `llama3.3:70b` | Strong quality |
+| GPU (24 GB+ VRAM) | `qwen3.5:27b`, `qwen3-coder` | Best local quality |
 
-For actuarial work specifically — structured analysis, document review, methodology drafting — the `qwen3.5` family and Microsoft's `phi-4` model perform particularly well on reasoning and numerical tasks relative to their hardware requirements. The `qwen2.5-coder:14b` variant is well suited if the primary use case involves working with code or structured data files.
+For actuarial work: `qwen3.5` and `phi-4` excel at reasoning/numerical tasks. `qwen2.5-coder:14b` for code/structured data.
 
-You can also use **4-bit quantisation** (the `Q4_K_M` format) to roughly halve the memory footprint with minimal quality loss. Ollama applies this by default for most models.
+**4-bit quantization** (Q4_K_M): halves memory, minimal quality loss. Ollama default.
 
-> **On quality expectations:** Local models trail the best cloud models on complex, multi-step reasoning tasks. For routine work — summarising reports, drafting methodology notes, reviewing calculations for structure — the gap is small. For highly complex analytical chains, you may prefer a cloud API with strong contractual protections over a weaker local model. The choice is between perfect privacy with moderate capability and strong privacy with higher capability.
+> **Quality trade-off:** Local models lag frontier cloud models on complex reasoning. For routine work (reports, methodology, calculation review), gap is small. For hardest problems, cloud API with strong contract may be better. Choice: perfect privacy + moderate capability vs. strong privacy + higher capability.
 
-### GUI alternatives to the command line
+### GUI options
 
-If command-line tools are not comfortable for your users, two GUI applications wrap the same local inference in a more familiar interface:
+- **[LM Studio](https://lmstudio.ai)** — Desktop app (macOS/Windows/Linux). Chat interface, local API. No terminal.
+- **[Jan](https://jan.ai)** — Open-source desktop assistant. Similar to LM Studio.
 
-- **[LM Studio](https://lmstudio.ai)** — A desktop application for macOS, Windows, and Linux. Model management, a chat interface, and a local API server, all without touching a terminal. Exposes an OpenAI-compatible API that your actuarial tool can point at directly.
-- **[Jan](https://jan.ai)** — An open-source offline desktop assistant. Similar to LM Studio in approach; useful for users who want a ChatGPT-style experience with complete local control.
+Both expose local API — point workflows at localhost instead of cloud.
 
-Both tools expose a local API endpoint, which means your existing workflows can be pointed at them rather than a cloud provider by changing a single URL.
+### Caveats
 
-### What this approach does not solve
+- **Hardware cost** — Modern machine required. 8 GB laptops = slow.
+- **Quality ceiling** — 2026 open-weight models good, but Claude Opus/GPT-5 still lead on hardest tasks.
+- **Maintenance** — You update models and manage disk. Cloud handles invisibly.
+- **No audit trail** — Compliance logging needs extra tooling. Cloud enterprise includes by default.
 
-Local deployment is not a panacea. A few honest caveats:
-
-- **Hardware cost.** Running a capable model locally requires a reasonably modern machine. Older laptops with 8 GB RAM will produce slow, lower-quality responses. The hardware investment is real.
-- **Model quality ceiling.** The best open-weight models in 2026 are very good — but the frontier proprietary models (Claude Opus, GPT-5, etc.) still lead on the most demanding tasks. Local models are a strong option for routine professional work, not necessarily for the hardest analytical problems.
-- **Maintenance.** You are responsible for updating models and managing disk space. Cloud APIs handle this invisibly; local deployment does not.
-- **No audit trail.** If your organisation requires logging of AI interactions for compliance purposes, a local setup needs additional tooling to provide that. Cloud enterprise plans typically include this by default.
-
-For organisations where data sovereignty is non-negotiable — or where regulatory requirements prohibit data leaving a specific jurisdiction — local deployment is the strongest available option. For most others, a well-configured API or enterprise plan provides sufficient protection with less operational overhead.
+**Best for:** Data sovereignty requirements or prohibited data export. **Otherwise:** API/enterprise plan = sufficient protection, less overhead.
 
 ---
 
-## Quick reference card
-
-```
-MAXIMUM PRIVACY — NO DATA LEAVES YOUR MACHINE:
-  ✓ Ollama (local open-weight models, e.g. qwen3.5, phi-4, llama3.3)
-  ✓ Claude Code + Ollama (local model backend, fully offline)
-  ✓ LM Studio or Jan (GUI wrappers for local inference)
-
-SAFE TO USE FOR SENSITIVE ACTUARIAL WORK (cloud, contractually protected):
-  ✓ OpenAI API (with ZDR for highest sensitivity)
-  ✓ ChatGPT Business or Enterprise accounts
-  ✓ Anthropic API / Claude for Work / Claude Enterprise
-  ✓ Google Vertex AI
-  ✓ Microsoft 365 Copilot (enterprise licences)
-  ✓ Azure OpenAI Service
-
-USE WITH CAUTION — OPT OUT OF TRAINING FIRST:
-  ⚠ ChatGPT Free / Plus / Pro
-  ⚠ Claude Free / Pro / Max
-  ⚠ Microsoft Copilot (consumer)
-
-AVOID FOR SENSITIVE WORK:
-  ✗ Google Gemini (consumer web interface)
-  ✗ Any AI tool where you cannot confirm the data tier
-```
-
----
-
-*This document reflects provider policies as of April 2026. AI provider terms change frequently. Review the linked policy pages periodically and consult your organisation's compliance team for guidance specific to your regulatory environment.*
+*This document reflects provider policies as of May 2026. AI provider terms change frequently. Review linked policy pages periodically and consult your organization's compliance team for guidance.*
