@@ -8,6 +8,8 @@ The project is a collection of Markdown files and Python scripts that agentic to
 
 > **DISCLAIMER**: TeamAnalyst is a proof of concept and should be presented that way. It is not intended to be a complete, error-free, or production-approved actuarial system. The CAS does not guarantee the accuracy of the output, and users should not rely on the generated material as a final actuarial work product without appropriate professional review.
 
+_These files can be downloaded via `git clone` or Code (green button at the top of this page) > Download Zip._
+
 
 ## Quick Start
 
