@@ -66,7 +66,7 @@ Current packaging rules:
 2. That plugin should include the full `skills/` tree (which now includes the subagents)
 3. Gemini installs the repo as one extension via `gemini-extension.json` + `GEMINI.md`
 4. `npx skills add` targets the repo and installs the TeamAnalyst skill folders for supported agents
-5. The CoWork plugin zip is automatically built by `.github/workflows/build-plugin.yml` CI
+5. The Cowork plugin zip is automatically built by `.github/workflows/build-plugin.yml` CI
 
 When changing packaging behavior:
 

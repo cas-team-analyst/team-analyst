@@ -44,13 +44,13 @@ Focus first exclusively on **orienting to the OS environment**.
    - All selections finalized
    - If analysis is incomplete, stop and advise user to finish reserving-analysis first
 
-**CoWork Agent Guidelines:**
+**Cowork Agent Guidelines:**
 
 **File operations:** Use `cp` for file operations. Convert Windows paths to Unix: `C:\Users\...` → `/mnt/c/Users/...`. Mount skill folder first if accessing templates.
 
 **Output:** Write findings to `PEER_REVIEW.md` in the analysis folder root (alongside REPORT.md, REPLICATE.md, PROGRESS.md).
 
-**Other:** Cache out of date? Suggest close/reopen CoWork. Never use unicode symbols in commands.
+**Other:** Cache out of date? Suggest close/reopen Cowork. Never use unicode symbols in commands.
 
 ---
 

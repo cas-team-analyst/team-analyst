@@ -14,13 +14,13 @@ description: Actuarial reserving analysis workflow. Use when the user requests r
    - Copy PROGRESS.md, REPORT.md, and REPLICATE.md from `assets/` to project directory. Use copy commands, do NOT read and write the files.
    - Start steps in PROGRESS.md. Mark them in progress/complete as you go.
 
-## CoWork Agent Guidelines
+## Cowork Agent Guidelines
 
 **File operations:** Copy files with `cp {BASE_DIRECTORY}/{skill_path} {PROJECT_FOLDER}/{target_path}`. Mount skill folder first. DO NOT use `create_file` for templates. Convert Windows paths to Unix: `C:\Users\...` → `/mnt/c/Users/...`
 
 **Template guardrails:** If copy fails, STOP and debug. Fix bugs with targeted edits AFTER copying - never rewrite entire files (loses tested logic).
 
-**Other:** Cache out of date? Suggest close/reopen CoWork. Never use unicode symbols in commands.
+**Other:** Cache out of date? Suggest close/reopen Cowork. Never use unicode symbols in commands.
 
 ## Quick Reference
 

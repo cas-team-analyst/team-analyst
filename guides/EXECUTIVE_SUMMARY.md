@@ -29,7 +29,7 @@ TeamAnalyst addresses that need by giving CAS members a working example of how A
 
 ## The Solution
 
-TeamAnalyst combines guided instructions, prebuilt Python scripts, standardized working documents, and focused subagents into one bundle that can be easily installed into a number of agentic tools (Claude CoWork, Claude Code, Cursor, Codex, etc.). The core workflow walks a user through a simplified reserving analysis from raw triangle data to a draft report. Along the way, the tool balances deterministic processing with AI assistance.
+TeamAnalyst combines guided instructions, prebuilt Python scripts, standardized working documents, and focused subagents into one bundle that can be easily installed into a number of agentic tools (Claude Cowork, Claude Code, Cursor, Codex, etc.). The core workflow walks a user through a simplified reserving analysis from raw triangle data to a draft report. Along the way, the tool balances deterministic processing with AI assistance.
 
 That balance is central to the design. TeamAnalyst uses AI where flexibility and judgment are valuable, such as interpreting incoming data layouts, suggesting baseline selections, answering questions, and performing peer-style review. It uses predefined scripts where consistency, speed, and repeatability matter more, such as producing diagnostics, running standard reserving calculations, generating Excel workbooks, and performing technical review checks.
 
@@ -62,7 +62,7 @@ For the CAS, this creates a strong educational asset. It highlights the potentia
 
 TeamAnalyst is meant to be used as a guided starting point rather than a finished production system. A typical user experience is straightforward.
 
-First, the user installs the bundle into a supported AI environment. For most users, Claude CoWork is the most approachable path. For more technical users, the same content can also be used with Agent Skills-compatible environments such as GitHub Copilot, Claude Code, Cursor, Windsurf, Cline, and Gemini CLI. Installation instructions are available at https://github.com/cas-team-analyst/team-analyst. 
+First, the user installs the bundle into a supported AI environment. For most users, Claude Cowork is the most approachable path. For more technical users, the same content can also be used with Agent Skills-compatible environments such as GitHub Copilot, Claude Code, Cursor, Windsurf, Cline, and Gemini CLI. Installation instructions are available at https://github.com/cas-team-analyst/team-analyst. 
 
 To test the tool quickly, users can provide one of three sample workbooks to the agent. Sample input data is available at https://github.com/cas-team-analyst/team-analyst/tree/main/sample-data.
 
@@ -111,7 +111,7 @@ For a long time now, the primary way to support knowledge workers with automatio
 
 **Lesson 2: Don't use agentic Python packages**
 
-The research also explored using agentic Python frameworks such as DeepAgents by LangChain. These approaches seemed promising because they are purpose-built for AI workflows and offer abstractions designed for agent orchestration. However, they introduced problems of their own. First, these frameworks lag behind the tools built by major AI companies. Features, performance improvements, and model updates appear in platforms like Claude CoWork, GitHub Copilot, and Gemini CLI months before third-party frameworks catch up. Second, these frameworks still require writing code rather than natural language specifications, which defeats one of the key goals: making the workflow accessible to actuaries who are not professional developers. Third, enterprise platforms built by major AI companies offer stronger security features, audit trails, and compliance controls than open-source frameworks typically provide—a significant concern for actuarial work.
+The research also explored using agentic Python frameworks such as DeepAgents by LangChain. These approaches seemed promising because they are purpose-built for AI workflows and offer abstractions designed for agent orchestration. However, they introduced problems of their own. First, these frameworks lag behind the tools built by major AI companies. Features, performance improvements, and model updates appear in platforms like Claude Cowork, GitHub Copilot, and Gemini CLI months before third-party frameworks catch up. Second, these frameworks still require writing code rather than natural language specifications, which defeats one of the key goals: making the workflow accessible to actuaries who are not professional developers. Third, enterprise platforms built by major AI companies offer stronger security features, audit trails, and compliance controls than open-source frameworks typically provide—a significant concern for actuarial work.
 
 **The spec-based alternative that solves both problems**
 
