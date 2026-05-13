@@ -1,4 +1,4 @@
-# TeamAnalyst: Executive Summary
+# TeamAnalyst: Executive Summary of Research
 
 ## Table of Contents
 
@@ -78,17 +78,11 @@ For more instructions on getting started, see https://github.com/cas-team-analys
 
 In practical terms, this means TeamAnalyst can be used in several ways: as a learning aid for actuaries who want to understand agentic workflows, as a demonstration of AI-assisted reserving, as a reusable template for internal experimentation, or as a base that technical users can adapt to their own methods and preferences.
 
-## Limitations and Future Research
-
-**Limitations**
+## Limitations
 
 TeamAnalyst is a proof of concept and should be presented that way. It is not intended to be a complete, error-free, or production-approved actuarial system. The CAS does not guarantee the accuracy of the output, and users should not rely on the generated material as a final actuarial work product without appropriate professional review.
 
 The current scope is intentionally narrow. The example workflow focuses on a simplified reserving analysis using triangle-based inputs and a limited set of reserving methods. That focus is a feature, not a flaw: it keeps the tool understandable, teachable, and easier to evaluate while still demonstrating the broader potential of agentic AI in actuarial practice.
-
-**Future Research**
-
-TODO
 
 ## Closing Note
 
