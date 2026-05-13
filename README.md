@@ -58,7 +58,7 @@ Contributions are welcome via [Issues](https://github.com/cas-team-analyst/team-
 For an introduction to collaborating on GitHub, we recommend this tutorial on Git and GitHub: https://www.w3schools.com/git/default.asp.
 
 Please keep in mind that our team is small and is not compensated for any work we do to support the project post release.
-- Do not submit a Pull Request until you are familiar with the project (see [How It Works](#how-it-works)) and have spent time using it, have carefully considered the implications of your change, and have thoroughly tested the change. 
+- Do not submit a Pull Request until you are familiar with the project and have spent time using it, have carefully considered the implications of your change, and have thoroughly tested the change. See [How It Works](#how-it-works) and developer documentation in the [guides](https://github.com/cas-team-analyst/team-analyst/tree/main/guides) folder.
 - Do not submit an issue until you have tried fixes and confirmed it is an issue with this repository and not your agentic tooling. 
 - Please be patient with us, we will respond when the time becomes available to do so.
 
