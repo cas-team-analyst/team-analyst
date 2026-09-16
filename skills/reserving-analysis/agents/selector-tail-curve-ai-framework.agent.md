@@ -64,7 +64,7 @@ You must evaluate the context metrics at this cutoff to understand the quality o
 - `cv_at_starting_age`: Is the variance across accident years low at the cutoff?
 - `slope_sign_changes`: Are there structural breaks in the selected LDFs?
 - `n_factors_in_fit`: How many selected LDFs were used to fit the curve?
-- `min_selected_ldf` / `max_selected_ldf` / `avg_selected_ldf`: Use these to ensure the fitted curve's extrapolated LDFs remain within a reasonable range compared to the empirical data.
+- `min_selected_ldf` / `max_selected_ldf` / `avg_selected_ldf` / `median_selected_ldf`: Use these to ensure the fitted curve's extrapolated LDFs remain within a reasonable range compared to the empirical data. Prefer `median_selected_ldf` over `avg_selected_ldf` as the central-tendency anchor when the underlying LDFs look outlier-skewed (e.g. `avg_selected_ldf` diverges from `median_selected_ldf` by more than a few percent) — the median is robust to a single large-loss or reserve-study distortion that the mean is not.
 
 ### 2. Fit the Curve
 

@@ -800,12 +800,14 @@ def process_measure(measure, selections, df_enhanced, df_averages, df_triangles)
     df_a = df_averages[(df_averages['measure'].astype(str) == measure) & (df_averages['interval'].astype(str) == cutoff_interval)]
     if not df_a.empty:
         avg_ata   = float(df_a['weighted_all'].iloc[0]) if pd.notna(df_a['weighted_all'].iloc[0]) else None
+        median_ata = float(df_a['median_all'].iloc[0]) if 'median_all' in df_a.columns and pd.notna(df_a['median_all'].iloc[0]) else None
         min_ata   = float(df_a['min_all'].iloc[0]) if pd.notna(df_a['min_all'].iloc[0]) else min_ata
         max_ata   = float(df_a['max_all'].iloc[0]) if pd.notna(df_a['max_all'].iloc[0]) else max_ata
         cv_ata    = float(df_a['cv_10yr'].iloc[0]) if pd.notna(df_a['cv_10yr'].iloc[0]) else None
         slope_ata = float(df_a['slope_10yr'].iloc[0]) if pd.notna(df_a['slope_10yr'].iloc[0]) else None
     else:
         avg_ata = None
+        median_ata = None
         cv_ata = None
         slope_ata = None
 
@@ -887,6 +889,7 @@ def process_measure(measure, selections, df_enhanced, df_averages, df_triangles)
             'min_selected_ldf':      min_ata,
             'max_selected_ldf':      max_ata,
             'avg_selected_ldf':      avg_ata,
+            'median_selected_ldf':   median_ata,
             'r_squared':             fit_diag['r_squared'],
             'loo_std_dev':           fit_diag['loo_std_dev'],
             'loo_min':               fit_diag['loo_min'],
@@ -940,7 +943,8 @@ def main():
 
     float_cols = [
         'tail_factor', 'cv_at_starting_age', 'r_squared', 'loo_std_dev', 'loo_min', 'loo_max',
-        'gap_to_last_observed', 'pct_of_cdf',
+        'gap_to_last_observed', 'pct_of_cdf', 'min_selected_ldf', 'max_selected_ldf',
+        'avg_selected_ldf', 'median_selected_ldf',
         'sensitivity_plus10_reserve_delta', 'sensitivity_minus10_reserve_delta',
         'sensitivity_plus20_reserve_delta', 'sensitivity_minus20_reserve_delta',
     ]

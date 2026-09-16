@@ -40,12 +40,17 @@ Phases 1-2 run in order and set the baseline LDF; Phase 3 isn't sequential — a
 | Column CV | Action |
 |---|---|
 | ≤ 0.10 | Standard averages |
-| 0.10–0.20 | Exclude single highest and lowest LDF |
+| 0.10–0.20 | Exclude single highest and lowest LDF, or use the median/winsorized average as a check |
 | > 0.20 | Exclude top/bottom 2 if 7+ points; otherwise exclude 1 each, flag low-credibility |
 
 - Never exclude >30% of data points. If that much looks anomalous, it may be the new pattern (→ Trending).
 - If outlier is the latest diagonal, apply Latest-Point Outlier (Section 2.6) first.
 - Document cause if known (large loss, reserve study, portfolio change).
+- **Robust averages** (`median`, `huber`, `winsorized` columns) are available alongside `simple`/`weighted`/`avg_exclude_high_low` at each window. Use them as a check whenever CV > 0.10 or a single point is suspected to be distorting the standard average:
+  - `median`: least sensitive to outliers of the three; use when one or two points are extreme and you want the central tendency to ignore them entirely.
+  - `huber`: downweights (rather than drops) extreme points; use when you want most of the data to still contribute but don't want a single large-loss diagonal to dominate.
+  - `winsorized`: caps rather than excludes the highest/lowest point; use as a middle ground when you want the outlier to still influence the average, just not linearly.
+  - If a robust average and the standard average diverge by >3%, treat that divergence as outlier evidence supporting the Section 1.1 action, and note both values in your reasoning.
 
 #### 1.2 Recency Preference
 
@@ -109,7 +114,7 @@ When these six conflict, priority runs **Convergence Override > Trending > Bayes
 
 - **Triggers:** <50 claims/AY; incurred <$1M/AY at 24+ months; <5 LDFs in column.
 - Widen to 7-year or all-year; increase prior anchoring to 60–70%; require 4+ points for trend confirmation; lean paid over incurred; consider external benchmarks if <25 claims/AY.
-- If excluding high/low leaves <4 points, use full dataset with trimmed mean (cap at 10th/90th percentile).
+- If excluding high/low leaves <4 points, use the full dataset's `median` or `winsorized` column instead of a hard exclusion.
 
 #### 2.6 Latest-Point Outlier Exception
 

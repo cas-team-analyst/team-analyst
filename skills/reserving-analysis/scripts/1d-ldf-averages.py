@@ -23,6 +23,46 @@ OUTPUT_PATH = config.PROCESSED_DATA
 METHOD_ID   = "chainladder"
 
 
+def huber_mean(x, k=1.5, max_iter=25, tol=1e-6):
+    """
+    Robust mean via Huber's M-estimator (downweights points beyond k scaled
+    MAD-deviations from the running center instead of dropping them outright).
+
+    Args:
+        x: array-like of factors
+        k: tuning constant (1.5 is the standard default; smaller = more robust)
+        max_iter: max iterations for the reweighting loop
+        tol: convergence tolerance
+
+    Returns:
+        Huber mean, or np.nan if x is empty
+    """
+    x = np.asarray(x, dtype=float)
+    if len(x) == 0:
+        return np.nan
+    if len(x) <= 2:
+        return x.mean()
+
+    mu = np.median(x)
+    mad = np.median(np.abs(x - mu))
+    scale = mad / 0.6745 if mad > 0 else x.std()
+    if scale == 0:
+        return mu
+
+    for _ in range(max_iter):
+        resid = (x - mu) / scale
+        abs_resid = np.abs(resid)
+        with np.errstate(divide='ignore'):
+            weights = np.where(abs_resid <= k, 1.0, k / np.where(abs_resid == 0, 1.0, abs_resid))
+        new_mu = np.sum(weights * x) / np.sum(weights)
+        if abs(new_mu - mu) < tol:
+            mu = new_mu
+            break
+        mu = new_mu
+
+    return mu
+
+
 def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     """
     Calculate LDF averages and QA metrics in a single wide format DataFrame.
@@ -36,13 +76,21 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
         Wide format DataFrame with columns:
         - measure: Type of measure (Incurred Loss, Paid Loss, etc.)
         - interval: Development interval (Dev Pd 1-Dev Pd 2, etc.)
-        - weighted_all, simple_all, avg_exclude_high_low_all: Averages using all data
+        - weighted_all, simple_all, avg_exclude_high_low_all, median_all, huber_all,
+          winsorized_all: Averages using all data
         - min_all, max_all: Minimum and maximum using all data
-        - weighted_3yr, simple_3yr: Averages using last 3 periods
-        - weighted_5yr, simple_5yr, avg_exclude_high_low_5yr: Averages using last 5 periods
-        - weighted_10yr, simple_10yr, avg_exclude_high_low_10yr: Averages using last 10 periods
+        - weighted_3yr, simple_3yr, median_3yr, huber_3yr: Averages using last 3 periods
+        - weighted_5yr, simple_5yr, avg_exclude_high_low_5yr, median_5yr, huber_5yr,
+          winsorized_5yr: Averages using last 5 periods
+        - weighted_10yr, simple_10yr, avg_exclude_high_low_10yr, median_10yr, huber_10yr,
+          winsorized_10yr: Averages using last 10 periods
         - cv_3yr, cv_5yr, cv_10yr: Coefficient of variation (volatility measure)
         - slope_3yr, slope_5yr, slope_10yr: Linear trend
+
+        median, huber, and winsorized are robust to outliers: median and Huber mean
+        (M-estimator) are computed for every window; winsorized (cap high/low instead
+        of dropping them) mirrors avg_exclude_high_low and is only computed for
+        all/5yr/10yr windows since it needs 3+ points to be meaningful.
     """
     # Filter to rows with valid LDF values (excludes first age in each period)
     df_with_ldfs = df_enhanced[df_enhanced['ldf'].notna()].copy()
@@ -60,32 +108,52 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
         weights = group['weight']
         
         def calc_avgs(f, w, n=None):
-            """Calculate weighted, simple, and exclude-high-low averages."""
+            """Calculate weighted, simple, exclude-high-low, median, Huber, and winsorized averages."""
             if n:
                 # Take last n observations
                 f, w = f.tail(n), w.tail(n)
-            
+
             # Skip if no data
             if len(f) == 0:
-                return np.nan, np.nan, np.nan
-            
+                return dict.fromkeys(
+                    ['weighted', 'simple', 'exclude_high_low', 'median', 'huber', 'winsorized'], np.nan)
+
             # Weighted average
             w_sum = w.sum()
             w_avg = (f * w).sum() / w_sum if w_sum > 0 else np.nan
-            
+
             # Simple average
             s_avg = f.mean()
-            
-            # Exclude high and low (medial average)
-            ehl_avg = f.sort_values().iloc[1:-1].mean() if len(f) > 2 else s_avg
-                
-            return w_avg, s_avg, ehl_avg
-        
+
+            # Median: robust to outliers, no exclusion needed
+            med = f.median()
+
+            # Huber mean: robust to outliers, downweights rather than drops
+            huber = huber_mean(f.values)
+
+            if len(f) > 2:
+                sorted_f = f.sort_values().reset_index(drop=True)
+                # Exclude high and low (medial average)
+                ehl_avg = sorted_f.iloc[1:-1].mean()
+                # Winsorized: cap (don't drop) the single highest/lowest value
+                winsorized = sorted_f.copy()
+                winsorized.iloc[0] = winsorized.iloc[1]
+                winsorized.iloc[-1] = winsorized.iloc[-2]
+                winz_avg = winsorized.mean()
+            else:
+                ehl_avg = s_avg
+                winz_avg = s_avg
+
+            return {
+                'weighted': w_avg, 'simple': s_avg, 'exclude_high_low': ehl_avg,
+                'median': med, 'huber': huber, 'winsorized': winz_avg,
+            }
+
         # Calculate averages for different time periods
-        all_w, all_s, all_ehl = calc_avgs(factors, weights)
-        w3, s3, _ = calc_avgs(factors, weights, 3)
-        w5, s5, ehl5 = calc_avgs(factors, weights, 5)
-        w10, s10, ehl10 = calc_avgs(factors, weights, 10)
+        all_stats = calc_avgs(factors, weights)
+        s3 = calc_avgs(factors, weights, 3)
+        s5 = calc_avgs(factors, weights, 5)
+        s10 = calc_avgs(factors, weights, 10)
         
         # Min and Max
         min_all = factors.min() if len(factors) > 0 else np.nan
@@ -111,11 +179,21 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
         return pd.Series({
             'cv_3yr': cv_3yr, 'cv_5yr': cv_5yr, 'cv_10yr': cv_10yr,
             'slope_3yr': slope_3yr, 'slope_5yr': slope_5yr, 'slope_10yr': slope_10yr,
-            'weighted_all': all_w, 'simple_all': all_s, 'avg_exclude_high_low_all': all_ehl,
+            'weighted_all': all_stats['weighted'], 'simple_all': all_stats['simple'],
+            'avg_exclude_high_low_all': all_stats['exclude_high_low'],
+            'median_all': all_stats['median'], 'huber_all': all_stats['huber'],
+            'winsorized_all': all_stats['winsorized'],
             'min_all': min_all, 'max_all': max_all,
-            'weighted_3yr': w3, 'simple_3yr': s3,
-            'weighted_5yr': w5, 'simple_5yr': s5, 'avg_exclude_high_low_5yr': ehl5,
-            'weighted_10yr': w10, 'simple_10yr': s10, 'avg_exclude_high_low_10yr': ehl10,
+            'weighted_3yr': s3['weighted'], 'simple_3yr': s3['simple'],
+            'median_3yr': s3['median'], 'huber_3yr': s3['huber'],
+            'weighted_5yr': s5['weighted'], 'simple_5yr': s5['simple'],
+            'avg_exclude_high_low_5yr': s5['exclude_high_low'],
+            'median_5yr': s5['median'], 'huber_5yr': s5['huber'],
+            'winsorized_5yr': s5['winsorized'],
+            'weighted_10yr': s10['weighted'], 'simple_10yr': s10['simple'],
+            'avg_exclude_high_low_10yr': s10['exclude_high_low'],
+            'median_10yr': s10['median'], 'huber_10yr': s10['huber'],
+            'winsorized_10yr': s10['winsorized'],
         })
     
     # Group by measure and interval, apply calculations
@@ -126,10 +204,13 @@ def calculate_ldf_averages(df_enhanced: pd.DataFrame) -> pd.DataFrame:
     
     # Round all average columns to 4 decimal places
     avg_cols = ['weighted_all', 'simple_all', 'avg_exclude_high_low_all',
+                'median_all', 'huber_all', 'winsorized_all',
                 'min_all', 'max_all',
-                'weighted_3yr', 'simple_3yr',
+                'weighted_3yr', 'simple_3yr', 'median_3yr', 'huber_3yr',
                 'weighted_5yr', 'simple_5yr', 'avg_exclude_high_low_5yr',
+                'median_5yr', 'huber_5yr', 'winsorized_5yr',
                 'weighted_10yr', 'simple_10yr', 'avg_exclude_high_low_10yr',
+                'median_10yr', 'huber_10yr', 'winsorized_10yr',
                 'cv_3yr', 'cv_5yr', 'cv_10yr',
                 'slope_3yr', 'slope_5yr', 'slope_10yr']
     for col in avg_cols:

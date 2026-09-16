@@ -123,7 +123,7 @@ def write_selections_section(ws, start_row, col_labels, fmt, prior_selections=No
     return start_row, sel_row
 
 _AVG_PERIOD_ORDER = ['all', '3yr', '5yr', '10yr']
-_AVG_TYPE_ORDER = ['simple', 'weighted', 'exclude_high_low']
+_AVG_TYPE_ORDER = ['simple', 'weighted', 'exclude_high_low', 'winsorized', 'median', 'huber']
 
 def _sort_avg_cols(cols):
     def key(col):

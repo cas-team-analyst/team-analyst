@@ -177,7 +177,7 @@ def find_selected_ldfs_in_cl_excel(cl_excel_path, measure):
 
 
 _AVG_PERIOD_ORDER = ['all', '3yr', '5yr', '10yr']
-_AVG_TYPE_ORDER = ['simple', 'weighted', 'exclude_high_low']
+_AVG_TYPE_ORDER = ['simple', 'weighted', 'exclude_high_low', 'winsorized', 'median', 'huber']
 
 def _sort_avg_cols(cols):
     def key(col):

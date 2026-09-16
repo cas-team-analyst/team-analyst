@@ -35,6 +35,23 @@ AVERAGE_DISPLAY_NAMES = {
     'slope_3yr': 'Slope - 3 Years',
     'slope_5yr': 'Slope - 5 Years',
     'slope_10yr': 'Slope - 10 Years',
+
+    # Median (robust to outliers)
+    'median_all': 'Median - All Years',
+    'median_3yr': 'Median - 3 Years',
+    'median_5yr': 'Median - 5 Years',
+    'median_10yr': 'Median - 10 Years',
+
+    # Huber mean (robust to outliers, M-estimator)
+    'huber_all': 'Huber Mean - All Years',
+    'huber_3yr': 'Huber Mean - 3 Years',
+    'huber_5yr': 'Huber Mean - 5 Years',
+    'huber_10yr': 'Huber Mean - 10 Years',
+
+    # Winsorized average (robust to outliers, caps high/low instead of dropping)
+    'winsorized_all': 'Winsorized Average - All Years',
+    'winsorized_5yr': 'Winsorized Average - 5 Years',
+    'winsorized_10yr': 'Winsorized Average - 10 Years',
 }
 
 
