@@ -640,8 +640,14 @@ def export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, df_ldf_a
             averages_md = "(No averages found)\n"
         
         # --- Curves section (all tail scenario diagnostics) ---
+        # Transposed: too many diagnostic columns to read as one row per method, so
+        # method becomes the header row and each diagnostic becomes its own row.
         scen_sub = df_scenarios[df_scenarios['measure'] == measure].drop(columns=['measure', 'starting_age', 'cutoff_age'], errors='ignore')
-        scen_md = df_to_markdown(scen_sub, index=False)
+        if not scen_sub.empty and 'method' in scen_sub.columns:
+            scen_t = scen_sub.set_index('method').T.reset_index().rename(columns={'index': 'Diagnostic'})
+            scen_md = df_to_markdown(scen_t, index=False)
+        else:
+            scen_md = df_to_markdown(scen_sub, index=False)
         
         # Add empirical ATAs as triangle table (period × interval)
         ata_sub = df_enhanced[(df_enhanced['measure'] == measure) & df_enhanced['ldf'].notna()].copy()
