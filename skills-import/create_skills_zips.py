@@ -15,6 +15,7 @@ OUTPUT_DIR = Path(__file__).resolve().parent
 
 EXCLUDE_DIR_NAMES = {"__pycache__", ".pytest_cache"}
 EXCLUDE_SUFFIXES = {".pyc"}
+EXCLUDE_FILENAMES = {"conftest.py"}
 
 
 def collect_skill_dirs():
@@ -27,6 +28,8 @@ def collect_files(skill_dir: Path):
         if not child.is_file():
             continue
         if child.suffix in EXCLUDE_SUFFIXES:
+            continue
+        if child.name in EXCLUDE_FILENAMES:
             continue
         if EXCLUDE_DIR_NAMES & set(child.relative_to(skill_dir).parts[:-1]):
             continue
