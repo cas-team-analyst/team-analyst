@@ -36,6 +36,7 @@ from modules.diagnostics_sheet import (
 # Paths from modules/config.py — override here if needed:
 OUTPUT_PATH = config.PROCESSED_DATA
 SELECTIONS_OUTPUT_PATH = config.SELECTIONS
+CONTEXT_OUTPUT_PATH = config.SELECTIONS_AGENT_LOGIC
 METHOD_ID = "chainladder"
 OUTPUT_FILE_NAME = "Chain Ladder Selections - LDFs.xlsx"
 
@@ -272,9 +273,10 @@ def build_exposure_sheet(ws, df2, fmt):
 
 def export_md_data(measures, df2, df3, df4, exp_md, prior_selections=None):
     """Export markdown context files for subagents."""
+    Path(CONTEXT_OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
     for measure in measures:
         safe_name = measure.lower().replace(' ', '_')
-        md_path = Path(SELECTIONS_OUTPUT_PATH) / f"chainladder-context-{safe_name}.md"
+        md_path = Path(CONTEXT_OUTPUT_PATH) / f"chainladder-context-{safe_name}.md"
         
         # Triangle data
         tri_sub = df2[(df2['measure'] == measure) & df2['value'].notna()]

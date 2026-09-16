@@ -22,8 +22,8 @@ from modules.xl_styles import SELECTION_FILL, AI_FILL, DATA_FONT, THIN_BORDER
 
 # Paths from modules/config.py — override here if needed:
 METHOD_ID = "chainladder"
-SELECTIONS_PATTERN    = config.SELECTIONS + f"{METHOD_ID}-ai-framework-*.json"
-AI_SELECTIONS_PATTERN = config.SELECTIONS + f"{METHOD_ID}-ai-open-ended-*.json"
+SELECTIONS_PATTERN    = config.SELECTIONS_AGENT_LOGIC + f"{METHOD_ID}-ai-framework-*.json"
+AI_SELECTIONS_PATTERN = config.SELECTIONS_AGENT_LOGIC + f"{METHOD_ID}-ai-open-ended-*.json"
 EXCEL_FILE            = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
 
 

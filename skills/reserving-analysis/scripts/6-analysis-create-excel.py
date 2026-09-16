@@ -64,7 +64,7 @@ def col_letter(col_idx):
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-INPUT_ULTIMATES        = config.ULTIMATES + "projected-ultimates.csv"
+INPUT_ULTIMATES        = config.PROCESSED_DATA + "projected-ultimates.csv"
 INPUT_TRIANGLES        = config.PROCESSED_DATA + "1_triangles.csv"
 INPUT_SELECTIONS_EXCEL = config.SELECTIONS + "Ultimates.xlsx"
 OUTPUT_PATH            = config.OUTPUT

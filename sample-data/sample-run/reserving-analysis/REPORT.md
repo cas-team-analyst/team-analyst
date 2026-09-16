@@ -229,7 +229,7 @@ No pricing ELR file was provided for this analysis. Per Section 3.4, `3-ie-ultim
 *Detailed exhibits live in the accompanying workbook; summarize selections and rationale here.*
 
 ### 6.1 Loss (Incurred + Paid, combined)
-- **Selected ultimates:** See `selections/Ultimates.xlsx` (Losses sheet) and `ultimates/projected-ultimates.csv` for full detail by accident year.
+- **Selected ultimates:** See `selections/Ultimates.xlsx` (Losses sheet) and `processed-data/projected-ultimates.csv` for full detail by accident year.
 - **Method weighting:** Framework AI applied the WC long-tail maturity schedule — Chain Ladder favored for mature years (60+ months), Bornhuetter-Ferguson/Initial Expected favored for green/early years (0-36 months), with Incurred vs. Paid CL weighted per-year based on convergence and diagnostics (e.g., paid-to-incurred ratio, implied case reserve levels).
 - **Notable judgment calls:**
   - **AY2012:** Framework AI weighted 70% Incurred CL / 30% Paid CL (selected $1,408,574) — the two CL indications diverged 11.0%, and a low paid-to-incurred ratio (87.6%) at 155 months suggested the paid tail may be understated, supporting the lean toward Incurred. Flagged for reviewer attention (see Section 11).

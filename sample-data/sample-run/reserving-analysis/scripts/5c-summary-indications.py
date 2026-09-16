@@ -10,11 +10,11 @@ Usage (run from scripts/ directory):
 
 Inputs:
     ../selections/Ultimates.xlsx          - Selected ultimates (User Selection → Framework AI)
-    ../ultimates/projected-ultimates.csv - Projected ultimates with actual values
+    ../processed-data/projected-ultimates.csv - Projected ultimates with actual values
     ../processed-data/1_triangles.csv    - Triangle data (for paid/case reserves calculation)
 
 Outputs:
-    ../selections/summary-indications.json   - JSON file with totals by category
+    ../selections/agent-logic/summary-indications.json   - JSON file with totals by category
     Printed table to console for copy/paste into PROGRESS.md and REPORT.md
 """
 
@@ -31,9 +31,9 @@ from modules.analysis_loaders import (
 
 # Paths
 INPUT_ULTIMATES_EXCEL = config.SELECTIONS + "Ultimates.xlsx"
-INPUT_ULTIMATES_CSV = config.ULTIMATES + "projected-ultimates.csv"
+INPUT_ULTIMATES_CSV = config.PROCESSED_DATA + "projected-ultimates.csv"
 INPUT_TRIANGLES = config.PROCESSED_DATA + "1_triangles.csv"
-OUTPUT_JSON = config.SELECTIONS + "summary-indications.json"
+OUTPUT_JSON = config.SELECTIONS_AGENT_LOGIC + "summary-indications.json"
 
 
 def calculate_case_reserves(triangles_path, df_ult, sel_lookup):

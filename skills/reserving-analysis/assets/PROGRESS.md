@@ -24,7 +24,7 @@ Process to complete each step:
 
 - [ ] Add the phases from PROGRESS.md to the task list. Include the complete phase (all [ ] steps) in each task.
 
-- [ ] Create folders `raw-data/`, `processed-data/`, `selections/`, `scripts/`, and `ultimates/` inside the project folder. The user will have selected their triangle file(s) and project folder via the file picker — use those paths to copy the triangle file(s) into `raw-data/` with bash cp. Do not ask the user to copy files manually.
+- [ ] Create folders `raw-data/`, `processed-data/`, `selections/`, `selections/agent-logic/`, and `scripts/` inside the project folder. `selections/agent-logic/` holds the non-Excel selection inputs and outputs (JSON, MD context files, saved selector agent specs) so `selections/` itself only shows the Excel workbooks a human needs to open. The user will have selected their triangle file(s) and project folder via the file picker — use those paths to copy the triangle file(s) into `raw-data/` with bash cp. Do not ask the user to copy files manually.
 
 - [ ] Update REPORT.md: search for `AI (Phase 1):` in the template and follow the fill instructions at each match.
 
@@ -46,7 +46,7 @@ Process to complete each step:
 
 - [ ] If you haven't already found prior selections, ask the user if prior LDF selections exist from a previous analysis. If they do, ask where they are located (Excel file, CSV, database, etc.). You will need to modify `read_and_process_prior_selections()` in `1a-load-and-validate.py` to read from that source during data extraction.
 
-- [ ] Ask the user if prior tail curve selections exist from a previous analysis. If they do, ask where they are located and what tail factor was used for each measure. Create a CSV file at `selections/tail-factor-prior.csv` with columns: `measure`, `cutoff_age`, `tail_factor`, `method`, `reasoning`. This will be loaded by `2d-tail-create-excel.py` and shown in the "Prior Selection" row for reference. If no prior tail selections exist, skip this step.
+- [ ] Ask the user if prior tail curve selections exist from a previous analysis. If they do, ask where they are located and what tail factor was used for each measure. Create a CSV file at `selections/agent-logic/tail-factor-prior.csv` with columns: `measure`, `cutoff_age`, `tail_factor`, `method`, `reasoning`. This will be loaded by `2d-tail-create-excel.py` and shown in the "Prior Selection" row for reference. If no prior tail selections exist, skip this step.
 
 - [ ] If you haven't already found an input file with Expected Loss Rates (containing period, expected loss rate, and expected frequency), ask the user if this file exists and to place it in the raw-data folder. Without this file, we won't be able to use the Initial Expected or Bornhuetter-Ferguson methods.
 
@@ -85,19 +85,21 @@ Process to complete each step:
 
 # Phase 4: Chain Ladder LDF Selections
 
-- [ ] Run `2a-chainladder-create-excel.py` to create the LDF selection workbook and export per-measure context files. The script will print the context file paths it creates (e.g., "Exported MD: selections/chainladder-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
+- [ ] Run `2a-chainladder-create-excel.py` to create the LDF selection workbook and export per-measure context files. The script will print the context file paths it creates (e.g., "Exported MD: selections/agent-logic/chainladder-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
 
 - [ ] Before you call subagents, share the selector subagent instructions and a context file example with the user by sending them as files (not just describing them in chat) so they appear in the output tab: send the `selector-chain-ladder-ldf-ai-framework` and `selector-chain-ladder-ldf-ai-open-ended` agent files under user-readable names ("Framework-based Selector Agent" and "Open-Ended Selector Agent"), plus one of the context files captured above (call it "AI Context Example: LDF"). This is to allow the user to review this for transparency while they wait for selections to finish.
 
 - [ ] **Invoke the framework selector and the open-ended selector in parallel** (call both subagents in the same message, not one after the other). Each covers all measures in a single invocation:
-  - Framework: call a general subagent following the spec at `selector-chain-ladder-ldf-ai-framework` and pass the list of context file paths you captured from the script output. It will read each context file (one measure at a time), apply the selection framework, and write one JSON file per measure: `selections/chainladder-ai-framework-<measure>.json`
-  - Open-ended: call a general subagent following the spec at `selector-chain-ladder-ldf-ai-open-ended` and pass the same list of context file paths. It will read each context file (one measure at a time), apply holistic actuarial judgment, and write one JSON file per measure: `selections/chainladder-ai-open-ended-<measure>.json`
+  - Framework: call a general subagent following the spec at `selector-chain-ladder-ldf-ai-framework` and pass the list of context file paths you captured from the script output. It will read each context file (one measure at a time), apply the selection framework, and write one JSON file per measure: `selections/agent-logic/chainladder-ai-framework-<measure>.json`
+  - Open-ended: call a general subagent following the spec at `selector-chain-ladder-ldf-ai-open-ended` and pass the same list of context file paths. It will read each context file (one measure at a time), apply holistic actuarial judgment, and write one JSON file per measure: `selections/agent-logic/chainladder-ai-open-ended-<measure>.json`
   
   Verify that one JSON file per measure was created for each selector. **Do NOT read the context files yourself** — the subagents will read them. **Do NOT read the JSON responses** — only verify the files were created. This keeps each selector's judgment independent: if you read the context or reasoning first, your own read on the data can leak into how you frame later steps and bias any selection stage toward agreeing with what you already concluded.
 
+- [ ] Use bash cp to copy the `selector-chain-ladder-ldf-ai-framework` and `selector-chain-ladder-ldf-ai-open-ended` agent files into `selections/agent-logic/` so the selection logic that produced these JSON files is preserved alongside the output.
+
 - [ ] Run `2b-chainladder-update-selections.py` to collect all per-measure JSON files and insert the selections and reasoning into the Excel file. This script will:
-  - Load all `selections/chainladder-ai-framework-*.json` files and combine them
-  - Load all `selections/chainladder-ai-open-ended-*.json` files and combine them
+  - Load all `selections/agent-logic/chainladder-ai-framework-*.json` files and combine them
+  - Load all `selections/agent-logic/chainladder-ai-open-ended-*.json` files and combine them
   - Populate the **Framework AI Selection** row (from framework files) and **Open-Ended AI Selection** row (from open-ended files) in each sheet
 
 - [ ] Tell the user where `selections/Chain Ladder Selections - LDFs.xlsx` is located. Explain that both framework and open-ended AI selections (purple rows) are visible. The **Framework AI Selection** row is what gets used for ultimates — the user can override it manually. If the Framework AI Selection row is left blank, the Open-Ended AI Selection will be used as a fallback.
@@ -115,19 +117,21 @@ _(Pause for Selections/Selections Demo):_
 
 - [ ] Run `2c-tail-methods-diagnostics.py` to fit tail curves and generate diagnostics. Debug any errors.
 
-- [ ] Run `2d-tail-create-excel.py` to create `selections/Chain Ladder Selections - Tail.xlsx` with curve fit results and diagnostics. If prior tail selections exist (`selections/tail-factor-prior.csv`), they will be included in a "Prior Selection" row for reference. The script will print the context file paths it creates (e.g., "  Exported MD: selections/tail-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
+- [ ] Run `2d-tail-create-excel.py` to create `selections/Chain Ladder Selections - Tail.xlsx` with curve fit results and diagnostics. If prior tail selections exist (`selections/agent-logic/tail-factor-prior.csv`), they will be included in a "Prior Selection" row for reference. The script will print the context file paths it creates (e.g., "  Exported MD: selections/agent-logic/tail-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
 
 - [ ] Before you call subagents, share the selector subagent instructions and a context file example with the user by sending them as files (not just describing them in chat) so they appear in the output tab: send the `selector-tail-curve-ai-framework` and `selector-tail-curve-ai-open-ended` agent files under user-readable names ("Framework-based Selector Agent" and "Open-Ended Selector Agent"), plus one of the context files captured above (call it "AI Context Example: Tail"). This is to allow the user to review this for transparency while they wait for selections to finish.
 
 - [ ] **Invoke the framework tail selector and the open-ended tail selector in parallel** (call both subagents in the same message, not one after the other). Each covers all measures in a single invocation:
-  - Framework: call a general subagent following the spec at `selector-tail-curve-ai-framework` and pass the list of context file paths you captured from the script output. It will read each context file (one measure at a time), apply the tail curve decision framework, select the best curve METHOD (not tail factor) based on diagnostics, and write one JSON file per measure: `selections/tail-curve-ai-framework-<measure>.json`
-  - Open-ended: call a general subagent following the spec at `selector-tail-curve-ai-open-ended` and pass the same list of context file paths. It will read each context file (one measure at a time), apply holistic actuarial judgment, and write one JSON file per measure: `selections/tail-curve-ai-open-ended-<measure>.json`
+  - Framework: call a general subagent following the spec at `selector-tail-curve-ai-framework` and pass the list of context file paths you captured from the script output. It will read each context file (one measure at a time), apply the tail curve decision framework, select the best curve METHOD (not tail factor) based on diagnostics, and write one JSON file per measure: `selections/agent-logic/tail-curve-ai-framework-<measure>.json`
+  - Open-ended: call a general subagent following the spec at `selector-tail-curve-ai-open-ended` and pass the same list of context file paths. It will read each context file (one measure at a time), apply holistic actuarial judgment, and write one JSON file per measure: `selections/agent-logic/tail-curve-ai-open-ended-<measure>.json`
   
   Verify that one JSON file per measure was created for each selector. **Do NOT read the context files yourself** — the subagents will read them. **Do NOT read the JSON responses** — only verify the files were created. This keeps each selector's judgment independent: if you read the context or reasoning first, your own read on the data can leak into how you frame later steps and bias any selection stage toward agreeing with what you already concluded.
 
+- [ ] Use bash cp to copy the `selector-tail-curve-ai-framework` and `selector-tail-curve-ai-open-ended` agent files into `selections/agent-logic/` so the selection logic that produced these JSON files is preserved alongside the output.
+
 - [ ] Run `2e-tail-update-selections.py` to collect all per-measure JSON files and insert the selections into the Excel file. This script will:
-  - Load all `selections/tail-curve-ai-framework-*.json` files and combine them
-  - Load all `selections/tail-curve-ai-open-ended-*.json` files and combine them
+  - Load all `selections/agent-logic/tail-curve-ai-framework-*.json` files and combine them
+  - Load all `selections/agent-logic/tail-curve-ai-open-ended-*.json` files and combine them
   - Populate the **Framework AI Selection** row and **Open-Ended AI Selection** row in each sheet
 
 - [ ] Tell the user where `selections/Chain Ladder Selections - Tail.xlsx` is located. Explain that both framework and open-ended AI selections (purple rows) are visible. The **Framework AI Selection** row shows the selected curve METHOD (e.g., 'bondy', 'exp_dev_quick') — this is what gets used to generate fitted LDFs in the Chain Ladder script. The user can override it manually. If the Framework AI Selection row is left blank, the Open-Ended AI Selection will be used as a fallback.
@@ -144,10 +148,10 @@ _(Pause for Selections/Selections Demo:)_
 - [ ] Run `2f-chainladder-ultimates.py`, `3-ie-ultimates.py`, and `4-bf-ultimates.py`. Debug any errors that occur. It is normal for IE and BF to get skipped if the user didn't provide the necessary data (exposure, initial expected). Note: `2f-chainladder-ultimates.py` will:
   1. Read empirical LDF selections from `selections/Chain Ladder Selections - LDFs.xlsx` (up to the cutoff age)
   2. Read the selected tail curve METHOD from `selections/Chain Ladder Selections - Tail.xlsx` (priority: User Selection → Framework AI → Open-Ended AI)
-  3. Load curve parameters from `processed-data/tail-scenarios.parquet`
+  3. Load curve parameters from `processed-data/tail-scenarios.csv`
   4. Generate fitted LDFs for ages beyond the cutoff using the selected curve method's formula
   5. Build complete CDFs by chaining empirical + fitted LDFs
-  6. Calculate Chain Ladder ultimates and save to `ultimates/projected-ultimates.parquet`
+  6. Calculate Chain Ladder ultimates and save to `processed-data/projected-ultimates.csv`
 
 - [ ] Update REPORT.md: search for `AI (Phase 6)` in the template and follow the fill instructions at each match.
 
@@ -155,19 +159,21 @@ _(Pause for Selections/Selections Demo:)_
 
 # Phase 7: Ultimate Selections
 
-- [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export category context files. The script will create two sheets: **Losses** (combining Incurred and Paid) and **Counts** (combining Reported and Closed). It will print the context file paths it creates (e.g., "  Exported MD: selections/ultimates-context-loss.md", "  Exported MD: selections/ultimates-context-count.md"). **Capture the list of context file paths** from the script output.
+- [ ] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export category context files. The script will create two sheets: **Losses** (combining Incurred and Paid) and **Counts** (combining Reported and Closed). It will print the context file paths it creates (e.g., "  Exported MD: selections/agent-logic/ultimates-context-loss.md", "  Exported MD: selections/agent-logic/ultimates-context-count.md"). **Capture the list of context file paths** from the script output.
 
 - [ ] Before you call subagents, share the selector subagent instructions and a context file example with the user by sending them as files (not just describing them in chat) so they appear in the output tab: send the `selector-ultimates-ai-framework` and `selector-ultimates-ai-open-ended` agent files under user-readable names ("Framework-based Selector Agent" and "Open-Ended Selector Agent"), plus one of the context files captured above (call it "AI Context Example: Ultimates"). This is to allow the user to review this for transparency while they wait for selections to finish.
 
 - [ ] **Invoke the framework ultimates selector and the open-ended ultimates selector in parallel** (call both subagents in the same message, not one after the other). Each covers both categories in a single invocation:
-  - Framework: call a general subagent following the spec at `selector-ultimates-ai-framework` and pass the list of context file paths you captured from the script output. It will read each context file (loss, then count, one at a time), for each category choose ONE ultimate per accident year (selecting between Incurred/Paid for Loss, or Reported/Closed for Count), apply the structured method weighting framework, and write two JSON files: `selections/ultimates-ai-framework-loss.json` and `selections/ultimates-ai-framework-count.json`
-  - Open-ended: call a general subagent following the spec at `selector-ultimates-ai-open-ended` and pass the same list of context file paths. It will read each context file (loss, then count, one at a time), for each category choose ONE ultimate per accident year, apply holistic actuarial judgment, and write two JSON files: `selections/ultimates-ai-open-ended-loss.json` and `selections/ultimates-ai-open-ended-count.json`
+  - Framework: call a general subagent following the spec at `selector-ultimates-ai-framework` and pass the list of context file paths you captured from the script output. It will read each context file (loss, then count, one at a time), for each category choose ONE ultimate per accident year (selecting between Incurred/Paid for Loss, or Reported/Closed for Count), apply the structured method weighting framework, and write two JSON files: `selections/agent-logic/ultimates-ai-framework-loss.json` and `selections/agent-logic/ultimates-ai-framework-count.json`
+  - Open-ended: call a general subagent following the spec at `selector-ultimates-ai-open-ended` and pass the same list of context file paths. It will read each context file (loss, then count, one at a time), for each category choose ONE ultimate per accident year, apply holistic actuarial judgment, and write two JSON files: `selections/agent-logic/ultimates-ai-open-ended-loss.json` and `selections/agent-logic/ultimates-ai-open-ended-count.json`
   
   Verify that two JSON files were created for each selector (one for Loss, one for Count). **Do NOT read the context files yourself** — the subagents will read them. **Do NOT read the JSON responses** — only verify the files were created. This keeps each selector's judgment independent: if you read the context or reasoning first, your own read on the data can leak into how you frame later steps and bias any selection stage toward agreeing with what you already concluded.
 
+- [ ] Use bash cp to copy the `selector-ultimates-ai-framework` and `selector-ultimates-ai-open-ended` agent files into `selections/agent-logic/` so the selection logic that produced these JSON files is preserved alongside the output.
+
 - [ ] Run `5b-ultimates-update-selections.py` to load the category JSON files and insert both framework and open-ended selections and reasoning into `selections/Ultimates.xlsx`. This script will:
-  - Load `selections/ultimates-ai-framework-loss.json` and `selections/ultimates-ai-framework-count.json`
-  - Load `selections/ultimates-ai-open-ended-loss.json` and `selections/ultimates-ai-open-ended-count.json`
+  - Load `selections/agent-logic/ultimates-ai-framework-loss.json` and `selections/agent-logic/ultimates-ai-framework-count.json`
+  - Load `selections/agent-logic/ultimates-ai-open-ended-loss.json` and `selections/agent-logic/ultimates-ai-open-ended-count.json`
   - Populate the Framework AI Selection and Open-Ended AI Selection columns in the Loss and Count sheets
 
 - [ ] Tell the user where `selections/Ultimates.xlsx` is located. Explain that both framework and open-ended AI selections are visible. The framework selection is what gets used by default — the user can override it manually. The open-ended selection provides an independent cross-check. Note that the workbook now has **Losses** and **Counts** sheets instead of per-measure sheets, and one ultimate is selected per category per accident year.

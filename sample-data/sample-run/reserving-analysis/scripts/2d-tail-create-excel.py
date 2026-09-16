@@ -34,6 +34,7 @@ ENHANCED_PATH = config.PROCESSED_DATA + "2_enhanced.csv"
 DIAGNOSTICS_PATH = config.PROCESSED_DATA + "3_diagnostics.csv"
 LDF_AVERAGES_PATH = config.PROCESSED_DATA + "4_ldf_averages.csv"
 SELECTIONS_OUTPUT_PATH = config.SELECTIONS
+CONTEXT_OUTPUT_PATH = config.SELECTIONS_AGENT_LOGIC
 OUTPUT_FILE_NAME = "Chain Ladder Selections - Tail.xlsx"
 CL_LDF_EXCEL = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
 
@@ -547,9 +548,10 @@ def export_md_data(measures, df_scenarios, df_enhanced, df_diagnostics, df_ldf_a
     - Tables should use same column ordering and display names
     - This allows subagents to use MD as canonical context that matches user's Excel view
     """
+    Path(CONTEXT_OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
     for measure in measures:
         safe_name = measure.lower().replace(' ', '_')
-        md_path = Path(SELECTIONS_OUTPUT_PATH) / f"tail-context-{safe_name}.md"
+        md_path = Path(CONTEXT_OUTPUT_PATH) / f"tail-context-{safe_name}.md"
         
         # Get selected LDFs from Chain Ladder Excel instead of observed factors
         ldf_data = find_selected_ldfs_in_cl_excel(CL_LDF_EXCEL, measure)
@@ -757,7 +759,7 @@ def main():
     print(f"  {len(df_ldf_averages)} LDF averages rows")
     
     # Load prior selections if available
-    prior_selections_path = Path(config.SELECTIONS) / "tail-factor-prior.csv"
+    prior_selections_path = Path(config.SELECTIONS_AGENT_LOGIC) / "tail-factor-prior.csv"
     df_prior = None
     if prior_selections_path.exists():
         df_prior = pd.read_csv(prior_selections_path)

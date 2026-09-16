@@ -31,16 +31,17 @@ from modules.markdown_utils import df_to_markdown
 from modules.xl_writers import write_ultimates_sheet_xlw
 
 # Paths from modules/config.py — override here if needed:
-INPUT_ULTIMATES  = config.ULTIMATES + "projected-ultimates.csv"
+INPUT_ULTIMATES  = config.PROCESSED_DATA + "projected-ultimates.csv"
 INPUT_TRIANGLES = config.PROCESSED_DATA + "1_triangles.csv"  # Triangle data including Exposure measure
-PRIOR_SELECTIONS_FW = config.SELECTIONS + "ultimates-prior.json"             # Optional, priority 1 — set to prior cycle's selected ultimates
-PRIOR_SELECTIONS_OE = config.SELECTIONS + "ultimates-prior-oe.json"          # Optional, priority 2 — fallback prior
+PRIOR_SELECTIONS_FW = config.SELECTIONS_AGENT_LOGIC + "ultimates-prior.json"             # Optional, priority 1 — set to prior cycle's selected ultimates
+PRIOR_SELECTIONS_OE = config.SELECTIONS_AGENT_LOGIC + "ultimates-prior-oe.json"          # Optional, priority 2 — fallback prior
 OUTPUT_FILE      = config.SELECTIONS + "Ultimates.xlsx"
-SELECTIONS_OUTPUT_PATH = config.SELECTIONS
+SELECTIONS_OUTPUT_PATH = config.SELECTIONS_AGENT_LOGIC
 
 
 def export_md_data(df_ult, exp_md, prior_selections=None):
     import pathlib
+    pathlib.Path(SELECTIONS_OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
     # Subagents should use these markdown files as canonical context.
     # Workbook contains hard-coded values from source data.
     # 

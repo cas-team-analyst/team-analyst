@@ -12,12 +12,12 @@ Formula:
 
 inputs:
     ../processed-data/1_triangles.csv - Triangle data (for diagonal/actual values)
-    ../ultimates/projected-ultimates.csv - CL ultimates with pct_developed
-    ../ultimates/projected-ultimates.csv - Expected ultimates by period and measure
+    ../processed-data/projected-ultimates.csv - CL ultimates with pct_developed
+    ../processed-data/projected-ultimates.csv - Expected ultimates by period and measure
 
 outputs:
-    ../ultimates/projected-ultimates.csv - Combined ultimates file with BF columns
-    ../ultimates/projected-ultimates.csv - Same data in CSV format
+    ../processed-data/projected-ultimates.csv - Combined ultimates file with BF columns
+    ../processed-data/projected-ultimates.csv - Same data in CSV format
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
@@ -35,9 +35,9 @@ from modules import config
 # NOTE: Set INPUT_IE_ULTIMATES to None if Initial Expected data is not available.
 #       This script will exit gracefully since BF requires Initial Expected ultimates.
 INPUT_TRIANGLE_DATA = config.PROCESSED_DATA + "1_triangles.csv"
-INPUT_CL_ULTIMATES  = config.ULTIMATES + "projected-ultimates.csv"
-INPUT_IE_ULTIMATES  = config.ULTIMATES + "projected-ultimates.csv"  # Set to None if not available
-OUTPUT_PATH         = config.ULTIMATES
+INPUT_CL_ULTIMATES  = config.PROCESSED_DATA + "projected-ultimates.csv"
+INPUT_IE_ULTIMATES  = config.PROCESSED_DATA + "projected-ultimates.csv"  # Set to None if not available
+OUTPUT_PATH         = config.PROCESSED_DATA
 
 
 def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:

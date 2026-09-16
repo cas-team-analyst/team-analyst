@@ -30,20 +30,18 @@
   - `7-tech-review.py` — Run technical reasonableness checks
   - `modules/` — Shared utility functions
 - `selections/Chain Ladder Selections - LDFs.xlsx` — Workbook with age-to-age factors, averages, Framework AI Selection row, Open-Ended AI Selection row, and User Selection row (if manually overridden). This is the record of LDF selections and reasoning (excluding tail).
-- `selections/chainladder-ai-framework-<measure>.json` — Per-measure machine-readable LDF selections from the framework selector with per-selection reasoning (e.g., `chainladder-ai-framework-paid_loss.json`).
-- `selections/chainladder-ai-open-ended-<measure>.json` — Per-measure machine-readable LDF selections from open-ended AI judgment with per-selection reasoning.
-- `selections/chainladder-context-<measure>.md` — Per-measure context files exported by `2a-chainladder-create-excel.py` (used by AI selectors).
 - `selections/Chain Ladder Selections - Tail.xlsx` — Workbook with tail curve fits (Bondy, Exponential Decay, McClenahan, Skurnick, etc.), leave-one-out diagnostics, Framework AI Selection row, Open-Ended AI Selection row, and User Selection row (if manually overridden). This is the record of tail curve selections and reasoning.
-- `selections/tail-ai-framework-<measure>.json` — Per-measure machine-readable tail curve selections from the framework selector with per-selection reasoning and decision points.
-- `selections/tail-ai-open-ended-<measure>.json` — Per-measure machine-readable tail curve selections from open-ended AI judgment with per-selection reasoning.
-- `selections/tail-context-<measure>.md` — Per-measure context files exported by `2d-tail-create-excel.py` (used by AI selectors).
-- `selections/tail-factor-prior.csv` — Prior tail curve selections from previous analysis (if provided by user).
 - `selections/Ultimates.xlsx` — Workbook with method indications (Chain Ladder, Initial Expected, BF where applicable), Framework AI Selection columns, Open-Ended AI Selection columns, and User Selection column (if manually overridden). This is the record of selected ultimates by measure and period.
-- `selections/ultimates-ai-framework-<measure>.json` — Per-measure machine-readable ultimate selections from the framework selector's method weighting with per-selection reasoning.
-- `selections/ultimates-ai-open-ended-<measure>.json` — Per-measure machine-readable ultimate selections from open-ended AI judgment with per-selection reasoning.
-- `selections/ultimates-context-<measure>.md` — Per-measure context files exported by `5a-ultimates-create-excel.py` (used by AI selectors).
-- `ultimates/` — Per-method ultimate outputs from scripts 2f, 3, and 4 (Chain Ladder, Initial Expected, Bornhuetter-Ferguson). Note any methods that were skipped and why.
-  - `projected-ultimates.csv` — Combined output with ultimates from all methods that ran
+- `selections/agent-logic/` — Non-Excel selection inputs, outputs, and saved selector specs (kept out of `selections/` so that folder only shows the workbooks a human needs to open):
+  - `chainladder-ai-framework-<measure>.json` / `chainladder-ai-open-ended-<measure>.json` — Per-measure machine-readable LDF selections with per-selection reasoning.
+  - `chainladder-context-<measure>.md` — Per-measure context files exported by `2a-chainladder-create-excel.py` (used by AI selectors).
+  - `tail-curve-ai-framework-<measure>.json` / `tail-curve-ai-open-ended-<measure>.json` — Per-measure machine-readable tail curve selections with per-selection reasoning and decision points.
+  - `tail-context-<measure>.md` — Per-measure context files exported by `2d-tail-create-excel.py` (used by AI selectors).
+  - `tail-factor-prior.csv` — Prior tail curve selections from previous analysis (if provided by user).
+  - `ultimates-ai-framework-<category>.json` / `ultimates-ai-open-ended-<category>.json` — Per-category machine-readable ultimate selections with per-selection reasoning.
+  - `ultimates-context-<category>.md` — Per-category context files exported by `5a-ultimates-create-excel.py` (used by AI selectors).
+  - `selector-*.agent.md` — Copies of the selector agent specs that produced the JSON selections above, saved alongside their output as a record of the selection logic used.
+- `processed-data/projected-ultimates.csv` — Combined per-method ultimate outputs from scripts 2f, 3, and 4 (Chain Ladder, Initial Expected, Bornhuetter-Ferguson). Note any methods that were skipped and why.
 - **Final consolidated output files** from `6-analysis-create-excel.py` and `7-tech-review.py` (in main project folder):
   - `Analysis.xlsx` — Consolidated workbook with all sheets (values only), containing paid-to-date, case reserves, IBNR, total unpaid, and selected ultimates by segment/period. This is the single-file numerical deliverable.
   - `Tech Review.xlsx` — Technical review diagnostics and checks, flagging any internal-consistency or reasonableness issues found in the analysis.

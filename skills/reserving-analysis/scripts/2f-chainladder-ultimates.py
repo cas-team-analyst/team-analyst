@@ -11,8 +11,8 @@ inputs:
     ../selections/Chain Ladder Selections - LDFs.xlsx - LDF selections by measure
 
 outputs:
-    ../ultimates/projected-ultimates.csv - Combined ultimates file with CL columns
-    ../ultimates/projected-ultimates.csv - Same data in CSV format
+    ../processed-data/projected-ultimates.csv - Combined ultimates file with CL columns
+    ../processed-data/projected-ultimates.csv - Same data in CSV format
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
@@ -30,7 +30,7 @@ from modules import config
 INPUT_TRIANGLE_DATA    = config.PROCESSED_DATA + "1_triangles.csv"
 INPUT_SELECTIONS_EXCEL = config.SELECTIONS + "Chain Ladder Selections - LDFs.xlsx"
 INPUT_TAIL_EXCEL       = config.SELECTIONS + "Chain Ladder Selections - Tail.xlsx"
-OUTPUT_PATH            = config.ULTIMATES
+OUTPUT_PATH            = config.PROCESSED_DATA
 
 
 # Excel reading helpers

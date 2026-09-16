@@ -34,10 +34,10 @@ _Filled in progressively as the analysis proceeds._
 ```
 <project-folder>/
   raw-data/       ← input data files
-  processed-data/ ← script outputs
-  selections/     ← Excel workbooks and JSON selection files
+  processed-data/ ← script outputs, including projected ultimates
+  selections/     ← Excel workbooks (human review)
+  selections/agent-logic/ ← JSON/MD selection inputs and outputs, saved selector agent specs
   scripts/        ← numbered Python scripts and modules/
-  ultimates/      ← projected ultimates parquet
 ```
 
 **Input data files placed in raw-data/:**
@@ -108,7 +108,7 @@ _(list files here)_
 
 **Script execution order:**
 
-1. `scripts/2f-chainladder-ultimates.py` — reads LDF selections and tail method; produces `ultimates/projected-ultimates.parquet`
+1. `scripts/2f-chainladder-ultimates.py` — reads LDF selections and tail method; produces `processed-data/projected-ultimates.csv`
 2. `scripts/3-ie-ultimates.py` — _(ran / skipped: state reason if skipped)_
 3. `scripts/4-bf-ultimates.py` — _(ran / skipped: state reason if skipped)_
 
@@ -149,7 +149,7 @@ _(list files here)_
 scripts/6-analysis-create-excel.py
 ```
 
-Reads: `ultimates/projected-ultimates.parquet`, `selections/Ultimates.xlsx`
+Reads: `processed-data/projected-ultimates.csv`, `selections/Ultimates.xlsx`
 
 **Expected output files:**
 

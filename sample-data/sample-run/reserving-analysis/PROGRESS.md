@@ -24,7 +24,7 @@ Process to complete each step:
 
 - [X] Add the phases from PROGRESS.md to the task list. Include the complete phase (all [ ] steps) in each task.
 
-- [X] Create folders `raw-data/`, `processed-data/`, `selections/`, `scripts/`, and `ultimates/` inside the project folder. The user will have selected their triangle file(s) and project folder via the file picker — use those paths to copy the triangle file(s) into `raw-data/` with bash cp. Do not ask the user to copy files manually.
+- [X] Create folders `raw-data/`, `processed-data/`, `selections/`, `selections/agent-logic/`, and `scripts/` inside the project folder. The user will have selected their triangle file(s) and project folder via the file picker — use those paths to copy the triangle file(s) into `raw-data/` with bash cp. Do not ask the user to copy files manually.
 
 - [X] Update REPORT.md: search for `AI (Phase 1):` in the template and follow the fill instructions at each match.
 
@@ -50,7 +50,7 @@ Process to complete each step:
 
 - [X] (Fully Automatic) No prior LDF selections file was provided alongside the triangle upload, so proceed without one — `read_and_process_prior_selections()` in `1a-load-and-validate.py` is left as a no-op.
 
-- [X] (Fully Automatic) No prior tail curve selections file was provided, so skip creating `selections/tail-factor-prior.csv`.
+- [X] (Fully Automatic) No prior tail curve selections file was provided, so skip creating `selections/agent-logic/tail-factor-prior.csv`.
 
 - [X] (Fully Automatic) No Expected Loss Rate (period, expected loss rate, expected frequency) file was provided. Initial Expected and Bornhuetter-Ferguson will be skipped unless exposure data is present in the triangle file, in which case default to the 3-year rolling average empirical fallback used by `3-ie-ultimates.py`. Note this decision in REPORT.md Section 3.4 (Data Limitations) and Section 5.5 (Assumption Rationale). **Exposure (Payroll) data IS present, so the fallback will be used for IE/BF.**
 
@@ -74,7 +74,7 @@ Process to complete each step:
 
 # Phase 4: Chain Ladder LDF Selections
 
-- [X] Run `2a-chainladder-create-excel.py` to create the LDF selection workbook and export per-measure context files. The script will print the context file paths it creates (e.g., "Exported MD: selections/chainladder-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
+- [X] Run `2a-chainladder-create-excel.py` to create the LDF selection workbook and export per-measure context files. The script will print the context file paths it creates (e.g., "Exported MD: selections/agent-logic/chainladder-context-paid_loss.md"). **Capture the list of context file paths** from the script output.
 
 - [X] Before you call subagents, share the selector subagent instructions and a context file example with the user by sending them as files (not just describing them in chat) so they appear in the output tab: send the `selector-chain-ladder-ldf-ai-framework` and `selector-chain-ladder-ldf-ai-open-ended` agent files under user-readable names ("Framework-based Selector Agent" and "Open-Ended Selector Agent"), plus one of the context files captured above (call it "AI Context Example: LDF"). This is to allow the user to review this for transparency while they wait for selections to finish.
 
@@ -96,7 +96,7 @@ Process to complete each step:
 
 - [ ] Run `2c-tail-methods-diagnostics.py` to fit tail curves and generate diagnostics. Debug any errors.
 
-- [X] Run `2d-tail-create-excel.py` to create `selections/Chain Ladder Selections - Tail.xlsx` with curve fit results and diagnostics. If prior tail selections exist (`selections/tail-factor-prior.csv`), they will be included in a "Prior Selection" row for reference. The script will print the context file paths it creates (e.g., "  Exported MD: selections/tail-context-paid_loss.md"). **Capture the list of context file paths** from the script output. (No prior tail selections existed, as expected.)
+- [X] Run `2d-tail-create-excel.py` to create `selections/Chain Ladder Selections - Tail.xlsx` with curve fit results and diagnostics. If prior tail selections exist (`selections/agent-logic/tail-factor-prior.csv`), they will be included in a "Prior Selection" row for reference. The script will print the context file paths it creates (e.g., "  Exported MD: selections/agent-logic/tail-context-paid_loss.md"). **Capture the list of context file paths** from the script output. (No prior tail selections existed, as expected.)
 
 - [X] Before you call subagents, share the selector subagent instructions and a context file example with the user by sending them as files (not just describing them in chat) so they appear in the output tab: send the `selector-tail-curve-ai-framework` and `selector-tail-curve-ai-open-ended` agent files under user-readable names ("Framework-based Selector Agent" and "Open-Ended Selector Agent"), plus one of the context files captured above (call it "AI Context Example: Tail"). This is to allow the user to review this for transparency while they wait for selections to finish.
 
@@ -120,7 +120,7 @@ Process to complete each step:
   3. Load curve parameters from `processed-data/tail-scenarios.parquet`
   4. Generate fitted LDFs for ages beyond the cutoff using the selected curve method's formula
   5. Build complete CDFs by chaining empirical + fitted LDFs
-  6. Calculate Chain Ladder ultimates and save to `ultimates/projected-ultimates.parquet`
+  6. Calculate Chain Ladder ultimates and save to `processed-data/projected-ultimates.csv`
 
 - [X] Update REPORT.md: search for `AI (Phase 6)` in the template and follow the fill instructions at each match.
 
@@ -133,7 +133,7 @@ Process to complete each step:
 
 # Phase 7: Ultimate Selections
 
-- [X] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export category context files. The script will create two sheets: **Losses** (combining Incurred and Paid) and **Counts** (combining Reported and Closed). It will print the context file paths it creates (e.g., "  Exported MD: selections/ultimates-context-loss.md", "  Exported MD: selections/ultimates-context-count.md"). **Capture the list of context file paths** from the script output.
+- [X] Run `scripts/5a-ultimates-create-excel.py` to create the ultimates workbook and export category context files. The script will create two sheets: **Losses** (combining Incurred and Paid) and **Counts** (combining Reported and Closed). It will print the context file paths it creates (e.g., "  Exported MD: selections/agent-logic/ultimates-context-loss.md", "  Exported MD: selections/agent-logic/ultimates-context-count.md"). **Capture the list of context file paths** from the script output.
 
 - [X] Before you call subagents, share the selector subagent instructions and a context file example with the user by sending them as files (not just describing them in chat) so they appear in the output tab: send the `selector-ultimates-ai-framework` and `selector-ultimates-ai-open-ended` agent files under user-readable names ("Framework-based Selector Agent" and "Open-Ended Selector Agent"), plus one of the context files captured above (call it "AI Context Example: Ultimates"). This is to allow the user to review this for transparency while they wait for selections to finish.
 

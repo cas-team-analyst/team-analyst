@@ -34,10 +34,10 @@ _Filled in progressively as the analysis proceeds._
 ```
 <project-folder>/
   raw-data/       ← input data files
-  processed-data/ ← script outputs
-  selections/     ← Excel workbooks and JSON selection files
+  processed-data/ ← script outputs, including projected ultimates
+  selections/     ← Excel workbooks (human review)
+  selections/agent-logic/ ← JSON/MD selection inputs and outputs, saved selector agent specs
   scripts/        ← numbered Python scripts and modules/
-  ultimates/      ← projected ultimates parquet
 ```
 
 **Input data files placed in raw-data/:**
@@ -173,7 +173,7 @@ _Filled in progressively as the analysis proceeds._
 
 **Script execution order:**
 
-1. `scripts/2f-chainladder-ultimates.py` — reads LDF selections and tail method; produces `ultimates/projected-ultimates.csv`. Chain Ladder ultimate totals: Paid Loss $52,820,151 (IBNR $11,052,297); Incurred Loss $51,730,785 (IBNR $8,114,390); Reported Count 9,737 (IBNR 21).
+1. `scripts/2f-chainladder-ultimates.py` — reads LDF selections and tail method; produces `processed-data/projected-ultimates.csv`. Chain Ladder ultimate totals: Paid Loss $52,820,151 (IBNR $11,052,297); Incurred Loss $51,730,785 (IBNR $8,114,390); Reported Count 9,737 (IBNR 21).
 2. `scripts/3-ie-ultimates.py` — **ran**, using the built-in ELR fallback (no pricing ELR file provided; see REPORT.md Section 5.2 for the derived per-AY rates). IE ultimate totals: Paid/Incurred Loss $46,003,887; Reported/Closed Count 10,325.
 3. `scripts/4-bf-ultimates.py` — **ran** (both CL and IE were available). BF ultimate totals: Paid Loss $48,572,178 (IBNR $6,804,323); Incurred Loss $48,813,353 (IBNR $5,196,958); Reported Count 9,738 (IBNR 22).
 
@@ -190,7 +190,7 @@ _Filled in progressively as the analysis proceeds._
 
 **Final ultimate selections to enter manually:**
 
-> Source: User Selection column if the analyst overrode the AI; otherwise the Framework AI Selection column. Full per-accident-year detail (all 24 years) is in `selections/Ultimates.xlsx`, Framework AI Selection column, and in `selections/ultimates-ai-framework-loss.json` / `-count.json`.
+> Source: User Selection column if the analyst overrode the AI; otherwise the Framework AI Selection column. Full per-accident-year detail (all 24 years) is in `selections/Ultimates.xlsx`, Framework AI Selection column, and in `selections/agent-logic/ultimates-ai-framework-loss.json` / `-count.json`.
 
 **Losses (totals):** Selected ultimate $49,174,758 | Paid to date $41,767,854 | Case reserves $1,848,541 | IBNR $5,558,363. No manual overrides (Fully Automatic mode) — Framework AI Selection used throughout. See REPORT.md Section 11 for flagged judgment calls (AY2012, AY2020).
 
@@ -206,7 +206,7 @@ _Filled in progressively as the analysis proceeds._
 scripts/6-analysis-create-excel.py
 ```
 
-Reads: `ultimates/projected-ultimates.csv`, `selections/Ultimates.xlsx`
+Reads: `processed-data/projected-ultimates.csv`, `selections/Ultimates.xlsx`
 
 **Output file produced:**
 

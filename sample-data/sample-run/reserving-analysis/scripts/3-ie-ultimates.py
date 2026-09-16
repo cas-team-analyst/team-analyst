@@ -15,8 +15,8 @@ inputs:
     ../processed-data/1_expected_loss_rates.csv - Optional expected loss rates and frequencies by period
 
 outputs:
-    ../ultimates/projected-ultimates.csv - Combined ultimates file with IE columns
-    ../ultimates/projected-ultimates.csv - Same data in CSV format
+    ../processed-data/projected-ultimates.csv - Combined ultimates file with IE columns
+    ../processed-data/projected-ultimates.csv - Same data in CSV format
 
 run-note: When copied to a project, run from the scripts/ directory:
     cd scripts/
@@ -35,7 +35,7 @@ from modules import config
 #       a 3-year rolling average of diagonal loss per unit of exposure.
 INPUT_TRIANGLE_DATA  = config.PROCESSED_DATA + "1_triangles.csv"
 INPUT_EXPECTED_RATES = config.PROCESSED_DATA + "1_expected_loss_rates.csv"  # Set to None if not available
-OUTPUT_PATH          = config.ULTIMATES
+OUTPUT_PATH          = config.PROCESSED_DATA
 
 
 def extract_diagonal(triangle_data: pd.DataFrame) -> pd.DataFrame:

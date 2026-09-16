@@ -22,10 +22,10 @@ from modules import config
 from modules.xl_utils import build_column_map
 
 # Paths from modules/config.py — override here if needed:
-FRAMEWORK_LOSS_FILE = config.SELECTIONS + "ultimates-ai-framework-loss.json"
-FRAMEWORK_COUNT_FILE = config.SELECTIONS + "ultimates-ai-framework-count.json"
-OPEN_ENDED_LOSS_FILE = config.SELECTIONS + "ultimates-ai-open-ended-loss.json"
-OPEN_ENDED_COUNT_FILE = config.SELECTIONS + "ultimates-ai-open-ended-count.json"
+FRAMEWORK_LOSS_FILE = config.SELECTIONS_AGENT_LOGIC + "ultimates-ai-framework-loss.json"
+FRAMEWORK_COUNT_FILE = config.SELECTIONS_AGENT_LOGIC + "ultimates-ai-framework-count.json"
+OPEN_ENDED_LOSS_FILE = config.SELECTIONS_AGENT_LOGIC + "ultimates-ai-open-ended-loss.json"
+OPEN_ENDED_COUNT_FILE = config.SELECTIONS_AGENT_LOGIC + "ultimates-ai-open-ended-count.json"
 EXCEL_FILE = config.SELECTIONS + "Ultimates.xlsx"
 
 
