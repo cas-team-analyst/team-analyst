@@ -162,6 +162,52 @@ Uninstall: `npx skills remove team-analyst`
 
 _Distribution strategy adapted from https://github.com/JuliusBrussee/caveman_
 
+**Installing without typing commands.** The table above uses typed commands. You can install for the same tools by clicking through the app's own screens instead, if you prefer not to use a command line.
+
+**Claude (Chat or Desktop)** is the only tool where TeamAnalyst installs as an actual point-and-click Skill upload, using the [Quick Start](#quick-start) steps at the top of this page. This is the recommended path for non-technical users. No command line is required.
+
+The same two things you did in Quick Start (sign up for an account, then load the skill files) also work in these other tools. Steps below follow that same order: get an account, then upload.
+
+**Microsoft Copilot**
+
+1. Sign up for or sign in to Microsoft 365 Copilot with a work or school account. Microsoft's skill-upload feature ("Agent Builder") is in preview and currently limited to organizations enrolled in the Microsoft Frontier Program, so a personal Microsoft account will not work. Ask your IT admin to enroll if needed: [Explore AI Early Access in Microsoft 365](https://www.microsoft.com/en-us/microsoft-365-copilot/frontier-program).
+2. Download the skill zip files from https://github.com/cas-team-analyst/team-analyst/tree/main/skills-import — `reserving-analysis.zip`, `peer-review.zip`. This is the same download used in [Quick Start](#quick-start).
+3. Go to m365.cloud.microsoft, select **Agents & Skills**, then **New agent**.
+4. In the **Configure** tab, expand **Skills**, select **Add**, and upload `reserving-analysis.zip` (repeat for `peer-review.zip`). Upload the whole zip file, not just the `SKILL.md` file inside it.
+5. Prepare your data as in Quick Start step 5, then start a new chat and type `/reserving-analysis`.
+
+Full instructions: [Add custom skills to your declarative agent in Agent Builder](https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/agent-builder-add-skills).
+
+**ChatGPT**
+
+As of September 2026, OpenAI is retiring custom GPTs in favor of Plugins and Projects, and new custom GPTs can only be created on Business, Enterprise, or Edu workspace accounts, not on personal plans (Free, Go, Plus, Pro). Check OpenAI's current guidance before relying on this path: [GPTs in ChatGPT](https://help.openai.com/en/articles/8554407-gpts-in-chatgpt).
+
+Where it is still available, ChatGPT does not accept a skill zip file directly, so you paste in the instructions and upload the reference files separately:
+
+1. Sign up for or sign in to a ChatGPT Business, Enterprise, or Edu workspace account.
+2. Open the [`reserving-analysis` skill folder](https://github.com/cas-team-analyst/team-analyst/tree/main/skills/reserving-analysis) on GitHub and open `SKILL.md`.
+3. Go to chatgpt.com/gpts, select **Create**, and open the **Configure** tab.
+4. Copy the full text of `SKILL.md` into the instructions box.
+5. Upload the files under [`skills/reserving-analysis/assets/`](https://github.com/cas-team-analyst/team-analyst/tree/main/skills/reserving-analysis/assets) as knowledge files.
+6. Prepare your data as in Quick Start step 5, then start a chat with your new GPT and ask it to begin the reserving analysis workflow.
+
+Full instructions: [Creating and editing GPTs](https://help.openai.com/en/articles/8554397-creating-and-editing-gpts).
+
+**Google Gemini**
+
+Gemini does not accept a skill zip file directly either, so the steps are the same paste-and-upload pattern as ChatGPT. This works on both personal Google accounts (including the free tier) and Google Workspace accounts.
+
+1. Sign up for or sign in to a Google account at gemini.google.com.
+2. Open the [`reserving-analysis` skill folder](https://github.com/cas-team-analyst/team-analyst/tree/main/skills/reserving-analysis) on GitHub and open `SKILL.md`.
+3. Select **Explore Gems**, then **New Gem**, and give it a name.
+4. Copy the full text of `SKILL.md` into the instructions box.
+5. In the **Knowledge** section, select **Add files** and upload the files under [`skills/reserving-analysis/assets/`](https://github.com/cas-team-analyst/team-analyst/tree/main/skills/reserving-analysis/assets) (up to 10 files, 100 MB each), then save the Gem.
+6. Prepare your data as in Quick Start step 5, then start a chat with your new Gem and ask it to begin the reserving analysis workflow.
+
+Full instructions: [Tips for creating custom Gems](https://support.google.com/gemini/answer/15235603?hl=en).
+
+For ChatGPT and Gemini, expect reduced functionality. Pasting in instructions and reference files is not the same as a real skill upload, and neither tool can run the project's Python scripts the way Claude or Microsoft Copilot's Agent Builder can, so calculations may be less consistent and the workflow may need more manual guidance from you. Treat results from these two paths as a rough starting point, not a validated run of the workflow.
+
 # Helpful Commands
 
 Update skill and plugin .zip files. 
