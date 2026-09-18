@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "team-analyst",
+  "version": "1.0.0",
+  "description": "Actuarial reserving workflow with selector subagents and Python helper scripts.",
+  "author": { "name": "CAS TeamAnalyst Research Team", "url": "https://github.com/cas-team-analyst" },
+  "homepage": "https://github.com/cas-team-analyst/team-analyst",
+  "repository": "https://github.com/cas-team-analyst/team-analyst",
+  "license": "MIT"
+}

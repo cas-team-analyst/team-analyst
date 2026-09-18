@@ -12,6 +12,6 @@ The easiest way to modify these is the ask the Claude agent directly to modify t
 
 Alternatively, you can edit the files directly and then re-compile and install the skill. This method is more technical and is out of scope for this document.
 
-After modifying, run `python plugins/create_plugin_zip_cowork.py` (and `python skills-import/create_skills_zips.py` if you also distribute per-skill zips) to rebuild the packaged artifacts.
+After modifying, run `python create_import_zips.py` to rebuild the packaged artifacts.
 
 _More information can be found in the [developer notes](https://github.com/cas-team-analyst/team-analyst/blob/main/guides/DEVELOPER_NOTES.md) and the individual agent files linked above._

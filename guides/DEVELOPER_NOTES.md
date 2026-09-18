@@ -10,7 +10,7 @@ Much of the information you need will be in `README.md`. This document gives a f
 
 - Agent skills for working with this codebase (not specifically related to reserving) are provided at `.agents/skills/` and `.claude/skills/`.
 
-- After modifying a skill, run `python plugins/create_plugin_zip_cowork.py; python skills-import/create_skills_zips.py` to rebuild the packaged artifacts.
+- After modifying a skill, run `python create_import_zips.py` to rebuild the packaged artifacts.
 
 - Follow best practices from [Anthropic's Guide to Skills for Claude Code](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf?hsLang=en)
 

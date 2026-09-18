@@ -26,7 +26,7 @@ _Instructions for other tools can be found [here](#installation-for-other-agenti
 
 2. In the chat box, select **Cowork**, **Sonnet**, and **Medium**. Cowork will enable the use of subagents (ignore this if the option is not available on free accounts, Chat will also work). Sonnet is preferred to Opus (quickly hits limits) and Haiku (can lose focus during long workflows).
 
-3. Download the skill zip files from https://github.com/cas-team-analyst/team-analyst/tree/main/skills-import — `reserving-analysis.zip`, `peer-review.zip`.
+3. Download the skill zip files here: [`reserving-analysis.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/reserving-analysis.zip) and [`peer-review.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/peer-review.zip).
 
 4. In Claude Chat, go to Customize > Skills > Add > Upload a skill, and upload each zip.
 
@@ -46,8 +46,8 @@ _These instructions are for Windows only. Mac/Linux is probably similar, if you 
 2. Enable long paths in Windows (Cowork sometimes creates these long paths): Settings > System > Advanced > Enable Long Paths (slide to "On").
 3. Open Claude Desktop and select **Cowork** on the top left. (You may need to enable virtualization if prompted and restart).
 4. Select the **Sonnet** model with **Medium** effort on the bottom right.
-5. Download `teamanalyst-cowork.zip` from https://github.com/cas-team-analyst/team-analyst/blob/main/plugins/teamanalyst-cowork.zip
-6. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files > Select `teamanalyst-cowork.zip`
+5. Download [`teamanalyst-plugin-cowork.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/teamanalyst-plugin-cowork.zip)
+6. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files > Select `teamanalyst-plugin-cowork.zip` (downloaded in step 5)
 7. Click "New task", upload your data, and type `/reserving-analysis` to start.
 
 > **Note:** Use one approach or the other across all of Claude (desktop/app/web) to avoid confusing the agent with multiple versions of the same skill. If you upload the skills to Claude Chat, do not upload the plugin to Cowork, and vice versa. Note that Chat cannot call subagents, so framework and open-ended selections will not be run as fully independent sub-tasks.
@@ -91,10 +91,8 @@ This is to protect our time and limit it to reviewing high quality contributions
 - `skills/reserving-analysis/agents/` custom selection subagents
 - `.claude-plugin/` Claude marketplace plugin and metadata
 - `GEMINI.md` and `gemini-extension.json` Gemini extension context and manifest metadata
-- `plugins/create_plugin_zip_cowork.py` script to package skills into `plugins/teamanalyst-cowork.zip` for upload into Cowork
-- `plugins/` generated plugin artifacts for download
-- `skills-import/create_skills_zips.py` script to package each skill folder into its own zip (e.g. `skills-import/reserving-analysis.zip`) for upload as individual Skills in Claude Chat
-- `skills-import/` generated per-skill zip artifacts for download
+- `create_import_zips.py` script that builds every zip in `import/`: the Cowork plugin, the plugin for other tools, and one zip per skill
+- `import/` generated zip artifacts for download (`teamanalyst-plugin-cowork.zip`, `teamanalyst-plugin-other.zip`, `reserving-analysis.zip`, `peer-review.zip`)
 - `sample-data/` example input data and a sample run with representative outputs
 - `guides/` supplementary notes for developers and advanced users and the [Executive Summary](https://github.com/cas-team-analyst/team-analyst/tree/main/guides/EXECUTIVE_SUMMARY.md)  providing more detail and context
 - `AGENTS.md, CLAUDE.md, .claude/, .agents/` instructions for AI agents working on this repository (not the workflow itself)
@@ -152,37 +150,84 @@ For more detailed information on specific aspects of TeamAnalyst, refer to the f
 
 # Installation for Other Agentic Tools
 
-| Agent | Install |
-|-------|---------|
-| **Claude Code** | `claude plugin marketplace add cas-team-analyst/team-analyst && claude plugin install team-analyst@team-analyst` |
-| **Gemini CLI** | `gemini extensions install https://github.com/cas-team-analyst/team-analyst` |
-| **Cursor** | `npx skills add cas-team-analyst/team-analyst -a cursor` |
-| **Windsurf** | `npx skills add cas-team-analyst/team-analyst -a windsurf` |
-| **Copilot** | `npx skills add cas-team-analyst/team-analyst -a github-copilot` |
-| **Cline** | `npx skills add cas-team-analyst/team-analyst -a cline` |
-| **Any other** | `npx skills add cas-team-analyst/team-analyst` |
+Jump to:
 
-Uninstall: `npx skills remove team-analyst`
+- **[Anthropic](#anthropic):** [Claude Code](#claude-code) | [Claude Cowork](#claude-cowork) | [Claude (Chat or Desktop)](#claude-chat-or-desktop)
+- **[OpenAI](#openai):** [Codex](#codex) | [ChatGPT](#chatgpt)
+- **[Google](#google):** [Gemini CLI](#gemini-cli) | [Google Gemini](#google-gemini) | [Antigravity CLI](#antigravity-cli) | [Antigravity IDE](#antigravity-ide-gui)
+- **[Microsoft](#microsoft):** [Microsoft Copilot](#microsoft-copilot)
+- **[GitHub](#github):** [GitHub Copilot CLI](#github-copilot-cli) | [VS Code (GitHub Copilot)](#vs-code-github-copilot) | [GitHub Copilot skills only](#github-copilot-skills-only)
+- **[Other tools](#other-tools):** [Cursor](#cursor) | [Any other tool](#any-other-tool)
+
+Two kinds of install are listed. A **plugin install** pulls the whole TeamAnalyst bundle from this GitHub repo in one step. A **skills install** copies the skill folders into your tool with `npx skills`. Use a plugin install where one is listed, and the skills install otherwise. Where a tool supports both, the commands below are shown twice: **global** (available in every project, the simplest choice for most users) and **project** (only the folder you run it in, so it does not affect your other projects). Point-and-click installs in desktop and web apps are global to your account. Plugin installs marked _docs-based_ follow the vendor's documentation and have not yet been tested by the TeamAnalyst team, so tell us if a step differs on your version.
+
+Tools are grouped by provider. Each tool section starts with the command to install where one exists, followed by point-and-click steps where the tool offers them. Uninstall (for tools installed with `npx skills`): run `npx skills remove reserving-analysis; npx skills remove peer-review` (add `-g` to each if you installed globally)
 
 _Distribution strategy adapted from https://github.com/JuliusBrussee/caveman_
 
-**Installing without typing commands.** The table above uses typed commands. You can install for the same tools by clicking through the app's own screens instead, if you prefer not to use a command line.
+## Anthropic
 
-**Claude (Chat or Desktop)** is the only tool where TeamAnalyst installs as an actual point-and-click Skill upload, using the [Quick Start](#quick-start) steps at the top of this page. This is the recommended path for non-technical users. No command line is required.
+### Claude Code
 
-The same two things you did in Quick Start (sign up for an account, then load the skill files) also work in these other tools. Steps below follow that same order: get an account, then upload.
+```bash
+# Global (user): available in every project
+claude plugin marketplace add cas-team-analyst/team-analyst && claude plugin install team-analyst@team-analyst
 
-**Microsoft Copilot**
+# Project: only the project in the current folder (run from the project root, shared with your team through .claude/settings.json)
+claude plugin marketplace add cas-team-analyst/team-analyst --scope project && claude plugin install team-analyst@team-analyst --scope project
+```
 
-1. Sign up for or sign in to Microsoft 365 Copilot with a work or school account. Microsoft's skill-upload feature ("Agent Builder") is in preview and currently limited to organizations enrolled in the Microsoft Frontier Program, so a personal Microsoft account will not work. Ask your IT admin to enroll if needed: [Explore AI Early Access in Microsoft 365](https://www.microsoft.com/en-us/microsoft-365-copilot/frontier-program).
-2. Download the skill zip files from https://github.com/cas-team-analyst/team-analyst/tree/main/skills-import — `reserving-analysis.zip`, `peer-review.zip`. This is the same download used in [Quick Start](#quick-start).
-3. Go to m365.cloud.microsoft, select **Agents & Skills**, then **New agent**.
-4. In the **Configure** tab, expand **Skills**, select **Add**, and upload `reserving-analysis.zip` (repeat for `peer-review.zip`). Upload the whole zip file, not just the `SKILL.md` file inside it.
-5. Prepare your data as in Quick Start step 5, then start a new chat and type `/reserving-analysis`.
+Start Claude Code and type `/reserving-analysis` to begin. To update later, run `claude plugin marketplace update team-analyst`. See [Claude Code plugin docs](https://code.claude.com/docs/en/plugin-marketplaces).
 
-Full instructions: [Add custom skills to your declarative agent in Agent Builder](https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/agent-builder-add-skills).
+### Claude Cowork
 
-**ChatGPT**
+*There is no terminal command to install the skill into this tool.* This installs the TeamAnalyst plugin from this repo. It works in Cowork on the web (claude.ai) or in the Claude Desktop app, and needs a paid Claude account.
+
+1. Download [`teamanalyst-plugin-cowork.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/teamanalyst-plugin-cowork.zip) (open the link and select the download button).
+2. **Desktop app only:** install Claude Desktop from https://support.claude.com/en/articles/10065433-installing-claude-desktop. On Windows, also enable long paths (Settings > System > Advanced > Enable Long Paths, slide to "On"). You may need to enable virtualization if prompted and restart.
+3. Open Claude Desktop, or go to https://claude.ai/, and select **Cowork** on the top left.
+4. Import the plugin: Customize > Personal plugins > + > Create plugin > Upload plugin > Browse files, then select `teamanalyst-plugin-cowork.zip`.
+5. To use it, select **New task**, upload your data, and type `/reserving-analysis`.
+
+Use one Claude install path only. If you install this plugin in Cowork, do not also upload the skill zips to Claude Chat, and vice versa.
+
+### Claude (Chat or Desktop)
+
+*There is no terminal command to install the skill into this tool.* This is a point-and-click Skill upload and works on the free tier.
+
+1. Sign in at https://claude.ai/ (or open Claude Desktop).
+2. Download the skill zip files here: [`reserving-analysis.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/reserving-analysis.zip) and [`peer-review.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/peer-review.zip) (open each link and select the download button).
+3. In Claude Chat, go to Customize > Skills > Add > Upload a skill, and upload each zip, one at a time. Upload the whole zip, not files from inside it.
+4. To use it, start a new chat, upload your data, and type `/reserving-analysis`.
+
+Use one Claude install path only. If you upload these skills to Chat, do not also install the Cowork plugin, and vice versa.
+
+## OpenAI
+
+### Codex
+
+```bash
+# Project: installs into .agents/skills/ in the current folder only
+npx skills add cas-team-analyst/team-analyst -a codex
+
+# Global: available in every project
+npx skills add cas-team-analyst/team-analyst -a codex -g
+```
+
+Without `-g`, the skills install into `.agents/skills/` in your current project, which Codex scans on startup. In Codex, type `$reserving-analysis` to start the workflow. See [Skills in Codex](https://learn.chatgpt.com/docs/build-skills) and the [`skills` CLI](https://github.com/vercel-labs/skills).
+
+**Plugin install (_docs-based_).** Codex can also add this repo as a plugin marketplace:
+
+```bash
+# Global: Codex plugins install for your user account, not per project
+codex plugin marketplace add cas-team-analyst/team-analyst
+```
+
+Then open `/plugins` inside Codex and install **team-analyst**. If Codex does not list it, use the skills install above, which is the tested path. See [Package your plugin](https://developers.openai.com/plugins/build/plugins).
+
+### ChatGPT
+
+*There is no terminal command to install the skill into this tool.*
 
 As of September 2026, OpenAI is retiring custom GPTs in favor of Plugins and Projects, and new custom GPTs can only be created on Business, Enterprise, or Edu workspace accounts, not on personal plans (Free, Go, Plus, Pro). Check OpenAI's current guidance before relying on this path: [GPTs in ChatGPT](https://help.openai.com/en/articles/8554407-gpts-in-chatgpt).
 
@@ -197,9 +242,22 @@ Where it is still available, ChatGPT does not accept a skill zip file directly, 
 
 Full instructions: [Creating and editing GPTs](https://help.openai.com/en/articles/8554397-creating-and-editing-gpts).
 
-**Google Gemini**
+**Plugins (later).** ChatGPT uses Codex-style plugins. TeamAnalyst is not available as a ChatGPT plugin yet, so use the paste-and-upload steps above.
 
-Gemini does not accept a skill zip file directly either, so the steps are the same paste-and-upload pattern as ChatGPT. This works on both personal Google accounts (including the free tier) and Google Workspace accounts.
+## Google
+
+### Gemini CLI
+
+```bash
+# Global: Gemini CLI extensions install for your user account, not per project
+gemini extensions install https://github.com/cas-team-analyst/team-analyst
+```
+
+Google retired Gemini CLI for free and individual Google AI Pro and Ultra users on June 18, 2026. It still works for Gemini Code Assist Standard and Enterprise licenses, or with a paid API key. Everyone else should use [Antigravity CLI](#antigravity-cli) below. See Google's [announcement](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/) and the [Gemini CLI extensions guide](https://geminicli.com/docs/extensions/).
+
+### Google Gemini
+
+*There is no terminal command to install the skill into this tool.* Gemini does not accept a skill zip file directly either, so the steps are the same paste-and-upload pattern as ChatGPT. This works on both personal Google accounts (including the free tier) and Google Workspace accounts.
 
 1. Sign up for or sign in to a Google account at gemini.google.com.
 2. Open the [`reserving-analysis` skill folder](https://github.com/cas-team-analyst/team-analyst/tree/main/skills/reserving-analysis) on GitHub and open `SKILL.md`.
@@ -210,12 +268,136 @@ Gemini does not accept a skill zip file directly either, so the steps are the sa
 
 Full instructions: [Tips for creating custom Gems](https://support.google.com/gemini/answer/15235603?hl=en).
 
+### Antigravity CLI
+
+```bash
+# Global: agy plugin install has no project option
+agy plugin install https://github.com/cas-team-analyst/team-analyst
+
+# Project: skills only, installs into .agents/skills/ in the current folder
+npx skills add cas-team-analyst/team-analyst -a antigravity
+```
+
+The first command installs TeamAnalyst as a plugin. Start a new `agy` session, then type `/skills` to confirm the TeamAnalyst skills are listed and `/reserving-analysis` to start the workflow. The `npx skills` command installs only the skills, into the directory where you ran it. To make skills available in every project without the plugin, add `-g` to it or copy the folders into `~/.gemini/antigravity-cli/skills/`. Get Antigravity CLI from [antigravity.google/download](https://antigravity.google/download). See [Plugins](https://antigravity.google/docs/plugins?tab=cli) and [Agent Skills](https://antigravity.google/docs/skills/) in the Antigravity docs.
+
+### Antigravity IDE (GUI)
+
+This covers the Antigravity 2.0 desktop app and the IDE. The `npx skills` command above also works here, since both read `.agents/skills/` in your project. To install without a command line:
+
+1. Download the repo from https://github.com/cas-team-analyst/team-analyst (select **Code**, then **Download ZIP**) and unzip it.
+2. Copy every folder inside the repo's `skills/` folder (`reserving-analysis`, `peer-review`, and the rest) into one of these locations:
+   - **One project only:** `.agents/skills/` inside your project folder. Create it if it does not exist.
+   - **All projects:** `.gemini/config/skills/` inside your user folder (on Windows, `C:\Users\<you>\.gemini\config\skills`).
+3. Open the agent side panel and check **Customizations** to confirm `reserving-analysis` is listed. No restart is needed.
+4. Prepare your data as in Quick Start step 5, then type `/reserving-analysis` in the prompt panel.
+
+**Plugin install (_docs-based_).** To install the whole bundle as a plugin instead, download [`teamanalyst-plugin-other.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/teamanalyst-plugin-other.zip) and unzip it into a folder named `team-analyst` inside one of these locations, so that `plugin.json` sits directly in that folder:
+
+- **One project only:** `.agents/plugins/` inside your project folder.
+- **All projects:** `.gemini/config/plugins/` inside your user folder (on Windows, `C:\Users\<you>\.gemini\config\plugins`).
+
+Then open **Customizations** in the agent side panel to confirm the plugin is listed. See [Plugins in Antigravity](https://antigravity.google/docs/plugins?tab=cli).
+
+See [Agent Skills](https://antigravity.google/docs/skills/) and the [Authoring Google Antigravity Skills](https://codelabs.developers.google.com/getting-started-with-antigravity-skills) codelab.
+
+## Microsoft
+
+### Microsoft Copilot
+
+*There is no terminal command to install the skill into this tool.*
+
+1. Sign up for or sign in to Microsoft 365 Copilot with a work or school account. Microsoft's skill-upload feature ("Agent Builder") is in preview and currently limited to organizations enrolled in the Microsoft Frontier Program, so a personal Microsoft account will not work. Ask your IT admin to enroll if needed: [Explore AI Early Access in Microsoft 365](https://www.microsoft.com/en-us/microsoft-365-copilot/frontier-program).
+2. Download the skill zip files here: [`reserving-analysis.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/reserving-analysis.zip) and [`peer-review.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/peer-review.zip). This is the same download used in [Quick Start](#quick-start).
+3. Go to m365.cloud.microsoft, select **Agents & Skills**, then **New agent**.
+4. In the **Configure** tab, expand **Skills**, select **Add**, and upload [`reserving-analysis.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/reserving-analysis.zip) (repeat for [`peer-review.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/peer-review.zip)). Upload the whole zip file, not just the `SKILL.md` file inside it.
+5. Prepare your data as in Quick Start step 5, then start a new chat and type `/reserving-analysis`.
+
+Full instructions: [Add custom skills to your declarative agent in Agent Builder](https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/agent-builder-add-skills).
+
+Microsoft 365 Copilot has no plugin format for skills, so the per-skill zips above are the only route. Limits from Microsoft: up to 8 skills per agent, 50 MB per zip, `SKILL.md` at the zip root, and instructions under 20,000 characters.
+
+## GitHub
+
+### GitHub Copilot CLI
+
+```bash
+# Global: Copilot CLI plugins install for your user account, not per project
+copilot plugin install cas-team-analyst/team-analyst
+
+# Global, alternative: add the repo as a marketplace first, then install from it
+copilot plugin marketplace add cas-team-analyst/team-analyst && copilot plugin install team-analyst@team-analyst
+
+# Project: skills only, installs into .agents/skills/ in the current folder
+npx skills add cas-team-analyst/team-analyst -a github-copilot
+```
+
+Check `copilot plugin list` to confirm it installed. Copilot CLI copies plugin contents at install time, so reinstall to pick up updates. This route is _docs-based_. See [Copilot CLI plugin reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference) and [Plugin marketplaces for Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-marketplace).
+
+### VS Code (GitHub Copilot)
+
+*There is no terminal command to install the skill into this tool.* This route is _docs-based_.
+
+1. Open the Command Palette (Ctrl+Shift+P, or Cmd+Shift+P on Mac) and run **Chat: Install Plugin From Source**.
+2. Paste `https://github.com/cas-team-analyst/team-analyst` and confirm.
+3. Open Copilot Chat in agent mode and type `/reserving-analysis`.
+
+To add the repo as a marketplace instead, add it to the `chat.plugins.marketplaces` setting. See [Agent plugins in VS Code](https://code.visualstudio.com/docs/agent-customization/agent-plugins).
+
+### GitHub Copilot (skills only)
+
+```bash
+# Project: installs into .agents/skills/ in the current folder only
+npx skills add cas-team-analyst/team-analyst -a github-copilot
+
+# Global: available in every project
+npx skills add cas-team-analyst/team-analyst -a github-copilot -g
+```
+
+Without `-g`, the skills install into `.agents/skills/` in your project, which GitHub Copilot reads in agent mode in VS Code and JetBrains, in Copilot CLI, and in the Copilot cloud agent. See [About agent skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills).
+
+## Other tools
+
+### Cursor
+
+```bash
+# Project: installs into .agents/skills/ in the current folder only
+npx skills add cas-team-analyst/team-analyst -a cursor
+
+# Global: available in every project
+npx skills add cas-team-analyst/team-analyst -a cursor -g
+```
+
+Without `-g`, the skills install into `.agents/skills/` in your project. In Cursor, open **Customize**, then **Skills**, to confirm they are listed, and type `/` in Agent chat to pick `reserving-analysis`. See [Agent Skills in Cursor](https://cursor.com/docs/context/skills).
+
+**Plugin install (_docs-based_).** Cursor's documentation does not describe installing a plugin from a GitHub link for individual accounts. Choose one of these, both of which use this repo:
+
+- **Local plugin:** download [`teamanalyst-plugin-other.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/teamanalyst-plugin-other.zip), unzip it into `~/.cursor/plugins/local/team-analyst` (so `plugin.json` sits directly in that folder), restart Cursor, and look under **Customize**.
+- **Team plans:** an admin opens the Dashboard, selects **Plugins**, then **Import from Repo**, and enters `https://github.com/cas-team-analyst/team-analyst`.
+
+See [Cursor plugins](https://cursor.com/docs/reference/plugins).
+
+### Any other tool
+
+```bash
+# Project: installs into the current folder only
+npx skills add cas-team-analyst/team-analyst
+
+# Global: available in every project
+npx skills add cas-team-analyst/team-analyst -g
+```
+
+The [`skills` CLI](https://github.com/vercel-labs/skills) lists every supported agent and where it installs skills.
+
+### Manual folder install
+
+For any tool that reads [Agent Plugins](https://agent-plugins.org/specification) (a folder with a root `plugin.json` and a `skills/` folder), download [`teamanalyst-plugin-other.zip`](https://github.com/cas-team-analyst/team-analyst/blob/main/import/teamanalyst-plugin-other.zip), unzip it, and copy the folder into that tool's plugins folder. Plugins are folders, so unzip first rather than importing the zip itself.
+
 For ChatGPT and Gemini, expect reduced functionality. Pasting in instructions and reference files is not the same as a real skill upload, and neither tool can run the project's Python scripts the way Claude or Microsoft Copilot's Agent Builder can, so calculations may be less consistent and the workflow may need more manual guidance from you. Treat results from these two paths as a rough starting point, not a validated run of the workflow.
 
 # Helpful Commands
 
-Update skill and plugin .zip files. 
+Update skill and plugin .zip files. This also builds `import/teamanalyst-plugin-other.zip` (root `plugin.json` plus `skills/`) for manual folder installs, and fails if the plugin versions differ across `plugin.json`, `.claude-plugin/plugin.json` and `gemini-extension.json`.
 
 ```bash
-python plugins/create_plugin_zip_cowork.py; python skills-import/create_skills_zips.py
+python create_import_zips.py
 ```
