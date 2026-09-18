@@ -1,14 +1,18 @@
 # TeamAnalyst
 
-**[Quick Start](#quick-start)** | **[Contribute](#make-a-contribution)** | **[Repository Layout](#repository-layout)** | **[How It Works](#how-it-works)** | **[Resources](#additional-resources)** | **[Install](#installation-for-other-agentic-tools)**
-
-TeamAnalyst is the result of a research initiative by the Casualty Actuarial Society (CAS) to explore the use of agentic tools in actuarial work. It targets a specific workflow: development of actuarial reserve ultimate estimates. 
-
-The project is a collection of Markdown files and Python scripts that agentic tools can use to run the workflow, organized to match the expected organization of these files for different tools.
-
 > **DISCLAIMER**: TeamAnalyst is a proof of concept and should be presented that way. It is not intended to be a complete, error-free, or production-approved actuarial system. The CAS does not guarantee the accuracy of the output, and users should not rely on the generated material as a final actuarial work product without appropriate professional review.
 
-_These files can be downloaded via `git clone` or Code (green button at the top of this page) > Download Zip._
+**[Quick Start](#quick-start)** | **[Contribute](#make-a-contribution)** | **[Repository Layout](#repository-layout)** | **[How It Works](#how-it-works)** | **[Resources](#additional-resources)** | **[Install](#installation-for-other-agentic-tools)**
+
+TeamAnalyst is the result of a research initiative by the Casualty Actuarial Society’s (CAS) Reserves Working Group to explore the use of agentic tools in actuarial work. It targets a specific workflow: development of actuarial reserve ultimate estimates. 
+
+The main deliverable is a zipped collection of files following the [agent skills](https://agentskills.io/) specification for easy loading into common agentic tools. It is NOT a production-ready system, but is instead a proof of concept for exploring the use of agentic tools in actuarial workflows. All you need to use it is an email address and an internet connection! Sample data is provided for easy testing and demonstration purposes.
+
+See [Quick Start](#quick-start) below to get started!
+
+This repository also contains the source files, plus other supporting files that are useful for maintaining and customizing TeamAnalyst. It is an evolving project, so check back often and don't hesitate to add a [GitHub Issue](https://github.com/cas-team-analyst/team-analyst/issues) if you'd like to see a change.
+
+_These files can be downloaded via [`git clone`](https://www.w3schools.com/git/git_clone.asp) or Code (green button at the top of this page) > Download Zip._
 
 
 ## Quick Start
@@ -20,7 +24,7 @@ _Instructions for other tools can be found [here](#installation-for-other-agenti
 1. Sign up for a Claude account at https://claude.ai/
    - **Important Note**: While this approach works on Claude's free tier, free/consumer accounts don't get the same data privacy protections as paid accounts — by default your conversations may be used to train models unless you turn that off in Settings > Privacy. See the [AI Training & Data Privacy Policies guide](https://github.com/cas-team-analyst/team-analyst/blob/main/guides/AI_TRAINING_POLICIES.md) before uploading any real client data.
 
-2. In the chat box, select **Cowork**, **Sonnet**, and **Medium**. Cowork will enable the use of subagents (ignore this if the option is not available, Chat will also work). Sonnet is preferred to Opus (quickly hits limits) and Haiku (can lose focus during long workflows).
+2. In the chat box, select **Cowork**, **Sonnet**, and **Medium**. Cowork will enable the use of subagents (ignore this if the option is not available on free accounts, Chat will also work). Sonnet is preferred to Opus (quickly hits limits) and Haiku (can lose focus during long workflows).
 
 3. Download the skill zip files from https://github.com/cas-team-analyst/team-analyst/tree/main/skills-import — `reserving-analysis.zip`, `peer-review.zip`.
 
